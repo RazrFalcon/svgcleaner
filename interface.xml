@@ -60,7 +60,7 @@
       <value>keep</value>
       <value>delete</value>
       <sub>
-        <std_dev type="spinBox" name="if their stdDeviation attributes less than" default="0.2" step="0.01" min="0.01" max="0.5"/>
+        <std_dev type="spinBox" name="if their stdDeviation attributes is less than" default="0.2" step="0.01" min="0.01" max="0.5"/>
       </sub>
     </gaussian_blur>
   </tab2>
@@ -73,7 +73,7 @@
       <value>no</value>
       <value>yes</value>
       <sub>
-	<protect_id type="chBox" name="Always keep IDs which contain only letters" default="yes">
+	<protect_id type="chBox" name="Always keep IDs that contain only letters" default="yes">
 	  <value>no</value>
 	  <value>yes</value>
 	</protect_id>
@@ -87,7 +87,7 @@
       <value>keep</value>
       <value>delete</value>
     </nonspec_atts>
-    <default_atts type="chBox" name="Remove attributes with default values" default="delete">
+    <default_atts type="chBox" name="Remove attributes with default SVG values" default="delete">
       <value>keep</value>
       <value>delete</value>
     </default_atts>
@@ -103,15 +103,15 @@
       <value>keep</value>
       <value>delete</value>
     </adobe_atts>
-    <stroke_atts type="chBox" name="Remove any stroke properties if there's no stroking" default="delete">
+    <stroke_atts type="chBox" name="Remove all stroke properties when there's no stroking" default="delete">
       <value>keep</value>
       <value>delete</value>
     </stroke_atts>
-    <fill_atts type="chBox" name="Remove any fill properties if there's no filling" default="delete">
+    <fill_atts type="chBox" name="Remove all fill properties when there's no filling" default="delete">
       <value>keep</value>
       <value>delete</value>
     </fill_atts>
-    <clip_atts type="chBox" name="Remove any unused attributes inside clipPath elements" default="delete">
+    <clip_atts type="chBox" name="Remove all unused attributes from clipPath elements" default="delete">
       <value>keep</value>
       <value>delete</value>
     </clip_atts>

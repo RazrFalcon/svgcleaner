@@ -1453,7 +1453,7 @@ foreach my $elt ($root->descendants) {
     }
 
     # удаление элементов, которые не имеют ни заполнения (fill), ни обводки (stroke)
-    if (($elt->att('fill') && $elt->att('fill') eq "none") ||
+    if ($elt_name ne "g" && ($elt->att('fill') && $elt->att('fill') eq "none") ||
 	(defined $elt->att('fill-opacity') && $elt->att('fill-opacity') == 0)) {
 # 	(defined $elt->att('fill-opacity') && $elt->att('fill-opacity')=~ /^-|^\+?0(\.0+)?$/)) {
 
@@ -1579,11 +1579,18 @@ foreach my $elt ($root->descendants) {
   # удаляем элементы filter (Gaussian blur), у которых атрибут stdDeviation дочернего элемента feGaussianBlur меньше значения $args{'std_dev'} (по-умолчанию 0.2 - действие таких фильтров практически незаметно)
   if ($args{'gaussian_blur'} eq "delete" &&
       $elt_name eq "filter" && $elt->children_count == 1 &&
-      $elt->all_children_are ('feGaussianBlur') &&
-      $elt->first_child->att('stdDeviation') < $args{'std_dev'}) {
+      $elt->all_children_are ('feGaussianBlur')) {
 
-    &del_elt($elt,$elt_name,$elt_id,"it's an unused filter");
-    next CYCLE_ELTS;
+    # stdDeviation = number comma-wsp? number?
+    my $stddev = $elt->first_child->att('stdDeviation');
+    (my $stddevX, my $stddevY) = ($1, $2) if ($stddev=~ /^($num)$cwsp?($num)?$/);
+
+    if (($stddevX && !$stddevY && $stddevX < $args{'std_dev'}) ||
+	($stddevX && $stddevY && $stddevX < $args{'std_dev'} && $stddevY < $args{'std_dev'})) {
+
+      &del_elt($elt,$elt_name,$elt_id,"it's an unused filter");
+      next CYCLE_ELTS;
+    }
   }
 
 

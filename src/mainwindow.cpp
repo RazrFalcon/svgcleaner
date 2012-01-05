@@ -2,7 +2,6 @@
 #include <QShortcut>
 #include <QThread>
 #include <QMenu>
-
 #include <QtDebug>
 
 #include "wizarddialog.h"
@@ -124,7 +123,7 @@ void MainWindow::prepareStart()
     foreach (QLabel *lbl, gBoxCompression->findChildren<QLabel *>(QRegExp("^lblI.*")))
         lbl->setText("0%");
     foreach (QLabel *lbl, gBoxTime->findChildren<QLabel *>(QRegExp("^lblI.*")))
-        lbl->setText("00h 00m 00s 000ms");
+        lbl->setText("000ms");
     lblITotalFiles->setText(QString::number(arguments.outputFiles.count()));
 }
 
@@ -170,12 +169,10 @@ void MainWindow::progress(SVGInfo info)
         if (itemScroll->value() == itemScroll->maximum()-1)
             itemScroll->setValue(itemScroll->value()+1);
     }
+    progressBar->setValue(progressBar->value()+1);
     createStatistics();
 
-    progressBar->setValue(progressBar->value()+1);
-
     CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
-
     if (position < arguments.inputFiles.count()) {
         cleaner->startNext(arguments.inputFiles.at(position),arguments.outputFiles.at(position));
         position++;
@@ -189,7 +186,7 @@ void MainWindow::on_actionStop_triggered()
         return;
 
     foreach (QThread *th, findChildren<QThread *>()) {
-        th->terminate();
+        th->quit();
         th->deleteLater();
     }
     enableButtons(true);
@@ -198,7 +195,7 @@ void MainWindow::on_actionStop_triggered()
 void MainWindow::cleaningFinished()
 {
     foreach (QThread *th, findChildren<QThread *>()) {
-        th->terminate();
+        th->quit();
         th->deleteLater();
     }
     enableButtons(true);
@@ -206,17 +203,9 @@ void MainWindow::cleaningFinished()
 
 void MainWindow::on_itemScroll_valueChanged(int value)
 {
-//    QTimer::singleShot(100, this, SLOT(scrollTo(int)));
     foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
         item->refill(itemList.at(value++),actionCompareView->isChecked());
 }
-
-void MainWindow::scrollTo(int value)
-{
-//    foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
-//        item->refill(itemList.at(value++),actionCompareView->isChecked());
-}
-
 
 void MainWindow::createStatistics()
 {
@@ -302,8 +291,6 @@ void MainWindow::closeEvent(QCloseEvent *)
 {
     foreach (QThread *th, findChildren<QThread *>()) {
         th->quit();
-        th->wait();
-        delete th;
+        th->deleteLater();
     }
-    exit(0);
 }

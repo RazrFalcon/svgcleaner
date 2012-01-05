@@ -47,7 +47,6 @@ private slots:
     void threadsCountChanged();
     void on_actionCompareView_triggered();
     void on_actionInfo_triggered();
-    void scrollTo(int value);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

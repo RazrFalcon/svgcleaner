@@ -21,7 +21,6 @@ CleanerThread::CleanerThread(ToThread args, QObject *parent) :
 
 CleanerThread::~CleanerThread()
 {
-//    delete proc;
 }
 
 void CleanerThread::startNext(const QString &inFile, const QString &outFile)
@@ -107,7 +106,6 @@ QString CleanerThread::removeAttribute(const QString &file)
 
 void CleanerThread::readyRead()
 {
-//    QProcess *proc = static_cast<QProcess *>(sender());
     scriptOutput += proc->readAllStandardOutput();
 }
 
@@ -146,12 +144,12 @@ SVGInfo CleanerThread::info()
         && QFileInfo(currentIn).suffix() == "svgz") {
 
         info.sizes<<findValue("The initial file size is");
-        info.compress = (float)QFileInfo(currentOut).size()
-                              /findValue("The initial file size is")*100;
+        info.compress = ((float)QFileInfo(currentOut).size()
+                              /findValue("The initial file size is"))*100;
     } else {
         info.sizes<<QFileInfo(currentIn).size();
-        info.compress = (float)QFileInfo(currentOut).size()
-                              /QFileInfo(currentIn).size()*100;
+        info.compress = ((float)QFileInfo(currentOut).size()
+                              /QFileInfo(currentIn).size())*100;
     }
     if (info.compress > 100)
         info.compress = 100;

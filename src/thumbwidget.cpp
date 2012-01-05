@@ -25,11 +25,6 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
     connect(btnIn,SIGNAL(clicked()),this,SLOT(openSVG()));
     connect(btnOut,SIGNAL(clicked()),this,SLOT(openSVG()));
 
-//    inSvg = new QSvgWidget(this);
-//    outSvg = new QSvgWidget(this);
-//    iconLayout->addWidget(inSvg);
-//    iconLayout->addWidget(outSvg);
-
     iconLayout->setSpacing(4);
     refill(info,compare);
 }
@@ -37,19 +32,6 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
 void ThumbWidget::refill(const SVGInfo &info, bool compare)
 {
     fullInfo = info;
-
-//    inSvg->load(info.paths[SVGInfo::INPUT]);
-//    QRect rectIn = inSvg->renderer()->viewBox();
-//    QSize sizeIn(rectIn.width(),rectIn.height());
-//    sizeIn.scale(80,80,Qt::KeepAspectRatio);
-//    inSvg->setFixedSize(sizeIn);
-
-//    outSvg->load(info.paths[SVGInfo::OUTPUT]);
-//    QRect rectOut = outSvg->renderer()->viewBox();
-//    QSize sizeOut(rectOut.width(),rectOut.height());
-//    sizeOut.scale(80,80,Qt::KeepAspectRatio);
-//    outSvg->setFixedSize(sizeOut);
-
 
     if (compare) {
         QPixmap pixIn(info.paths[SVGInfo::INPUT]);
@@ -77,7 +59,7 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
         btnOut->setText("");
 
     lblName->setText(QFileInfo(info.paths[SVGInfo::OUTPUT]).fileName());
-    lblName->setToolTip("Input file: "+info.paths[SVGInfo::INPUT]);
+    lblName->setToolTip(tr("Input file: ")+info.paths[SVGInfo::INPUT]);
 
     SomeUtils utils;
 
@@ -93,10 +75,10 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
     lblTime->setText(utils.prepareTime(info.time));
 
     if (info.crashed) {
-        btnIn->setText("crashed");
+        btnIn->setText(tr("crashed"));
         btnIn->setIcon(QIcon());
 
-        btnOut->setText("crashed");
+        btnOut->setText(tr("crashed"));
         btnOut->setIcon(QIcon());
 
         lblElemP->setText("(0.00%)");
@@ -113,8 +95,10 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
         lblSizeA->setText(utils.prepareSize(info.sizes[SVGInfo::OUTPUT]));
         lblSizeP->setText("("+QString::number(info.compress,'f',2)+"%)");
 
-        lblElemP->setText("("+QString::number((float)info.elemFinal/info.elemInitial*100,'f',2)+"%)");
-        lblAttrP->setText("("+QString::number((float)info.attrFinal/info.attrInitial*100,'f',2)+"%)");
+        lblElemP->setText("("+QString::number(((float)info.elemFinal/
+                                               info.elemInitial)*100,'f',2)+"%)");
+        lblAttrP->setText("("+QString::number(((float)info.attrFinal/
+                                               info.attrInitial)*100,'f',2)+"%)");
     }
 }
 

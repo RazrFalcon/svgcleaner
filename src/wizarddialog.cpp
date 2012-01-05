@@ -36,7 +36,7 @@ void WizardDialog::loadSettings()
     lineEditInDir->setText(settings->value("Wizard/lastInDir").toString());
     lineEditOutDir->setText(settings->value("Wizard/lastOutDir",QDir::homePath()).toString());
     lineEditPrefix->setText(settings->value("Wizard/prefix").toString());
-    lineEditSuffix->setText(settings->value("Wizard/suffix",tr("_optimized")).toString());
+    lineEditSuffix->setText(settings->value("Wizard/suffix",tr("_cleaned")).toString());
 
     gBoxCompress->setChecked(settings->value("Wizard/compress",true).toBool());
     spinBoxCompress->setValue(settings->value("Wizard/compressLevel",9).toInt());
@@ -70,12 +70,12 @@ void WizardDialog::setupGUI()
 
     QListWidgetItem *itemFiles = new QListWidgetItem(listWidget);
     ItemWidget *widgetFiles = new ItemWidget("files");
-    itemFiles->setToolTip("Files");
+    itemFiles->setToolTip(tr("Files"));
     listWidget->setItemWidget(itemFiles,widgetFiles);
 
     QListWidgetItem *itemPresets = new QListWidgetItem(listWidget);
     ItemWidget *widgetPresets = new ItemWidget("presets");
-    itemPresets->setToolTip("Presets");
+    itemPresets->setToolTip(tr("Presets"));
     listWidget->setItemWidget(itemPresets,widgetPresets);
     connect(listWidget,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
                             this,SLOT(changePage(QListWidgetItem*,QListWidgetItem*)));
@@ -251,7 +251,7 @@ void WizardDialog::resetFields()
     lineEditInDir->clear();
     lineEditOutDir->setText(QDir::homePath());
     lineEditPrefix->clear();
-    lineEditSuffix->setText(tr("_optimized"));
+    lineEditSuffix->setText(tr("_cleaned"));
     radioBtn1->setChecked(true);
     chBoxRecursive->setChecked(false);
     gBoxCompress->setChecked(true);
@@ -290,23 +290,23 @@ bool WizardDialog::checkForWarnings()
 {
     bool check = true;
     if (lineEditInDir->text().isEmpty()) {
-        createWarning(tr("Input dir is not selected."));
+        createWarning(tr("Input folder is not selected."));
         check = false;
     } else if (lineEditOutDir->text().isEmpty()) {
-        createWarning(tr("Output dir is not selected."));
+        createWarning(tr("Output folder is not selected."));
         check = false;
     } else if (lineEditPrefix->text().isEmpty() && lineEditSuffix->text().isEmpty()) {
         createWarning(tr("You must set prefix and suffix for this save method."));
         check = false;
     } else if (!QDir(lineEditInDir->text()).exists()) {
-        createWarning(tr("Input dir is not exist."));
+        createWarning(tr("Input folder is not exist."));
         check = false;
     } else if (radioBtn3->isChecked() && cmbBoxCompressor->currentText().contains("7z")
                && gBoxCompress->isChecked()) {
-        createWarning(tr("Program can't work in this method.\n7z can't overwrite original files"));
+        createWarning(tr("Program can't work in this method.\n7z can't overwrite original files."));
         check = false;
     } else if (fileList.isEmpty()) {
-        createWarning(tr("Input dir didn't contain any svg, svgz files."));
+        createWarning(tr("Input folder didn't contain any svg, svgz files."));
         check = false;
     }
     return check;
@@ -329,11 +329,6 @@ void WizardDialog::on_btnSavePreset_clicked()
         createWarning(tr("You must set preset name."));
         return;
     }
-//    if (gInfo->presets().contains(linePresetName->text())) {
-//        createWarning(tr("Preset with such name already exist.\n"
-//                         "Please, change a name of preset."));
-//        return;
-//    }
 
     // generate path
     QString path = QFileInfo(settings->fileName()).absolutePath()+"/preset/";

@@ -43,7 +43,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -78,12 +78,12 @@
                 <widget class="QComboBox" name="cmbBoxCompressor">
                  <item>
                   <property name="text">
-                   <string>gzip</string>
+                   <string notr="true">gzip</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>7z</string>
+                   <string notr="true">7z</string>
                   </property>
                  </item>
                 </widget>
@@ -222,7 +222,7 @@
              <item row="1" column="2" colspan="2">
               <widget class="QToolButton" name="btnOpenInDir">
                <property name="text">
-                <string>...</string>
+                <string notr="true">...</string>
                </property>
                <property name="iconSize">
                 <size>
@@ -281,7 +281,7 @@
              <item row="1" column="2">
               <widget class="QToolButton" name="btnOpenOutDir">
                <property name="text">
-                <string>...</string>
+                <string notr="true">...</string>
                </property>
                <property name="iconSize">
                 <size>
@@ -353,7 +353,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>.svg</string>
+                <string notr="true">.svg</string>
                </property>
               </widget>
              </item>
@@ -500,7 +500,7 @@
              </size>
             </property>
             <property name="html">
-             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+             <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;

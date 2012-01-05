@@ -19,6 +19,6 @@ LineEdit::~LineEdit()
 
 void LineEdit::setValue(const int &value)
 {
-    lbl->setText(QString("%1 files in").arg(value));
+    lbl->setText(QString(tr("%1 files in")).arg(value));
     setStyleSheet(QString("padding-left: %1px;").arg(lbl->fontMetrics().width(lbl->text())+5));
 }

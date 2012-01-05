@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>622</width>
-    <height>461</height>
+    <width>686</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -33,26 +33,6 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item row="1" column="0" colspan="2">
-     <widget class="QProgressBar" name="progressBar">
-      <property name="value">
-       <number>0</number>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QScrollBar" name="itemScroll">
-      <property name="maximum">
-       <number>0</number>
-      </property>
-      <property name="pageStep">
-       <number>1</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
      <widget class="QScrollArea" name="scrollArea">
       <property name="frameShape">
@@ -72,8 +52,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>365</width>
-         <height>409</height>
+         <width>425</width>
+         <height>508</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="itemLayout">
@@ -82,6 +62,26 @@
         </property>
        </layout>
       </widget>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QScrollBar" name="itemScroll">
+      <property name="maximum">
+       <number>0</number>
+      </property>
+      <property name="pageStep">
+       <number>1</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
      </widget>
     </item>
    </layout>
@@ -114,17 +114,8 @@
    <addaction name="actionInfo"/>
   </widget>
   <widget class="QDockWidget" name="dockStatistics">
-   <property name="minimumSize">
-    <size>
-     <width>229</width>
-     <height>426</height>
-    </size>
-   </property>
    <property name="features">
     <set>QDockWidget::DockWidgetMovable</set>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Statistics</string>
@@ -132,183 +123,9 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QGridLayout" name="gridLayout">
-     <property name="margin">
-      <number>2</number>
-     </property>
-     <item row="9" column="0" colspan="2">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="2" column="0" colspan="2">
-      <widget class="QGroupBox" name="gBoxTime">
-       <property name="title">
-        <string>Processing time</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <widget class="QLabel" name="lbl6">
-          <property name="text">
-           <string>Total:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="lblIFullTime">
-          <property name="text">
-           <string>00h 00m 00s 000ms</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Maximum:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="lbl7">
-          <property name="text">
-           <string>Average:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Minimum:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLabel" name="lblIAverageTime">
-          <property name="text">
-           <string>00h 00m 00s 000ms</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLabel" name="lblIMaxTime">
-          <property name="text">
-           <string>00h 00m 00s 000ms</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLabel" name="lblIMinTime">
-          <property name="text">
-           <string>00h 00m 00s 000ms</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QGroupBox" name="gBoxCompression">
-       <property name="title">
-        <string>New file sizes</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="1" column="0" rowspan="2">
-         <widget class="QLabel" name="lbl3">
-          <property name="text">
-           <string>Maximum:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1" rowspan="2">
-         <widget class="QLabel" name="lblIMaxCompress">
-          <property name="text">
-           <string>0%</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0" rowspan="3">
-         <widget class="QLabel" name="lbl4">
-          <property name="text">
-           <string>Minimum:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1" rowspan="3">
-         <widget class="QLabel" name="lblIMinCompress">
-          <property name="text">
-           <string>0%</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="lbl5">
-          <property name="text">
-           <string>Total:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="lblIAverComp">
-          <property name="text">
-           <string>0%</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="2">
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
       <widget class="QGroupBox" name="gBoxSize">
        <property name="title">
         <string>Files</string>
@@ -324,7 +141,7 @@
         <item row="0" column="1">
          <widget class="QLabel" name="lblITotalFiles">
           <property name="text">
-           <string>0</string>
+           <string notr="true">0</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -344,7 +161,7 @@
         <item row="1" column="1">
          <widget class="QLabel" name="lblICleaned">
           <property name="text">
-           <string>0</string>
+           <string notr="true">0</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -364,7 +181,7 @@
         <item row="2" column="1" rowspan="3">
          <widget class="QLabel" name="lblICrashed">
           <property name="text">
-           <string>0</string>
+           <string notr="true">0</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -391,7 +208,7 @@
         <item row="5" column="1">
          <widget class="QLabel" name="lblITotalSizeBefore">
           <property name="text">
-           <string>0</string>
+           <string notr="true">0</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -404,7 +221,7 @@
         <item row="6" column="1">
          <widget class="QLabel" name="lblITotalSizeAfter">
           <property name="text">
-           <string>0</string>
+           <string notr="true">0</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -417,12 +234,183 @@
        </layout>
       </widget>
      </item>
+     <item>
+      <widget class="QGroupBox" name="gBoxCompression">
+       <property name="title">
+        <string>New file sizes</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="1" column="0" rowspan="2">
+         <widget class="QLabel" name="lbl3">
+          <property name="text">
+           <string>Maximum:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" rowspan="2">
+         <widget class="QLabel" name="lblIMaxCompress">
+          <property name="text">
+           <string notr="true">0%</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" rowspan="3">
+         <widget class="QLabel" name="lbl4">
+          <property name="text">
+           <string>Minimum:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1" rowspan="3">
+         <widget class="QLabel" name="lblIMinCompress">
+          <property name="text">
+           <string notr="true">0%</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="lbl5">
+          <property name="text">
+           <string>Total:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="lblIAverComp">
+          <property name="text">
+           <string notr="true">0%</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="gBoxTime">
+       <property name="title">
+        <string>Processing time</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="QLabel" name="lbl6">
+          <property name="text">
+           <string>Total:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Maximum:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="lbl7">
+          <property name="text">
+           <string>Average:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Minimum:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLabel" name="lblIMinTime">
+          <property name="text">
+           <string>000ms</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLabel" name="lblIAverageTime">
+          <property name="text">
+           <string>000ms</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="lblIMaxTime">
+          <property name="text">
+           <string>000ms</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="lblIFullTime">
+          <property name="text">
+           <string>000ms</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
     </layout>
    </widget>
   </widget>
   <action name="actionWizard">
    <property name="text">
-    <string>wizard</string>
+    <string notr="true">wizard</string>
    </property>
    <property name="toolTip">
     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -432,7 +420,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Show wizard &lt;span style=&quot; color:#808080;&quot;&gt;Crtl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+W</string>
+    <string notr="true">Ctrl+W</string>
    </property>
   </action>
   <action name="actionStart">
@@ -440,7 +428,7 @@ p, li { white-space: pre-wrap; }
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>start</string>
+    <string notr="true">start</string>
    </property>
    <property name="toolTip">
     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -450,7 +438,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Start cleaning &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+R&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+R</string>
+    <string notr="true">Ctrl+R</string>
    </property>
   </action>
   <action name="actionStop">
@@ -458,7 +446,7 @@ p, li { white-space: pre-wrap; }
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>stop</string>
+    <string notr="true">stop</string>
    </property>
    <property name="toolTip">
     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -468,12 +456,12 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Stop cleaning &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+S&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+S</string>
+    <string notr="true">Ctrl+S</string>
    </property>
   </action>
   <action name="actionThreads">
    <property name="text">
-    <string>threads</string>
+    <string notr="true">threads</string>
    </property>
    <property name="toolTip">
     <string>Threads count</string>
@@ -481,10 +469,10 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionInfo">
    <property name="text">
-    <string>info</string>
+    <string notr="true">info</string>
    </property>
    <property name="toolTip">
-    <string>Show info</string>
+    <string>About</string>
    </property>
   </action>
   <action name="actionCompareView">
@@ -495,7 +483,7 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>compareView</string>
+    <string notr="true">compareView</string>
    </property>
    <property name="toolTip">
     <string>Compare view</string>

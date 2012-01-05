@@ -1,0 +1,6 @@
+<preset name="Vacuum-defs">
+ <pretty_print default="nice"/>
+ <empty_tags default="normal"/>
+ <quote default="double"/>
+ <unused_def default="delete"/>
+</preset>

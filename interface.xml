@@ -1,0 +1,201 @@
+<arguments>
+  <tab2 icon="elements" name="Elements">
+    <no_prolog type="chBox" name="Remove prolog" default="1">
+      <value>0</value>
+      <value>1</value>
+    </no_prolog>
+    <comments type="chBox" name="Remove comments" default="drop">
+      <value>keep</value>
+      <value>drop</value>
+    </comments>
+    <unused_def type="chBox" name="Remove unused definitions" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </unused_def>
+    <non_svgelts type="chBox" name="Remove non-SVG elements" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </non_svgelts>
+    <metadata type="chBox" name="Remove metadata elements" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </metadata>
+    <inkscape_elts type="chBox" name="Remove Inkscape elements" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </inkscape_elts>
+    <sodipodi_elts type="chBox" name="Remove Sodipodi elements" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </sodipodi_elts>
+    <adobe_elts type="chBox" name="Remove Adobe Illustrator elements" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </adobe_elts>
+    <invisible_elts type="chBox" name="Remove invisible elements" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </invisible_elts>
+    <erase_groups type="chBox" name="Collapse groups where possible" default="yes">
+      <value>no</value>
+      <value>yes</value>
+    </erase_groups>
+    <empty_groups type="chBox" name="Remove empty groups" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </empty_groups>
+    <empty_defs type="chBox" name="Remove the empty defs section" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </empty_defs>
+    <dupl_defs type="chBox" name="Remove duplicated elements in the defs section" default="yes">
+      <value>no</value>
+      <value>yes</value>
+    </dupl_defs>
+    <singly_grads type="chBox" name="Collapse singly referenced gradients" default="yes">
+      <value>no</value>
+      <value>yes</value>
+    </singly_grads>
+    <gaussian_blur type="chBox_sub" name="Remove Gaussian blur filters" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+      <sub>
+        <std_dev type="spinBox" name="if their stdDeviation attribute less than" default="0.2" step="0.01" min="0.01" max="0.5"/>
+      </sub>
+    </gaussian_blur>
+  </tab2>
+  <tab3 icon="attributes" name="Attributes">
+    <unused_ns type="chBox" name="Remove unused namespaces" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </unused_ns>
+    <unref_id type="chBox_sub" name="Remove unreferenced IDs" default="yes">
+      <value>no</value>
+      <value>yes</value>
+      <sub>
+	<protect_id type="chBox" name="To protect IDs which contain only letters" default="yes">
+	  <value>no</value>
+	  <value>yes</value>
+	</protect_id>
+      </sub>
+    </unref_id>
+    <non_svgatts type="chBox" name="Remove non-SVG attributes" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </non_svgatts>
+    <nonspec_atts type="chBox" name="Remove non specified attributes" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </nonspec_atts>
+    <default_atts type="chBox" name="Remove SVG default values" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </default_atts>
+    <inkscape_atts type="chBox" name="Remove Inkscape attributes" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </inkscape_atts>
+    <sodipodi_atts type="chBox" name="Remove Sodipodi attributes" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </sodipodi_atts>
+    <adobe_atts type="chBox" name="Remove Adobe Illustrator attributes" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </adobe_atts>
+    <stroke_atts type="chBox" name="Remove any stroke properties if there's no stroking" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </stroke_atts>
+    <fill_atts type="chBox" name="Remove any fill properties if there's no filling" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </fill_atts>
+    <clip_atts type="chBox" name="Remove any unused attributes within clipPath elements" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </clip_atts>
+    <grad_coord type="chBox" name="Remove gradient coordinates when possible" default="yes">
+      <value>no</value>
+      <value>yes</value>
+    </grad_coord>
+    <spf_space type="chBox" name="Remove superfluous white space from d and points values" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </spf_space>
+  </tab3>
+  <tab4 icon="optimization" name="Optimization">
+    <viewbox type="chBox" name="Enable viewBox" default="yes">
+      <value>no</value>
+      <value>yes</value>
+    </viewbox>
+    <units_px type="chBox" name="Convert all units to pixels" default="yes">
+      <value>no</value>
+      <value>yes</value>
+    </units_px>
+    <color_rrggbb type="chBox_sub" name="Convert all colors to #RRGGBB format" default="yes">
+      <value>no</value>
+      <value>yes</value>
+      <sub>
+	<color_rgb type="chBox" name="Convert colors to #RGB format if possible" default="yes">
+	  <value>no</value>
+	  <value>yes</value>
+	</color_rgb>
+      </sub>
+    </color_rrggbb>
+    <bs_path type="chBox" name="Convert basic shapes to paths" default="yes">
+      <value>no</value>
+      <value>yes</value>
+    </bs_path>
+    <abs_rel type="chBox" name="Convert absolute paths to relative ones" default="yes">
+      <value>no</value>
+      <value>yes</value>
+    </abs_rel>
+    <conc_trans type="chBox" name="Recalculate some transformations to the matrix" default="yes">
+      <value>no</value>
+      <value>yes</value>
+    </conc_trans>
+    <opt_trans type="chBox" name="Recalculate coordinates and remove transform attributes where possible" default="yes">
+      <value>no</value>
+      <value>yes</value>
+    </opt_trans>
+    <sort_defs type="chBox" name="Sort elements in the defs section by tag names" default="yes">
+      <value>no</value>
+      <value>yes</value>
+    </sort_defs>
+    <round_numbers type="chBox_sub" name="Round numbers inside attribute values" default="yes">
+    <value>no</value>
+    <value>yes</value>
+    <sub>
+      <dp_tr type="spinBox" name="transform attributes" default="5" step="1" min="0" max="9"/>
+      <dp_d type="spinBox" name="coordinate attributes" default="4" step="1" min="0" max="9"/>
+      <dp_att type="spinBox" name="other attributes" default="3" step="1" min="0" max="9"/>
+    </sub>
+    </round_numbers>
+  </tab4>
+  <tab5 icon="output" name="Output">
+    <pretty_print type="cmbBox" name="The pretty print style" default="nice">
+      <value>none</value>
+      <value>nsgmls</value>
+      <value>nice</value>
+      <value>indented</value>
+      <value>indented_c</value>
+      <value>indented_a</value>
+      <value>indented_close_tag</value>
+      <value>cvs</value>
+      <value>wrapped</value>
+      <value>record</value>
+      <value>record_c</value>
+    </pretty_print>
+    <indent type="spinBox" name="The indentation for the pretty print style" default="2" step="1" min="0" max="5"/>
+    <empty_tags type="cmbBox" name="The empty tag display style" default="normal">
+      <value>normal</value>
+      <value>html</value>
+      <value>expand</value>
+    </empty_tags>
+    <quote type="cmbBox" name="The quote character for attributes" default="double">
+      <value>double</value>
+      <value>single</value>
+    </quote>
+  </tab5>
+</arguments> 

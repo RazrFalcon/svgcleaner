@@ -1,0 +1,2 @@
+SVG Cleaner is an application that cleans SVG images from unnecessary data in batch mode. It has a lot of cleaning options and supports both .svg and .svgz files.
+A cleaned SVG file may be as small as 10-60% of the original size. 

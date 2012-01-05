@@ -1,0 +1,24 @@
+<preset name="Normal">
+ <pretty_print default="nice"/>
+ <empty_tags default="normal"/>
+ <quote default="double"/>
+ <unused_ns default="delete"/>
+ <default_atts default="delete"/>
+ <inkscape_atts default="delete"/>
+ <sodipodi_atts default="delete"/>
+ <adobe_atts default="delete"/>
+ <stroke_atts default="delete"/>
+ <fill_atts default="delete"/>
+ <text_atts default="delete"/>
+ <d_atts default="delete"/>
+ <unused_def default="delete"/>
+ <metadata default="delete"/>
+ <inkscape_elts default="delete"/>
+ <sodipodi_elts default="delete"/>
+ <adobe_elts default="delete"/>
+ <invisible_elts default="delete"/>
+ <erase_groups default="yes"/>
+ <empty_groups default="delete"/>
+ <empty_defs default="delete"/>
+ <empty_text default="delete"/>
+</preset>

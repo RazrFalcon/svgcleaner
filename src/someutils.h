@@ -11,7 +11,7 @@ class SomeUtils : public QObject
 public:
     explicit SomeUtils(QObject *parent = 0);
     QString prepareSize(int bytes);
-    QString prepareTime(int ms, bool clip = false);
+    QString prepareTime(int ms);
     int getTotalSize(const QStringList &list, int count = -1);
 };
 

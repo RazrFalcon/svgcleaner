@@ -90,7 +90,7 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
     lblAttrA->setText(QString::number(info.attrFinal));
 
     // time
-    lblTime->setText(utils.prepareTime(info.time,true));
+    lblTime->setText(utils.prepareTime(info.time));
 
     if (info.crashed) {
         btnIn->setText("crashed");

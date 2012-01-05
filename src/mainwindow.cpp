@@ -124,7 +124,7 @@ void MainWindow::prepareStart()
     foreach (QLabel *lbl, gBoxCompression->findChildren<QLabel *>(QRegExp("^lblI.*")))
         lbl->setText("0%");
     foreach (QLabel *lbl, gBoxTime->findChildren<QLabel *>(QRegExp("^lblI.*")))
-        lbl->setText("00:00:00:000");
+        lbl->setText("00h 00m 00s 000ms");
     lblITotalFiles->setText(QString::number(arguments.outputFiles.count()));
 }
 

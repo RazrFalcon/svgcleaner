@@ -1109,20 +1109,7 @@ foreach my $elt ($root->descendants_or_self) {
   $atts_initial+=($elt->att_nb);
 
   # удаляем префикс 'svg:' из имен элементов
-    $elt->set_tag($1) if ($elt->name=~ /^svg:(.+)$/);
-
-  # исправляем ошибки в атрибутах 'fill' и 'stroke':
-  # параметр ' url(#<IRI>) любые символы' меняем на 'url(#<IRI>)'
-  if ($elt->att('fill') &&
-      $elt->att('fill')=~ /^\s*(url\(#[^\)]+\)).+|^\s+(url\(#[^\)]+\))\s*$/) {
-
-    $elt->set_att('fill' => $1);
-  }
-  elsif ($elt->att('stroke') &&
-	 $elt->att('stroke')=~ /^\s*(url\(#[^\)]+\)).+|^\s+(url\(#[^\)]+\))\s*$/) {
-
-    $elt->set_att('stroke' => $1);
-  }
+  $elt->set_tag($1) if ($elt->name=~ /^svg:(.+)$/);
 
   # если элемент содержит атрибут style
   if (defined $elt->att('style')) {
@@ -1145,6 +1132,65 @@ foreach my $elt ($root->descendants_or_self) {
 
 	$elt->set_att($att => $att_val) if ($att=~ /^[a-z]/);
     }
+  }
+
+  # исправление значений атрибутов
+  while ((my $att, my $att_val) = each %{$elt->atts}) {
+
+    my $i;
+    # удаляем крайние пробелы из значений атрибутов
+    if ($att_val=~ /^(\s+)/) {
+      $att_val = substr $att_val, length $1;
+      $i = 1;
+    }
+    if ($att_val=~ /(\s+)$/) {
+      $att_val = substr $att_val, 0, -(length $1);
+      $i = 1;
+    }
+
+    # исправляем ошибки в атрибутах, параметры которых задают ссылки
+    # параметр 'url(#<IRI>) любые символы' меняем на 'url(#<IRI>)'
+    if ($att_val=~ /^url\(#[^\)]+\)(.+)$/) {
+      $att_val = substr $att_val, 0, -(length $1);
+      $i = 1;
+    }
+
+    # удаляем обозначение юнита 'px' - это дефолтная еденица измерения
+    if ($att_val=~ /^($num)px$/) {
+      $att_val = $1;
+      $i = 1;
+    }
+
+    # исправляем нулевые параметры атрибутов
+    if ($att_val=~ /^($num)($unit)?$/ && $1 == 0) {
+      $att_val = 0;
+      $i = 1;
+    }
+
+    # удаляем крайние правые нули в числах
+    if ($att_val=~ /^([-+]?\d*\.\d*0+)($unit)?$/) {
+      $att_val = $1+0;
+      $att_val = $att_val.$2 if ($2);
+      $i = 1;
+    }
+
+    # исправляем отрицательные параметры атрибутов ширины и высоты
+    if ($att=~ /height$|width$|^r$|^rx$|^ry$/ && $att_val=~ /^-/) {
+      $att_val = 0;
+      $i = 1;
+    }
+
+    # исправляем значения прозрачности
+    if ($att=~ /opacity$/ && $att_val < 0) {
+      $att_val = 0;
+      $i = 1;
+    }
+    elsif ($att=~ /opacity$/ && $att_val > 1) {
+      $att_val = 1;
+      $i = 1;
+    }
+
+    $elt->set_att($att => $att_val) if ($i);
   }
 }
 
@@ -1195,7 +1241,8 @@ if ($root->att('width') && $root->att('height')) {
   }
 
 } elsif (!$root->att('width') && !$root->att('height') &&
-	 $root->att('viewBox')=~ /($num)\s*,?\s*($num)$/) {
+	 $root->att('viewBox')=~ /($num)$cwsp($num)$/) {
+# 	 $root->att('viewBox')=~ /($num)\s*,?\s*($num)$/) {
 
   $actual_width = $1;
   $actual_height = $2;
@@ -1398,7 +1445,8 @@ foreach my $elt ($root->descendants) {
 
     # удаление элементов с атрибутом opacity="0"
     if (defined $elt->att('opacity') &&
-	$elt->att('opacity')=~ /^-|^\+?0(\.0+)?$/) {
+	$elt->att('opacity') == 0) {
+# 	$elt->att('opacity')=~ /^-|^\+?0(\.0+)?$/) {
 
       &del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
       next CYCLE_ELTS;
@@ -1406,13 +1454,16 @@ foreach my $elt ($root->descendants) {
 
     # удаление элементов, которые не имеют ни заполнения (fill), ни обводки (stroke)
     if (($elt->att('fill') && $elt->att('fill') eq "none") ||
-	(defined $elt->att('fill-opacity') && $elt->att('fill-opacity')=~ /^-|^\+?0(\.0+)?$/)) {
+	(defined $elt->att('fill-opacity') && $elt->att('fill-opacity') == 0)) {
+# 	(defined $elt->att('fill-opacity') && $elt->att('fill-opacity')=~ /^-|^\+?0(\.0+)?$/)) {
 
       if ((!$elt->att('stroke') && !$elt->parent('g[@stroke]')) ||
 	  (!$elt->att('stroke') && $elt->parent("g[\@stroke=\"none\"]")) ||
 	  ($elt->att('stroke') && $elt->att('stroke') eq "none") ||
-	  (defined $elt->att('stroke-opacity') && $elt->att('stroke-opacity')=~ /^-|^\+?0(\.0+)?$/) ||
-	  (defined $elt->att('stroke-width') && $elt->att('stroke-width')=~ /^-|^\+?0(\.0+)?$unit?$/)) {
+	  (defined $elt->att('stroke-opacity') && $elt->att('stroke-opacity') == 0) ||
+	  (defined $elt->att('stroke-width') && $elt->att('stroke-width') eq "0")) {
+# 	  (defined $elt->att('stroke-opacity') && $elt->att('stroke-opacity')=~ /^-|^\+?0(\.0+)?$/) ||
+# 	  (defined $elt->att('stroke-width') && $elt->att('stroke-width')=~ /^-|^\+?0(\.0+)?$unit?$/)) {
 
 	&del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
 	next CYCLE_ELTS;
@@ -1421,8 +1472,10 @@ foreach my $elt ($root->descendants) {
 
     # удаление элементов rect, pattern и image со значением атрибутов height или width равным или меньшим нуля
     if ($elt_name~~['pattern','image', 'rect'] &&
-	((defined $elt->att('height') && $elt->att('height')=~ /^-|^\+?0(\.0+)?$unit?$/) ||
-	(defined $elt->att('width') && $elt->att('width')=~ /^-|^\+?0(\.0+)?$unit?$/))) {
+	((defined $elt->att('height') && $elt->att('height') eq "0") ||
+	(defined $elt->att('width') && $elt->att('width') eq "0"))) {
+# 	((defined $elt->att('height') && $elt->att('height')=~ /^-|^\+?0(\.0+)?$unit?$/) ||
+# 	(defined $elt->att('width') && $elt->att('width')=~ /^-|^\+?0(\.0+)?$unit?$/))) {
 
       &del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
       next CYCLE_ELTS;
@@ -1462,7 +1515,8 @@ foreach my $elt ($root->descendants) {
     # удаление элементов circle со значением атрибута r равным или меньшим нуля
     if ($elt_name eq "circle" &&
 	defined $elt->att('r') &&
-	$elt->att('r')=~ /^-|^\+?0(\.0+)?$unit?$/) {
+	$elt->att('r') eq "0") {
+# 	$elt->att('r')=~ /^-|^\+?0(\.0+)?$unit?$/) {
 
       &del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
       next CYCLE_ELTS;
@@ -1470,8 +1524,10 @@ foreach my $elt ($root->descendants) {
 
     # удаление элементов ellipse со значением атрибутов rx или ry равным или меньшим нуля
     if ($elt_name eq "ellipse" &&
-	((defined $elt->att('rx') && $elt->att('rx')=~ /^-|^\+?0(\.0+)?$unit?$/) ||
-	(defined $elt->att('ry') && $elt->att('ry')=~ /^-|^\+?0(\.0+)?$unit?$/))) {
+	((defined $elt->att('rx') && $elt->att('rx') eq "0") ||
+	(defined $elt->att('ry') && $elt->att('ry') eq "0"))) {
+# 	((defined $elt->att('rx') && $elt->att('rx')=~ /^-|^\+?0(\.0+)?$unit?$/) ||
+# 	(defined $elt->att('ry') && $elt->att('ry')=~ /^-|^\+?0(\.0+)?$unit?$/))) {
 
       &del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
       next CYCLE_ELTS;
@@ -1577,8 +1633,10 @@ foreach my $elt ($root->descendants) {
       }
 
       # если одно из значений атрибутов rx и ry равно нулю, то удаляем эти атрибуты
-      if ((defined $rx && $rx=~ /^-|^\+?0(\.0+)?$/) ||
-	  (defined $ry && $ry=~ /^-|^\+?0(\.0+)?$/)) {
+#       if ((defined $rx && $rx=~ /^-|^\+?0(\.0+)?$/) ||
+# 	  (defined $ry && $ry=~ /^-|^\+?0(\.0+)?$/)) {
+      if ((defined $rx && $rx == 0) ||
+	  (defined $ry && $ry == 0)) {
 	$elt->del_att('rx');
 	$elt->del_att('ry');
       }
@@ -1792,10 +1850,24 @@ foreach my $elt ($root->descendants) {
 	if ($1 ~~ @del_elts || !$twig->elt_id($1)) {
 
 	  $elt->del_att($att);
-	  $elt->set_att('fill' => 'none') if ($att eq "fill");
-	  $elt->delete if ($att eq "fill" && !$elt->att('stroke') && !$elt->parent('g[@stroke]'));
-	  $elt->delete if ($att eq "fill" && $elt->att('stroke') eq "none");
-	  $elt->delete if ($att eq "fill" && $elt->att('stroke-width') && $elt->att('stroke-width')=~ /^-|^0$unit?$/);
+
+	  if ($att eq "fill") {
+
+	    $elt->set_att('fill' => 'none');
+
+	    if ((!$elt->att('stroke') && !$elt->parent('g[@stroke]')) ||
+	    (!$elt->att('stroke') && $elt->parent("g[\@stroke=\"none\"]")) ||
+	    ($elt->att('stroke') && $elt->att('stroke') eq "none") ||
+	    (defined $elt->att('stroke-opacity') && $elt->att('stroke-opacity')=~ /^-|^\+?0(\.0+)?$/) ||
+	    (defined $elt->att('stroke-width') && $elt->att('stroke-width')=~ /^-|^\+?0(\.0+)?$unit?$/)) {
+
+	    $elt->delete;
+	    }
+	  }
+# 	  $elt->set_att('fill' => 'none') if ($att eq "fill");
+# 	  $elt->delete if ($att eq "fill" && !$elt->att('stroke') && !$elt->parent('g[@stroke]'));
+# 	  $elt->delete if ($att eq "fill" && $elt->att('stroke') eq "none");
+# 	  $elt->delete if ($att eq "fill" && $elt->att('stroke-width') && $elt->att('stroke-width')=~ /^-|^0$unit?$/);
 	} else {
 	  # в противном случае записываем ссылку в массив @ref_id (если соответствующего id еще нет в этом массиве)
 	  push @ref_id, $1 unless ($1 ~~ @ref_id);
@@ -2056,7 +2128,6 @@ if ($args{'opt_trans'} eq "yes" && $defs) {
 
 
 
-
 #######################
 # ОБРАБОТКА АТРИБУТОВ #
 #######################
@@ -2119,6 +2190,7 @@ foreach my $elt ($root->descendants_or_self) {
       next CYCLE_ATTS;
     }
 
+
     # удаление атрибутов, которые не используются элементом в котором они находятся
     if ($args{'nonspec_atts'} eq "delete") {
 
@@ -2168,30 +2240,9 @@ foreach my $elt ($root->descendants_or_self) {
     # получаем значение атрибута
     my $att_val = $elt->att($att);
 
-    # удаляем крайние пробелы из значения атрибута
-    $att_val = $1 if ($att_val=~ /^\s+(.+)\s*$/);
 
     # получаем префикс имени атрибута
     (my $att_pref = $att)=~ s/:.+$// if ($args{'adobe_atts'} eq "delete" && $att=~ /:/);
-
-
-    # удаление обозначения юнита 'px' - это дефолтное значение
-    if ($att_val=~ /^($num)($unit)$/ &&
-	$2 eq "px") {
-
-      $att_val = $1;
-      $elt->set_att($att => $att_val);
-    }
-
-
-    # исправляем значение прозрачности
-    if ($att=~ /opacity$/ &&
-	($att_val < 0 || $att_val > 1)) {
-
-      $att_val = 0 if ($att_val < 0);
-      $att_val = 1 if ($att_val > 1);
-      $elt->set_att($att => $att_val);
-    }
 
 
     # удаление неиспользуемых имен id
@@ -3041,7 +3092,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 	    $rx = &round_num($rx,'',$args{'dp_d'}) if ($rx && $rx=~ /\./ && $args{'dp_d'});
 	    $ry = &round_num($ry,'',$args{'dp_d'}) if ($ry && $ry=~ /\./ && $args{'dp_d'});
-	    $xar = &round_num($xar,'',$args{'dp_d'}) if ($xar && $xar=~ /\./ && $args{'dp_d'});
+	    $xar = &round_num($xar,'',$args{'dp_att'}) if ($xar && $xar=~ /\./ && $args{'dp_att'});
 	    $xar = &opt_angle($xar) if ($xar < 0 || $xar > 360);
 	    $xar = 0 if ($xar == 360);
 	    $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx && $dx=~ /\./ && $args{'dp_d'});
@@ -3078,62 +3129,72 @@ foreach my $elt ($root->descendants_or_self) {
     }
 
 
-    # удаление лишних пробелов из значений атрибутов d и points
-    if ($args{'spf_space'} eq "delete" &&
-	$args{'abs_rel'} ne "yes" &&
-	$att~~['d','points']) {
-#     if ($args{'spf_space'} eq "delete" &&
-# 	$att eq "points") {
-
-      # удаление крайних пробелов
-      $att_val=~ s/^\s+|\s+$//g;
-      # замена двух и более пробелов на один
-      $att_val=~ s/\s{2,}/ /g;
-      # удаление пробелов возле букв
-      $att_val=~ s/\s*([mlhvcsqtaz])\s*/$1/gi;
-      # удаление пробелов перед знаком минус
-      $att_val=~ s/($num,$num)\s+-/$1-/g;
-
-      $elt->set_att($att => $att_val);
-    }
-
-
     # округление всех чисел в значениях атрибутов d и points
     if ($args{'round_numbers'} eq "yes" &&
 	$args{'abs_rel'} ne "yes" &&
 	$att~~['d','points'] &&
 	$att_val=~ /\./) {
-#     if ($args{'round_numbers'} eq "yes" &&
-# 	$att eq "points" &&
-# 	$att_val=~ /\./) {
 
+      # создаем массив с командами и их параметрами 
+      my @d = split(/([MZLHVCSQTAmzlhvcsqta]|$num|$cwsp)/, $att_val);
+
+      # новые данные path или points
       my $data;
 
-      while ($att_val || $att_val eq "0") {
+      CYCLE_D:
+      while (@d) {
 
-	if ($att_val=~ /^($fpnum)/) {
-	  $att_val=~ s/^($fpnum)//;
-	  my $num = $1;
-	  $num += 0 if ($num=~ /\.0+$/);
-	  $num = &round_num($num,'',$args{'dp_d'}) if ($num=~ /\./);
-	  $data = $data.$num;
+	my $param = shift @d;
+
+	# обрабатываем команды path
+	if ($param=~/^[\w]$/) {
+	  $data = $data."$param";
 	}
-	elsif ($att_val=~ /^($scinum)/) {
-	  $att_val=~ s/^($scinum)//;
-	  $data = $data.$1;
+
+	# обрабатываем пробелы
+	elsif ($param=~/^\s+$/) {
+	  $data = $data.' ';
 	}
-	elsif ($att_val=~ /^\./) {
-	  $att_val=~ s/^\.//;
-	  $data = $data;
+
+	# обрабатываем разделители
+	elsif ($param=~/^$cwsp$/) {
+	  if ($param=~/,/) {
+	    $data = $data.',';
+	  } else {
+	    $data = $data.' ';
+	  }
 	}
-	elsif ($att_val=~ /^[a-z,\s]/i) {
-	  $att_val=~ s/^([a-z,\s])//i;
-	  $data = $data.$1;
+
+	# обрабатываем числа в экспоненциальном формате 
+	elsif ($param=~/^$scinum$/) {
+	  $data = $data."$param";
+	}
+
+	# обрабатываем числа с плавающей запятой
+	elsif ($param=~/^$fpnum$/) {
+	  $param = &round_num($param,'',$args{'dp_d'}) if ($param && $param=~ /\./ && $args{'dp_d'});
+	  $data = $data."$param";
 	}
       }
 
       $elt->set_att($att => $data);
       &crt_att($elt,$att,"all numbers was rounded",$i,$elt_name,$elt_id);
+    }
+
+
+    # удаление лишних пробелов из значений атрибутов d и points
+    if ($args{'spf_space'} eq "delete" &&
+	$args{'abs_rel'} ne "yes" &&
+	$att~~['d','points']) {
+
+      # замена двух и более пробелов на один
+      $att_val=~ s/\s{2,}/ /g;
+      # удаление пробелов возле букв
+      $att_val=~ s/\s*([mlhvcsqtaz])\s*/$1/gi;
+      # удаление пробелов перед знаком минус
+      $att_val=~ s/($num\s*,\s*$num)\s+-/$1-/g;
+
+      $elt->set_att($att => $att_val);
       next CYCLE_ATTS;
     }
 

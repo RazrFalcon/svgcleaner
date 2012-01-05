@@ -87,7 +87,7 @@
       <value>keep</value>
       <value>delete</value>
     </nonspec_atts>
-    <default_atts type="chBox" name="Remove SVG default values" default="delete">
+    <default_atts type="chBox" name="Remove attributes with default values" default="delete">
       <value>keep</value>
       <value>delete</value>
     </default_atts>

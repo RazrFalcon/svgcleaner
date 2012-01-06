@@ -17,8 +17,6 @@ int main(int argc, char *argv[])
     if (translator->load("/usr/share/svgcleaner/translations/svgcleaner"
                          +QLocale::system().name().remove(QRegExp("_.."))))
         qApp->installTranslator(translator);
-    else
-        qDebug()<<"Can't load translation.";
 
     MainWindow w;
     w.show();

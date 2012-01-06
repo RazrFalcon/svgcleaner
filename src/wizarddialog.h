@@ -29,6 +29,7 @@ private:
     void resetFields();
     void saveSettings();
     void setupGUI();
+    bool checkFor7z();
     QStringList getInFiles();
     QStringList getOutFiles();
     QString argLine();

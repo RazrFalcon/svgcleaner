@@ -2,6 +2,7 @@
 #include <QShortcut>
 #include <QThread>
 #include <QMenu>
+#include <QMessageBox>
 #include <QtDebug>
 
 #include "wizarddialog.h"
@@ -54,8 +55,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(quitShortcut,SIGNAL(activated()),qApp,SLOT(quit()));
 
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
-    on_actionWizard_triggered();
-
     resize(900,650);
 }
 
@@ -91,6 +90,7 @@ void MainWindow::on_actionStart_triggered()
         cleanerList.append(cleaner);
         connect(cleaner,SIGNAL(cleaned(SVGInfo)),
                 this,SLOT(progress(SVGInfo)),Qt::QueuedConnection);
+        connect(cleaner,SIGNAL(criticalError(QString)),this,SLOT(errorHandler(QString)));
         cleaner->moveToThread(thread);
         cleaner->startNext(arguments.inputFiles.at(position),arguments.outputFiles.at(position));
         thread->start();
@@ -176,23 +176,57 @@ void MainWindow::progress(SVGInfo info)
     if (position < arguments.inputFiles.count()) {
         cleaner->startNext(arguments.inputFiles.at(position),arguments.outputFiles.at(position));
         position++;
-    } else
-        cleaningFinished();
+    } else {
+        if (progressBar->value() == progressBar->maximum())
+            cleaningFinished();
+    }
+}
+
+void MainWindow::createStatistics()
+{
+    SomeUtils utils;
+
+    // files
+    lblICleaned->setText(QString::number(progressBar->value()-lblICrashed->text().toInt()));
+    lblITotalSizeBefore->setText(utils.prepareSize(inputSize));
+    lblITotalSizeAfter->setText(utils.prepareSize(outputSize));
+
+    // cleaned
+    lblIAverComp->setText(QString::number(
+                          100-(averageCompress/progressBar->value()),'f',2)+"%");
+    lblIMaxCompress->setText(QString::number(100-compressMin,'f',2)+"%");
+    lblIMinCompress->setText(QString::number(100-compressMax,'f',2)+"%");
+
+    // time
+    int fullTime = time.elapsed();
+    lblIFullTime->setText(utils.prepareTime(fullTime));
+    lblIMaxTime->setText(utils.prepareTime(timeMax));
+    if (lblICleaned->text().toInt() != 0)
+        lblIAverageTime->setText(utils.prepareTime(fullTime/lblICleaned->text().toInt()));
+    lblIMinTime->setText(utils.prepareTime(timeMin));
+}
+
+void MainWindow::errorHandler(const QString &text)
+{
+    killThreads();
+    QMessageBox::critical(this,tr("Error"),
+                          text+tr("\nProcessing will be stopped now."),
+                          QMessageBox::Ok);
 }
 
 void MainWindow::on_actionStop_triggered()
 {
     if (!actionStop->isEnabled())
         return;
-
-    foreach (QThread *th, findChildren<QThread *>()) {
-        th->quit();
-        th->deleteLater();
-    }
-    enableButtons(true);
+    killThreads();
 }
 
 void MainWindow::cleaningFinished()
+{
+    killThreads();
+}
+
+void MainWindow::killThreads()
 {
     foreach (QThread *th, findChildren<QThread *>()) {
         th->quit();
@@ -205,29 +239,6 @@ void MainWindow::on_itemScroll_valueChanged(int value)
 {
     foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
         item->refill(itemList.at(value++),actionCompareView->isChecked());
-}
-
-void MainWindow::createStatistics()
-{
-    SomeUtils utils;
-
-    // files
-    lblICleaned->setText(QString::number(progressBar->value()-lblICrashed->text().toInt()+1));
-    lblITotalSizeBefore->setText(utils.prepareSize(inputSize));
-    lblITotalSizeAfter->setText(utils.prepareSize(outputSize));
-
-    // cleaned
-    lblIAverComp->setText(QString::number(
-                              100-(averageCompress/lblICleaned->text().toInt()),'f',2)+"%");
-    lblIMaxCompress->setText(QString::number(100-compressMin,'f',2)+"%");
-    lblIMinCompress->setText(QString::number(100-compressMax,'f',2)+"%");
-
-    // time
-    int fullTime = time.elapsed();
-    lblIFullTime->setText(utils.prepareTime(fullTime));
-    lblIMaxTime->setText(utils.prepareTime(timeMax));
-    lblIAverageTime->setText(utils.prepareTime(fullTime/lblICleaned->text().toInt()));
-    lblIMinTime->setText(utils.prepareTime(timeMin));
 }
 
 void MainWindow::threadsCountChanged()
@@ -289,8 +300,5 @@ void MainWindow::resizeEvent(QResizeEvent *)
 
 void MainWindow::closeEvent(QCloseEvent *)
 {
-    foreach (QThread *th, findChildren<QThread *>()) {
-        th->quit();
-        th->deleteLater();
-    }
+    killThreads();
 }

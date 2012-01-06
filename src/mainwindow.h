@@ -35,8 +35,10 @@ private:
     void enableButtons(bool value);
     void removeThumbs();
     void createStatistics();
+    void killThreads();
 
 private slots:
+    void errorHandler(const QString &text);
     void cleaningFinished();
     void on_actionWizard_triggered();
     void on_actionStart_triggered();

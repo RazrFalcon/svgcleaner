@@ -2,6 +2,7 @@
 #include <QFileDialog>
 #include <QWheelEvent>
 #include <QDirIterator>
+#include <QProcess>
 #include <QtDebug>
 
 #include "itemwidget.h"
@@ -25,6 +26,12 @@ WizardDialog::WizardDialog(QWidget *parent) :
     resetItems(cmbBoxPreset->currentText());
 
     adjustSize();
+}
+
+WizardDialog::~WizardDialog()
+{
+    delete gInfo;
+    delete settings;
 }
 
 void WizardDialog::loadSettings()
@@ -82,6 +89,12 @@ void WizardDialog::setupGUI()
     listWidget->setCurrentRow(0);
     listWidget->installEventFilter(this);
 
+    if (!checkFor7z()) {
+        cmbBoxCompressor->removeItem(1);
+        cmbBoxCompressor->setToolTip(tr("Install <b>p7zip</b> to use it as compressor "
+                                        "for svgz files."));
+    }
+
     loadFiles();
 
     // setup icons
@@ -90,10 +103,12 @@ void WizardDialog::setupGUI()
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
 }
 
-WizardDialog::~WizardDialog()
+bool WizardDialog::checkFor7z()
 {
-    delete gInfo;
-    delete settings;
+    QProcess zipproc;
+    zipproc.start("7z");
+    zipproc.waitForFinished();
+    return !QString(zipproc.readAll()).isEmpty();
 }
 
 void WizardDialog::radioSelected()
@@ -303,7 +318,7 @@ bool WizardDialog::checkForWarnings()
         check = false;
     } else if (radioBtn3->isChecked() && cmbBoxCompressor->currentText().contains("7z")
                && gBoxCompress->isChecked()) {
-        createWarning(tr("Program can't work in this method.\n7z can't overwrite original files."));
+        createWarning(tr("Program can't work in this method.\n7z can't overwrite original file."));
         check = false;
     } else if (fileList.isEmpty()) {
         createWarning(tr("Input folder didn't contain any svg, svgz files."));
@@ -355,7 +370,7 @@ void WizardDialog::on_btnSavePreset_clicked()
             QDomElement tagElem = domDoc->createElement(name);
             int defValue = gInfo->defaultValue("None",name);
             int defValueS = gInfo->defaultSpintValue("None",name);
-            if      (w->inherits("QComboBox")) {
+            if        (w->inherits("QComboBox")) {
                 if (qobject_cast<QComboBox *>(w)->currentIndex() == defValue)
                 tagElem.setAttribute("default",
                     gInfo->valueAt(name,qobject_cast<QComboBox *>(w)->currentIndex()));

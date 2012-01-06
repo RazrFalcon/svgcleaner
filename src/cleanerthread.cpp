@@ -16,6 +16,7 @@ CleanerThread::CleanerThread(ToThread args, QObject *parent) :
     arguments = args;
     proc = new QProcess;
     connect(proc,SIGNAL(readyReadStandardOutput()),this,SLOT(readyRead()));
+    connect(proc,SIGNAL(readyReadStandardError()),this,SLOT(readyReadError()));
     connect(proc,SIGNAL(finished(int)),this,SLOT(finished(int)));
 }
 
@@ -25,9 +26,6 @@ CleanerThread::~CleanerThread()
 
 void CleanerThread::startNext(const QString &inFile, const QString &outFile)
 {
-    // needed to terminate freezed cleaner script
-//    cleaningTimer->start(30000); // 5 min
-
     cleaningTime = QTime::currentTime();
 
     scriptOutput.clear();
@@ -36,13 +34,11 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
     currentOut = outFile;
 
     if (validXML(inFile)) {
-        QString str = removeAttribute(inFile);
-//        if (str.isEmpty()) {
-//            current++;
-//            if (current < outFiles.count())
-//                startNext();
-//            return;
-//        }
+        QString str = prepareFile(inFile);
+        if (str.isEmpty()) { // = bad svg file
+            emit cleaned(info());
+            return;
+        }
         QDir().mkpath(QFileInfo(outFile).absolutePath());
         QFile outFile(outSVG);
         if (outFile.open(QFile::WriteOnly)) {
@@ -69,7 +65,7 @@ bool CleanerThread::validXML(const QString &file)
 
 // remove attribute xml:space before starting a script,
 // in the same time copy svg source to the new path
-QString CleanerThread::removeAttribute(const QString &file)
+QString CleanerThread::prepareFile(const QString &file)
 {
     QDomDocument inputDom;
     if (QFileInfo(file).suffix() == "svg") {
@@ -86,27 +82,34 @@ QString CleanerThread::removeAttribute(const QString &file)
     }
     QDomNodeList nodeList = inputDom.childNodes();
     for (int i = 0; i < nodeList.count(); ++i) {
-//        qDebug()<<nodeList.at(i).nodeName();
         if (nodeList.at(i).nodeName() == "svg" || nodeList.at(i).nodeName() == "svg:svg") {
             QDomElement element = nodeList.at(i).toElement();
             element.removeAttribute("xml:space");
-//            QRegExp rx("px|pt|pc|mm|cm|m|in|ft|em|ex|%");
-//            QString width = element.attribute("width");
-//            width.remove(rx);
-//            QString height = element.attribute("height");
-//            height.remove(rx);
-//            qDebug()<<width.toInt()<<height.toInt();
-//            //viewBox="0 0 0 0";
-//            if (width.toInt() < 1 || height.toInt() < 1)
-//                return "";
+            QRegExp rx("px|pt|pc|mm|cm|m|in|ft|em|ex|%");
+            QString width = element.attribute("width");
+            width.remove(rx);
+            QString height = element.attribute("height");
+            height.remove(rx);
+            if (width.toInt() < 1 || height.toInt() < 1)
+                return "";
+            return inputDom.toString();
         }
     }
-    return inputDom.toString();
+    return "";
 }
 
 void CleanerThread::readyRead()
 {
     scriptOutput += proc->readAllStandardOutput();
+}
+
+void CleanerThread::readyReadError()
+{
+    QString error = proc->readAllStandardError();
+    if (error.contains("Can't locate XML/Twig.pm in"))
+        emit criticalError(tr("You must install XML/Twig."));
+    else
+        emit criticalError(error);
 }
 
 void CleanerThread::finished(int)
@@ -124,7 +127,6 @@ void CleanerThread::finished(int)
         if (arguments.compressWith == "7z") // temp bugfix
             QFile(outSVG).remove();
     }
-
     emit cleaned(info());
 }
 

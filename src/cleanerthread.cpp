@@ -109,7 +109,7 @@ void CleanerThread::readyReadError()
     if (error.contains("Can't locate XML/Twig.pm in"))
         emit criticalError(tr("You must install XML/Twig."));
     else
-        emit criticalError(error);
+        qDebug()<<error;
 }
 
 void CleanerThread::finished(int)

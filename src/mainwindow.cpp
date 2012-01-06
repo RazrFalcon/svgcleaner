@@ -107,7 +107,6 @@ void MainWindow::prepareStart()
     timeMin = 999999999;
     inputSize = 0;
     outputSize = 0;
-    averageCompress = 0;
     enableButtons(false);
     removeThumbs();
     itemScroll->hide();
@@ -150,7 +149,6 @@ void MainWindow::progress(SVGInfo info)
     if (info.crashed)
         lblICrashed->setText(QString::number(lblICrashed->text().toInt()+1));
     else {
-        averageCompress += info.compress;
         inputSize += info.sizes[SVGInfo::INPUT];
         outputSize += info.sizes[SVGInfo::OUTPUT];
         if (info.compress > compressMax && info.compress < 100) compressMax = info.compress;
@@ -192,8 +190,8 @@ void MainWindow::createStatistics()
     lblITotalSizeAfter->setText(utils.prepareSize(outputSize));
 
     // cleaned
-    lblIAverComp->setText(QString::number(
-                          100-(averageCompress/progressBar->value()),'f',2)+"%");
+    if (outputSize != 0 && inputSize != 0)
+        lblIAverComp->setText(QString::number(((float)outputSize/inputSize)*100,'f',2)+"%");
     lblIMaxCompress->setText(QString::number(100-compressMin,'f',2)+"%");
     lblIMinCompress->setText(QString::number(100-compressMax,'f',2)+"%");
 

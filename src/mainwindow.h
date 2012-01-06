@@ -18,7 +18,6 @@ public:
     ~MainWindow();
 
 private:
-    float averageCompress;
     float compressMax;
     float compressMin;
     int timeMax;

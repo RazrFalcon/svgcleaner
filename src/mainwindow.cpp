@@ -145,6 +145,16 @@ void MainWindow::enableButtons(bool value)
 
 void MainWindow::progress(SVGInfo info)
 {
+    progressBar->setValue(progressBar->value()+1);
+    CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
+    if (position < arguments.inputFiles.count()) {
+        cleaner->startNext(arguments.inputFiles.at(position),arguments.outputFiles.at(position));
+        position++;
+    } else {
+        if (progressBar->value() == progressBar->maximum())
+            cleaningFinished();
+    }
+
     itemList.append(info);
     if (info.crashed)
         lblICrashed->setText(QString::number(lblICrashed->text().toInt()+1));
@@ -167,17 +177,7 @@ void MainWindow::progress(SVGInfo info)
         if (itemScroll->value() == itemScroll->maximum()-1)
             itemScroll->setValue(itemScroll->value()+1);
     }
-    progressBar->setValue(progressBar->value()+1);
     createStatistics();
-
-    CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
-    if (position < arguments.inputFiles.count()) {
-        cleaner->startNext(arguments.inputFiles.at(position),arguments.outputFiles.at(position));
-        position++;
-    } else {
-        if (progressBar->value() == progressBar->maximum())
-            cleaningFinished();
-    }
 }
 
 void MainWindow::createStatistics()
@@ -226,6 +226,8 @@ void MainWindow::cleaningFinished()
 
 void MainWindow::killThreads()
 {
+    foreach (CleanerThread *cleaner, findChildren<CleanerThread *>())
+        cleaner->deleteLater();
     foreach (QThread *th, findChildren<QThread *>()) {
         th->quit();
         th->deleteLater();

@@ -198,11 +198,12 @@ void WizardDialog::loadFiles()
     }
     fileList.clear();
     QDirIterator dirIt(lineEditInDir->text(),
-                       chBoxRecursive->isChecked()?QDirIterator::Subdirectories
-                                                  :QDirIterator::NoIteratorFlags);
+                       chBoxRecursive->isChecked()?(QDirIterator::Subdirectories
+                                                   |QDirIterator::FollowSymlinks)
+                                                   :QDirIterator::NoIteratorFlags);
     while (dirIt.hasNext()) {
         dirIt.next();
-        if (QFileInfo(dirIt.filePath()).isFile())
+        if (QFileInfo(dirIt.filePath()).isFile() && !QFileInfo(dirIt.filePath()).isSymLink())
             if (QFileInfo(dirIt.filePath()).suffix().contains(QRegExp("svg$|svgz$")))
                 fileList.append(dirIt.filePath());
     }

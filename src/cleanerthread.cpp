@@ -90,8 +90,10 @@ QString CleanerThread::prepareFile(const QString &file)
             width.remove(rx);
             QString height = element.attribute("height");
             height.remove(rx);
-            if (width.toInt() < 1 || height.toInt() < 1)
+            if (width.toInt() < 0 || height.toInt() < 0)
                 return "";
+            else if (width.toInt() == 0 || height.toInt() == 0)
+                element.setAttribute("viewBoxm","0 0 0 0");
             return inputDom.toString();
         }
     }

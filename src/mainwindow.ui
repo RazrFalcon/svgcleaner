@@ -52,7 +52,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>425</width>
+         <width>516</width>
          <height>508</height>
         </rect>
        </property>
@@ -116,6 +116,9 @@
   <widget class="QDockWidget" name="dockStatistics">
    <property name="features">
     <set>QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Statistics</string>

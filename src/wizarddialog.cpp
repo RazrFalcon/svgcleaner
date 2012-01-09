@@ -47,7 +47,6 @@ void WizardDialog::loadSettings()
 
     gBoxCompress->setChecked(settings->value("Wizard/compress",true).toBool());
     spinBoxCompress->setValue(settings->value("Wizard/compressLevel",9).toInt());
-    cmbBoxCompressor->setCurrentIndex(settings->value("Wizard/compressor",0).toInt());
     rBtnSaveSuffix->setChecked(settings->value("Wizard/compressType",false).toBool());
 }
 
@@ -89,12 +88,6 @@ void WizardDialog::setupGUI()
     listWidget->setCurrentRow(0);
     listWidget->installEventFilter(this);
 
-    if (!checkFor7z()) {
-        cmbBoxCompressor->removeItem(1);
-        cmbBoxCompressor->setToolTip(tr("Install <b>p7zip</b> to use it as compressor "
-                                        "for svgz files."));
-    }
-
     loadFiles();
 
     // setup icons
@@ -106,7 +99,11 @@ void WizardDialog::setupGUI()
 bool WizardDialog::checkFor7z()
 {
     QProcess zipproc;
+#ifdef Q_OS_WIN
+    zipproc.start("7-Zip/7za.exe");
+#else
     zipproc.start("7z");
+#endif
     zipproc.waitForFinished();
     return !QString(zipproc.readAll()).isEmpty();
 }
@@ -161,7 +158,6 @@ ToThread WizardDialog::threadArguments()
     threadArgs.inputFiles = getInFiles();
     threadArgs.outputFiles = getOutFiles();
     threadArgs.level = QString::number(spinBoxCompress->value());
-    threadArgs.compressWith = cmbBoxCompressor->currentText();
     return threadArgs;
 }
 
@@ -223,9 +219,11 @@ QStringList WizardDialog::getOutFiles()
 {
     QStringList list;
     if        (radioBtn1->isChecked()) {
-        foreach (QFileInfo file, fileList)
-            list.append(lineEditOutDir->text()
-                        +QString(file.absoluteFilePath()).remove(lineEditInDir->text()));
+        foreach (QFileInfo file, fileList) {
+            list.append(QDir(lineEditOutDir->text()).absolutePath()
+                        +QString(file.absoluteFilePath())
+                        .remove(QDir(lineEditInDir->text()).absolutePath()));
+        }
     } else if (radioBtn2->isChecked()) {
         foreach (QFileInfo file, fileList)
             list.append(file.absolutePath()+QDir::separator()+lineEditPrefix->text()
@@ -272,7 +270,6 @@ void WizardDialog::resetFields()
     chBoxRecursive->setChecked(false);
     gBoxCompress->setChecked(true);
     rBtnSaveSuffix->setChecked(true);
-    cmbBoxCompressor->setCurrentIndex(0);
     spinBoxCompress->setValue(9);
 }
 
@@ -317,12 +314,12 @@ bool WizardDialog::checkForWarnings()
     } else if (!QDir(lineEditInDir->text()).exists()) {
         createWarning(tr("Input folder is not exist."));
         check = false;
-    } else if (radioBtn3->isChecked() && cmbBoxCompressor->currentText().contains("7z")
-               && gBoxCompress->isChecked()) {
-        createWarning(tr("Program can't work in this method.\n7z can't overwrite original file."));
-        check = false;
     } else if (fileList.isEmpty()) {
         createWarning(tr("Input folder didn't contain any svg, svgz files."));
+        check = false;
+    } else if (!checkFor7z()) {
+        createWarning(tr("Install <b>p7zip</b> to use it as compressor "
+                         "for svgz files."));
         check = false;
     }
     return check;
@@ -429,7 +426,6 @@ void WizardDialog::saveSettings()
     settings->setValue("Wizard/suffix",lineEditSuffix->text());
     settings->setValue("Wizard/compress",gBoxCompress->isChecked());
     settings->setValue("Wizard/compressLevel",spinBoxCompress->value());
-    settings->setValue("Wizard/compressor",cmbBoxCompressor->currentIndex());
     settings->setValue("Wizard/compressType",rBtnSaveSuffix->isChecked());
     settings->setValue("Wizard/preset",cmbBoxPreset->currentIndex());
 }

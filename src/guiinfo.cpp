@@ -14,10 +14,18 @@ GuiInfo::GuiInfo(QObject *parent) :
     QObject(parent)
 {
     QDomDocument doc;
+#ifdef Q_OS_WIN
+    doc.setContent(loadFile("C:/Users/Razr/Desktop/svgcleaner/interface.xml"));
+#else
     doc.setContent(loadFile("/usr/share/svgcleaner/interface.xml"));
+#endif
     presetMap.insert("None",doc);
 
+#ifdef Q_OS_WIN
+    QDir presetDir("presets");
+#else
     QDir presetDir("/usr/share/svgcleaner/presets/");
+#endif
     QFileInfoList files = presetDir.entryInfoList(QStringList("*.preset"));
     QDir presetDir2(QDir::homePath()+"/.config/svgcleaner/preset/");
     files += presetDir2.entryInfoList(QStringList("*.preset"));

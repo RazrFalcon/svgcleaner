@@ -33,34 +33,27 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
     currentIn = inFile;
     currentOut = outFile;
 
-    if (validXML(inFile)) {
-        QString str = prepareFile(inFile);
-        if (str.isEmpty()) { // = bad svg file
-            emit cleaned(info());
-            return;
-        }
-        QDir().mkpath(QFileInfo(outFile).absolutePath());
-        QFile outFile(outSVG);
-        if (outFile.open(QFile::WriteOnly)) {
-            QTextStream out(&outFile);
-            out<<str;
-        }
+    QString str = prepareFile(inFile);
+    if (str.isEmpty()) { // == bad svg file
+        emit cleaned(info());
+        return;
+    }
+    QDir().mkpath(QFileInfo(outFile).absolutePath());
+    QFile file(outSVG);
+    if (file.open(QFile::WriteOnly)) {
+        QTextStream out(&file);
+        out<<str;
     }
     QStringList args;
-    args.append("/usr/bin/svgcleaner");
+#ifdef Q_OS_WIN
+    args.append("svgcleaner"); // perl script
+#else
+    args.append("/usr/bin/svgcleaner"); // perl script
+#endif
     args.append(outSVG);
     args.append(arguments.args);
     args.append("quiet");
-
     proc->start("perl",args);
-}
-
-// valid svg structure using Qt class QSvgRenderer
-bool CleanerThread::validXML(const QString &file)
-{
-    QSvgRenderer render;
-    render.load(file);
-    return render.isValid();
 }
 
 // remove attribute xml:space before starting a script,
@@ -75,8 +68,12 @@ QString CleanerThread::prepareFile(const QString &file)
     } else {
         QProcess proc;
         QStringList args;
-        args<<"-c"<<file;
-        proc.start("gunzip",args);
+        args<<"e"<<"-so"<<file;
+#ifdef Q_OS_WIN
+        proc.start("7-Zip/7za.exe",args);
+#else
+        proc.start("7z",args);
+#endif
         proc.waitForFinished();
         inputDom.setContent(&proc);
     }
@@ -117,17 +114,20 @@ void CleanerThread::readyReadError()
 void CleanerThread::finished(int)
 {
     if (QFileInfo(currentOut).suffix() == "svgz") {
+        if (currentOut == currentIn) // because 7zip can't overwrite svgz, for some reason
+            QFile(currentIn).remove();
+        QFile(currentOut).remove(); // if it's already exist
+
         QProcess procZip;
         QStringList args;
-        if (arguments.compressWith == "gzip") {
-            args<<"--suffix=z"<<"-"+arguments.level<<"-f"<<outSVG;
-        } else {
-            args<<"a"<<"-bd"<<"-tgzip"<<"-mx"+arguments.level<<currentOut<<outSVG;
-        }
-        procZip.start(arguments.compressWith,args);
+        args<<"a"<<"-tgzip"<<"-mx"+arguments.level<<currentOut<<outSVG;
+#ifdef Q_OS_WIN
+        procZip.start("7-Zip/7za.exe",args);
+#else
+        procZip.start("7z",args);
+#endif
         procZip.waitForFinished();
-        if (arguments.compressWith == "7z") // temp bugfix
-            QFile(outSVG).remove();
+        QFile(outSVG).remove();
     }
     emit cleaned(info());
 }
@@ -136,7 +136,6 @@ void CleanerThread::finished(int)
 SVGInfo CleanerThread::info()
 {
     SVGInfo info;
-
     info.paths<<currentIn<<currentOut;
     info.elemInitial = findValue("The initial number of elements is");
     info.elemFinal = findValue("The final number of elements is");

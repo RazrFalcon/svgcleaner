@@ -14,8 +14,12 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 
     QTranslator *translator = new QTranslator;
-    if (translator->load("/usr/share/svgcleaner/translations/svgcleaner"
-                         +QLocale::system().name().remove(QRegExp("_.."))))
+#ifdef Q_OS_WIN
+    QString path = "translations/svgcleaner";
+#else
+    QString path = "/usr/share/svgcleaner/translations/svgcleaner";
+#endif
+    if (translator->load(path+QLocale::system().name().remove(QRegExp("_.."))))
         qApp->installTranslator(translator);
 
     MainWindow w;

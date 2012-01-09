@@ -52,8 +52,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>516</width>
-         <height>508</height>
+         <width>533</width>
+         <height>510</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="itemLayout">

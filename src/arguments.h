@@ -11,7 +11,6 @@ struct ToThread
     QStringList outputFiles;
     QString level;
     QString args;
-    QString compressWith;
 };
 
 struct SVGInfo

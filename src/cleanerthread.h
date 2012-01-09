@@ -31,7 +31,6 @@ private:
     QTimer *cleaningTimer;
     ToThread arguments;
 
-    bool validXML(const QString &file);
     int findValue(const QString &text);
     QString prepareFile(const QString &file);
     SVGInfo info();

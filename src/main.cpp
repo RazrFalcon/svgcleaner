@@ -15,9 +15,9 @@ int main(int argc, char *argv[])
 
     QTranslator *translator = new QTranslator;
 #ifdef Q_OS_WIN
-    QString path = "translations/svgcleaner";
+    QString path = "translations/svgcleaner_";
 #else
-    QString path = "/usr/share/svgcleaner/translations/svgcleaner";
+    QString path = "/usr/share/svgcleaner/translations/svgcleaner_";
 #endif
     if (translator->load(path+QLocale::system().name().remove(QRegExp("_.."))))
         qApp->installTranslator(translator);

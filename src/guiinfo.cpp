@@ -15,7 +15,7 @@ GuiInfo::GuiInfo(QObject *parent) :
 {
     QDomDocument doc;
 #ifdef Q_OS_WIN
-    doc.setContent(loadFile("C:/Users/Razr/Desktop/svgcleaner/interface.xml"));
+    doc.setContent(loadFile("interface.xml"));
 #else
     doc.setContent(loadFile("/usr/share/svgcleaner/interface.xml"));
 #endif

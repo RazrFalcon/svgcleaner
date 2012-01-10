@@ -96,18 +96,6 @@ void WizardDialog::setupGUI()
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
 }
 
-bool WizardDialog::checkFor7z()
-{
-    QProcess zipproc;
-#ifdef Q_OS_WIN
-    zipproc.start("7-Zip/7za.exe");
-#else
-    zipproc.start("7z");
-#endif
-    zipproc.waitForFinished();
-    return !QString(zipproc.readAll()).isEmpty();
-}
-
 void WizardDialog::radioSelected()
 {
     frameOutDir->setVisible(radioBtn1->isChecked());
@@ -318,8 +306,11 @@ bool WizardDialog::checkForWarnings()
         createWarning(tr("Input folder didn't contain any svg, svgz files."));
         check = false;
     } else if (!checkFor7z()) {
-        createWarning(tr("Install <b>p7zip</b> to use it as compressor "
+        createWarning(tr("Install p7zip to use it as compressor "
                          "for svgz files."));
+        check = false;
+    } else if (!checkForPerl()) {
+        createWarning(tr("You must install Perl to use this program."));
         check = false;
     }
     return check;
@@ -328,6 +319,30 @@ bool WizardDialog::checkForWarnings()
 void WizardDialog::createWarning(const QString &text)
 {
     QMessageBox::warning(this,tr("Warning"),text,QMessageBox::Ok);
+}
+
+bool WizardDialog::checkFor7z()
+{
+    QProcess zipproc;
+#ifdef Q_OS_WIN
+    zipproc.start("7-Zip/7za.exe");
+#else
+    zipproc.start("7z");
+#endif
+    zipproc.waitForFinished();
+    return !QString(zipproc.readAll()).isEmpty();
+}
+
+bool WizardDialog::checkForPerl()
+{
+    QProcess perlProc;
+#ifdef Q_OS_WIN
+//    perlProc.start("which",QStringList("perl"));
+#else
+    perlProc.start("which",QStringList("perl"));
+#endif
+    perlProc.waitForFinished();
+    return !QString(perlProc.readAll()).contains("which: no perl in");
 }
 
 void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &name)

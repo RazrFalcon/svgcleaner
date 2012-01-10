@@ -30,6 +30,7 @@ private:
     void saveSettings();
     void setupGUI();
     bool checkFor7z();
+    bool checkForPerl();
     QStringList getInFiles();
     QStringList getOutFiles();
     QString argLine();

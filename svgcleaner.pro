@@ -1,5 +1,6 @@
 QT       += core gui xml svg
-TARGET    = svgcleaner-gui
+unix:TARGET    = svgcleaner-gui
+windows:TARGET    = SVGCleaner
 TEMPLATE  = app
 VERSION   = 0.3
 
@@ -33,6 +34,7 @@ FORMS    += src/thumbwidget.ui \
 OTHER_FILES += interface.xml
 RESOURCES   += icons/icons.qrc
 CODECFORSRC  = UTF-8
+windows:RC_FILE = icons/icon.rc
 
 include(translations/translations.pri)
 

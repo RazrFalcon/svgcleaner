@@ -335,14 +335,14 @@ bool WizardDialog::checkFor7z()
 
 bool WizardDialog::checkForPerl()
 {
+#ifdef Q_OS_UNIX
     QProcess perlProc;
-#ifdef Q_OS_WIN
-//    perlProc.start("which",QStringList("perl"));
-#else
     perlProc.start("which",QStringList("perl"));
-#endif
     perlProc.waitForFinished();
     return !QString(perlProc.readAll()).contains("which: no perl in");
+#else
+    return true;
+#endif
 }
 
 void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &name)

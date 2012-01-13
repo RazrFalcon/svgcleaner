@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>541</width>
-    <height>110</height>
+    <width>459</width>
+    <height>109</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true">Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <property name="margin">
@@ -61,7 +61,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>value</string>
+         <string notr="true">value</string>
         </property>
         <property name="textFormat">
          <enum>Qt::PlainText</enum>
@@ -115,7 +115,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>value</string>
+         <string notr="true">value</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -123,9 +123,9 @@
        </widget>
       </item>
       <item row="1" column="4">
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="lblArrow1">
         <property name="text">
-         <string>-&gt;</string>
+         <string notr="true">-&gt;</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -135,14 +135,14 @@
       <item row="1" column="5">
        <widget class="QLabel" name="lblSizeA">
         <property name="text">
-         <string>value</string>
+         <string notr="true">value</string>
         </property>
        </widget>
       </item>
       <item row="1" column="6">
        <widget class="QLabel" name="lblSizeP">
         <property name="text">
-         <string>value</string>
+         <string notr="true">value</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -171,7 +171,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>value</string>
+         <string notr="true">value</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -179,9 +179,9 @@
        </widget>
       </item>
       <item row="2" column="4">
-       <widget class="QLabel" name="label_5">
+       <widget class="QLabel" name="lblArrow2">
         <property name="text">
-         <string>-&gt;</string>
+         <string notr="true">-&gt;</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -191,14 +191,14 @@
       <item row="2" column="5">
        <widget class="QLabel" name="lblElemA">
         <property name="text">
-         <string>value</string>
+         <string notr="true">value</string>
         </property>
        </widget>
       </item>
       <item row="2" column="6">
        <widget class="QLabel" name="lblElemP">
         <property name="text">
-         <string>value</string>
+         <string notr="true">value</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -227,7 +227,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>value</string>
+         <string notr="true">value</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -235,9 +235,9 @@
        </widget>
       </item>
       <item row="3" column="4">
-       <widget class="QLabel" name="label_6">
+       <widget class="QLabel" name="lblArrow3">
         <property name="text">
-         <string>-&gt;</string>
+         <string notr="true">-&gt;</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -247,14 +247,14 @@
       <item row="3" column="5">
        <widget class="QLabel" name="lblAttrA">
         <property name="text">
-         <string>value</string>
+         <string notr="true">value</string>
         </property>
        </widget>
       </item>
       <item row="3" column="6">
        <widget class="QLabel" name="lblAttrP">
         <property name="text">
-         <string>value</string>
+         <string notr="true">value</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -283,7 +283,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>value</string>
+         <string notr="true">value</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

@@ -18,7 +18,6 @@ public:
     ~MainWindow();
 
 private:
-    float averageCompress;
     float compressMax;
     float compressMin;
     int timeMax;
@@ -35,8 +34,10 @@ private:
     void enableButtons(bool value);
     void removeThumbs();
     void createStatistics();
+    void killThreads();
 
 private slots:
+    void errorHandler(const QString &text);
     void cleaningFinished();
     void on_actionWizard_triggered();
     void on_actionStart_triggered();
@@ -47,7 +48,6 @@ private slots:
     void threadsCountChanged();
     void on_actionCompareView_triggered();
     void on_actionInfo_triggered();
-    void scrollTo(int value);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

@@ -16,19 +16,16 @@ CleanerThread::CleanerThread(ToThread args, QObject *parent) :
     arguments = args;
     proc = new QProcess;
     connect(proc,SIGNAL(readyReadStandardOutput()),this,SLOT(readyRead()));
+    connect(proc,SIGNAL(readyReadStandardError()),this,SLOT(readyReadError()));
     connect(proc,SIGNAL(finished(int)),this,SLOT(finished(int)));
 }
 
 CleanerThread::~CleanerThread()
 {
-//    delete proc;
 }
 
 void CleanerThread::startNext(const QString &inFile, const QString &outFile)
 {
-    // needed to terminate freezed cleaner script
-//    cleaningTimer->start(30000); // 5 min
-
     cleaningTime = QTime::currentTime();
 
     scriptOutput.clear();
@@ -36,41 +33,32 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
     currentIn = inFile;
     currentOut = outFile;
 
-    if (validXML(inFile)) {
-        QString str = removeAttribute(inFile);
-//        if (str.isEmpty()) {
-//            current++;
-//            if (current < outFiles.count())
-//                startNext();
-//            return;
-//        }
-        QDir().mkpath(QFileInfo(outFile).absolutePath());
-        QFile outFile(outSVG);
-        if (outFile.open(QFile::WriteOnly)) {
-            QTextStream out(&outFile);
-            out<<str;
-        }
+    QString str = prepareFile(inFile);
+    if (str.isEmpty()) { // == bad svg file
+        emit cleaned(info());
+        return;
+    }
+    QDir().mkpath(QFileInfo(outFile).absolutePath());
+    QFile file(outSVG);
+    if (file.open(QFile::WriteOnly)) {
+        QTextStream out(&file);
+        out<<str;
     }
     QStringList args;
-    args.append("/usr/bin/svgcleaner");
+#ifdef Q_OS_WIN
+    args.append("svgcleaner"); // perl script
+#else
+    args.append("/usr/bin/svgcleaner"); // perl script
+#endif
     args.append(outSVG);
     args.append(arguments.args);
     args.append("quiet");
-
     proc->start("perl",args);
-}
-
-// valid svg structure using Qt class QSvgRenderer
-bool CleanerThread::validXML(const QString &file)
-{
-    QSvgRenderer render;
-    render.load(file);
-    return render.isValid();
 }
 
 // remove attribute xml:space before starting a script,
 // in the same time copy svg source to the new path
-QString CleanerThread::removeAttribute(const QString &file)
+QString CleanerThread::prepareFile(const QString &file)
 {
     QDomDocument inputDom;
     if (QFileInfo(file).suffix() == "svg") {
@@ -80,53 +68,67 @@ QString CleanerThread::removeAttribute(const QString &file)
     } else {
         QProcess proc;
         QStringList args;
-        args<<"-c"<<file;
-        proc.start("gunzip",args);
+        args<<"e"<<"-so"<<file;
+#ifdef Q_OS_WIN
+        proc.start("7-Zip/7za.exe",args);
+#else
+        proc.start("7z",args);
+#endif
         proc.waitForFinished();
         inputDom.setContent(&proc);
     }
     QDomNodeList nodeList = inputDom.childNodes();
     for (int i = 0; i < nodeList.count(); ++i) {
-//        qDebug()<<nodeList.at(i).nodeName();
         if (nodeList.at(i).nodeName() == "svg" || nodeList.at(i).nodeName() == "svg:svg") {
             QDomElement element = nodeList.at(i).toElement();
             element.removeAttribute("xml:space");
-//            QRegExp rx("px|pt|pc|mm|cm|m|in|ft|em|ex|%");
-//            QString width = element.attribute("width");
-//            width.remove(rx);
-//            QString height = element.attribute("height");
-//            height.remove(rx);
-//            qDebug()<<width.toInt()<<height.toInt();
-//            //viewBox="0 0 0 0";
-//            if (width.toInt() < 1 || height.toInt() < 1)
-//                return "";
+            QRegExp rx("px|pt|pc|mm|cm|m|in|ft|em|ex|%");
+            QString width = element.attribute("width");
+            width.remove(rx);
+            QString height = element.attribute("height");
+            height.remove(rx);
+            if (width.toInt() < 0 || height.toInt() < 0)
+                return "";
+            else if (width.toInt() == 0 || height.toInt() == 0)
+                element.setAttribute("viewBoxm","0 0 0 0");
+            return inputDom.toString();
         }
     }
-    return inputDom.toString();
+    return "";
 }
 
 void CleanerThread::readyRead()
 {
-//    QProcess *proc = static_cast<QProcess *>(sender());
     scriptOutput += proc->readAllStandardOutput();
+}
+
+void CleanerThread::readyReadError()
+{
+    QString error = proc->readAllStandardError();
+    if (error.contains("Can't locate XML/Twig.pm in"))
+        emit criticalError(tr("You must install XML/Twig."));
+    else
+        qDebug()<<error<<"in"<<currentIn;
 }
 
 void CleanerThread::finished(int)
 {
     if (QFileInfo(currentOut).suffix() == "svgz") {
+        if (currentOut == currentIn) // because 7zip can't overwrite svgz, for some reason
+            QFile(currentIn).remove();
+        QFile(currentOut).remove(); // if it's already exist
+
         QProcess procZip;
         QStringList args;
-        if (arguments.compressWith == "gzip") {
-            args<<"--suffix=z"<<"-"+arguments.level<<"-f"<<outSVG;
-        } else {
-            args<<"a"<<"-bd"<<"-tgzip"<<"-mx"+arguments.level<<currentOut<<outSVG;
-        }
-        procZip.start(arguments.compressWith,args);
+        args<<"a"<<"-tgzip"<<"-mx"+arguments.level<<currentOut<<outSVG;
+#ifdef Q_OS_WIN
+        procZip.start("7-Zip/7za.exe",args);
+#else
+        procZip.start("7z",args);
+#endif
         procZip.waitForFinished();
-        if (arguments.compressWith == "7z") // temp bugfix
-            QFile(outSVG).remove();
+        QFile(outSVG).remove();
     }
-
     emit cleaned(info());
 }
 
@@ -134,7 +136,6 @@ void CleanerThread::finished(int)
 SVGInfo CleanerThread::info()
 {
     SVGInfo info;
-
     info.paths<<currentIn<<currentOut;
     info.elemInitial = findValue("The initial number of elements is");
     info.elemFinal = findValue("The final number of elements is");
@@ -146,12 +147,12 @@ SVGInfo CleanerThread::info()
         && QFileInfo(currentIn).suffix() == "svgz") {
 
         info.sizes<<findValue("The initial file size is");
-        info.compress = (float)QFileInfo(currentOut).size()
-                              /findValue("The initial file size is")*100;
+        info.compress = ((float)QFileInfo(currentOut).size()
+                              /findValue("The initial file size is"))*100;
     } else {
         info.sizes<<QFileInfo(currentIn).size();
-        info.compress = (float)QFileInfo(currentOut).size()
-                              /QFileInfo(currentIn).size()*100;
+        info.compress = ((float)QFileInfo(currentOut).size()
+                              /QFileInfo(currentIn).size())*100;
     }
     if (info.compress > 100)
         info.compress = 100;

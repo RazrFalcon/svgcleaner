@@ -19,6 +19,7 @@ public:
 
 signals:
     void cleaned(const SVGInfo);
+    void criticalError(QString);
 
 private:
     QProcess *proc;
@@ -30,13 +31,13 @@ private:
     QTimer *cleaningTimer;
     ToThread arguments;
 
-    bool validXML(const QString &file);
     int findValue(const QString &text);
-    QString removeAttribute(const QString &file);
+    QString prepareFile(const QString &file);
     SVGInfo info();
 
 private slots:
     void readyRead();
+    void readyReadError();
     void finished(int);
 };
 

@@ -28,10 +28,10 @@ QString SomeUtils::prepareTime(int ms)
     QTime dt = QTime::fromString("0", "z");
     dt = dt.addMSecs(ms);
     QString timeStr;
-    timeStr = QString("%1h %2m %3s %4ms").arg(dt.toString("hh"))
-                                         .arg(dt.toString("mm"))
-                                         .arg(dt.toString("ss"))
-                                         .arg(dt.toString("zzz"));
+    timeStr = QString(tr("%1h %2m %3s %4ms")).arg(dt.toString("hh"))
+                                             .arg(dt.toString("mm"))
+                                             .arg(dt.toString("ss"))
+                                             .arg(dt.toString("zzz"));
     return timeStr.remove(QRegExp("00. "));
 }
 

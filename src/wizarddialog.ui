@@ -61,34 +61,7 @@
             <layout class="QGridLayout" name="gridLayout_5">
              <item row="1" column="0" colspan="3">
               <layout class="QGridLayout" name="gridLayout_6">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_8">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Use compressor:</string>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="1">
-                <widget class="QComboBox" name="cmbBoxCompressor">
-                 <item>
-                  <property name="text">
-                   <string>gzip</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>7z</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="1" column="1">
                 <widget class="QSpinBox" name="spinBoxCompress">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -102,12 +75,15 @@
                  <property name="maximum">
                   <number>9</number>
                  </property>
+                 <property name="singleStep">
+                  <number>2</number>
+                 </property>
                  <property name="value">
                   <number>9</number>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
+               <item row="0" column="0">
                 <widget class="QLabel" name="label_6">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -222,7 +198,7 @@
              <item row="1" column="2" colspan="2">
               <widget class="QToolButton" name="btnOpenInDir">
                <property name="text">
-                <string>...</string>
+                <string notr="true">...</string>
                </property>
                <property name="iconSize">
                 <size>
@@ -281,7 +257,7 @@
              <item row="1" column="2">
               <widget class="QToolButton" name="btnOpenOutDir">
                <property name="text">
-                <string>...</string>
+                <string notr="true">...</string>
                </property>
                <property name="iconSize">
                 <size>
@@ -353,7 +329,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>.svg</string>
+                <string notr="true">.svg</string>
                </property>
               </widget>
              </item>
@@ -500,7 +476,7 @@
              </size>
             </property>
             <property name="html">
-             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+             <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -651,7 +627,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>listWidget</tabstop>
   <tabstop>buttonBox</tabstop>
   <tabstop>gBoxCompress</tabstop>
-  <tabstop>cmbBoxCompressor</tabstop>
   <tabstop>spinBoxCompress</tabstop>
   <tabstop>rBtnCompressAll</tabstop>
   <tabstop>rBtnSaveSuffix</tabstop>

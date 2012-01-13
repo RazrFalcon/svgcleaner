@@ -2,6 +2,7 @@
 #include <QFileDialog>
 #include <QWheelEvent>
 #include <QDirIterator>
+#include <QProcess>
 #include <QtDebug>
 
 #include "itemwidget.h"
@@ -27,6 +28,12 @@ WizardDialog::WizardDialog(QWidget *parent) :
     adjustSize();
 }
 
+WizardDialog::~WizardDialog()
+{
+    delete gInfo;
+    delete settings;
+}
+
 void WizardDialog::loadSettings()
 {
     settings = new QSettings(QSettings::NativeFormat, QSettings::UserScope,
@@ -36,11 +43,10 @@ void WizardDialog::loadSettings()
     lineEditInDir->setText(settings->value("Wizard/lastInDir").toString());
     lineEditOutDir->setText(settings->value("Wizard/lastOutDir",QDir::homePath()).toString());
     lineEditPrefix->setText(settings->value("Wizard/prefix").toString());
-    lineEditSuffix->setText(settings->value("Wizard/suffix",tr("_optimized")).toString());
+    lineEditSuffix->setText(settings->value("Wizard/suffix",tr("_cleaned")).toString());
 
     gBoxCompress->setChecked(settings->value("Wizard/compress",true).toBool());
     spinBoxCompress->setValue(settings->value("Wizard/compressLevel",9).toInt());
-    cmbBoxCompressor->setCurrentIndex(settings->value("Wizard/compressor",0).toInt());
     rBtnSaveSuffix->setChecked(settings->value("Wizard/compressType",false).toBool());
 }
 
@@ -70,12 +76,12 @@ void WizardDialog::setupGUI()
 
     QListWidgetItem *itemFiles = new QListWidgetItem(listWidget);
     ItemWidget *widgetFiles = new ItemWidget("files");
-    itemFiles->setToolTip("Files");
+    itemFiles->setToolTip(tr("Files"));
     listWidget->setItemWidget(itemFiles,widgetFiles);
 
     QListWidgetItem *itemPresets = new QListWidgetItem(listWidget);
     ItemWidget *widgetPresets = new ItemWidget("presets");
-    itemPresets->setToolTip("Presets");
+    itemPresets->setToolTip(tr("Presets"));
     listWidget->setItemWidget(itemPresets,widgetPresets);
     connect(listWidget,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
                             this,SLOT(changePage(QListWidgetItem*,QListWidgetItem*)));
@@ -88,12 +94,6 @@ void WizardDialog::setupGUI()
     btnOpenInDir->setIcon(QIcon(":/open.svgz"));
     btnOpenOutDir->setIcon(QIcon(":/open.svgz"));
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
-}
-
-WizardDialog::~WizardDialog()
-{
-    delete gInfo;
-    delete settings;
 }
 
 void WizardDialog::radioSelected()
@@ -146,7 +146,6 @@ ToThread WizardDialog::threadArguments()
     threadArgs.inputFiles = getInFiles();
     threadArgs.outputFiles = getOutFiles();
     threadArgs.level = QString::number(spinBoxCompress->value());
-    threadArgs.compressWith = cmbBoxCompressor->currentText();
     return threadArgs;
 }
 
@@ -183,11 +182,12 @@ void WizardDialog::loadFiles()
     }
     fileList.clear();
     QDirIterator dirIt(lineEditInDir->text(),
-                       chBoxRecursive->isChecked()?QDirIterator::Subdirectories
-                                                  :QDirIterator::NoIteratorFlags);
+                       chBoxRecursive->isChecked()?(QDirIterator::Subdirectories
+                                                   |QDirIterator::FollowSymlinks)
+                                                   :QDirIterator::NoIteratorFlags);
     while (dirIt.hasNext()) {
         dirIt.next();
-        if (QFileInfo(dirIt.filePath()).isFile())
+        if (QFileInfo(dirIt.filePath()).isFile() && !QFileInfo(dirIt.filePath()).isSymLink())
             if (QFileInfo(dirIt.filePath()).suffix().contains(QRegExp("svg$|svgz$")))
                 fileList.append(dirIt.filePath());
     }
@@ -207,9 +207,11 @@ QStringList WizardDialog::getOutFiles()
 {
     QStringList list;
     if        (radioBtn1->isChecked()) {
-        foreach (QFileInfo file, fileList)
-            list.append(lineEditOutDir->text()
-                        +QString(file.absoluteFilePath()).remove(lineEditInDir->text()));
+        foreach (QFileInfo file, fileList) {
+            list.append(QDir(lineEditOutDir->text()).absolutePath()
+                        +QString(file.absoluteFilePath())
+                        .remove(QDir(lineEditInDir->text()).absolutePath()));
+        }
     } else if (radioBtn2->isChecked()) {
         foreach (QFileInfo file, fileList)
             list.append(file.absolutePath()+QDir::separator()+lineEditPrefix->text()
@@ -251,12 +253,11 @@ void WizardDialog::resetFields()
     lineEditInDir->clear();
     lineEditOutDir->setText(QDir::homePath());
     lineEditPrefix->clear();
-    lineEditSuffix->setText(tr("_optimized"));
+    lineEditSuffix->setText(tr("_cleaned"));
     radioBtn1->setChecked(true);
     chBoxRecursive->setChecked(false);
     gBoxCompress->setChecked(true);
     rBtnSaveSuffix->setChecked(true);
-    cmbBoxCompressor->setCurrentIndex(0);
     spinBoxCompress->setValue(9);
 }
 
@@ -290,23 +291,26 @@ bool WizardDialog::checkForWarnings()
 {
     bool check = true;
     if (lineEditInDir->text().isEmpty()) {
-        createWarning(tr("Input dir is not selected."));
+        createWarning(tr("Input folder is not selected."));
         check = false;
     } else if (lineEditOutDir->text().isEmpty()) {
-        createWarning(tr("Output dir is not selected."));
+        createWarning(tr("Output folder is not selected."));
         check = false;
     } else if (lineEditPrefix->text().isEmpty() && lineEditSuffix->text().isEmpty()) {
         createWarning(tr("You must set prefix and suffix for this save method."));
         check = false;
     } else if (!QDir(lineEditInDir->text()).exists()) {
-        createWarning(tr("Input dir is not exist."));
-        check = false;
-    } else if (radioBtn3->isChecked() && cmbBoxCompressor->currentText().contains("7z")
-               && gBoxCompress->isChecked()) {
-        createWarning(tr("Program can't work in this method.\n7z can't overwrite original files"));
+        createWarning(tr("Input folder is not exist."));
         check = false;
     } else if (fileList.isEmpty()) {
-        createWarning(tr("Input dir didn't contain any svg, svgz files."));
+        createWarning(tr("Input folder didn't contain any svg, svgz files."));
+        check = false;
+    } else if (!checkFor7z()) {
+        createWarning(tr("Install p7zip to use it as compressor "
+                         "for svgz files."));
+        check = false;
+    } else if (!checkForPerl()) {
+        createWarning(tr("You must install Perl to use this program."));
         check = false;
     }
     return check;
@@ -315,6 +319,30 @@ bool WizardDialog::checkForWarnings()
 void WizardDialog::createWarning(const QString &text)
 {
     QMessageBox::warning(this,tr("Warning"),text,QMessageBox::Ok);
+}
+
+bool WizardDialog::checkFor7z()
+{
+    QProcess zipproc;
+#ifdef Q_OS_WIN
+    zipproc.start("7-Zip/7za.exe");
+#else
+    zipproc.start("7z");
+#endif
+    zipproc.waitForFinished();
+    return !QString(zipproc.readAll()).isEmpty();
+}
+
+bool WizardDialog::checkForPerl()
+{
+#ifdef Q_OS_UNIX
+    QProcess perlProc;
+    perlProc.start("which",QStringList("perl"));
+    perlProc.waitForFinished();
+    return !QString(perlProc.readAll()).contains("which: no perl in");
+#else
+    return true;
+#endif
 }
 
 void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &name)
@@ -329,11 +357,6 @@ void WizardDialog::on_btnSavePreset_clicked()
         createWarning(tr("You must set preset name."));
         return;
     }
-//    if (gInfo->presets().contains(linePresetName->text())) {
-//        createWarning(tr("Preset with such name already exist.\n"
-//                         "Please, change a name of preset."));
-//        return;
-//    }
 
     // generate path
     QString path = QFileInfo(settings->fileName()).absolutePath()+"/preset/";
@@ -360,7 +383,7 @@ void WizardDialog::on_btnSavePreset_clicked()
             QDomElement tagElem = domDoc->createElement(name);
             int defValue = gInfo->defaultValue("None",name);
             int defValueS = gInfo->defaultSpintValue("None",name);
-            if      (w->inherits("QComboBox")) {
+            if        (w->inherits("QComboBox")) {
                 if (qobject_cast<QComboBox *>(w)->currentIndex() == defValue)
                 tagElem.setAttribute("default",
                     gInfo->valueAt(name,qobject_cast<QComboBox *>(w)->currentIndex()));
@@ -418,7 +441,6 @@ void WizardDialog::saveSettings()
     settings->setValue("Wizard/suffix",lineEditSuffix->text());
     settings->setValue("Wizard/compress",gBoxCompress->isChecked());
     settings->setValue("Wizard/compressLevel",spinBoxCompress->value());
-    settings->setValue("Wizard/compressor",cmbBoxCompressor->currentIndex());
     settings->setValue("Wizard/compressType",rBtnSaveSuffix->isChecked());
     settings->setValue("Wizard/preset",cmbBoxPreset->currentIndex());
 }

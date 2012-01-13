@@ -1,0 +1,15 @@
+SVG Cleaner depend on:
+- Qt >=4.6
+- Perl
+- XML-Twig
+- p7zip
+
+If you use Ubuntu - you can use this ppa:
+ppa:svg-cleaner-team/svgcleaner
+
+For windows you can use our installer.
+
+To compile from source:
+1) qmake
+2) make
+3) make install

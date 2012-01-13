@@ -2,7 +2,7 @@
 #include <QShortcut>
 #include <QThread>
 #include <QMenu>
-
+#include <QMessageBox>
 #include <QtDebug>
 
 #include "wizarddialog.h"
@@ -55,8 +55,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(quitShortcut,SIGNAL(activated()),qApp,SLOT(quit()));
 
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
-    on_actionWizard_triggered();
-
     resize(900,650);
 }
 
@@ -92,6 +90,7 @@ void MainWindow::on_actionStart_triggered()
         cleanerList.append(cleaner);
         connect(cleaner,SIGNAL(cleaned(SVGInfo)),
                 this,SLOT(progress(SVGInfo)),Qt::QueuedConnection);
+        connect(cleaner,SIGNAL(criticalError(QString)),this,SLOT(errorHandler(QString)));
         cleaner->moveToThread(thread);
         cleaner->startNext(arguments.inputFiles.at(position),arguments.outputFiles.at(position));
         thread->start();
@@ -108,7 +107,6 @@ void MainWindow::prepareStart()
     timeMin = 999999999;
     inputSize = 0;
     outputSize = 0;
-    averageCompress = 0;
     enableButtons(false);
     removeThumbs();
     itemScroll->hide();
@@ -124,7 +122,7 @@ void MainWindow::prepareStart()
     foreach (QLabel *lbl, gBoxCompression->findChildren<QLabel *>(QRegExp("^lblI.*")))
         lbl->setText("0%");
     foreach (QLabel *lbl, gBoxTime->findChildren<QLabel *>(QRegExp("^lblI.*")))
-        lbl->setText("00h 00m 00s 000ms");
+        lbl->setText("000ms");
     lblITotalFiles->setText(QString::number(arguments.outputFiles.count()));
 }
 
@@ -147,11 +145,20 @@ void MainWindow::enableButtons(bool value)
 
 void MainWindow::progress(SVGInfo info)
 {
+    progressBar->setValue(progressBar->value()+1);
+    CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
+    if (position < arguments.inputFiles.count()) {
+        cleaner->startNext(arguments.inputFiles.at(position),arguments.outputFiles.at(position));
+        position++;
+    } else {
+        if (progressBar->value() == progressBar->maximum())
+            cleaningFinished();
+    }
+
     itemList.append(info);
     if (info.crashed)
         lblICrashed->setText(QString::number(lblICrashed->text().toInt()+1));
     else {
-        averageCompress += info.compress;
         inputSize += info.sizes[SVGInfo::INPUT];
         outputSize += info.sizes[SVGInfo::OUTPUT];
         if (info.compress > compressMax && info.compress < 100) compressMax = info.compress;
@@ -171,65 +178,20 @@ void MainWindow::progress(SVGInfo info)
             itemScroll->setValue(itemScroll->value()+1);
     }
     createStatistics();
-
-    progressBar->setValue(progressBar->value()+1);
-
-    CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
-
-    if (position < arguments.inputFiles.count()) {
-        cleaner->startNext(arguments.inputFiles.at(position),arguments.outputFiles.at(position));
-        position++;
-    } else
-        cleaningFinished();
 }
-
-void MainWindow::on_actionStop_triggered()
-{
-    if (!actionStop->isEnabled())
-        return;
-
-    foreach (QThread *th, findChildren<QThread *>()) {
-        th->terminate();
-        th->deleteLater();
-    }
-    enableButtons(true);
-}
-
-void MainWindow::cleaningFinished()
-{
-    foreach (QThread *th, findChildren<QThread *>()) {
-        th->terminate();
-        th->deleteLater();
-    }
-    enableButtons(true);
-}
-
-void MainWindow::on_itemScroll_valueChanged(int value)
-{
-//    QTimer::singleShot(100, this, SLOT(scrollTo(int)));
-    foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
-        item->refill(itemList.at(value++),actionCompareView->isChecked());
-}
-
-void MainWindow::scrollTo(int value)
-{
-//    foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
-//        item->refill(itemList.at(value++),actionCompareView->isChecked());
-}
-
 
 void MainWindow::createStatistics()
 {
     SomeUtils utils;
 
     // files
-    lblICleaned->setText(QString::number(progressBar->value()-lblICrashed->text().toInt()+1));
+    lblICleaned->setText(QString::number(progressBar->value()-lblICrashed->text().toInt()));
     lblITotalSizeBefore->setText(utils.prepareSize(inputSize));
     lblITotalSizeAfter->setText(utils.prepareSize(outputSize));
 
     // cleaned
-    lblIAverComp->setText(QString::number(
-                              100-(averageCompress/lblICleaned->text().toInt()),'f',2)+"%");
+    if (outputSize != 0 && inputSize != 0)
+        lblIAverComp->setText(QString::number(((float)outputSize/inputSize)*100,'f',2)+"%");
     lblIMaxCompress->setText(QString::number(100-compressMin,'f',2)+"%");
     lblIMinCompress->setText(QString::number(100-compressMax,'f',2)+"%");
 
@@ -237,8 +199,46 @@ void MainWindow::createStatistics()
     int fullTime = time.elapsed();
     lblIFullTime->setText(utils.prepareTime(fullTime));
     lblIMaxTime->setText(utils.prepareTime(timeMax));
-    lblIAverageTime->setText(utils.prepareTime(fullTime/lblICleaned->text().toInt()));
+    if (lblICleaned->text().toInt() != 0)
+        lblIAverageTime->setText(utils.prepareTime(fullTime/lblICleaned->text().toInt()));
     lblIMinTime->setText(utils.prepareTime(timeMin));
+}
+
+void MainWindow::errorHandler(const QString &text)
+{
+    killThreads();
+    QMessageBox::critical(this,tr("Error"),
+                          text+tr("\nProcessing will be stopped now."),
+                          QMessageBox::Ok);
+}
+
+void MainWindow::on_actionStop_triggered()
+{
+    if (!actionStop->isEnabled())
+        return;
+    killThreads();
+}
+
+void MainWindow::cleaningFinished()
+{
+    killThreads();
+}
+
+void MainWindow::killThreads()
+{
+    foreach (CleanerThread *cleaner, findChildren<CleanerThread *>())
+        cleaner->deleteLater();
+    foreach (QThread *th, findChildren<QThread *>()) {
+        th->quit();
+        th->deleteLater();
+    }
+    enableButtons(true);
+}
+
+void MainWindow::on_itemScroll_valueChanged(int value)
+{
+    foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
+        item->refill(itemList.at(value++),actionCompareView->isChecked());
 }
 
 void MainWindow::threadsCountChanged()
@@ -300,10 +300,5 @@ void MainWindow::resizeEvent(QResizeEvent *)
 
 void MainWindow::closeEvent(QCloseEvent *)
 {
-    foreach (QThread *th, findChildren<QThread *>()) {
-        th->quit();
-        th->wait();
-        delete th;
-    }
-    exit(0);
+    killThreads();
 }

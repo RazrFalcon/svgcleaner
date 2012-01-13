@@ -1,8 +1,8 @@
 QT       += core gui xml svg
-unix:TARGET    = svgcleaner-gui
-windows:TARGET    = SVGCleaner
 TEMPLATE  = app
 VERSION   = 0.3
+unix:TARGET    = svgcleaner-gui
+windows:TARGET = SVGCleaner
 
 SOURCES  += src/main.cpp \
             src/guiinfo.cpp \

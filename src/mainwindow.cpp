@@ -145,6 +145,7 @@ void MainWindow::enableButtons(bool value)
 
 void MainWindow::progress(SVGInfo info)
 {
+    itemList.append(info);
     progressBar->setValue(progressBar->value()+1);
     CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
     if (position < arguments.inputFiles.count()) {
@@ -155,14 +156,13 @@ void MainWindow::progress(SVGInfo info)
             cleaningFinished();
     }
 
-    itemList.append(info);
     if (info.crashed)
         lblICrashed->setText(QString::number(lblICrashed->text().toInt()+1));
     else {
         inputSize += info.sizes[SVGInfo::INPUT];
         outputSize += info.sizes[SVGInfo::OUTPUT];
         if (info.compress > compressMax && info.compress < 100) compressMax = info.compress;
-        if (info.compress < compressMin && info.compress > 0) compressMin = info.compress;
+        if (info.compress < compressMin && info.compress > 0)   compressMin = info.compress;
         if (info.time > timeMax) timeMax = info.time;
         if (info.time < timeMin) timeMin = info.time;
     }
@@ -235,17 +235,17 @@ void MainWindow::killThreads()
     enableButtons(true);
 }
 
-void MainWindow::on_itemScroll_valueChanged(int value)
-{
-    foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
-        item->refill(itemList.at(value++),actionCompareView->isChecked());
-}
-
 void MainWindow::threadsCountChanged()
 {
     QAction *action = qobject_cast<QAction *>(sender());
     settings->setValue("threadCount",action->text());
     actionThreads->setToolTip(tr("Threads selected: ")+action->text());
+}
+
+void MainWindow::on_itemScroll_valueChanged(int value)
+{
+    foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
+        item->refill(itemList.at(value++),actionCompareView->isChecked());
 }
 
 void MainWindow::on_actionCompareView_triggered()

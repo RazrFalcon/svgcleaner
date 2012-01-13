@@ -680,7 +680,12 @@ my $fpnum = qr/[-+]?\d*\.?\d+/;
 my $scinum = qr/[-+]?\d*\.?\d+[eE][-+]?\d+/;
 
 # шаблон всех чисел (обычных и в экспоненциальном формате)
-my $num = qr/$scinum|$fpnum/;
+# my $num = qr/$scinum|$fpnum/;
+my $exp = qr/[eE][+-]?\d+/;
+my $fract_const = qr/\d*\.\d+|\d+\./;
+my $fp_const = qr/$fract_const$exp?|\d+$exp/;
+my $num = qr/[+-]?$fp_const|[+-]?\d+/;
+my $flag = qr/0|1/;
 
 # шаблон едениц измерения
 my $unit = qr/px|pt|pc|mm|cm|m|in|ft|em|ex|%/;
@@ -1670,7 +1675,8 @@ foreach my $elt ($root->descendants) {
 
       $elt->set_tag('path');
       $elt->del_att('cx', 'cy', 'r');
-      $elt->set_att('d' => "M$x1,$y A$r,$r 0 1 0 $x2,$y A$r,$r 0 1 0 $x1,$y z");
+#       $elt->set_att('d' => "M$x1,$y A$r,$r 0 1 0 $x2,$y A$r,$r 0 1 0 $x1,$y z");
+      $elt->set_att('d' => "M$x1,$y A$r,$r 0 1 0 $x2,$y A$r,$r 0 1 0 $x1,$y");
       &bs_path($elt_name,$elt_id) if ($ARGV[2] && $ARGV[2] ne "quiet");
     }
 
@@ -1694,7 +1700,8 @@ foreach my $elt ($root->descendants) {
 
       $elt->set_tag('path');
       $elt->del_att('cx', 'cy', 'rx', 'ry');
-      $elt->set_att('d' => "M$x1,$y A$rx,$ry 0 1 0 $x2,$y A$rx,$ry 0 1 0 $x1,$y z");
+#       $elt->set_att('d' => "M$x1,$y A$rx,$ry 0 1 0 $x2,$y A$rx,$ry 0 1 0 $x1,$y z");
+      $elt->set_att('d' => "M$x1,$y A$rx,$ry 0 1 0 $x2,$y A$rx,$ry 0 1 0 $x1,$y");
       &bs_path($elt_name,$elt_id) if ($ARGV[2] && $ARGV[2] ne "quiet");
     }
 
@@ -2681,13 +2688,13 @@ foreach my $elt ($root->descendants_or_self) {
 	$args{'abs_rel'} eq "yes" &&
 	$att_val=~ /[MZLHVCSQTA]/) {
 
-      # ПРАВИЛО РЕНДЕРИНГА: обработка команд и их параметров производится до выявления первой же ошибки (после нее путь уже не отрисовывается)
+      # ПРАВИЛО РЕНДЕРИНГА: обработка команд и их параметров производится до выявления первой же ошибки (после нее путь дальше уже не отрисовывается)
 
       # создаем массив с командами и их параметрами 
       my @d = split(/([MZLHVCSQTAmzlhvcsqta])/, $att_val);
 
       # новые данные path
-      my $data;
+      my $d;
       # последняя команда из новой строки path
       my $rcmd;
       # текущие абсолютные координаты X и Y
@@ -2696,512 +2703,624 @@ foreach my $elt ($root->descendants_or_self) {
       my $mX; my $mY;
       # текущие относительные координаты X и Y
       my $dx; my $dy;
-      # дополнительные координаты для кривых Безье
+      # координаты для кривых Безье
       my $dx1; my $dy1; my $dx2; my $dy2;
       # параметры дуг
       my $rx; my $ry; my $xar; my $laf; my $sf;
 
+      # цикл обработки обработки данных текущего элемента path
       CYCLE_D:
       while (@d) {
-
+	# берем команду
 	my $cmd = shift @d;
 
-	# обрабатываем команду "closepath": Z или z
-	if ($cmd eq "Z" || $cmd eq "z") {
-	  $data = $data."z";
+	# обрабатываем команду "closepath": Z|z
+	if ($cmd~~['Z', 'z']) {
+	  ($cpX, $cpY) = ($mX, $mY);
+	  $d = $d."z";
 	  $rcmd = "z";
-	  $cpX = $mX;
-	  $cpY = $mY;
 	}
 
-	# обрабатываем команду "moveto": M (x y) или m (x y)
-	elsif ($cmd eq "M" || $cmd eq "m") {
-
+	# обрабатываем команду "moveto": M|m (x y)+
+	elsif ($cmd~~['M', 'm']) {
+	  # берем параметр команды
 	  my $param = shift @d;
 	  # обнуляем значение переменной $rcmd  
 	  undef $rcmd;
+	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	  my $data;
+	  # создаем массив, содержащий пары координат текущей команды
+	  my @param = split(/($num$cwsp?$num)/, $param);
 
-	  while ($param=~ s/^\.?\s*($num)$cwsp?($num)$cwsp?//) {
+	  # обрабатываем вышеуказанный массив
+	  while (@param) {
+	    my $param = shift @param;
 
-	    if (!$data) {
-	      $dx = $1;
-	      $dy = $2;
-	      $cpX = $1;
-	      $cpY = $2;
-	    }
-	    elsif ($cmd eq "M" && $data) {
-	      $dx = $1-$cpX;
-	      $dy = $2-$cpY;
-	      $cpX = $1;
-	      $cpY = $2;
-	    }
-	    elsif ($cmd eq "m" && $data) {
-	      $dx = $1;
-	      $dy = $2;
-	      $cpX += $1;
-	      $cpY += $2;
-	    }
+	    # если параметром является пара координат
+	    if ($param=~ /^($num)$cwsp?($num)$/) {
+	      # у самой первой команды "moveto" координаты всегда абсолютные
+	      if (!$d && !$data) {
+		($dx, $dy, $cpX, $cpY) = ($1, $2, $1, $2);
+	      }
+	      else {
+		($dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $1, $2) if ($cmd eq "M");
+		($dx, $dy, $cpX, $cpY) = ($1, $2, $cpX+$1, $cpY+$2) if ($cmd eq "m");
+	      }
 
-	    $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx && $dx=~ /\./ && $args{'dp_d'});
-	    $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy && $dy=~ /\./ && $args{'dp_d'});
+	      # округляем относительные координаты
+	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($args{'round_numbers'} eq "yes" && $dx=~ /\./);
+	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($args{'round_numbers'} eq "yes" && $dy=~ /\./);
 
-	    if (!$rcmd) {
-	      $mX = $cpX;
-	      $mY = $cpY;
-	      $data = $data."m$dx,$dy";
-	      $rcmd = "m";
+	      if (!$rcmd) {
+		($mX, $mY) = ($cpX, $cpY);
+		$data = $data."m$dx,$dy";
+		$rcmd = "m";
+	      }
+	      elsif ($rcmd~~['m','l'] && $dx && $dy) {
+		$data = $data." $dx,$dy";
+		$rcmd = "l";
+	      }
+	      elsif ($rcmd~~['h','v'] && $dx && $dy) {
+		$data = $data."l$dx,$dy";
+		$rcmd = "l";
+	      }
+	      elsif ($rcmd~~['m','l','v'] && $dx && !$dy) {
+		$data = $data."h$dx";
+		$rcmd = "h";
+	      }
+	      elsif ($rcmd eq "h" && $dx && !$dy) {
+		$data=~ s/($num)$// if ($data);
+		$d=~ s/($num)$// if (!$data);
+		$dx += $1;
+		$data = $data."$dx";
+		$rcmd = "h";
+	      }
+	      elsif ($rcmd~~['m','l','h'] && !$dx && $dy) {
+		$data = $data."v$dy";
+		$rcmd = "v";
+	      }
+	      elsif ($rcmd eq "v" && !$dx && $dy) {
+		$data=~ s/($num)$// if ($data);
+		$d=~ s/($num)$// if (!$data);
+		$dy += $1;
+		$data = $data."$dy";
+		$rcmd = "v";
+	      }
 	    }
-	    elsif ($rcmd~~['m','l'] && $dx && $dy) {
-	      $data = $data." $dx,$dy";
-	      $rcmd = "l";
-	    }
-	    elsif ($rcmd~~['h','v'] && $dx && $dy) {
-	      $data = $data."l$dx,$dy";
-	      $rcmd = "l";
-	    }
-	    elsif ($rcmd~~['m','l','v'] && $dx && !$dy) {
-	      $data = $data."h$dx";
-	      $rcmd = "h";
-	    }
-	    elsif ($rcmd eq "h" && $dx && !$dy) {
-	      $data=~ s/($num)$//;
-	      $dx += $1;
-	      $data = $data."$dx";
-	      $rcmd = "h";
-	    }
-	    elsif ($rcmd~~['m','l','h'] && !$dx && $dy) {
-	      $data = $data."v$dy";
-	      $rcmd = "v";
-	    }
-	    elsif ($rcmd eq "v" && !$dx && $dy) {
-	      $data=~ s/($num)$//;
-	      $dy += $1;
-	      $data = $data."$dy";
-	      $rcmd = "v";
+	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
+	    elsif ($param!~ /^$cwsp?$/) {
+	      $d = $d.$data if ($data);
+	      last CYCLE_D;
 	    }
 	  }
-	  last CYCLE_D if ($param);
+	  $d = $d.$data;
 	}
 
-	# обрабатываем команду "lineto": L (x y) или l (x y)
-	elsif ($cmd eq "L" || $cmd eq "l") {
-
+	# обрабатываем команду "lineto": L|l (x y)
+	elsif ($cmd~~['L', 'l']) {
+	  # берем параметр команды
 	  my $param = shift @d;
+	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	  my $data;
+	  # создаем массив, содержащий пары координат текущей команды
+	  my @param = split(/($num$cwsp?$num)/, $param);
 
-	  while ($param=~ s/^\.?\s*($num)$cwsp?($num)$cwsp?//) {
+	  # обрабатываем вышеуказанный массив
+	  while (@param) {
+	    my $param = shift @param;
 
-	    if ($cmd eq "L") {
-	      $dx = $1-$cpX;
-	      $dy = $2-$cpY;
-	      $cpX = $1;
-	      $cpY = $2;
-	    }
-	    elsif ($cmd eq "l") {
-	      $dx = $1;
-	      $dy = $2;
-	      $cpX += $1;
-	      $cpY += $2;
-	    }
+	    # если параметром является пара координат
+	    if ($param=~ /^($num)$cwsp?($num)$/) {
 
-	    $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx && $dx=~ /\./ && $args{'dp_d'});
-	    $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy && $dy=~ /\./ && $args{'dp_d'});
+	      # рассчитываем координаты
+	      if ($cmd eq "L") {
+		($dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $1, $2);
+	      }
+	      else {
+		($dx, $dy, $cpX, $cpY) = ($1, $2, $cpX+$1, $cpY+$2);
+	      }
 
-	    if ($rcmd~~['m','l'] && $dx && $dy) {
-	      $data = $data." $dx,$dy";
-	      $rcmd = "l";
+	      # округляем относительные координаты
+	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
+	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
+
+	      # формируем переменную $data в зависимости от $rcmd
+	      if ($rcmd~~['m','l'] && $dx && $dy) {
+		$data = $data." $dx,$dy";
+		$rcmd = "l";
+	      }
+	      elsif (!($rcmd~~['m','l']) && $dx && $dy) {
+		$data = $data."l$dx,$dy";
+		$rcmd = "l";
+	      }
+	      elsif ($rcmd ne "h" && $dx && !$dy) {
+		$data = $data."h$dx";
+		$rcmd = "h";
+	      }
+	      elsif ($rcmd eq "h" && $dx && !$dy) {
+		$data=~ s/($num)$// if ($data);
+		$d=~ s/($num)$// if (!$data);
+		$dx += $1;
+		$data = $data."$dx";
+		$rcmd = "h";
+	      }
+	      elsif ($rcmd ne "v" && !$dx && $dy) {
+		$data = $data."v$dy";
+		$rcmd = "v";
+	      }
+	      elsif ($rcmd eq "v" && !$dx && $dy) {
+		$data=~ s/($num)$// if ($data);
+		$d=~ s/($num)$// if (!$data);
+		$dy += $1;
+		$data = $data."$dy";
+		$rcmd = "v";
+	      }
 	    }
-	    elsif (!($rcmd~~['m','l']) && $dx && $dy) {
-	      $data = $data."l$dx,$dy";
-	      $rcmd = "l";
-	    }
-	    elsif ($rcmd ne "h" && $dx && !$dy) {
-	      $data = $data."h$dx";
-	      $rcmd = "h";
-	    }
-	    elsif ($rcmd eq "h" && $dx && !$dy) {
-	      $data=~ s/($num)$//;
-	      $dx += $1;
-	      $data = $data."$dx";
-	      $rcmd = "h";
-	    }
-	    elsif ($rcmd ne "v" && !$dx && $dy) {
-	      $data = $data."v$dy";
-	      $rcmd = "v";
-	    }
-	    elsif ($rcmd eq "v" && !$dx && $dy) {
-	      $data=~ s/($num)$//;
-	      $dy += $1;
-	      $data = $data."$dy";
-	      $rcmd = "v";
+	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
+	    elsif ($param!~ /^$cwsp?$/) {
+	      $d = $d.$data if ($data);
+	      last CYCLE_D;
 	    }
 	  }
-	  last CYCLE_D if ($param);
+	  $d = $d.$data if ($data);
 	}
 
-	# обрабатываем команду "horizontal-lineto": H x или h x
-	elsif ($cmd eq "H" || $cmd eq "h") {
-
+	# обрабатываем команду "horizontal-lineto": H|h x
+	elsif ($cmd~~['H', 'h']) {
+	  # берем параметр команды
 	  my $param = shift @d;
+	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	  my $data;
+	  # создаем массив, содержащий пары координат текущей команды
+	  my @param = split(/($num)/, $param);
 
-	  while ($param=~ s/^\.?\s*($num)$cwsp?//) {
+	  # обрабатываем вышеуказанный массив
+	  while (@param) {
+	    my $param = shift @param;
 
-	    if ($cmd eq "H") {
-	      $dx = $1-$cpX;
-	      $cpX = $1;
+	    # если параметром является пара координат
+	    if ($param=~ /^($num)$/) {
+
+	      # рассчитываем координаты
+	      if ($cmd eq "H") {
+		($dx, $cpX) = ($1-$cpX, $1);
+	      }
+	      else {
+		($dx, $cpX) = ($1, $cpX+$1);
+	      }
+
+	      # округляем относительные координаты
+	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
+
+	      # формируем переменную $data в зависимости от $rcmd
+	      if ($rcmd eq "h" && $dx) {
+		$data=~ s/($num)$// if ($data);
+		$d=~ s/($num)$// if (!$data);
+		$dx += $1;
+		$data = $data."$dx";
+		$rcmd = "h";
+	      }
+	      elsif ($rcmd ne "h" && $dx) {
+		$data = $data."h$dx";
+		$rcmd = "h";
+	      }
 	    }
-	    elsif ($cmd eq "h") {
-	      $dx = $1;
-	      $cpX += $1;
-	    }
-
-	    $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx && $dx=~ /\./ && $args{'dp_d'});
-
-	    if ($rcmd eq "h" && $dx) {
-	      $data=~ s/($num)$//;
-	      $dx += $1;
-	      $data = $data."$dx";
-	      $rcmd = "h";
-	    }
-	    elsif ($rcmd ne "h" && $dx) {
-	      $data = $data."h$dx";
-	      $rcmd = "h";
+	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
+	    elsif ($param!~ /^$cwsp?$/) {
+	      $d = $d.$data if ($data);
+	      last CYCLE_D;
 	    }
 	  }
-	  last CYCLE_D if ($param);
+	  $d = $d.$data if ($data);
 	}
 
-	# обрабатываем команду "vertical-lineto": V y или v y
-	elsif ($cmd eq "V" || $cmd eq "v") {
-
+	# обрабатываем команду "vertical-lineto": V|v y
+	elsif ($cmd~~['V', 'v']) {
+	  # берем параметр команды
 	  my $param = shift @d;
+	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	  my $data;
+	  # создаем массив, содержащий пары координат текущей команды
+	  my @param = split(/($num)/, $param);
 
-	  while ($param=~ s/^\.?\s*($num)$cwsp?//) {
+	  # обрабатываем вышеуказанный массив
+	  while (@param) {
+	    my $param = shift @param;
 
-	    if ($cmd eq "V") {
-	      $dy = $1-$cpY;
-	      $cpY = $1;
+	    # если параметром является пара координат
+	    if ($param=~ /^($num)$/) {
+
+	      # рассчитываем координаты
+	      if ($cmd eq "V") {
+		($dy, $cpY) = ($1-$cpY, $1);
+	      }
+	      else {
+		($dy, $cpY) = ($1, $cpY+$1);
+	      }
+
+	      # округляем относительные координаты
+	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
+
+	      # формируем переменную $data в зависимости от $rcmd
+	      if ($rcmd eq "v" && $dy) {
+		$data=~ s/($num)$// if ($data);
+		$d=~ s/($num)$// if (!$data);
+		$dy += $1;
+		$data = $data."$dy";
+		$rcmd = "v";
+	      }
+	      elsif ($rcmd ne "v" && $dy) {
+		$data = $data."v$dy";
+		$rcmd = "v";
+	      }
 	    }
-	    elsif ($cmd eq "v") {
-	      $dy = $1;
-	      $cpY += $1;
-	    }
-
-	    $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy && $dy=~ /\./ && $args{'dp_d'});
-
-	    if ($rcmd eq "v" && $dy) {
-	      $data=~ s/($num)$//;
-	      $dy += $1;
-	      $data = $data."$dy";
-	      $rcmd = "v";
-	    }
-	    elsif ($rcmd ne "v" && $dy) {
-	      $data = $data."v$dy";
-	      $rcmd = "v";
+	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
+	    elsif ($param!~ /^$cwsp?$/) {
+	      $d = $d.$data if ($data);
+	      last CYCLE_D;
 	    }
 	  }
-	  last CYCLE_D if ($param);
+	  $d = $d.$data if ($data);
 	}
 
-	# обрабатываем команду "curveto": C (x1 y1 x2 y2 x y) или c (x1 y1 x2 y2 x y)
-	elsif ($cmd eq "C" || $cmd eq "c") {
-
+	# обрабатываем команду "curveto": C|c (x1 y1 x2 y2 x y)
+	elsif ($cmd~~['C', 'c']) {
+	  # берем параметр команды
 	  my $param = shift @d;
+	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	  my $data;
+	  # создаем массив, содержащий пары координат текущей команды
+	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num$cwsp?$num$cwsp?$num)/, $param);
 
-	  while ($param=~ s/^\.?\s*($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?//) {
+	  # обрабатываем вышеуказанный массив
+	  while (@param) {
+	    my $param = shift @param;
 
-	    if ($cmd eq "C") {
-	      $dx1 = $1-$cpX;
-	      $dy1 = $2-$cpY;
-	      $dx2 = $3-$cpX;
-	      $dy2 = $4-$cpY;
-	      $dx = $5-$cpX;
-	      $dy = $6-$cpY;
-	      $cpX = $5;
-	      $cpY = $6;
+	    # если параметром является пара координат
+	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
+
+	      # рассчитываем координаты
+	      if ($cmd eq "C") {
+		($dx1, $dy1, $dx2, $dy2) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY);
+		($dx, $dy, $cpX, $cpY) = ($5-$cpX, $6-$cpY, $5, $6);
+	      }
+	      else {
+		($dx1, $dy1, $dx2, $dy2) = ($1, $2, $3, $4);
+		($dx, $dy, $cpX, $cpY) = ($5, $6, $cpX+$5, $cpY+$6);
+	      }
+
+	      # округляем относительные координаты
+	      $dx1 = &round_num($dx1,'',$args{'dp_d'}) if ($dx1=~ /\./);
+	      $dy1 = &round_num($dy1,'',$args{'dp_d'}) if ($dy1=~ /\./);
+	      $dx2 = &round_num($dx2,'',$args{'dp_d'}) if ($dx2=~ /\./);
+	      $dy2 = &round_num($dy2,'',$args{'dp_d'}) if ($dy2=~ /\./);
+	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
+	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
+
+	      # формируем переменную $data в зависимости от $rcmd
+		  if ($rcmd eq "c") {
+		    $data = $data." $dx1,$dy1 $dx2,$dy2 $dx,$dy";
+		    $rcmd = "c";
+		  }
+		  else {
+		    $data = $data."c$dx1,$dy1 $dx2,$dy2 $dx,$dy";
+		    $rcmd = "c";
+		  }
 	    }
-	    elsif ($cmd eq "c") {
-	      $dx1 = $1;
-	      $dy1 = $2;
-	      $dx2 = $3;
-	      $dy2 = $4;
-	      $dx = $5;
-	      $dy = $6;
-	      $cpX += $5;
-	      $cpY += $6;
-	    }
-
-	    $dx1 = &round_num($dx1,'',$args{'dp_d'}) if ($dx1 && $dx1=~ /\./ && $args{'dp_d'});
-	    $dy1 = &round_num($dy1,'',$args{'dp_d'}) if ($dy1 && $dy1=~ /\./ && $args{'dp_d'});
-	    $dx2 = &round_num($dx2,'',$args{'dp_d'}) if ($dx2 && $dx2=~ /\./ && $args{'dp_d'});
-	    $dy2 = &round_num($dy2,'',$args{'dp_d'}) if ($dy2 && $dy2=~ /\./ && $args{'dp_d'});
-	    $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx && $dx=~ /\./ && $args{'dp_d'});
-	    $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy && $dy=~ /\./ && $args{'dp_d'});
-
-	    if ($rcmd eq "c") {
-	      $data = $data." $dx1,$dy1 $dx2,$dy2 $dx,$dy";
-	      $rcmd = "c";
-	    }
-	    elsif ($rcmd ne "c") {
-	      $data = $data."c$dx1,$dy1 $dx2,$dy2 $dx,$dy";
-	      $rcmd = "c";
+	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
+	    elsif ($param!~ /^$cwsp?$/) {
+	      $d = $d.$data if ($data);
+	      last CYCLE_D;
 	    }
 	  }
-	  last CYCLE_D if ($param);
+	  $d = $d.$data;
 	}
 
-	# обрабатываем команду "smooth-curveto": S (x2 y2 x y) или s (x2 y2 x y)
-	elsif ($cmd eq "S" || $cmd eq "s") {
-
+	# обрабатываем команду "smooth-curveto": S|s (x2 y2 x y)
+	elsif ($cmd~~['S', 's']) {
+	  # берем параметр команды
 	  my $param = shift @d;
+	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	  my $data;
+	  # создаем массив, содержащий пары координат текущей команды
+	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num)/, $param);
 
-	  while ($param=~ s/^\.?\s*($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?//) {
+	  # обрабатываем вышеуказанный массив
+	  while (@param) {
+	    my $param = shift @param;
 
-	    if ($cmd eq "S") {
-	      $dx2 = $1-$cpX;
-	      $dy2 = $2-$cpY;
-	      $dx = $3-$cpX;
-	      $dy = $4-$cpY;
-	      $cpX = $3;
-	      $cpY = $4;
+	    # если параметром является пара координат
+	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
+
+	      # рассчитываем координаты
+	      if ($cmd eq "S") {
+		($dx2, $dy2, $dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY, $3, $4);
+	      }
+	      else {
+		($dx2, $dy2, $dx, $dy, $cpX, $cpY) = ($1, $2, $3, $4, $cpX+$3, $cpY+$4);
+	      }
+
+	      # округляем относительные координаты
+	      $dx2 = &round_num($dx2,'',$args{'dp_d'}) if ($dx2=~ /\./);
+	      $dy2 = &round_num($dy2,'',$args{'dp_d'}) if ($dy2=~ /\./);
+	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
+	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
+
+	      # формируем переменную $data в зависимости от $rcmd
+	      if ($rcmd eq "s") {
+		$data = $data." $dx2,$dy2 $dx,$dy";
+		$rcmd = "s";
+	      }
+	      else {
+		$data = $data."s$dx2,$dy2 $dx,$dy";
+		$rcmd = "s";
+	      }
 	    }
-	    elsif ($cmd eq "s") {
-	      $dx2 = $1;
-	      $dy2 = $2;
-	      $dx = $3;
-	      $dy = $4;
-	      $cpX += $3;
-	      $cpY += $4;
-	    }
-
-	    $dx2 = &round_num($dx2,'',$args{'dp_d'}) if ($dx2 && $dx2=~ /\./ && $args{'dp_d'});
-	    $dy2 = &round_num($dy2,'',$args{'dp_d'}) if ($dy2 && $dy2=~ /\./ && $args{'dp_d'});
-	    $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx && $dx=~ /\./ && $args{'dp_d'});
-	    $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy && $dy=~ /\./ && $args{'dp_d'});
-
-	    if ($rcmd eq "s") {
-	      $data = $data." $dx2,$dy2 $dx,$dy";
-	      $rcmd = "s";
-	    }
-	    elsif ($rcmd ne "s") {
-	      $data = $data."s$dx2,$dy2 $dx,$dy";
-	      $rcmd = "s";
+	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
+	    elsif ($param!~ /^$cwsp?$/) {
+	      $d = $d.$data if ($data);
+	      last CYCLE_D;
 	    }
 	  }
-	  last CYCLE_D if ($param);
+	  $d = $d.$data;
 	}
 
-	# обрабатываем команду "quadratic-bezier-curveto": Q (x1 y1 x y) или q (x1 y1 x y)
-	elsif ($cmd eq "Q" || $cmd eq "q") {
-
+	# обрабатываем команду "quadratic-bezier-curveto": Q|q (x1 y1 x y)
+	elsif ($cmd~~['Q', 'q']) {
+	  # берем параметр команды
 	  my $param = shift @d;
+	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	  my $data;
+	  # создаем массив, содержащий пары координат текущей команды
+	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num)/, $param);
 
-	  while ($param=~ s/^\.?\s*($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?//) {
+	  # обрабатываем вышеуказанный массив
+	  while (@param) {
+	    my $param = shift @param;
 
-	    if ($cmd eq "Q") {
-	      $dx1 = $1-$cpX;
-	      $dy1 = $2-$cpY;
-	      $dx = $3-$cpX;
-	      $dy = $4-$cpY;
-	      $cpX = $3;
-	      $cpY = $4;
+	    # если параметром является пара координат
+	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
+
+	      # рассчитываем координаты
+	      if ($cmd eq "Q") {
+		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY, $3, $4);
+	      }
+	      else {
+		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1, $2, $3, $4, $cpX+$3, $cpY+$4);
+	      }
+
+	      # округляем относительные координаты
+	      $dx1 = &round_num($dx1,'',$args{'dp_d'}) if ($dx1=~ /\./);
+	      $dy1 = &round_num($dy1,'',$args{'dp_d'}) if ($dy1=~ /\./);
+	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
+	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
+
+	      # формируем переменную $data в зависимости от $rcmd
+	      if ($rcmd eq "q") {
+		$data = $data." $dx1,$dy1 $dx,$dy";
+		$rcmd = "q";
+	      }
+	      else {
+		$data = $data."q$dx1,$dy1 $dx,$dy";
+		$rcmd = "q";
+	      }
 	    }
-	    elsif ($cmd eq "q") {
-	      $dx1 = $1;
-	      $dy1 = $2;
-	      $dx = $3;
-	      $dy = $4;
-	      $cpX += $3;
-	      $cpY += $4;
-	    }
-
-	    $dx1 = &round_num($dx1,'',$args{'dp_d'}) if ($dx1 && $dx1=~ /\./ && $args{'dp_d'});
-	    $dy1 = &round_num($dy1,'',$args{'dp_d'}) if ($dy1 && $dy1=~ /\./ && $args{'dp_d'});
-	    $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx && $dx=~ /\./ && $args{'dp_d'});
-	    $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy && $dy=~ /\./ && $args{'dp_d'});
-
-	    if ($rcmd eq "q") {
-	      $data = $data." $dx1,$dy1 $dx,$dy";
-	      $rcmd = "q";
-	    }
-	    elsif ($rcmd ne "q") {
-	      $data = $data."q$dx1,$dy1 $dx,$dy";
-	      $rcmd = "q";
+	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
+	    elsif ($param!~ /^$cwsp?$/) {
+	      $d = $d.$data if ($data);
+	      last CYCLE_D;
 	    }
 	  }
-	  last CYCLE_D if ($param);
+	  $d = $d.$data;
 	}
 
-	# обрабатываем команду "smooth-quadratic-bezier-curveto": T (x y) или t (x y)
-	elsif ($cmd eq "T" || $cmd eq "t") {
-
+	# обрабатываем команду "smooth-quadratic-bezier-curveto": T|t (x y)
+	elsif ($cmd~~['T', 't']) {
+	  # берем параметр команды
 	  my $param = shift @d;
+	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	  my $data;
+	  # создаем массив, содержащий пары координат текущей команды
+	  my @param = split(/($num$cwsp?$num)/, $param);
 
-	  while ($param=~ s/^\.?\s*($num)$cwsp?($num)$cwsp?//) {
+	  # обрабатываем вышеуказанный массив
+	  while (@param) {
+	    my $param = shift @param;
 
-	    if ($cmd eq "T") {
-	      $dx = $1-$cpX;
-	      $dy = $2-$cpY;
-	      $cpX = $1;
-	      $cpY = $2;
+	    # если параметром является пара координат
+	    if ($param=~ /^($num)$cwsp?($num)$/) {
+
+	      # рассчитываем координаты
+	      if ($cmd eq "T") {
+		($dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $1, $2);
+	      }
+	      else {
+		($dx, $dy, $cpX, $cpY) = ($1, $2, $cpX+$1, $cpY+$2);
+	      }
+
+	      # округляем относительные координаты
+	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
+	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
+
+	      # формируем переменную $data в зависимости от $rcmd
+	      if ($rcmd eq "t") {
+		$data = $data." $dx,$dy";
+		$rcmd = "t";
+	      }
+	      else {
+		$data = $data."t$dx,$dy";
+		$rcmd = "t";
+	      }
 	    }
-	    elsif ($cmd eq "t") {
-	      $dx = $1;
-	      $dy = $2;
-	      $cpX += $1;
-	      $cpY += $2;
-	    }
-
-	    $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx && $dx=~ /\./ && $args{'dp_d'});
-	    $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy && $dy=~ /\./ && $args{'dp_d'});
-
-	    if ($rcmd eq "t") {
-	      $data = $data." $dx,$dy";
-	      $rcmd = "t";
-	    }
-	    elsif ($rcmd ne "t") {
-	      $data = $data."t$dx,$dy";
-	      $rcmd = "t";
+	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
+	    elsif ($param!~ /^$cwsp?$/) {
+	      $d = $d.$data if ($data);
+	      last CYCLE_D;
 	    }
 	  }
-	  last CYCLE_D if ($param);
+	  $d = $d.$data;
 	}
 
-	# обрабатываем команду "elliptical-arc": A (rx ry x-axis-rotation large-arc-flag sweep-flag x y) или
-	# a (rx ry x-axis-rotation large-arc-flag sweep-flag x y)
-	elsif ($cmd eq "A" || $cmd eq "a") {
-
+	# обрабатываем команду "elliptical-arc": A|a (rx ry x-axis-rotation large-arc-flag sweep-flag x y)
+	elsif ($cmd~~['A', 'a']) {
+	  # берем параметр команды
 	  my $param = shift @d;
+	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	  my $data;
+	  # создаем массив, содержащий пары координат текущей команды
+	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp$flag$cwsp?$flag$cwsp?$num$cwsp?$num)/, $param);
 
-	  while ($param=~ s/^\.?\s*($num)$cwsp?($num)$cwsp?($num)$cwsp(0|1)$cwsp?(0|1)$cwsp?($num)$cwsp?($num)$cwsp?//) {
+	  # обрабатываем вышеуказанный массив
+	  while (@param) {
+	    my $param = shift @param;
 
-	    if ($cmd eq "A") {
-	      $rx = $1;
-	      $ry = $2;
-	      $xar = $3;
-	      $laf = $4;
-	      $sf = $5;
-	      $dx = $6-$cpX;
-	      $dy = $7-$cpY;
-	      $cpX = $6;
-	      $cpY = $7;
+	    # если параметром является пара координат
+	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp(0|1)$cwsp?(0|1)$cwsp?($num)$cwsp?($num)$/) {
+
+	      # рассчитываем координаты
+	      ($rx, $ry, $xar, $laf, $sf) = ($1, $2, $3, $4, $5);
+	      if ($cmd eq "A") {
+		($dx, $dy, $cpX, $cpY) = ($6-$cpX, $7-$cpY, $6, $7);
+	      }
+	      else {
+		($dx, $dy, $cpX, $cpY) = ($6, $7, $cpX+$6, $cpY+$7);
+	      }
+
+	      # округляем относительные координаты
+	      $rx = &round_num($rx,'',$args{'dp_d'}) if ($rx=~ /\./);
+	      $ry = &round_num($ry,'',$args{'dp_d'}) if ($ry=~ /\./);
+	      $xar = &round_num($xar,'',$args{'dp_att'}) if ($xar=~ /\./ && $args{'dp_att'});
+	      $xar = &opt_angle($xar) if ($xar < 0 || $xar > 360);
+	      $xar = 0 if ($xar == 360);
+	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
+	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
+
+	      # прекращаем обработку данных, если радиусы дуги меньше нуля - это ошибка
+	      if ($rx < 0 || $ry < 0) {
+		$d = $d.$data if ($data);
+		last CYCLE_D;
+	      }
+
+	      # формируем переменную $data в зависимости от $rcmd
+	      if ($rcmd eq "a") {
+		$data = $data." $rx,$ry $xar $laf,$sf $dx,$dy";
+		$rcmd = "a";
+	      }
+	      else {
+		$data = $data."a$rx,$ry $xar $laf,$sf $dx,$dy";
+		$rcmd = "a";
+	      }
 	    }
-	    elsif ($cmd eq "a") {
-	      $rx = $1;
-	      $ry = $2;
-	      $xar = $3;
-	      $laf = $4;
-	      $sf = $5;
-	      $dx = $6;
-	      $dy = $7;
-	      $cpX += $6;
-	      $cpY += $7;
-	    }
-
-	    $rx = &round_num($rx,'',$args{'dp_d'}) if ($rx && $rx=~ /\./ && $args{'dp_d'});
-	    $ry = &round_num($ry,'',$args{'dp_d'}) if ($ry && $ry=~ /\./ && $args{'dp_d'});
-	    $xar = &round_num($xar,'',$args{'dp_att'}) if ($xar && $xar=~ /\./ && $args{'dp_att'});
-	    $xar = &opt_angle($xar) if ($xar < 0 || $xar > 360);
-	    $xar = 0 if ($xar == 360);
-	    $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx && $dx=~ /\./ && $args{'dp_d'});
-	    $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy && $dy=~ /\./ && $args{'dp_d'});
-
-	    last CYCLE_D if ($rx < 0 || $ry < 0);
-
-	    if ($rcmd eq "a") {
-	      $data = $data." $rx,$ry $xar $laf,$sf $dx,$dy";
-	      $rcmd = "a";
-	    }
-	    elsif ($rcmd ne "a") {
-	      $data = $data."a$rx,$ry $xar $laf,$sf $dx,$dy";
-	      $rcmd = "a";
+	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
+	    elsif ($param!~ /^$cwsp?$/) {
+	      $d = $d.$data if ($data);
+	      last CYCLE_D;
 	    }
 	  }
-	  last CYCLE_D if ($param);
+	  $d = $d.$data;
 	}
 
-	# если нет буквы (значением $cmd является undef или пробел), то переходим к следующему элементу массива @d
-	elsif (!$cmd || $cmd=~ /^\s+$/) {
+	# пропускаем пробелы и пустые значения
+	elsif ($cmd=~ /^$cwsp?$/) {
 	  next CYCLE_D;
 	}
-
-	# прерываем обработку, если команда не содержит одну из букв MZLHVCSQTAmzlhvcsqta
+	# прекращаем обработку данных, если командой является любая другая буква
 	else {
 	  last CYCLE_D;
 	}
-      } # CYCLE_D
+      } # цикл CYCLE_D
 
-      $elt->set_att($att => $data);
+      $elt->set_att($att => $d);
       &crt_att($elt,$att,"absolute coordinates converted to relative ones",$i,$elt_name,$elt_id);
       next CYCLE_ATTS;
     }
 
 
-    # округление всех чисел в значениях атрибутов d и points
-    if ($args{'round_numbers'} eq "yes" &&
-	$args{'abs_rel'} ne "yes" &&
-	$att~~['d','points'] &&
-	$att_val=~ /\./) {
+    # округление всех чисел и удаление ненужных пробелов в значениях атрибутов d, если не используется преобразование абсолютных координат в относительные
+    if ($att eq "d" &&
+	($args{'round_numbers'} eq "yes" ||
+	$args{'spf_space'} eq "delete")) {
 
-      # создаем массив с командами и их параметрами 
-      my @d = split(/([MZLHVCSQTAmzlhvcsqta]|$num|$cwsp)/, $att_val);
+      # создаем из $att_val массив, в котором числа будут являться отдельными элементами
+      my @d = split(/($num)/, $att_val);
+      # новые данные path
+      my $d;
 
-      # новые данные path или points
-      my $data;
-
-      CYCLE_D:
+      # цикл обработки обработки данных текущего элемента path
+      CYCLE_RND:
       while (@d) {
 
-	my $param = shift @d;
+	my $data = shift @d;
 
-	# обрабатываем команды path
-	if ($param=~/^[\w]$/) {
-	  $data = $data."$param";
+	# округляем числа
+	if ($args{'round_numbers'} eq "yes" &&
+	    $data=~ /^$num$/ && $data=~ /\./ && $data!~ /[Ee]/) {
+
+	  $data = &round_num($data,'',$args{'dp_d'});
 	}
+	# удаляем пробелы возле букв команд или прекращаем обработку данных, если буква не соответствует команде path
+	elsif ($data=~ /^\s*[A-Za-z]\s*$/) {
 
-	# обрабатываем пробелы
-	elsif ($param=~/^\s+$/) {
-	  $data = $data.' ';
+	  last CYCLE_RND if ($data!~ /[MZLHVCSQTAmzlhvcsqta]/);
+	  $data=~ s/\s+//g if ($args{'spf_space'} eq "delete" && $data=~ /\s+/);
 	}
-
-	# обрабатываем разделители
-	elsif ($param=~/^$cwsp$/) {
-	  if ($param=~/,/) {
-	    $data = $data.',';
+	# обрабатываем пробелы и запятые
+	elsif ($args{'spf_space'} eq "delete" &&
+	       $data=~ /^$cwsp$/) {
+      
+	  if ($data=~ /,/) {
+	      $data = "," ;
 	  } else {
-	    $data = $data.' ';
+	      $data = " ";
 	  }
 	}
 
-	# обрабатываем числа в экспоненциальном формате 
-	elsif ($param=~/^$scinum$/) {
-	  $data = $data."$param";
-	}
+	$d = $d.$data;
+      } # CYCLE_RND
 
-	# обрабатываем числа с плавающей запятой
-	elsif ($param=~/^$fpnum$/) {
-	  $param = &round_num($param,'',$args{'dp_d'}) if ($param && $param=~ /\./ && $args{'dp_d'});
-	  $data = $data."$param";
-	}
-      }
-
-      $elt->set_att($att => $data);
-      &crt_att($elt,$att,"all numbers was rounded",$i,$elt_name,$elt_id);
+      $elt->set_att($att => $d);
+      &crt_att($elt,$att,"all numbers were rounded",$i,$elt_name,$elt_id);
+      next CYCLE_ATTS;
     }
 
 
-    # удаление лишних пробелов из значений атрибутов d и points
-    if ($args{'spf_space'} eq "delete" &&
-	$args{'abs_rel'} ne "yes" &&
-	$att~~['d','points']) {
+    # округление всех чисел и удаление ненужных пробелов в значениях атрибутов points
+    if ($att eq "points" &&
+	($args{'round_numbers'} eq "yes" ||
+	$args{'spf_space'} eq "delete")) {
 
-      # замена двух и более пробелов на один
-      $att_val=~ s/\s{2,}/ /g;
-      # удаление пробелов возле букв
-      $att_val=~ s/\s*([mlhvcsqtaz])\s*/$1/gi;
-      # удаление пробелов перед знаком минус
-      $att_val=~ s/($num\s*,\s*$num)\s+-/$1-/g;
+      # создаем из $att_val массив, в котором числа будут являться отдельными элементами
+      my @points = split(/($num)/, $att_val);
+      # новые данные path
+      my $points;
 
-      $elt->set_att($att => $att_val);
+      # цикл обработки обработки данных текущего элемента
+      while (@points) {
+
+	my $data = shift @points;
+
+	# округляем числа
+	if ($args{'round_numbers'} eq "yes" &&
+	    $data=~ /^$num$/ && $data=~ /\./ && $data!~ /[Ee]/) {
+
+	  $data = &round_num($data,'',$args{'dp_d'});
+	}
+	# обрабатываем пробелы и запятые
+	elsif ($args{'spf_space'} eq "delete" &&
+	       $data=~ /^$cwsp$/) {
+      
+	  if ($data=~ /,/) {
+	    $data = "," ;
+	  } else {
+	    $data = " ";
+	  }
+	}
+
+	$points = $points.$data;
+      }
+
+      $elt->set_att($att => $points);
+      &crt_att($elt,$att,"all numbers were rounded",$i,$elt_name,$elt_id);
       next CYCLE_ATTS;
     }
 
@@ -3473,8 +3592,10 @@ if ($args{'singly_grads'} eq "yes" && $defs) {
 
     my $link = substr($elt->att('xlink:href'), 1);
 
+    # если ссылка на другой градиент не содержится в массиве внешних ссылок и этот градиент не имеет трансформации (это исключение связано с тем, что результат рендеринга таких ссылок не однозначен у Инкскейпа и Файерфокса), то объединяем два градиента в один
     if ($xlinks{"#$link"} &&
-	!($link~~@out_link)) {
+	!($link~~@out_link) &&
+	!($twig->elt_id($link)->att('gradientTransform'))) {
 
       my $elt_name = $elt->name;
       my $elt_id = $elt->id;

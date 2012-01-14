@@ -52,7 +52,6 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
 #endif
     args.append(outSVG);
     args.append(arguments.args);
-    args.append("quiet");
     proc->start("perl",args);
 }
 

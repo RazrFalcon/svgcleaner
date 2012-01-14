@@ -37,10 +37,18 @@ Licence: GNU GPL v3</translation>
     </message>
 </context>
 <context>
+    <name>CleanerThread</name>
+    <message>
+        <location filename="../src/cleanerthread.cpp" line="109"/>
+        <source>You must install XML-Twig.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>LineEdit</name>
     <message>
         <location filename="../src/lineedit.cpp" line="22"/>
-        <source>%1 files in</source>
+        <source>%1 files</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -52,7 +60,7 @@ Licence: GNU GPL v3</translation>
         <translation>Nástrojový pruh</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="121"/>
+        <location filename="../src/mainwindow.ui" line="124"/>
         <source>Statistics</source>
         <translation>Statistika</translation>
     </message>
@@ -61,8 +69,8 @@ Licence: GNU GPL v3</translation>
         <translation type="obsolete">Čas úklidu</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="286"/>
-        <location filename="../src/mainwindow.ui" line="315"/>
+        <location filename="../src/mainwindow.ui" line="289"/>
+        <location filename="../src/mainwindow.ui" line="318"/>
         <source>Total:</source>
         <translation>Celkem:</translation>
     </message>
@@ -71,19 +79,19 @@ Licence: GNU GPL v3</translation>
         <translation type="obsolete">00:00:00:000</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="246"/>
-        <location filename="../src/mainwindow.ui" line="322"/>
+        <location filename="../src/mainwindow.ui" line="249"/>
+        <location filename="../src/mainwindow.ui" line="325"/>
         <source>Maximum:</source>
         <translation>Nejvíce:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="329"/>
+        <location filename="../src/mainwindow.ui" line="332"/>
         <source>Average:</source>
         <translation>Průměrně:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="266"/>
-        <location filename="../src/mainwindow.ui" line="336"/>
+        <location filename="../src/mainwindow.ui" line="269"/>
+        <location filename="../src/mainwindow.ui" line="339"/>
         <source>Minimum:</source>
         <translation>Nejméně:</translation>
     </message>
@@ -96,12 +104,12 @@ Licence: GNU GPL v3</translation>
         <translation type="obsolete">0%</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="131"/>
+        <location filename="../src/mainwindow.ui" line="134"/>
         <source>Files</source>
         <translation>Soubory</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="137"/>
+        <location filename="../src/mainwindow.ui" line="140"/>
         <source>Total count:</source>
         <translation>Celkový počet:</translation>
     </message>
@@ -110,45 +118,54 @@ Licence: GNU GPL v3</translation>
         <translation type="obsolete">0</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="157"/>
+        <location filename="../src/mainwindow.ui" line="160"/>
         <source>Cleaned:</source>
         <translation>Vyčištěno:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="177"/>
+        <location filename="../src/mainwindow.ui" line="180"/>
         <source>Crashed:</source>
         <translation>Spadlo:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="197"/>
+        <location filename="../src/mainwindow.ui" line="200"/>
         <source>Size before:</source>
         <translation>Velikost před:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="204"/>
+        <location filename="../src/mainwindow.ui" line="207"/>
         <source>Size after:</source>
         <translation>Velikost po:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="240"/>
+        <location filename="../src/mainwindow.ui" line="243"/>
         <source>New file sizes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="309"/>
+        <location filename="../src/mainwindow.ui" line="312"/>
         <source>Processing time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="343"/>
-        <location filename="../src/mainwindow.ui" line="356"/>
-        <location filename="../src/mainwindow.ui" line="369"/>
-        <location filename="../src/mainwindow.ui" line="382"/>
+        <location filename="../src/mainwindow.ui" line="346"/>
+        <location filename="../src/mainwindow.ui" line="359"/>
+        <location filename="../src/mainwindow.ui" line="372"/>
+        <location filename="../src/mainwindow.ui" line="385"/>
         <source>000ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="475"/>
+        <location filename="../src/mainwindow.ui" line="419"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Show wizard &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.ui" line="478"/>
         <source>About</source>
         <translation type="unfinished">O</translation>
     </message>
@@ -157,13 +174,12 @@ Licence: GNU GPL v3</translation>
         <translation type="obsolete">Průvodce</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="416"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Show wizard &lt;span style=&quot; color:#808080;&quot;&gt;Crtl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -178,7 +194,7 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Spustit</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="434"/>
+        <location filename="../src/mainwindow.ui" line="437"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -199,7 +215,7 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Zastavit</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="452"/>
+        <location filename="../src/mainwindow.ui" line="455"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -220,7 +236,7 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Vlákna</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="467"/>
+        <location filename="../src/mainwindow.ui" line="470"/>
         <source>Threads count</source>
         <translation>Počet vláken</translation>
     </message>
@@ -237,15 +253,26 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Srovnávací pohled</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="489"/>
+        <location filename="../src/mainwindow.ui" line="492"/>
         <source>Compare view</source>
         <translation>Srovnávací pohled</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="48"/>
-        <location filename="../src/mainwindow.cpp" line="237"/>
+        <location filename="../src/mainwindow.cpp" line="49"/>
+        <location filename="../src/mainwindow.cpp" line="242"/>
         <source>Threads selected: </source>
         <translation>Vybraná vlákna:</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="210"/>
+        <source>Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="211"/>
+        <source>
+Processing will be stopped now.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -340,9 +367,8 @@ p, li { white-space: pre-wrap; }
         <translation>Stlačit</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="73"/>
         <source>Use compressor:</source>
-        <translation>Použít stlačovač:</translation>
+        <translation type="obsolete">Použít stlačovač:</translation>
     </message>
     <message>
         <source>gzip</source>
@@ -353,22 +379,22 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">7z</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="119"/>
+        <location filename="../src/wizarddialog.ui" line="95"/>
         <source>Compress level:</source>
         <translation>Úroveň stlačení:</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="137"/>
+        <location filename="../src/wizarddialog.ui" line="113"/>
         <source>Compress all to svgz</source>
         <translation>Stlačit vše do svgz</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="156"/>
+        <location filename="../src/wizarddialog.ui" line="132"/>
         <source>Use input file suffix</source>
         <translation>Použít příponu vstupního souboru</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="178"/>
+        <location filename="../src/wizarddialog.ui" line="154"/>
         <source>Open files from the input folder and:</source>
         <translation>Otevřít soubory ze vstupní složky a:</translation>
     </message>
@@ -377,12 +403,12 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">...</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="247"/>
+        <location filename="../src/wizarddialog.ui" line="226"/>
         <source>Input folder:</source>
         <translation>Vstupní složka:</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="300"/>
+        <location filename="../src/wizarddialog.ui" line="282"/>
         <source>Output folder:</source>
         <translation>Výstupní složka:</translation>
     </message>
@@ -391,34 +417,44 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">.svg</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="382"/>
-        <location filename="../src/wizarddialog.cpp" line="404"/>
+        <location filename="../src/wizarddialog.ui" line="201"/>
+        <source>Open input folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="263"/>
+        <source>Open output folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="364"/>
+        <location filename="../src/wizarddialog.cpp" line="431"/>
         <source>filename</source>
         <translation>Název souboru</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="389"/>
-        <location filename="../src/wizarddialog.cpp" line="403"/>
+        <location filename="../src/wizarddialog.ui" line="371"/>
+        <location filename="../src/wizarddialog.cpp" line="430"/>
         <source>Example: </source>
         <translation>Příklad:</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="396"/>
+        <location filename="../src/wizarddialog.ui" line="378"/>
         <source>Set prefix and suffix:</source>
         <translation>Nastavit předponu a příponu:</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="412"/>
+        <location filename="../src/wizarddialog.ui" line="394"/>
         <source>Recursive folder scanning</source>
         <translation>Prohledávání složek včetně podsložek</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="428"/>
+        <location filename="../src/wizarddialog.ui" line="410"/>
         <source>save cleaned files into output folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="441"/>
+        <location filename="../src/wizarddialog.ui" line="423"/>
         <source>save cleaned files into current folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -431,12 +467,12 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Uložit uklizené soubory do nynější složky</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="454"/>
+        <location filename="../src/wizarddialog.ui" line="436"/>
         <source>overwrite original files</source>
         <translation>Přepsat původní soubory</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="490"/>
+        <location filename="../src/wizarddialog.ui" line="472"/>
         <source>Select preset:</source>
         <translation>Nastavit přednastavení:</translation>
     </message>
@@ -453,17 +489,17 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="537"/>
+        <location filename="../src/wizarddialog.ui" line="519"/>
         <source>Save current settings as preset:</source>
         <translation>Uložit nynější nastavení jako přednastavení:</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="551"/>
+        <location filename="../src/wizarddialog.ui" line="533"/>
         <source>Remove</source>
         <translation>Odstranit</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="558"/>
+        <location filename="../src/wizarddialog.ui" line="540"/>
         <source>Save</source>
         <translation>Uložit</translation>
     </message>
@@ -472,70 +508,79 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">_vyladěno</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="63"/>
+        <location filename="../src/wizarddialog.cpp" line="69"/>
         <source>prefix</source>
         <translation>Předpona</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="64"/>
+        <location filename="../src/wizarddialog.cpp" line="70"/>
         <source>suffix</source>
         <translation>Přípona</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="65"/>
+        <location filename="../src/wizarddialog.cpp" line="71"/>
         <source>name</source>
         <translation>Název</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="73"/>
+        <location filename="../src/wizarddialog.cpp" line="79"/>
         <source>Files</source>
         <translation type="unfinished">Soubory</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="78"/>
+        <location filename="../src/wizarddialog.cpp" line="84"/>
         <source>Presets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="39"/>
-        <location filename="../src/wizarddialog.cpp" line="254"/>
+        <location filename="../src/wizarddialog.cpp" line="46"/>
+        <location filename="../src/wizarddialog.cpp" line="256"/>
         <source>_cleaned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="269"/>
+        <location filename="../src/wizarddialog.cpp" line="270"/>
         <source>Select input folder</source>
         <translation>Vybrat vstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="282"/>
+        <location filename="../src/wizarddialog.cpp" line="283"/>
         <source>Select output folder</source>
         <translation>Vybrat výstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="293"/>
+        <location filename="../src/wizarddialog.cpp" line="294"/>
         <source>Input folder is not selected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="296"/>
+        <location filename="../src/wizarddialog.cpp" line="297"/>
         <source>Output folder is not selected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="302"/>
+        <location filename="../src/wizarddialog.cpp" line="303"/>
         <source>Input folder is not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="306"/>
-        <source>Program can&apos;t work in this method.
-7z can&apos;t overwrite original files.</source>
+        <source>Input folder did not contain any svg, svgz files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="309"/>
-        <source>Input folder didn&apos;t contain any svg, svgz files.</source>
+        <source>You must install 7-Zip to use SVG Cleaner.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="312"/>
+        <source>You must install Perl to use SVG Cleaner.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="424"/>
+        <source>You cannot remove default preset.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -547,7 +592,7 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Výstupní adresář není vybrán.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="299"/>
+        <location filename="../src/wizarddialog.cpp" line="300"/>
         <source>You must set prefix and suffix for this save method.</source>
         <translation>Pro tento způsob ukládání musíte vybrat předponu a příponu.</translation>
     </message>
@@ -566,27 +611,26 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Vstupní adresář neobsahoval žádné soubory svg, svgz.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="317"/>
-        <location filename="../src/wizarddialog.cpp" line="337"/>
+        <location filename="../src/wizarddialog.cpp" line="320"/>
+        <location filename="../src/wizarddialog.cpp" line="364"/>
         <source>Warning</source>
         <translation>Varování</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="329"/>
+        <location filename="../src/wizarddialog.cpp" line="356"/>
         <source>You must set preset name.</source>
         <translation>Musíte nastavit název přednastavení.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="338"/>
+        <location filename="../src/wizarddialog.cpp" line="365"/>
         <source>Preset already exist.
 Overwrite?</source>
         <translation>Přednastavení již existuje.
 Přepsat?</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="397"/>
         <source>You can&apos;t remove default preset.</source>
-        <translation>Nemůžete odstranit výchozí přednastavení.</translation>
+        <translation type="obsolete">Nemůžete odstranit výchozí přednastavení.</translation>
     </message>
 </context>
 </TS>

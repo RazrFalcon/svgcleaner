@@ -1,8 +1,8 @@
 QT       += core gui xml svg
-unix:TARGET    = svgcleaner-gui
-windows:TARGET    = SVGCleaner
 TEMPLATE  = app
 VERSION   = 0.3
+unix:TARGET    = svgcleaner-gui
+windows:TARGET = SVGCleaner
 
 SOURCES  += src/main.cpp \
             src/guiinfo.cpp \
@@ -36,19 +36,19 @@ RESOURCES   += icons/icons.qrc
 CODECFORSRC  = UTF-8
 windows:RC_FILE = icons/icon.rc
 
-include(translations/translations.pri)
+#include(translations/translations.pri)
 
 unix {
     isEmpty (PREFIX):PREFIX = /usr
 
-    INSTALLS          += target desktop logo script presets interface trans
+    INSTALLS          += target desktop logo script presets interface #trans
 
     desktop.path       = $$PREFIX/share/applications
     desktop.files     += svgcleaner.desktop
     logo.path          = $$PREFIX/share/icons/hicolor/scalable/apps
     logo.files        += icons/svgcleaner.svg
-    trans.path         = $$PREFIX/share/svgcleaner/translations
-    trans.files       += svgcleaner_ru.qm svgcleaner_cs.qm
+#    trans.path         = $$PREFIX/share/svgcleaner/translations
+#    trans.files       += svgcleaner_ru.qm svgcleaner_cs.qm
     interface.path     = $$PREFIX/share/svgcleaner
     interface.files   += interface.xml
     presets.path       = $$PREFIX/share/svgcleaner/presets

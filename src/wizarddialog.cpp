@@ -303,14 +303,13 @@ bool WizardDialog::checkForWarnings()
         createWarning(tr("Input folder is not exist."));
         check = false;
     } else if (fileList.isEmpty()) {
-        createWarning(tr("Input folder didn't contain any svg, svgz files."));
+        createWarning(tr("Input folder did not contain any svg, svgz files."));
         check = false;
     } else if (!checkFor7z()) {
-        createWarning(tr("Install p7zip to use it as compressor "
-                         "for svgz files."));
+        createWarning(tr("You must install 7-Zip to use SVG Cleaner."));
         check = false;
     } else if (!checkForPerl()) {
-        createWarning(tr("You must install Perl to use this program."));
+        createWarning(tr("You must install Perl to use SVG Cleaner."));
         check = false;
     }
     return check;
@@ -325,7 +324,7 @@ bool WizardDialog::checkFor7z()
 {
     QProcess zipproc;
 #ifdef Q_OS_WIN
-    zipproc.start("7-Zip/7za.exe");
+    zipproc.start("7-Zip/7za.exe"); // not really important
 #else
     zipproc.start("7z");
 #endif
@@ -422,7 +421,7 @@ void WizardDialog::on_btnRmPreset_clicked()
         file.remove();
         cmbBoxPreset->removeItem(cmbBoxPreset->currentIndex());
     } else {
-        createWarning(tr("You can't remove default preset."));
+        createWarning(tr("You cannot remove default preset."));
     }
 }
 

@@ -4,5 +4,4 @@ AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent)
 {
     setupUi(this);
-    adjustSize();
 }

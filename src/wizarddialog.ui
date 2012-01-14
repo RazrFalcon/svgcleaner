@@ -197,6 +197,9 @@
              </item>
              <item row="1" column="2" colspan="2">
               <widget class="QToolButton" name="btnOpenInDir">
+               <property name="toolTip">
+                <string>Open input folder</string>
+               </property>
                <property name="text">
                 <string notr="true">...</string>
                </property>
@@ -256,6 +259,9 @@
              </item>
              <item row="1" column="2">
               <widget class="QToolButton" name="btnOpenOutDir">
+               <property name="toolTip">
+                <string>Open output folder</string>
+               </property>
                <property name="text">
                 <string notr="true">...</string>
                </property>

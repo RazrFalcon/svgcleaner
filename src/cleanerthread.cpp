@@ -52,7 +52,6 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
 #endif
     args.append(outSVG);
     args.append(arguments.args);
-    args.append("quiet");
     proc->start("perl",args);
 }
 
@@ -106,7 +105,7 @@ void CleanerThread::readyReadError()
 {
     QString error = proc->readAllStandardError();
     if (error.contains("Can't locate XML/Twig.pm in"))
-        emit criticalError(tr("You must install XML/Twig."));
+        emit criticalError(tr("You must install XML-Twig."));
     else
         qDebug()<<error<<"in"<<currentIn;
 }

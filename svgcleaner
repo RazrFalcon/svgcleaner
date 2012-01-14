@@ -3711,6 +3711,32 @@ if ($args{'sort_defs'} eq "yes" &&
   }
 }
 
+# преобразовываем SVG атрибуты в свойства атрибута style
+if ($args{'style_prop'} ne "yes") {
+
+  # обрабатываем все элементы файла
+  foreach my $elt ($root->descendants_or_self) {
+
+    my $style_att;
+
+    # обрабатываем все атрибуты текущего элемента
+    while ((my $att, my $att_val) = each %{$elt->atts}) {
+      # если атрибут можно представить в виде свойства атрибута style
+      if ($att~~@style_atts) {
+	# формируем атрибут style
+	if ($style_att) {
+	  $style_att = $style_att.";$att:$att_val";
+	} else {
+	  $style_att = "$att:$att_val";
+	}
+	# удаляем SVG атрибут
+	$elt->del_att($att);
+      }
+    }
+    # сохраняем атрибут style
+    $elt->set_att('style' => $style_att) if ($style_att);
+  }
+}
 
 # определяем конечный размер файла
 my $size_final = length($twig->sprint);

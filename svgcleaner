@@ -1573,11 +1573,31 @@ foreach my $elt ($root->descendants) {
 
 
   # удаление пустых групп (элементов g, которые не имеют дочерних элементов)
-  if ($args{'empty_groups'} eq "delete" &&
-      $elt_name eq "g" && !$elt->children) {
+  if ($elt_name eq "g" &&
+      $args{'empty_groups'} eq "delete") {
+
+    # если группа не имеет дочерних элементов
+    unless ($elt->children) {
 
       &del_elt($elt,$elt_name,$elt_id,"it's an empty group");
       next CYCLE_ELTS;
+    }
+    # или если группа имеет дочерние элементы и все они также являются группами
+    elsif ($elt->children &&
+	   $elt->all_children_are('g')) {
+
+      # проверяем все дочерние группы
+      foreach ($elt->children) {
+	# удаляем пустую дочернюю группу
+	$_->delete unless ($_->children);
+      }
+      # удаляем основную группу, если она стала пустой
+      unless ($elt->children) {
+
+	&del_elt($elt,$elt_name,$elt_id,"it's an empty group");
+	next CYCLE_ELTS;
+      }
+    }
   }
 
 
@@ -2283,9 +2303,10 @@ foreach my $elt ($root->descendants_or_self) {
 	next CYCLE_ATTS; 
       }
 
-      # удаление пространств имен Inkscape
+      # удаление пространств имен Inkscape, если в файле отсутствуют элементы inkscape:path-effect
       if ($args{'inkscape_elts'} eq "delete" &&
 	  $args{'inkscape_atts'} eq "delete" &&
+	  !($root->descendants('inkscape:path-effect')) &&
 	  $att eq "xmlns:inkscape") {
 
 	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
@@ -2322,16 +2343,16 @@ foreach my $elt ($root->descendants_or_self) {
 
     # удаление атрибутов Inkscape
     if ($args{'inkscape_elts'} ne "delete" &&
-	$elt_name!~ /^inkscape:/ &&
 	$args{'inkscape_atts'} eq "delete" &&
+	$elt_name!~ /^inkscape:/ &&
 	$att=~ /^inkscape:/) {
 
       &del_att($elt,$att,"it's an Inkscape attribute",$i,$elt_name,$elt_id);
       next CYCLE_ATTS;
     }
     elsif ($args{'inkscape_elts'} eq "delete" &&
-	   $elt_name ne "inkscape:path-effect" &&
 	   $args{'inkscape_atts'} eq "delete" &&
+	   $elt_name ne "inkscape:path-effect" &&
 	   $att=~ /^inkscape:/) {
 
       &del_att($elt,$att,"it's an Inkscape attribute",$i,$elt_name,$elt_id);
@@ -3640,32 +3661,46 @@ if ($args{'singly_grads'} eq "yes" && $defs) {
 
 
 # разгруппировываем группу, если элемент g не содержит атрибутов или содержит только атрибут id, который не входит в список использующихся id
-if ($args{'erase_groups'} eq "yes") {
+if ($args{'erase_groups'} eq "yes" ||
+    $args{'empty_groups'} eq "delete") {
 
   foreach my $elt ($root->get_xpath('//g')) {
 
     my $elt_id = $elt->id;
 
-    # обрабатываем группу, если все ее дочерние элементы являются группами
-    if ($elt->children &&
-	$elt->all_children_are('g')) {
+    # удаляем пустые группы
+    if ($args{'empty_groups'} eq "delete") {
 
-      foreach ($elt->children) {
-	# удаляем пустую дочернюю группу
-	$_->delete unless ($_->children);
-      }
-      # удаляем основную группу, если она стала пустой
+      # удаляем пустую группу, если она не содержит дочерних элементов
       $elt->delete unless ($elt->children);
+
+      # обрабатываем группу, если все ее дочерние элементы являются группами
+      if ($elt->children &&
+	  $elt->all_children_are('g')) {
+
+	foreach ($elt->children) {
+	  # удаляем пустую дочернюю группу
+	  $_->delete unless ($_->children);
+	}
+	# удаляем основную группу, если она стала пустой
+	$elt->delete unless ($elt->children);
+      }
     }
 
 
-    unless ($elt->parent('switch')) {
+    # разгруппировываем группы, если их родительским элементом не является элемент switch
+    if ($args{'erase_groups'} eq "yes" &&
+	!($elt->parent('switch')) &&
+	$elt->children) {
 
-      if ($elt->att_nb == 1 && $elt->id &&
-	  !($elt_id ~~ @ref_id) && $args{'protect_id'} ne "yes") {
+      # если группа содержит только атрибут id, который не содержится в списке использующихся id и содержит цифру в случае использования защиты id, состоящих только из букв
+      if ($elt->att_nb == 1 && $elt_id && !($elt_id ~~ @ref_id) &&
+	  ($args{'protect_id'} ne "yes" || ($args{'protect_id'} eq "yes" && $elt_id=~/\d/))) {
 
 	$elt->erase;
-      } elsif ($elt->has_no_atts) {
+      }
+      # если группа не имеет атрибутов
+      elsif ($elt->has_no_atts) {
 
 	$elt->erase;
       }

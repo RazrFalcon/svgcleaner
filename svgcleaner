@@ -6,6 +6,8 @@
 # The GNU General Public License is a free, copyleft license for software and other kinds of works.
 # http://www.gnu.org/copyleft/gpl.html
 
+# ppa:svg-cleaner-team/svgcleaner-dev
+
 use strict;
 use warnings;
 
@@ -2790,10 +2792,10 @@ foreach my $elt ($root->descendants_or_self) {
 		$rcmd = "h";
 	      }
 	      elsif ($rcmd eq "h" && $dx && !$dy) {
-		$data=~ s/($num)$// if ($data);
-		$d=~ s/($num)$// if (!$data);
-		$dx += $1;
-		$data = $data."$dx";
+# 		$data=~ s/($num)$// if ($data);
+# 		$d=~ s/($num)$// if (!$data);
+# 		$dx += $1;
+		$data = $data." $dx";
 		$rcmd = "h";
 	      }
 	      elsif ($rcmd~~['m','l','h'] && !$dx && $dy) {
@@ -2801,10 +2803,10 @@ foreach my $elt ($root->descendants_or_self) {
 		$rcmd = "v";
 	      }
 	      elsif ($rcmd eq "v" && !$dx && $dy) {
-		$data=~ s/($num)$// if ($data);
-		$d=~ s/($num)$// if (!$data);
-		$dy += $1;
-		$data = $data."$dy";
+# 		$data=~ s/($num)$// if ($data);
+# 		$d=~ s/($num)$// if (!$data);
+# 		$dy += $1;
+		$data = $data." $dy";
 		$rcmd = "v";
 	      }
 	    }
@@ -2859,10 +2861,10 @@ foreach my $elt ($root->descendants_or_self) {
 		$rcmd = "h";
 	      }
 	      elsif ($rcmd eq "h" && $dx && !$dy) {
-		$data=~ s/($num)$// if ($data);
-		$d=~ s/($num)$// if (!$data);
-		$dx += $1;
-		$data = $data."$dx";
+# 		$data=~ s/($num)$// if ($data);
+# 		$d=~ s/($num)$// if (!$data);
+# 		$dx += $1;
+		$data = $data." $dx";
 		$rcmd = "h";
 	      }
 	      elsif ($rcmd ne "v" && !$dx && $dy) {
@@ -2870,10 +2872,10 @@ foreach my $elt ($root->descendants_or_self) {
 		$rcmd = "v";
 	      }
 	      elsif ($rcmd eq "v" && !$dx && $dy) {
-		$data=~ s/($num)$// if ($data);
-		$d=~ s/($num)$// if (!$data);
-		$dy += $1;
-		$data = $data."$dy";
+# 		$data=~ s/($num)$// if ($data);
+# 		$d=~ s/($num)$// if (!$data);
+# 		$dy += $1;
+		$data = $data." $dy";
 		$rcmd = "v";
 	      }
 	    }
@@ -2915,10 +2917,10 @@ foreach my $elt ($root->descendants_or_self) {
 
 	      # формируем переменную $data в зависимости от $rcmd
 	      if ($rcmd eq "h" && $dx) {
-		$data=~ s/($num)$// if ($data);
-		$d=~ s/($num)$// if (!$data);
-		$dx += $1;
-		$data = $data."$dx";
+# 		$data=~ s/($num)$// if ($data);
+# 		$d=~ s/($num)$// if (!$data);
+# 		$dx += $1;
+		$data = $data." $dx";
 		$rcmd = "h";
 	      }
 	      elsif ($rcmd ne "h" && $dx) {
@@ -2964,10 +2966,10 @@ foreach my $elt ($root->descendants_or_self) {
 
 	      # формируем переменную $data в зависимости от $rcmd
 	      if ($rcmd eq "v" && $dy) {
-		$data=~ s/($num)$// if ($data);
-		$d=~ s/($num)$// if (!$data);
-		$dy += $1;
-		$data = $data."$dy";
+# 		$data=~ s/($num)$// if ($data);
+# 		$d=~ s/($num)$// if (!$data);
+# 		$dy += $1;
+		$data = $data." $dy";
 		$rcmd = "v";
 	      }
 	      elsif ($rcmd ne "v" && $dy) {
@@ -3616,6 +3618,7 @@ if ($args{'singly_grads'} eq "yes" && $defs) {
     # если ссылка на другой градиент не содержится в массиве внешних ссылок и этот градиент не имеет трансформации (это исключение связано с тем, что результат рендеринга таких ссылок не однозначен у Инкскейпа и Файерфокса), то объединяем два градиента в один
     if ($xlinks{"#$link"} &&
 	!($link~~@out_link) &&
+	$twig->elt_id($link) &&
 	!($twig->elt_id($link)->att('gradientTransform'))) {
 
       my $elt_name = $elt->name;

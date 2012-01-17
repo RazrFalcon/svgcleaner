@@ -23,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent) :
     actionStart->setIcon(QIcon(":/start.svgz"));
     actionStop->setIcon(QIcon(":/stop.svgz"));
     actionThreads->setIcon(QIcon(":/cpu.svgz"));
-    actionCompareView->setIcon(QIcon(":/view.svgz"));
     actionInfo->setIcon(QIcon(":/information.svgz"));
     scrollArea->installEventFilter(this);
     progressBar->hide();
@@ -49,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actionThreads->setToolTip(tr("Threads selected: ")+QString::number(threadCount));
 
     actionCompareView->setChecked(settings->value("compareView",true).toBool());
+    on_actionCompareView_triggered();
 
     // setup shortcuts
     QShortcut *quitShortcut = new QShortcut(QKeySequence::Quit,this);
@@ -250,6 +250,11 @@ void MainWindow::on_itemScroll_valueChanged(int value)
 
 void MainWindow::on_actionCompareView_triggered()
 {
+    if (actionCompareView->isChecked())
+        actionCompareView->setIcon(QIcon(":/thumbs-on.svgz"));
+    else
+        actionCompareView->setIcon(QIcon(":/thumbs-off.svgz"));
+
     int i = itemScroll->value();
     foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
         item->refill(itemList.at(i++),actionCompareView->isChecked());

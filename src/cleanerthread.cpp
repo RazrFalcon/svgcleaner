@@ -173,3 +173,4 @@ int CleanerThread::findValue(const QString &text)
     QString tmpStr = scriptOutput.split("\n").filter(text).first();
     return tmpStr.remove(QRegExp("[A-Za-z]|%| ")).toInt();
 }
+

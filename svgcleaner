@@ -111,9 +111,9 @@ my %pres_atts = (
   'display' => ['svg', 'g', 'switch', 'a', 'foreignObject', 'circle', 'ellipse', 'image', 'line', 'path', 'polygon', 'polyline', 'rect', 'text', 'use', 'altGlyph', 'textPath', 'text', 'tref', 'tspan'],
   'dominant-baseline' => ['altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
   'enable-background' => ['a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch', 'symbol'],
-  'fill' => ['animate', 'animateColor', 'animateMotion', 'animateTransform', 'set', 'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
-  'fill-opacity' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
-  'fill-rule' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
+  'fill' => ['animate', 'animateColor', 'animateMotion', 'animateTransform', 'set', 'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol','use'],
+  'fill-opacity' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol','use'],
+  'fill-rule' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol','use'],
   'filter' => ['a', 'defs', 'glyph', 'g', 'marker', 'missing-glyph', 'pattern', 'svg', 'switch', 'symbol', 'circle', 'ellipse', 'image', 'line', 'path', 'polygon', 'polyline', 'rect', 'text', 'use'],
   'flood-color' => ['feFlood', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
   'flood-opacity' => ['feFlood', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
@@ -142,14 +142,14 @@ my %pres_atts = (
   'shape-rendering' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
   'stop-color' => ['stop'],
   'stop-opacity' => ['stop'],
-  'stroke' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
-  'stroke-dasharray' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
-  'stroke-dashoffset' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
-  'stroke-linecap' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
-  'stroke-linejoin' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
-  'stroke-miterlimit' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
-  'stroke-opacity' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
-  'stroke-width' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
+  'stroke' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol','use'],
+  'stroke-dasharray' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol','use'],
+  'stroke-dashoffset' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol','use'],
+  'stroke-linecap' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol','use'],
+  'stroke-linejoin' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol','use'],
+  'stroke-miterlimit' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol','use'],
+  'stroke-opacity' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol','use'],
+  'stroke-width' => ['path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol','use'],
   'text-anchor' => ['altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
   'text-decoration' => ['altGlyph', 'textPath', 'text', 'tref', 'tspan', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
   'text-rendering' => ['text', 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch','symbol'],
@@ -1969,10 +1969,18 @@ if ($args{'unused_def'} eq "delete" && $defs) {
 
     # получаем имя id обрабатываемого элемента
     my $elt_id = $elt->id;
-    $elt_id = "none" unless ($elt_id);
+#     $elt_id = "none" unless ($elt_id);
 
-    # удаляем элемент, если его id не содержится в массиве @ref_id (списке id на которые имеются ссылки)
-    unless ($elt_id ~~ @ref_id) {
+    # удаляем элемент, если его имя не "style" и id не содержится в массиве @ref_id (списке id на которые имеются ссылки)
+    if ($elt->name ne "style" && $elt_id && !($elt_id~~@ref_id)) {
+
+      # бывают случаи, когда сам элемент не содержится в списке id на которые имеются ссылки, а его потомки - содержатся
+      if ($elt->children) {
+	foreach ($elt->descendants) {
+	  # переносим такого потомка удаляемого элемента на место последнего потомка элемента defs
+	  $_->move(last_child => $defs) if (($_->id)~~@ref_id);
+	}
+      }
 
       my $elt_name = $elt->name;
       &del_elt($elt,$elt_name,$elt_id,"it's an unused definition");
@@ -2402,20 +2410,20 @@ foreach my $elt ($root->descendants_or_self) {
     if ($args{'stroke_atts'} eq "delete" &&
 	$att=~ /^stroke-/) {
 
-      if ((!$elt->att('stroke') && !$elt->parent('g[@stroke]')) ||
-	  (!$elt->att('stroke') && $elt->parent("g[\@stroke=\"none\"]")) ||
+      if ((!$elt->att('stroke') && !$elt->parent('[@stroke]')) ||
+	  (!$elt->att('stroke') && $elt->parent("[\@stroke=\"none\"]")) ||
 	  ($elt->att('stroke') && $elt->att('stroke') eq "none")) {
 
 	&del_att($elt,$att,"this element is not stroked",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS;
       }
 
-      if ((defined $elt->att('stroke-opacity') && $elt->att('stroke-opacity')=~ /^-|^\+?0(\.0+)?$/) ||
-	  (defined $elt->att('stroke-width') && $elt->att('stroke-width')=~ /^-|^\+?0(\.0+)?$unit?$/)) {
+      if ((defined $elt->att('stroke-opacity') && $elt->att('stroke-opacity') == 0) ||
+	  (defined $elt->att('stroke-width') && $elt->att('stroke-width') == 0)) {
 
 	&del_att($elt,$att,"this element is not stroked",$i,$elt_name,$elt_id);
-	if (!$elt->parent('g[@stroke]') ||
-	    $elt->parent("g[\@stroke=\"none\"]")) {
+	if (!$elt->parent('[@stroke]') ||
+	    $elt->parent("[\@stroke=\"none\"]")) {
 	  &del_att($elt,'stroke',"this element is not stroked",$i,$elt_name,$elt_id);
 	} else {
 	  $elt->set_att('stroke' => 'none');
@@ -2429,16 +2437,17 @@ foreach my $elt ($root->descendants_or_self) {
     if ($args{'fill_atts'} eq "delete" &&
 	$att=~ /^fill-/) {
 
-      if ($elt->att('fill') && $elt->att('fill') eq "none") {
+      if (($elt->att('fill') && $elt->att('fill') eq "none") ||
+	  (!$elt->att('fill') && $elt->parent("[\@fill=\"none\"]"))) {
 
 	&del_att($elt,$att,"this element is not filled",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS;
       }
 
-      if (defined $elt->att('fill-opacity') && $elt->att('fill-opacity')=~ /^-|^\+?0(\.0+)?$/) {
+      if (defined $elt->att('fill-opacity') && $elt->att('fill-opacity') == 0) {
 
 	&del_att($elt,$att,"this element is not filled",$i,$elt_name,$elt_id);
-	$elt->set_att('fill' => 'none');
+	$elt->set_att('fill' => 'none') unless ($elt->parent("[\@fill=\"none\"]"));
 	next CYCLE_ATTS;
       }
     }
@@ -2555,9 +2564,9 @@ foreach my $elt ($root->descendants_or_self) {
 	next CYCLE_ATTS;
       }
 
-      # не удаляем дефолтное значение атрибута, если содержащий его элемент является дочерним элементом группы, которая также содержит аналогичный атрибут
+      # не удаляем дефолтное значение атрибута, если родительский элемент его элемента аналогичный атрибут
       if ($att_val eq $default_atts{$att} &&
-	  $elt->parent("g[\@$att]")) {
+	  $elt->parent("[\@$att]")) {
 
 	next CYCLE_ATTS;
       }

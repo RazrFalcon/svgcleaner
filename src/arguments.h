@@ -11,6 +11,7 @@ struct ToThread
     QStringList outputFiles;
     QString level;
     QString args;
+    QString cleanerPath;
 };
 
 struct SVGInfo

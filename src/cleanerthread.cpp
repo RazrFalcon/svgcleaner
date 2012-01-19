@@ -45,11 +45,7 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
         out<<str;
     }
     QStringList args;
-#ifdef Q_OS_WIN
-    args.append("svgcleaner"); // perl script
-#else
-    args.append("/usr/bin/svgcleaner"); // perl script
-#endif
+    args.append(arguments.cleanerPath);
     args.append(outSVG);
     args.append(arguments.args);
     proc->start("perl",args);

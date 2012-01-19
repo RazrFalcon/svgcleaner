@@ -55,6 +55,6 @@ unix {
     presets.files     += presets/soft.preset presets/normal.preset \
                          presets/optimal.preset presets/vacuum-defs.preset
     script.path        = $$PREFIX/bin
-    script.files      += svgcleaner
+    script.files      += svgcleaner.pl
     target.path        = $$PREFIX/bin
 }

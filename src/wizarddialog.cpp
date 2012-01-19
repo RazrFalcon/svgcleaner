@@ -146,7 +146,19 @@ ToThread WizardDialog::threadArguments()
     threadArgs.inputFiles = getInFiles();
     threadArgs.outputFiles = getOutFiles();
     threadArgs.level = QString::number(spinBoxCompress->value());
+    threadArgs.cleanerPath = findCleaner();
     return threadArgs;
+}
+
+QString WizardDialog::findCleaner()
+{
+    QString cleaner("svgcleaner.pl");
+    if (QFile(cleaner).exists()) // next to exe. Usual build/Windows.
+        return cleaner;
+    else if (QFile("/usr/bin/"+cleaner).exists()) // linux path
+        return "/usr/bin/"+cleaner;
+    else if (QFile("../SVGCleaner/"+cleaner).exists()) // Qt Creator shadow build
+        return "../SVGCleaner/"+cleaner;
 }
 
 QString WizardDialog::argLine()

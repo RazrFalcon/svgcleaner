@@ -32,6 +32,18 @@ MainWindow::MainWindow(QWidget *parent) :
     settings = new QSettings(QSettings::NativeFormat, QSettings::UserScope,
                              "svgcleaner", "config");
 
+    QWidget *w = new QWidget();
+    w->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    toolBar->addWidget(w);
+    QComboBox *combo = new QComboBox();
+    combo->addItem("Sort by name");
+    combo->addItem("Sort by size");
+    combo->addItem("Sort by attributes");
+    combo->addItem("Sort by elements");
+    combo->addItem("Sort by time");
+    combo->setMinimumHeight(toolBar->height());
+    toolBar->addWidget(combo);
+
     // setup threads menu
     int threadCount = settings->value("threadCount",QThread::idealThreadCount()).toInt();
     QMenu *menu = new QMenu(this);

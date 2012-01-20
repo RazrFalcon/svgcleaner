@@ -38,12 +38,6 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
         emit cleaned(info());
         return;
     }
-    QDir().mkpath(QFileInfo(outFile).absolutePath());
-    QFile file(outSVG);
-    if (file.open(QFile::WriteOnly)) {
-        QTextStream out(&file);
-        out<<str;
-    }
     QStringList args;
     args.append(arguments.cleanerPath);
     args.append(outSVG);

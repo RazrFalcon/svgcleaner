@@ -40,6 +40,7 @@ private:
     int presetDefValue(const QString &name, const QString &string);
     QCheckBox* createCheckBox(const QDomNode &node);
     QString loadFile(const QString &file);
+    QString findInterface();
     QWidget* createComboBox(const QDomNode &node);
     QWidget* createSpinBox(const QDomNode &node);
     QWidget* createSub(const QDomNode &node);

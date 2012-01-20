@@ -44,3 +44,14 @@ int SomeUtils::getTotalSize(const QStringList &list, int count)
         size += QFileInfo(list.at(i)).size();
     return size;
 }
+
+QString SomeUtils::findFile(QString name, QString defaultFolder)
+{
+    if (QFile("../SVGCleaner/"+name).exists()) // Qt Creator shadow build
+        return "../SVGCleaner/"+name;
+    else if (QFile(name).exists()) // next to exe. Usual build/Windows.
+        return name;
+    else if (QFile(defaultFolder+name).exists()) // linux path
+        return defaultFolder+name;
+    return name;
+}

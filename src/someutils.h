@@ -10,6 +10,7 @@ class SomeUtils : public QObject
 
 public:
     explicit SomeUtils(QObject *parent = 0);
+    QString findFile(QString name, QString defaultFolder);
     QString prepareSize(int bytes);
     QString prepareTime(int ms);
     int getTotalSize(const QStringList &list, int count = -1);

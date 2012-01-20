@@ -1,8 +1,7 @@
 #include <QDesktopServices>
+#include <QResizeEvent>
 #include <QFileInfo>
 #include <QUrl>
-#include <QSvgWidget>
-#include <QtSvg/QtSvg>
 #include <QtDebug>
 
 #include "thumbwidget.h"
@@ -106,9 +105,9 @@ void ThumbWidget::openSVG()
 {
     QPushButton *btn = qobject_cast<QPushButton *>(sender());
     if (btn->accessibleName() == "input")
-        QDesktopServices::openUrl(QUrl(fullInfo.paths[SVGInfo::INPUT], QUrl::TolerantMode));
+        QDesktopServices::openUrl(QUrl(fullInfo.paths[SVGInfo::INPUT],QUrl::TolerantMode));
     else
-        QDesktopServices::openUrl(QUrl(fullInfo.paths[SVGInfo::OUTPUT], QUrl::TolerantMode));
+        QDesktopServices::openUrl(QUrl(fullInfo.paths[SVGInfo::OUTPUT],QUrl::TolerantMode));
 }
 
 void ThumbWidget::resizeEvent(QResizeEvent *event)

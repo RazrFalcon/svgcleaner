@@ -24,7 +24,6 @@ private:
     QSettings *settings;
     bool checkForWarnings();
     void createWarning(const QString &text);
-    QString findCleaner();
     void loadSettings();
     void resetItems(const QString &preset);
     void resetFields();

@@ -1,10 +1,6 @@
-#include <QFile>
 #include <QDir>
 #include <QFileInfo>
-#include <QtSvg/QSvgRenderer>
 #include <QDomDocument>
-#include <QTextStream>
-#include <QTextDocument>
 #include <QTime>
 #include <QtDebug>
 
@@ -38,6 +34,13 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
         emit cleaned(info());
         return;
     }
+    QDir().mkpath(QFileInfo(outFile).absolutePath());
+    QFile file(outSVG);
+    if (file.open(QFile::WriteOnly)) {
+        QTextStream out(&file);
+        out<<str;
+    }
+
     QStringList args;
     args.append(arguments.cleanerPath);
     args.append(outSVG);
@@ -79,7 +82,7 @@ QString CleanerThread::prepareFile(const QString &file)
             if (width.toInt() < 0 || height.toInt() < 0)
                 return "";
             else if (width.toInt() == 0 || height.toInt() == 0)
-                element.setAttribute("viewBoxm","0 0 0 0");
+                element.setAttribute("viewBox","0 0 0 0");
             return inputDom.toString();
         }
     }

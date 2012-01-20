@@ -9,44 +9,29 @@
 #include <QtDebug>
 
 #include "guiinfo.h"
+#include "someutils.h"
 
 GuiInfo::GuiInfo(QObject *parent) :
     QObject(parent)
 {
     QDomDocument doc;
-#ifdef Q_OS_WIN
-    doc.setContent(loadFile("interface.xml"));
-#else
-    doc.setContent(loadFile("/usr/share/svgcleaner/interface.xml"));
-#endif
+    SomeUtils utils;
+    doc.setContent(loadFile(utils.findFile("interface.xml","/usr/share/svgcleaner/")));
     presetMap.insert("None",doc);
 
-#ifdef Q_OS_WIN
-    QDir presetDir("presets");
-#else
-    QDir presetDir("/usr/share/svgcleaner/presets/");
-#endif
-    QFileInfoList files = presetDir.entryInfoList(QStringList("*.preset"));
-    QDir presetDir2(QDir::homePath()+"/.config/svgcleaner/preset/");
-    files += presetDir2.entryInfoList(QStringList("*.preset"));
+    // load presets
+    QFileInfoList files;
+    files += QDir("presets").entryInfoList(QStringList("*.preset"));
+    files += QDir("/usr/share/svgcleaner/presets/")
+            .entryInfoList(QStringList("*.preset"));
+    files += QDir(QDir::homePath()+"/.config/svgcleaner/preset/")
+            .entryInfoList(QStringList("*.preset"));
     for (int i = 0; i < files.count(); ++i) {
         QDomDocument dom;
         dom.setContent(loadFile(files.at(i).absoluteFilePath()));
         QString presetName = dom.namedItem("preset").toElement().attribute("name");
         presetMap.insert(presetName,dom);
     }
-}
-
-QString GuiInfo::findInterface()
-{
-    QString cleaner("interface.xml");
-    if (QFile(cleaner).exists()) // next to exe. Usual build/Windows.
-        return cleaner;
-    else if (QFile("/usr/share/svgcleaner/"+cleaner).exists()) // linux path
-        return "/usr/share/svgcleaner/"+cleaner;
-    else if (QFile("../SVGCleaner/"+cleaner).exists()) // Qt Creator shadow build
-        return "../SVGCleaner/"+cleaner;
-    return cleaner;
 }
 
 QString GuiInfo::loadFile(const QString &file)

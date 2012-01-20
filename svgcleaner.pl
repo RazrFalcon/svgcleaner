@@ -2573,7 +2573,8 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       # не удаляем дефолтное значение атрибута, если родительский элемент его элемента аналогичный атрибут
-      if ($att_val eq $default_atts{$att} &&
+      if ($att!~ /opacity$/ &&
+	  $att_val eq $default_atts{$att} &&
 	  $elt->parent("[\@$att]")) {
 
 	next CYCLE_ATTS;

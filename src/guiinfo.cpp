@@ -37,6 +37,18 @@ GuiInfo::GuiInfo(QObject *parent) :
     }
 }
 
+QString GuiInfo::findInterface()
+{
+    QString cleaner("interface.xml");
+    if (QFile(cleaner).exists()) // next to exe. Usual build/Windows.
+        return cleaner;
+    else if (QFile("/usr/share/svgcleaner/"+cleaner).exists()) // linux path
+        return "/usr/share/svgcleaner/"+cleaner;
+    else if (QFile("../SVGCleaner/"+cleaner).exists()) // Qt Creator shadow build
+        return "../SVGCleaner/"+cleaner;
+    return cleaner;
+}
+
 QString GuiInfo::loadFile(const QString &file)
 {
     QFile inputFile(file);

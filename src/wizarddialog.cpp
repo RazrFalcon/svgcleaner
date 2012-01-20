@@ -159,6 +159,7 @@ QString WizardDialog::findCleaner()
         return "/usr/bin/"+cleaner;
     else if (QFile("../SVGCleaner/"+cleaner).exists()) // Qt Creator shadow build
         return "../SVGCleaner/"+cleaner;
+    return cleaner;
 }
 
 QString WizardDialog::argLine()

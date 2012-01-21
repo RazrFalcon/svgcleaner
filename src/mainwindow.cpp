@@ -1,4 +1,5 @@
 #include <QWheelEvent>
+#include <QKeyEvent>
 #include <QShortcut>
 #include <QThread>
 #include <QMenu>
@@ -242,12 +243,12 @@ void MainWindow::cleaningFinished()
 
 void MainWindow::killThreads()
 {
-    foreach (CleanerThread *cleaner, findChildren<CleanerThread *>())
-        cleaner->deleteLater();
     foreach (QThread *th, findChildren<QThread *>()) {
         th->quit();
         th->deleteLater();
     }
+    foreach (CleanerThread *cleaner, findChildren<CleanerThread *>())
+        cleaner->deleteLater();
     enableButtons(true);
 }
 
@@ -318,6 +319,14 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             itemScroll->setValue(itemScroll->value()-1);
         else
             itemScroll->setValue(itemScroll->value()+1);
+        return true;
+    }
+    if (obj == scrollArea && event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_End)
+            itemScroll->setValue(itemScroll->maximum());
+        else if (keyEvent->key() == Qt::Key_Home)
+            itemScroll->setValue(0);
         return true;
     }
     return false;

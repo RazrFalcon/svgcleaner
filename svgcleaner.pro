@@ -13,7 +13,8 @@ SOURCES  += src/main.cpp \
             src/itemwidget.cpp \
             src/aboutdialog.cpp \
             src/lineedit.cpp \
-            src/wizarddialog.cpp
+            src/wizarddialog.cpp \
+    iconbutton.cpp
 		
 HEADERS  += src/guiinfo.h \
             src/thumbwidget.h \
@@ -24,7 +25,8 @@ HEADERS  += src/guiinfo.h \
             src/itemwidget.h \
             src/aboutdialog.h \
             src/lineedit.h \
-            src/wizarddialog.h
+            src/wizarddialog.h \
+    iconbutton.h
 
 FORMS    += src/thumbwidget.ui \
             src/mainwindow.ui \

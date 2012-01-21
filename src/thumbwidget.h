@@ -5,6 +5,7 @@
 #include <QPushButton>
 
 #include "arguments.h"
+#include "iconbutton.h"
 #include "ui_thumbwidget.h"
 
 class ThumbWidget : public QWidget, private Ui::ThumbWidget
@@ -17,8 +18,9 @@ public:
 
 private:
     SVGInfo fullInfo;
-    QPushButton *btnIn;
-    QPushButton *btnOut;
+    IconButton *btnIn;
+    IconButton *btnOut;
+    bool flag;
 
 private slots:
     void openSVG();

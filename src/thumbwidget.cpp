@@ -4,6 +4,9 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include <QDialog>
+#include <QTimer>
+
 #include "thumbwidget.h"
 #include "someutils.h"
 
@@ -11,11 +14,11 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(this);
-    btnIn = new QPushButton(this);
+    btnIn = new IconButton(this);
     btnIn->setFixedSize(70,70);
     btnIn->setFlat(true);
     btnIn->setAccessibleName("input");
-    btnOut = new QPushButton(this);
+    btnOut = new IconButton(this);
     btnOut->setFixedSize(70,70);
     btnOut->setFlat(true);
     btnOut->setAccessibleName("output");
@@ -36,7 +39,8 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
         QPixmap pixIn(info.paths[SVGInfo::INPUT]);
         if (pixIn.width() > 64)
             pixIn = pixIn.scaled(64,64,Qt::KeepAspectRatio,Qt::SmoothTransformation);
-        btnIn->show();
+//        btnIn->show();
+        btnIn->setPath(info.paths[SVGInfo::INPUT]);
         btnIn->setIcon(QIcon(pixIn));
         btnIn->setIconSize(pixIn.size());
         if (pixIn.isNull() || info.crashed) {
@@ -50,6 +54,7 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
     QPixmap pixOut(info.paths[SVGInfo::OUTPUT]);
     if (pixOut.width() > 64)
         pixOut = pixOut.scaled(64,64,Qt::KeepAspectRatio,Qt::SmoothTransformation);
+    btnOut->setPath(info.paths[SVGInfo::OUTPUT]);
     btnOut->setIcon(QIcon(pixOut));
     btnOut->setIconSize(pixOut.size());
     if (pixOut.isNull() || info.crashed) {
@@ -118,3 +123,4 @@ void ThumbWidget::resizeEvent(QResizeEvent *event)
                                       Qt::ElideLeft,size);
     lblName->setText(normalStr);
 }
+

@@ -25,8 +25,8 @@ private:
     QProcess *proc;
     QString currentIn;
     QString currentOut;
-    QString scriptOutput;
     QString outSVG;
+    QString scriptOutput;
     QTime cleaningTime;
     QTimer *cleaningTimer;
     ToThread arguments;
@@ -36,9 +36,9 @@ private:
     SVGInfo info();
 
 private slots:
+    void finished(int);
     void readyRead();
     void readyReadError();
-    void finished(int);
 };
 
 #endif // CLEANERTHREAD_H

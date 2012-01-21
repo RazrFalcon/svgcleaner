@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QComboBox>
 #include <QTime>
 #include <QSettings>
 
@@ -20,39 +21,41 @@ public:
 private:
     float compressMax;
     float compressMin;
-    int timeMax;
-    int timeMin;
     int inputSize;
     int outputSize;
     int position;
+    int timeMax;
+    int timeMin;
+    QComboBox *cmbSort;
     QList<CleanerThread *> cleanerList;
     QList<SVGInfo> itemList;
     QSettings *settings;
     QTime time;
     ToThread arguments;
 
-    void enableButtons(bool value);
-    void removeThumbs();
     void createStatistics();
+    void enableButtons(bool value);
     void killThreads();
+    void removeThumbs();
 
 private slots:
-    void errorHandler(const QString &text);
     void cleaningFinished();
-    void on_actionWizard_triggered();
+    void errorHandler(const QString &text);
+    void on_actionCompareView_triggered();
+    void on_actionInfo_triggered();
     void on_actionStart_triggered();
     void on_actionStop_triggered();
+    void on_actionWizard_triggered();
     void on_itemScroll_valueChanged(int value);
     void prepareStart();
     void progress(SVGInfo);
+    void sortingChanged(int value);
     void threadsCountChanged();
-    void on_actionCompareView_triggered();
-    void on_actionInfo_triggered();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
-    void resizeEvent(QResizeEvent *);
     void closeEvent(QCloseEvent *);
+    void resizeEvent(QResizeEvent *);
 };
 
 #endif // MAINWINDOW_H

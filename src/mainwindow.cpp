@@ -32,17 +32,19 @@ MainWindow::MainWindow(QWidget *parent) :
     settings = new QSettings(QSettings::NativeFormat, QSettings::UserScope,
                              "svgcleaner", "config");
 
+    // create sorting combobox
     QWidget *w = new QWidget();
     w->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     toolBar->addWidget(w);
-    QComboBox *combo = new QComboBox();
-    combo->addItem("Sort by name");
-    combo->addItem("Sort by size");
-    combo->addItem("Sort by attributes");
-    combo->addItem("Sort by elements");
-    combo->addItem("Sort by time");
-    combo->setMinimumHeight(toolBar->height());
-    toolBar->addWidget(combo);
+    cmbSort = new QComboBox();
+    cmbSort->addItem(tr("Sort by name"));
+    cmbSort->addItem(tr("Sort by size"));
+    cmbSort->addItem(tr("Sort by attributes"));
+    cmbSort->addItem(tr("Sort by elements"));
+    cmbSort->addItem(tr("Sort by time"));
+    cmbSort->setMinimumHeight(toolBar->height());
+    connect(cmbSort,SIGNAL(currentIndexChanged(int)),this,SLOT(sortingChanged(int)));
+    toolBar->addWidget(cmbSort);
 
     // setup threads menu
     int threadCount = settings->value("threadCount",QThread::idealThreadCount()).toInt();
@@ -128,6 +130,7 @@ void MainWindow::prepareStart()
     progressBar->setValue(0);
     progressBar->setMaximum(arguments.inputFiles.count());
     itemLayout->addStretch(100);
+    cmbSort->setCurrentIndex(0);
 
     foreach (QLabel *lbl, gBoxSize->findChildren<QLabel *>(QRegExp("^lblI.*")))
         lbl->setText("0");
@@ -152,6 +155,7 @@ void MainWindow::enableButtons(bool value)
     actionWizard->setEnabled(value);
     actionThreads->setEnabled(value);
     actionInfo->setEnabled(value);
+    cmbSort->setEnabled(value);
     progressBar->setVisible(!value);
 }
 
@@ -277,6 +281,33 @@ void MainWindow::on_actionInfo_triggered()
 {
     AboutDialog dialog;
     dialog.exec();
+}
+
+int sortValue;
+bool caseInsensitiveLessThan(SVGInfo &s1, SVGInfo &s2)
+{
+    if (sortValue == 0)
+        return s1.paths.last().toLower() < s2.paths.last().toLower();
+    else if (sortValue == 1)
+        return s1.sizes.last() < s2.sizes.last();
+    else if (sortValue == 2)
+        return s1.attrFinal < s2.attrFinal;
+    else if (sortValue == 3)
+        return s1.elemFinal < s2.elemFinal;
+    else if (sortValue == 4)
+        return s1.time < s2.time;
+    return s1.paths.last().toLower() < s2.paths.last().toLower();
+}
+
+void MainWindow::sortingChanged(int value)
+{
+    if (itemList.isEmpty())
+        return;
+    sortValue = value;
+    qSort(itemList.begin(),itemList.end(),caseInsensitiveLessThan);
+    int i = itemScroll->value();
+    foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
+        item->refill(itemList.at(i++),actionCompareView->isChecked());
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

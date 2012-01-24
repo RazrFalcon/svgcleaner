@@ -1,8 +1,9 @@
 [Desktop Entry]
 Name=SVG Cleaner
+Version=0.3
 GenericName=SVG Cleaning Program
 Comment=Batch, tunable, crossplatform SVG cleaning program
 Exec=svgcleaner-gui
-Icon=/usr/share/icons/hicolor/scalable/apps/svgcleaner.svg
+Icon=svgcleaner
 Type=Application
-Categories=Graphics;
+Categories=Qt;Graphics;

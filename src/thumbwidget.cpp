@@ -1,11 +1,6 @@
-#include <QDesktopServices>
 #include <QResizeEvent>
 #include <QFileInfo>
-#include <QUrl>
 #include <QtDebug>
-
-#include <QDialog>
-#include <QTimer>
 
 #include "thumbwidget.h"
 #include "someutils.h"
@@ -14,53 +9,16 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(this);
-    btnIn = new IconButton(this);
-    btnIn->setFixedSize(70,70);
-    btnIn->setFlat(true);
-    btnIn->setAccessibleName("input");
-    btnOut = new IconButton(this);
-    btnOut->setFixedSize(70,70);
-    btnOut->setFlat(true);
-    btnOut->setAccessibleName("output");
-    iconLayout->addWidget(btnIn);
-    iconLayout->addWidget(btnOut);
-    connect(btnIn,SIGNAL(clicked()),this,SLOT(openSVG()));
-    connect(btnOut,SIGNAL(clicked()),this,SLOT(openSVG()));
 
-    iconLayout->setSpacing(4);
+//    iconsWidget = new IconsWidget();
+//    gridLayout->addWidget(iconsWidget,0,0,5,1);
+
     refill(info,compare);
 }
 
 void ThumbWidget::refill(const SVGInfo &info, bool compare)
 {
     fullInfo = info;
-
-    if (compare) {
-        QPixmap pixIn(info.paths[SVGInfo::INPUT]);
-        if (pixIn.width() > 64)
-            pixIn = pixIn.scaled(64,64,Qt::KeepAspectRatio,Qt::SmoothTransformation);
-//        btnIn->show();
-        btnIn->setPath(info.paths[SVGInfo::INPUT]);
-        btnIn->setIcon(QIcon(pixIn));
-        btnIn->setIconSize(pixIn.size());
-        if (pixIn.isNull() || info.crashed) {
-        } else {
-            btnIn->setText("");
-        }
-    } else {
-        btnIn->hide();
-    }
-
-    QPixmap pixOut(info.paths[SVGInfo::OUTPUT]);
-    if (pixOut.width() > 64)
-        pixOut = pixOut.scaled(64,64,Qt::KeepAspectRatio,Qt::SmoothTransformation);
-    btnOut->setPath(info.paths[SVGInfo::OUTPUT]);
-    btnOut->setIcon(QIcon(pixOut));
-    btnOut->setIconSize(pixOut.size());
-    if (pixOut.isNull() || info.crashed) {
-
-    } else
-        btnOut->setText("");
 
     lblName->setText(QFileInfo(info.paths[SVGInfo::OUTPUT]).fileName());
     lblName->setToolTip(tr("Input file: ")+info.paths[SVGInfo::INPUT]);
@@ -79,12 +37,6 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
     lblTime->setText(utils.prepareTime(info.time));
 
     if (info.crashed) {
-        btnIn->setText(tr("crashed"));
-        btnIn->setIcon(QIcon());
-
-        btnOut->setText(tr("crashed"));
-        btnOut->setIcon(QIcon());
-
         lblElemP->setText("(0.00%)");
         lblAttrP->setText("(0.00%)");
         lblTime->setText("0");
@@ -94,6 +46,7 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
         lblSizeA->setText("0");
         lblSizeP->setText("(0.00%)");
     } else {
+        iconsWidget->setPaths(info.paths[SVGInfo::INPUT],info.paths[SVGInfo::OUTPUT],compare);
         // size
         lblSizeB->setText(utils.prepareSize(info.sizes[SVGInfo::INPUT]));
         lblSizeA->setText(utils.prepareSize(info.sizes[SVGInfo::OUTPUT]));
@@ -106,19 +59,10 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
     }
 }
 
-void ThumbWidget::openSVG()
-{
-    QPushButton *btn = qobject_cast<QPushButton *>(sender());
-    if (btn->accessibleName() == "input")
-        QDesktopServices::openUrl(QUrl(fullInfo.paths[SVGInfo::INPUT],QUrl::TolerantMode));
-    else
-        QDesktopServices::openUrl(QUrl(fullInfo.paths[SVGInfo::OUTPUT],QUrl::TolerantMode));
-}
-
 void ThumbWidget::resizeEvent(QResizeEvent *event)
 {
     QFontMetrics fm(QFont().defaultFamily());
-    int size = event->size().width()-lbl1->width()-iconLayout->sizeHint().width()-25;
+    int size = event->size().width()-lbl1->width()-iconsWidget->width()-25;
     QString normalStr = fm.elidedText(QFileInfo(fullInfo.paths[SVGInfo::OUTPUT]).fileName(),
                                       Qt::ElideLeft,size);
     lblName->setText(normalStr);

@@ -52,7 +52,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>516</width>
+         <width>461</width>
          <height>508</height>
         </rect>
        </property>
@@ -381,6 +381,12 @@
         </item>
         <item row="0" column="1">
          <widget class="QLabel" name="lblIFullTime">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>000ms</string>
           </property>

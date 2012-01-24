@@ -1,6 +1,7 @@
 #include <QDesktopServices>
 #include <QMouseEvent>
 #include <QUrl>
+#include <QBitmap>
 #include <QTimer>
 #include <QCursor>
 #include <QPainter>
@@ -11,8 +12,8 @@
 IconsWidget::IconsWidget(QWidget *parent) :
     QWidget(parent)
 {
-    diag = new QLabel();
-    diag->setWindowFlags(Qt::ToolTip);
+    toolTip = new QLabel();
+    toolTip->setWindowFlags(Qt::SplashScreen);
     setMouseTracking(true);
 //    setFixedWidth(200); // didn't work
 }
@@ -20,27 +21,37 @@ IconsWidget::IconsWidget(QWidget *parent) :
 void IconsWidget::setPaths(const QString &pathIn,const QString &pathOut,const bool compare)
 {
     inpath = pathIn;
+    outpath = pathOut;
 
     QPixmap pix1(pathIn);
+    QPixmap pix2(pathOut);
+    QImage image(pix1.width()+pix2.width()+20,pix2.height()+20,QImage::Format_ARGB32);
+    image.fill(0);
+    mainPix = QPixmap::fromImage(image, Qt::NoOpaqueDetection | Qt::AutoColor);
+    QPainter painter(&mainPix);
+    QPalette pal;
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.setPen(QPen(Qt::blue,2));
+    painter.setBrush(QBrush(pal.color(QPalette::Background)));
+    painter.drawRoundedRect(3,3,image.width()-7,image.height()-7,20,20);
+    painter.drawPixmap((image.width()-pix1.width()-pix2.width())/2,
+                       (image.height()-pix1.height())/2,pix1.width(),pix1.height(),pix1);
+    painter.drawPixmap((image.width()-pix1.width()-pix2.width())/2+pix1.width(),
+                       (image.height()-pix2.height())/2,pix2.width(),pix2.height(),pix2);
+    painter.end();
+
+
     if (compare) {
-        outpath = pathOut;
-        QPixmap pix2(pathOut);
-        QImage image(pix1.width()+pix2.width(),pix2.height(),QImage::Format_ARGB32_Premultiplied);
-        image.fill(0);
-        mainPix = QPixmap::fromImage(image, Qt::NoOpaqueDetection | Qt::AutoColor);
-        QPainter painter(&mainPix);
-        painter.drawPixmap(0,0,pix1.width(),pix1.height(),pix1);
-        painter.drawPixmap(pix2.width(),0,pix2.width(),pix2.height(),pix2);
-        painter.end();
         setFixedWidth(200);
     } else {
         outpath.clear();
-        mainPix = pix1;
         setFixedWidth(100);
     }
-    if (mainPix.width() > 500)
-        mainPix = mainPix.scaledToWidth(500,Qt::SmoothTransformation);
-    diag->setPixmap(mainPix);
+    if (mainPix.width() > 600)
+        mainPix = mainPix.scaledToWidth(600,Qt::SmoothTransformation);
+    toolTip->setPixmap(mainPix);
+    toolTip->setMask(mainPix.mask());
     isCrashed = false;
     repaint();
 }
@@ -57,7 +68,7 @@ void IconsWidget::enterEvent(QEvent *)
 
 void IconsWidget::leaveEvent(QEvent *)
 {
-    diag->hide();
+    toolTip->hide();
 }
 
 void IconsWidget::showToolTip()
@@ -65,7 +76,7 @@ void IconsWidget::showToolTip()
     QCursor curs;
     QPoint cursPos = mapFromGlobal(curs.pos());
     if (cursPos.x() > 0 && cursPos.y() > 0 && cursPos.y() < height() && cursPos.x() < width()) {
-        diag->show();
+        toolTip->show();
     }
 }
 
@@ -78,11 +89,11 @@ void IconsWidget::mouseMoveEvent(QMouseEvent *event)
         QPoint p = mapToGlobal(event->pos());
         QPoint p2 = mapToGlobal(QPoint(0,0));
         if (p.y()-mainPix.height()-12 > 0)
-            diag->setGeometry(p.x()-mainPix.width()/2,p2.y()-mainPix.height()-12,
-                              mainPix.width(),mainPix.height()+border);
+            toolTip->setGeometry(p.x()-mainPix.width()/2,p2.y()-mainPix.height()-12,
+                              mainPix.width(),mainPix.height());
         else
-            diag->setGeometry(p.x()-mainPix.width()/2,p2.y()+height()+border,
-                              mainPix.width(),mainPix.height()+border);
+            toolTip->setGeometry(p.x()-mainPix.width()/2,p2.y()+height()+border,
+                              mainPix.width(),mainPix.height());
     }
 }
 

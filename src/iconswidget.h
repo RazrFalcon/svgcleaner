@@ -16,7 +16,7 @@ public:
 private:
     QString inpath;
     QString outpath;
-    QLabel *diag;
+    QLabel *toolTip;
     bool isCrashed;
     QPixmap mainPix;
     

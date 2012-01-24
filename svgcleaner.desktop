@@ -5,4 +5,4 @@ Comment=Batch, tunable, crossplatform SVG cleaning program
 Exec=svgcleaner-gui
 Icon=/usr/share/icons/hicolor/scalable/apps/svgcleaner.svg
 Type=Application
-Categories=Graphics;
+Categories=Qt;Graphics;

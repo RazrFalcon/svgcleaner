@@ -12,13 +12,11 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
 {
     setupUi(this);
     btnIn = new QPushButton(this);
-    btnIn->setFixedSize(70,70);
+    btnIn->setFixedSize(80,80);
     btnIn->setFlat(true);
-    btnIn->setAccessibleName("input");
     btnOut = new QPushButton(this);
-    btnOut->setFixedSize(70,70);
+    btnOut->setFixedSize(80,80);
     btnOut->setFlat(true);
-    btnOut->setAccessibleName("output");
     iconLayout->addWidget(btnIn);
     iconLayout->addWidget(btnOut);
     connect(btnIn,SIGNAL(clicked()),this,SLOT(openSVG()));
@@ -34,11 +32,12 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
 
     if (compare) {
         QPixmap pixIn(info.paths[SVGInfo::INPUT]);
-        if (pixIn.width() > 64)
-            pixIn = pixIn.scaled(64,64,Qt::KeepAspectRatio,Qt::SmoothTransformation);
+        if (pixIn.width() > 74)
+            pixIn = pixIn.scaled(74,74,Qt::KeepAspectRatio,Qt::SmoothTransformation);
         btnIn->show();
         btnIn->setIcon(QIcon(pixIn));
         btnIn->setIconSize(pixIn.size());
+        btnIn->setAccessibleName(info.paths[SVGInfo::INPUT]);
         if (pixIn.isNull() || info.crashed) {
         } else {
             btnIn->setText("");
@@ -48,10 +47,11 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
     }
 
     QPixmap pixOut(info.paths[SVGInfo::OUTPUT]);
-    if (pixOut.width() > 64)
-        pixOut = pixOut.scaled(64,64,Qt::KeepAspectRatio,Qt::SmoothTransformation);
+    if (pixOut.width() > 74)
+        pixOut = pixOut.scaled(74,74,Qt::KeepAspectRatio,Qt::SmoothTransformation);
     btnOut->setIcon(QIcon(pixOut));
     btnOut->setIconSize(pixOut.size());
+    btnOut->setAccessibleName(info.paths[SVGInfo::OUTPUT]);
     if (pixOut.isNull() || info.crashed) {
 
     } else
@@ -104,10 +104,7 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
 void ThumbWidget::openSVG()
 {
     QPushButton *btn = qobject_cast<QPushButton *>(sender());
-    if (btn->accessibleName() == "input")
-        QDesktopServices::openUrl(QUrl(fullInfo.paths[SVGInfo::INPUT],QUrl::TolerantMode));
-    else
-        QDesktopServices::openUrl(QUrl(fullInfo.paths[SVGInfo::OUTPUT],QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl(btn->accessibleName()));
 }
 
 void ThumbWidget::resizeEvent(QResizeEvent *event)

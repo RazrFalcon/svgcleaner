@@ -131,9 +131,9 @@ SVGInfo CleanerThread::info()
     info.attrFinal = findValue("The final number of attributes is");
 
     // if svgz saved to svg with cleaning, we need to save size of uncompressed/uncleaned svg
-    if (QFileInfo(currentOut).suffix() == "svg"
-        && QFileInfo(currentIn).suffix() == "svgz"
-        || currentIn == currentOut) {
+    if ((QFileInfo(currentOut).suffix() == "svg"
+        && QFileInfo(currentIn).suffix() == "svgz")
+        || (currentIn == currentOut)) {
 
         info.sizes<<findValue("The initial file size is");
         info.compress = ((float)QFileInfo(currentOut).size()

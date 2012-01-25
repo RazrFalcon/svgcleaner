@@ -16,10 +16,6 @@ CleanerThread::CleanerThread(ToThread args, QObject *parent) :
     connect(proc,SIGNAL(finished(int)),this,SLOT(finished(int)));
 }
 
-CleanerThread::~CleanerThread()
-{
-}
-
 void CleanerThread::startNext(const QString &inFile, const QString &outFile)
 {
     cleaningTime = QTime::currentTime();
@@ -71,7 +67,7 @@ QString CleanerThread::prepareFile(const QString &file)
     }
     QDomNodeList nodeList = inputDom.childNodes();
     for (int i = 0; i < nodeList.count(); ++i) {
-        if (nodeList.at(i).nodeName() == "svg" || nodeList.at(i).nodeName() == "svg:svg") {
+        if (nodeList.at(i).nodeName().contains(QRegExp("svg|svg:svg"))) {
             QDomElement element = nodeList.at(i).toElement();
             element.removeAttribute("xml:space");
             QRegExp rx("px|pt|pc|mm|cm|m|in|ft|em|ex|%");
@@ -135,16 +131,17 @@ SVGInfo CleanerThread::info()
     info.attrFinal = findValue("The final number of attributes is");
 
     // if svgz saved to svg with cleaning, we need to save size of uncompressed/uncleaned svg
-    if (  QFileInfo(currentOut).suffix() == "svg"
-        && QFileInfo(currentIn).suffix() == "svgz") {
+    if (QFileInfo(currentOut).suffix() == "svg"
+        && QFileInfo(currentIn).suffix() == "svgz"
+        || currentIn == currentOut) {
 
         info.sizes<<findValue("The initial file size is");
         info.compress = ((float)QFileInfo(currentOut).size()
-                              /findValue("The initial file size is"))*100;
+                               /findValue("The initial file size is"))*100;
     } else {
         info.sizes<<QFileInfo(currentIn).size();
         info.compress = ((float)QFileInfo(currentOut).size()
-                              /QFileInfo(currentIn).size())*100;
+                               /QFileInfo(currentIn).size())*100;
     }
     if (info.compress > 100)
         info.compress = 100;

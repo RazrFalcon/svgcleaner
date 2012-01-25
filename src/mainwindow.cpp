@@ -5,11 +5,11 @@
 #include <QMessageBox>
 #include <QtDebug>
 
-#include "wizarddialog.h"
-#include "thumbwidget.h"
+#include "aboutdialog.h"
 #include "cleanerthread.h"
 #include "someutils.h"
-#include "aboutdialog.h"
+#include "thumbwidget.h"
+#include "wizarddialog.h"
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -119,6 +119,7 @@ void MainWindow::prepareStart()
     compressMin = 99;
     timeMax = 0;
     timeMin = 999999999;
+    timeFull = 0;
     inputSize = 0;
     outputSize = 0;
     enableButtons(false);
@@ -181,6 +182,7 @@ void MainWindow::progress(SVGInfo info)
         if (info.compress < compressMin && info.compress > 0)   compressMin = info.compress;
         if (info.time > timeMax) timeMax = info.time;
         if (info.time < timeMin) timeMin = info.time;
+        timeFull += info.time;
     }
 
     int available = scrollArea->height()/itemLayout->itemAt(0)->geometry().height();
@@ -216,8 +218,10 @@ void MainWindow::createStatistics()
     lblIFullTime->setText(utils.prepareTime(fullTime));
     lblIMaxTime->setText(utils.prepareTime(timeMax));
     if (lblICleaned->text().toInt() != 0)
-        lblIAverageTime->setText(utils.prepareTime(fullTime/lblICleaned->text().toInt()));
-    lblIMinTime->setText(utils.prepareTime(timeMin));
+        lblIAverageTime->setText(utils.prepareTime(timeFull/lblICleaned->text().toInt()));
+    qDebug()<<timeFull;
+    if (timeMin != 999999999)
+        lblIMinTime->setText(utils.prepareTime(timeMin));
 }
 
 void MainWindow::errorHandler(const QString &text)

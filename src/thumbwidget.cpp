@@ -2,7 +2,6 @@
 #include <QResizeEvent>
 #include <QFileInfo>
 #include <QUrl>
-#include <QtDebug>
 
 #include "thumbwidget.h"
 #include "someutils.h"

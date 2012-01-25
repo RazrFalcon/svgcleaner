@@ -219,7 +219,6 @@ void MainWindow::createStatistics()
     lblIMaxTime->setText(utils.prepareTime(timeMax));
     if (lblICleaned->text().toInt() != 0)
         lblIAverageTime->setText(utils.prepareTime(timeFull/lblICleaned->text().toInt()));
-    qDebug()<<timeFull;
     if (timeMin != 999999999)
         lblIMinTime->setText(utils.prepareTime(timeMin));
 }
@@ -322,6 +321,14 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             itemScroll->setValue(itemScroll->value()-1);
         else
             itemScroll->setValue(itemScroll->value()+1);
+        return true;
+    }
+    if (obj == scrollArea && event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_End)
+            itemScroll->setValue(itemScroll->maximum());
+        else if (keyEvent->key() == Qt::Key_Home)
+            itemScroll->setValue(0);
         return true;
     }
     return false;

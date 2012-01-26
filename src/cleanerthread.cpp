@@ -68,6 +68,7 @@ QString CleanerThread::prepareFile(const QString &file)
     QDomNodeList nodeList = inputDom.childNodes();
     for (int i = 0; i < nodeList.count(); ++i) {
         if (nodeList.at(i).nodeName().contains(QRegExp("svg|svg:svg"))) {
+//            (width || height ) && !viewBox
             QDomElement element = nodeList.at(i).toElement();
             element.removeAttribute("xml:space");
             QRegExp rx("px|pt|pc|mm|cm|m|in|ft|em|ex|%");
@@ -76,6 +77,10 @@ QString CleanerThread::prepareFile(const QString &file)
             QString height = element.attribute("height");
             height.remove(rx);
             if (width.toInt() < 0 || height.toInt() < 0)
+                return "";
+            else if ((element.attribute("width").contains("%")
+                     || element.attribute("height").contains("%"))
+                      && element.attribute("viewBox").isEmpty())
                 return "";
             else if (width.toInt() == 0 || height.toInt() == 0)
                 element.setAttribute("viewBox","0 0 0 0");

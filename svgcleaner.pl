@@ -757,7 +757,8 @@ sub bs_path {
 
 # подпрограмма создающая строку с описанием элемента (имена элементов, атрибуты и их значения)
 sub desc_elt {
-  my $desc_elt="";
+#   my $desc_elt="";
+  my $desc_elt;
   foreach my $elt ($_[0]->descendants_or_self) {
     $desc_elt = $desc_elt.$elt->name;
     foreach my $att ($elt->att_names) {
@@ -798,7 +799,8 @@ sub color_rrggbb {
   my $att_val = $_[0];
   # изменяем формат цвета с rgb(десятичные числа или проценты) на #RRGGBB
   if ($att_val=~ /^\s*rgb\(\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)\s*$/) {
-    (my $r,my $g,my $b) = ($1,$2,$3);
+#     (my $r,my $g,my $b) = ($1,$2,$3);
+    my ($r, $g, $b) = ($1,$2,$3);
     ($r,$g,$b) = ($r*255/100,$g*255/100,$b*255/100) if ($att_val=~ /%/);
     ($r,$g,$b) = split(' ',sprintf("%02x %02x %02x",int $r,int $g,int $b));
     $att_val = "#$r$g$b";
@@ -824,9 +826,10 @@ sub color_rrggbb {
 
 # подпрограмма округления десятичного числа
 sub round_num {
-  my $att_val = $_[0];
-  my $unit = $_[1];
-  my $dp = $_[2];
+#   my $att_val = $_[0];
+#   my $unit = $_[1];
+#   my $dp = $_[2];
+  my ($att_val, $unit, $dp) = @_;
   # +0 нужен для удаления лишних правых крайних нулей
   $att_val = sprintf("%.${dp}f", $att_val)+0 if ($att_val=~ /([\d]*\.[\d][\d]{$dp,})/);
   $att_val=~ s/^0\./\./ if ($att_val=~ /^0\.[\d]+/);
@@ -839,10 +842,11 @@ sub round_num {
 
 # подпрограмма пересчета всех возможных едениц измерения в пиксели
 sub units_px {
-  my $elt = $_[0];
-  my $att = $_[1];
-  my $att_val = $_[2];
-  my $unit = $_[3];
+#   my $elt = $_[0];
+#   my $att = $_[1];
+#   my $att_val = $_[2];
+#   my $unit = $_[3];
+  my ($elt, $att, $att_val, $unit) = @_;
   # пересчитываем em и ex в пиксели
   if ($unit~~['em','ex']) {
     # определяем размер фонта
@@ -886,14 +890,9 @@ sub units_px {
 
 # подпрограмма умножения матриц трансформации
 sub nested_transform {
-  my $a1;my $b1;my $c1;my $d1;my $e1;my $f1;
-  if ($_[0]=~/^$matrix$/) {
-    ($a1,$b1,$c1,$d1,$e1,$f1) = ($1,$2,$3,$4,$5,$6);
-  }
-  my $a2;my $b2;my $c2;my $d2;my $e2;my $f2;
-  if ($_[1]=~/^$matrix$/) {
-    ($a2,$b2,$c2,$d2,$e2,$f2) = ($1,$2,$3,$4,$5,$6);
-  }
+  my ($a1,$b1,$c1,$d1,$e1,$f1) = ($1,$2,$3,$4,$5,$6) if ($_[0]=~/^$matrix$/);
+  my ($a2,$b2,$c2,$d2,$e2,$f2) = ($1,$2,$3,$4,$5,$6) if ($_[1]=~/^$matrix$/);
+
   my $a = $a1*$a2+$c1*$b2;
   my $b = $b1*$a2+$d1*$b2;
   my $c = $a1*$c2+$c1*$d2;
@@ -945,6 +944,13 @@ sub angle_sin {
   my $rad = ($deg/180)*3.14159265358979;
 
   return sprintf("%.8f", sin($rad))+0;
+}
+
+
+# подпрограмма сравнения чисел с плавающей запятой
+sub equal {
+  my ($num1, $num2, $dp) = @_;
+  return sprintf("%.${dp}f", $num1) eq sprintf("%.${dp}f", $num2);
 }
 
 
@@ -1118,6 +1124,7 @@ my $elts_initial = scalar($root->descendants_or_self);
 
 # определяем начальное количество атрибутов в файле, а также преобразуем параметры атрибута style в атрибуты XML (это необходимо для последующих операций по оптимизации, которые используют XPath (XML Path Language) — язык запросов к элементам XML-документа)
 my $atts_initial = 0;
+
 foreach my $elt ($root->descendants_or_self) {
 
   $atts_initial+=($elt->att_nb);
@@ -1125,86 +1132,112 @@ foreach my $elt ($root->descendants_or_self) {
   # удаляем префикс 'svg:' из имен элементов
   $elt->set_tag($1) if ($elt->name=~ /^svg:(.+)$/);
 
-  # если элемент содержит атрибут style
-  if (defined $elt->att('style')) {
+  # получаем значение атрибута style
+  my $style = $elt->att('style');
+
+  # удаляем атрибут style, если он пустой
+  if (defined $style && $style=~ /^\s*$/) {
+
+    $elt->del_att('style');
+  }
+  # преобразовываем параметры атрибута style в атрибуты XML
+  elsif ($style && $style!~ /:\s*;/) {
+
     # создаем хэш, содержащий параметры и их значения
-    my %style = map { split(":",$_) } split(";",$elt->att('style'));
+    my %style = map { split(/\s*:\s*/,$_) } split(/\s*;\s*/,$style);
+
     # удаляем атрибут style
     $elt->del_att('style');
+    undef $style;
 
     # создаем атрибуты XML
     while ((my $att, my $att_val) = each %style) {
       # если ключ хэша начинается с буквы (если ключ будет начинатся с иного символа то SVG-файл станет непригодным), то создаем атрибут с именем ключа хэша и параметром равным значению ключа хэша
-      $att = $1 if ($att=~ /^\s+(.+)\s*$/);
-      $att_val = $1 if ($att_val=~ /^\s+(.+)\s*$/);
 
-      if ($att=~ /^fill$|^stroke$/ &&
-	  $att_val=~ /^(url\(#[^\)]+\)).+$/) {
-
-	$att_val = $1;
-      }
-
-	$elt->set_att($att => $att_val) if ($att=~ /^[a-z]/);
+      $elt->set_att($att => $att_val) if ($att=~ /^[a-z]/);
     }
   }
 
   # исправление значений атрибутов
+  CYCLE_FIX:
   while ((my $att, my $att_val) = each %{$elt->atts}) {
 
-    my $i;
+    # удаляем атрибут с пустым значением
+    if (defined $att_val && $att_val=~ /^\s*$/) {
+
+      $elt->del_att($att);
+      next CYCLE_FIX;
+    }
+
     # удаляем крайние пробелы из значений атрибутов
     if ($att_val=~ /^(\s+)/) {
+
       $att_val = substr $att_val, length $1;
-      $i = 1;
+      $elt->set_att($att => $att_val);
     }
     if ($att_val=~ /(\s+)$/) {
+
       $att_val = substr $att_val, 0, -(length $1);
-      $i = 1;
+      $elt->set_att($att => $att_val);
+    }
+    # удаляем обозначение юнита ('px') - это дефолтная еденица измерения
+    if ($att_val=~ /^($num)px$/) {
+
+      $att_val = $1;
+      $elt->set_att($att => $att_val);
+    }
+
+    # исправляем значения прозрачности
+    if ($att=~ /opacity$/ &&
+	$att_val=~ /^($num)($unit)?$/) {
+
+      if (($1 > 1 && !$2) || ($1 > 0 && $2)) {
+	$elt->set_att($att => "1");
+	next CYCLE_FIX;
+      }
+      elsif ($1 < 0) {
+	$elt->set_att($att => "0");
+	next CYCLE_FIX;
+      }
+    }
+
+    # исправляем отрицательные параметры атрибутов ширины, высоты и радиусов
+    if ($att=~ /height$|width$|^r$|^rx$|^ry$/ &&
+	$att_val=~ /^($num)($unit)?$/ && $1 < 0) {
+
+      $elt->set_att($att => "0");
+      next CYCLE_FIX;
+    }
+ 
+   # исправляем нулевые параметры атрибутов
+    # например: 0.000000 -> 0 или 0pt -> 0
+    if ($att_val=~ /^($num)($unit)?$/ &&
+	$1 == 0 && (length $1 > 1 || $2)) {
+
+      $elt->set_att($att => "0");
+      next CYCLE_FIX;
+    }
+
+    # удаляем крайние правые нули в числах
+    # например: 0.50 -> 0.5 или 5.000000 -> 5
+    if ($att_val=~ /^([-+]?\d*\.\d*0+)($unit)?$/ &&
+	$att ne "version") {
+
+      $att_val = $1+0;
+      $att_val = $att_val.$2 if ($2);
+      $elt->set_att($att => $att_val);
+      next CYCLE_FIX;
     }
 
     # исправляем ошибки в атрибутах, параметры которых задают ссылки
     # параметр 'url(#<IRI>) любые символы' меняем на 'url(#<IRI>)'
+    # например: 'url(#radialGradient4312) rgb(0, 0, 0)' -> 'url(#radialGradient4312)'
     if ($att_val=~ /^url\(#[^\)]+\)(.+)$/) {
+
       $att_val = substr $att_val, 0, -(length $1);
-      $i = 1;
+      $elt->set_att($att => $att_val);
+      next CYCLE_FIX;
     }
-
-    # удаляем обозначение юнита 'px' - это дефолтная еденица измерения
-    if ($att_val=~ /^($num)px$/) {
-      $att_val = $1;
-      $i = 1;
-    }
-
-    # исправляем нулевые параметры атрибутов
-    if ($att_val=~ /^($num)($unit)?$/ && $1 == 0) {
-      $att_val = 0;
-      $i = 1;
-    }
-
-    # удаляем крайние правые нули в числах
-    if ($att_val=~ /^([-+]?\d*\.\d*0+)($unit)?$/) {
-      $att_val = $1+0;
-      $att_val = $att_val.$2 if ($2);
-      $i = 1;
-    }
-
-    # исправляем отрицательные параметры атрибутов ширины и высоты
-    if ($att=~ /height$|width$|^r$|^rx$|^ry$/ && $att_val=~ /^-/) {
-      $att_val = 0;
-      $i = 1;
-    }
-
-    # исправляем значения прозрачности
-    if ($att=~ /opacity$/ && $att_val < 0) {
-      $att_val = 0;
-      $i = 1;
-    }
-    elsif ($att=~ /opacity$/ && $att_val > 1) {
-      $att_val = 1;
-      $i = 1;
-    }
-
-    $elt->set_att($att => $att_val) if ($i);
   }
 }
 
@@ -1298,6 +1331,13 @@ foreach ($root->descendants) {
   # получаем id элемента
   my $elt_id = $_->id;
   $elt_id = "none" unless ($elt_id);
+
+  # если внутри секции defs содержится элемент style, то выносим его за пределы defs
+  if ($elt_name eq "style" &&
+      $_->parent('defs')) {
+
+    $_->move(after => $defs);
+  }
 
   # если элемент должен находиться внутри элемента defs, но находится вне его
   if ($elt_name ~~ @defs_elts &&
@@ -1446,6 +1486,15 @@ foreach my $elt ($root->descendants) {
   }
 
 
+  # удаление элементов Microsoft Visio
+  if ($args{'visio_elts'} eq "delete" &&
+      $elt_name=~ /^v:/) {
+
+    &del_elt($elt,$elt_name,$elt_id,"it's a Microsoft Visio element");
+    next CYCLE_ELTS;
+  }
+
+
   # удаление невидимых элементов
   if ($args{'invisible_elts'} eq "delete") {
 
@@ -1467,17 +1516,15 @@ foreach my $elt ($root->descendants) {
     }
 
     # удаление элементов, которые не имеют ни заполнения (fill), ни обводки (stroke)
-    if ($elt_name ne "g" && ($elt->att('fill') && $elt->att('fill') eq "none") ||
-	(defined $elt->att('fill-opacity') && $elt->att('fill-opacity') == 0)) {
-# 	(defined $elt->att('fill-opacity') && $elt->att('fill-opacity')=~ /^-|^\+?0(\.0+)?$/)) {
+    if ($elt_name ne "g" && !($elt->parent('defs')) &&
+	(($elt->att('fill') && $elt->att('fill') eq "none") ||
+	(defined $elt->att('fill-opacity') && $elt->att('fill-opacity') == 0))) {
 
       if ((!$elt->att('stroke') && !$elt->parent('g[@stroke]')) ||
 	  (!$elt->att('stroke') && $elt->parent("g[\@stroke=\"none\"]")) ||
 	  ($elt->att('stroke') && $elt->att('stroke') eq "none") ||
 	  (defined $elt->att('stroke-opacity') && $elt->att('stroke-opacity') == 0) ||
 	  (defined $elt->att('stroke-width') && $elt->att('stroke-width') eq "0")) {
-# 	  (defined $elt->att('stroke-opacity') && $elt->att('stroke-opacity')=~ /^-|^\+?0(\.0+)?$/) ||
-# 	  (defined $elt->att('stroke-width') && $elt->att('stroke-width')=~ /^-|^\+?0(\.0+)?$unit?$/)) {
 
 	&del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
 	next CYCLE_ELTS;
@@ -1883,7 +1930,19 @@ foreach my $elt ($root->descendants) {
   if (($args{'unused_def'} eq "delete" || $args{'unref_id'} eq "delete") &&
       !$elt->parent('defs')) {
 
-    # обрабатываем все атрибуты этого элемента
+    # отдельно обрабатываем элемент style
+    if ($elt_name eq "style") {
+      foreach ($elt->children) {
+	if ($_->is_cdata) {
+	  my @urls = split(/(url\s*\(#[^\)]+\))/, ($_->cdata));
+	  foreach (@urls) {
+	    push @ref_id, $1 if ($_=~ /url\s*\(#([^\)]+)\)/ && !($1 ~~ @ref_id));
+	  }
+	}
+      }
+    }
+
+    # обрабатываем все атрибуты элемента
     while ((my $att, my $att_val) = each %{$elt->atts}) {
 
       # если атрибут содержит ссылку на другой элемент
@@ -1900,18 +1959,14 @@ foreach my $elt ($root->descendants) {
 	    $elt->set_att('fill' => 'none');
 
 	    if ((!$elt->att('stroke') && !$elt->parent('g[@stroke]')) ||
-	    (!$elt->att('stroke') && $elt->parent("g[\@stroke=\"none\"]")) ||
-	    ($elt->att('stroke') && $elt->att('stroke') eq "none") ||
-	    (defined $elt->att('stroke-opacity') && $elt->att('stroke-opacity')=~ /^-|^\+?0(\.0+)?$/) ||
-	    (defined $elt->att('stroke-width') && $elt->att('stroke-width')=~ /^-|^\+?0(\.0+)?$unit?$/)) {
+		(!$elt->att('stroke') && $elt->parent("g[\@stroke=\"none\"]")) ||
+		($elt->att('stroke') && $elt->att('stroke') eq "none") ||
+		(defined $elt->att('stroke-opacity') && $elt->att('stroke-opacity') == 0) ||
+		(defined $elt->att('stroke-width') && $elt->att('stroke-width') eq "0")) {
 
-	    $elt->delete;
+	      $elt->delete if ($args{'invisible_elts'} eq "delete");
 	    }
 	  }
-# 	  $elt->set_att('fill' => 'none') if ($att eq "fill");
-# 	  $elt->delete if ($att eq "fill" && !$elt->att('stroke') && !$elt->parent('g[@stroke]'));
-# 	  $elt->delete if ($att eq "fill" && $elt->att('stroke') eq "none");
-# 	  $elt->delete if ($att eq "fill" && $elt->att('stroke-width') && $elt->att('stroke-width')=~ /^-|^0$unit?$/);
 	} else {
 	  # в противном случае записываем ссылку в массив @ref_id (если соответствующего id еще нет в этом массиве)
 	  push @ref_id, $1 unless ($1 ~~ @ref_id);
@@ -1929,13 +1984,14 @@ my @out_link = @ref_id;
 # ЧИСТКА ЭЛЕМЕНТА DEFS #
 ########################
 
-if ($args{'unused_def'} eq "delete" ||
-    $args{'unref_id'} eq "delete") {
+if (($args{'unused_def'} eq "delete" ||
+    $args{'unref_id'} eq "delete") && @ref_id) {
 
   # цикл: обрабатываем все id из массива @ref_id
   foreach (@ref_id) {
     # цикл: обрабатываем элемент с текущим id и всех его потомков (поскольку они также могут содержать ссылки на другие элементы, как, например, дочерние элементы path у элементов clipPath или mask)
-    foreach my $elt ($twig->elt_id("$_")->descendants_or_self){
+
+    foreach my $elt ($twig->elt_id($_)->descendants_or_self){
 
       # цикл: обрабатываем атрибуты текущего элемента
       while ((my $att, my $att_val) = each %{$elt->atts}) {
@@ -1970,7 +2026,7 @@ if ($args{'unused_def'} eq "delete" ||
 }
 
 
-if ($args{'unused_def'} eq "delete" && $defs) {
+if ($args{'unused_def'} eq "delete" && $defs && @ref_id) {
 
   # цикл: обрабатываем все дочерние элементы элемента defs
   foreach my $elt ($defs->children) {
@@ -1979,8 +2035,8 @@ if ($args{'unused_def'} eq "delete" && $defs) {
     my $elt_id = $elt->id;
 #     $elt_id = "none" unless ($elt_id);
 
-    # удаляем элемент, если его имя не "style" и id не содержится в массиве @ref_id (списке id на которые имеются ссылки)
-    if ($elt->name ne "style" && $elt_id && !($elt_id~~@ref_id)) {
+    # удаляем элемент, если его id не содержится в массиве @ref_id (списке id на которые имеются ссылки)
+    if ($elt_id && !($elt_id~~@ref_id)) {
 
       # бывают случаи, когда сам элемент не содержится в списке id на которые имеются ссылки, а его потомки - содержатся
       if ($elt->children) {
@@ -1994,6 +2050,11 @@ if ($args{'unused_def'} eq "delete" && $defs) {
       &del_elt($elt,$elt_name,$elt_id,"it's an unused definition");
     }
   }
+}
+elsif ($args{'unused_def'} eq "delete" && !@ref_id) {
+
+  $root->first_child('defs')->delete;
+  undef $defs;
 }
 
 
@@ -2349,6 +2410,15 @@ foreach my $elt ($root->descendants_or_self) {
 	next CYCLE_ATTS; 
       }
 
+      # удаление пространств имен Microsoft Visio
+      if ($args{'visio_elts'} eq "delete" &&
+	  $args{'visio_atts'} eq "delete" &&
+	  $att eq "xmlns:v") {
+
+	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS; 
+      }
+
       # удаление пространства имен xlink
       if ($att eq "xmlns:xlink" &&
 	  !$twig->get_xpath('//*[@xlink:href or @xlink:type or @xlink:role or @xlink:arcrole or @xlink:title or @xlink:show or @xlink:actuate]')) {
@@ -2410,6 +2480,24 @@ foreach my $elt ($root->descendants_or_self) {
 	   $att_pref && $att_pref~~@adobe_pref) {
 
       &del_att($elt,$att,"it's an Adobe Illustrator attribute",$i,$elt_name,$elt_id);
+      next CYCLE_ATTS;
+    }
+
+
+    # удаление атрибутов Microsoft Visio
+    if ($args{'visio_elts'} ne "delete" &&
+	$elt_name!~ /^v:/ &&
+	$args{'visio_atts'} eq "delete" &&
+	$att=~ /^v:/) {
+
+      &del_att($elt,$att,"it's a Microsoft Visio attribute",$i,$elt_name,$elt_id);
+      next CYCLE_ATTS;
+    }
+    elsif ($args{'visio_elts'} eq "delete" &&
+	   $args{'visio_atts'} eq "delete" &&
+	   $att=~ /^v:/) {
+
+      &del_att($elt,$att,"it's a Microsoft Visio attribute",$i,$elt_name,$elt_id);
       next CYCLE_ATTS;
     }
 
@@ -2483,7 +2571,7 @@ foreach my $elt ($root->descendants_or_self) {
       $att_val = $actual_height if ($elt_name eq "svg" && $att eq "height");
 
       # новое значение атрибута
-      $att_val = &units_px($elt,$att,$1,$2) unless ($elt_name eq "svg");
+      $att_val = &units_px($elt,$att,$1,$2) unless ($elt_name eq "svg" || $elt->parent('defs') || $att eq "startOffset");
 
       # сохраняем значение атрибута, если оно было изменено
       if ("$att_val" ne "$old_att") {
@@ -2563,11 +2651,10 @@ foreach my $elt ($root->descendants_or_self) {
 	$att_val = "#000000";
       }
 
-      # не удаляем дефолтное значение атрибута fill, если содержащий его элемент находится в секции defs
-      if ($att_val eq $default_atts{$att} &&
-	  $att eq "fill" &&
-	  $elt_name~~@keep_fill &&
-	  $elt->parent('defs')) {
+      # не удаляем дефолтное значение атрибута fill, если содержащий его элемент находится в секции defs или этим элементом является 'svg'
+      if ($att_val eq $default_atts{$att} && $att eq "fill" &&
+	  (($elt->parent('defs') && $elt_name~~@keep_fill) ||
+	  $elt_name eq "svg")) {
 
 	next CYCLE_ATTS;
       }
@@ -3375,39 +3462,34 @@ foreach my $elt ($root->descendants_or_self) {
       # преобразование матрицы в одну из элементарных трансформаций, если это возможно
       if ($att_val=~ /^$matrix$/) {
 
+	my ($a,$b,$c,$d,$e,$f) = ($1+0,$2+0,$3+0,$4+0,$5+0,$6+0);
+
 	# translate - matrix(1,0,0,1,x,y)
-	$att_val = "translate($5,$6)" if ($1==1 && $2==0 && $3==0 && $4==1);
+	$att_val = "translate($e,$f)" if ($a==1 && $b==0 && $c==0 && $d==1);
 
 	# scale - matrix(kx,0,0,ky,0,0)
-	$att_val = "scale($1,$4)" if ($2==0 && $3==0 && $5==0 && $6==0);
+	$att_val = "scale($a,$d)" if ($b==0 && $c==0 && $e==0 && $f==0);
 
 	# rotate - matrix(cos(a),sin(a),-sin(a),cos(a),0,0)
-	if ($2==0 && $3==0 &&
-	    $1==$4 && $5==0 && $6==0 &&
-	    (&acos($1)-&asin($2))<0.01) {
+	if ($e==0 && $f==0 && $c && $b/$c==-1 &&
+	    $a==$d && $a<1 && $a>-1 &&
+	    &equal((&acos($a)), (&asin($b)), 2)) {
 
-	  my $angle = &asin($2);
-	  $att_val = "rotate($angle)";
-	}
-	elsif ($2!=0 && $3!=0 && $2/$3==-1 &&
-	    $1==$4 && $5==0 && $6==0 &&
-	    (&acos($1)-&asin($2))<0.01) {
-
-	  my $angle = &asin($2);
+	  my $angle = &asin($b);
 	  $att_val = "rotate($angle)";
 	}
 
 	# skewX - matrix(1,0,tg(a),1,0,0)
-	if ($1==1 && $2==0 && $4==1 && $5==0 && $6==0) {
+	if ($a==1 && $b==0 && $d==1 && $e==0 && $f==0 && $c!=0) {
 
-	  my $angle = &atan($3);
+	  my $angle = &atan($c);
 	  $att_val = "skewX($angle)";
 	}
 
 	# skewY - matrix(1,tg(a),0,1,0,0)
-	if ($1==1 && $3==0 && $4==1 && $5==0 && $6==0) {
+	if ($a==1 && $c==0 && $d==1 && $e==0 && $f==0 && $b!=0) {
 
-	  my $angle = &atan($2);
+	  my $angle = &atan($b);
 	  $att_val = "skewY($angle)";
 	}
       }

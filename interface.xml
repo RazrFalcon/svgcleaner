@@ -32,6 +32,10 @@
       <value>keep</value>
       <value>delete</value>
     </adobe_elts>
+    <visio_elts type="chBox" name="Remove Microsoft Visio elements" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </visio_elts>
     <invisible_elts type="chBox" name="Remove invisible elements" default="delete">
       <value>keep</value>
       <value>delete</value>
@@ -103,6 +107,10 @@
       <value>keep</value>
       <value>delete</value>
     </adobe_atts>
+    <visio_atts type="chBox" name="Remove Microsoft Visio attributes" default="delete">
+      <value>keep</value>
+      <value>delete</value>
+    </visio_atts>
     <stroke_atts type="chBox" name="Remove all stroke properties when there's no stroking" default="delete">
       <value>keep</value>
       <value>delete</value>

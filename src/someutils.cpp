@@ -32,7 +32,8 @@ QString SomeUtils::prepareTime(int ms)
                                              .arg(dt.toString("mm"))
                                              .arg(dt.toString("ss"))
                                              .arg(dt.toString("zzz"));
-    return timeStr.remove(QRegExp("00. "));
+    // slightly stupid, but works
+    return timeStr.remove(QRegExp("^00. ")).remove(QRegExp("^00. ")).remove(QRegExp("^00. "));
 }
 
 int SomeUtils::getTotalSize(const QStringList &list, int count)

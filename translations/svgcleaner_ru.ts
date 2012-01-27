@@ -16,6 +16,19 @@
     </message>
     <message>
         <location filename="../src/aboutdialog.ui" line="41"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SVG Cleaner is an application that cleans SVG images from unnecessary data in batch mode.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Autors:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The core Perl script was written by Andrey Bayrak, and the user interface (Qt4) was written by Eugene Raizner.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SVG Cleaner is licensed under the GNU General Public License, Version 3.&lt;br /&gt;The GNU General Public License is a free, copyleft license for software and other kinds of works.&lt;br /&gt;&lt;a href=&quot;http://www.gnu.org/copyleft/gpl.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;http://www.gnu.org/copyleft/gpl.html&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Batch, tunable, crossplatform SVG cleaning program.
 
 Autors:
@@ -23,7 +36,7 @@ GUI by	   Raizner Evgeniy &lt;razrfalcon@gmail.com&gt;
 Perl script by Andrey Bayrak &lt;andrey.bayrak@gmail.com&gt;
 
 Licenses: GNU GPL v3</source>
-        <translation>Программа для очистки SVG файлов.
+        <translation type="obsolete">Программа для очистки SVG файлов.
 
 Авторы:
 Интерфейс 	   Raizner Evgeniy &lt;razrfalcon@gmail.com&gt;
@@ -39,7 +52,7 @@ Perl-скрипт   Andrey Bayrak &lt;andrey.bayrak@gmail.com&gt;
         <translation type="obsolete">Вы должны установить XML-Twig.</translation>
     </message>
     <message>
-        <location filename="../src/cleanerthread.cpp" line="109"/>
+        <location filename="../src/cleanerthread.cpp" line="102"/>
         <source>You must install XML-Twig.</source>
         <translation>Вы должны установить XML-Twig.</translation>
     </message>
@@ -135,12 +148,12 @@ Perl-скрипт   Andrey Bayrak &lt;andrey.bayrak@gmail.com&gt;
         <location filename="../src/mainwindow.ui" line="346"/>
         <location filename="../src/mainwindow.ui" line="359"/>
         <location filename="../src/mainwindow.ui" line="372"/>
-        <location filename="../src/mainwindow.ui" line="385"/>
+        <location filename="../src/mainwindow.ui" line="391"/>
         <source>000ms</source>
         <translation>000мс</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="419"/>
+        <location filename="../src/mainwindow.ui" line="425"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -165,7 +178,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Запустить мастер &lt;span style=&quot; color:#808080;&quot;&gt;Crtl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="437"/>
+        <location filename="../src/mainwindow.ui" line="443"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -178,7 +191,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Запустить обработку &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+R&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="455"/>
+        <location filename="../src/mainwindow.ui" line="461"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -191,33 +204,63 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Остановить обработку &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+S&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="470"/>
+        <location filename="../src/mainwindow.ui" line="476"/>
         <source>Threads count</source>
         <translation>Количество потоков</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="478"/>
+        <location filename="../src/mainwindow.ui" line="484"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="492"/>
+        <location filename="../src/mainwindow.ui" line="498"/>
         <source>Compare view</source>
         <translation>Включить сравнение</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="49"/>
-        <location filename="../src/mainwindow.cpp" line="242"/>
+        <location filename="../src/mainwindow.cpp" line="40"/>
+        <source>Sort by name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="41"/>
+        <source>Sort by size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="42"/>
+        <source>Sort by compression</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="43"/>
+        <source>Sort by attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="44"/>
+        <source>Sort by elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="45"/>
+        <source>Sort by time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="63"/>
+        <location filename="../src/mainwindow.cpp" line="262"/>
         <source>Threads selected: </source>
         <translation>Потоков выбрано:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="210"/>
+        <location filename="../src/mainwindow.cpp" line="230"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="211"/>
+        <location filename="../src/mainwindow.cpp" line="231"/>
         <source>
 Processing will be stopped now.</source>
         <translation>
@@ -276,17 +319,21 @@ Processing will be stopped now.</source>
     </message>
     <message>
         <location filename="../src/thumbwidget.ui" line="273"/>
-        <source>Cleaning time:</source>
-        <translation>Время очистки:</translation>
+        <source>Processing time:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/thumbwidget.cpp" line="62"/>
+        <source>Cleaning time:</source>
+        <translation type="obsolete">Время очистки:</translation>
+    </message>
+    <message>
+        <location filename="../src/thumbwidget.cpp" line="60"/>
         <source>Input file: </source>
         <translation>Исходный файл:</translation>
     </message>
     <message>
-        <location filename="../src/thumbwidget.cpp" line="78"/>
-        <location filename="../src/thumbwidget.cpp" line="81"/>
+        <location filename="../src/thumbwidget.cpp" line="76"/>
+        <location filename="../src/thumbwidget.cpp" line="79"/>
         <source>crashed</source>
         <translation>ошибка</translation>
     </message>
@@ -349,13 +396,13 @@ Processing will be stopped now.</source>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="364"/>
-        <location filename="../src/wizarddialog.cpp" line="431"/>
+        <location filename="../src/wizarddialog.cpp" line="433"/>
         <source>filename</source>
         <translation>имя</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="371"/>
-        <location filename="../src/wizarddialog.cpp" line="430"/>
+        <location filename="../src/wizarddialog.cpp" line="432"/>
         <source>Example: </source>
         <translation>Пример:</translation>
     </message>
@@ -431,52 +478,52 @@ Processing will be stopped now.</source>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="46"/>
-        <location filename="../src/wizarddialog.cpp" line="256"/>
+        <location filename="../src/wizarddialog.cpp" line="258"/>
         <source>_cleaned</source>
         <translation>_очищенный</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="270"/>
+        <location filename="../src/wizarddialog.cpp" line="272"/>
         <source>Select input folder</source>
         <translation>Выберите исходную папку</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="283"/>
+        <location filename="../src/wizarddialog.cpp" line="285"/>
         <source>Select output folder</source>
         <translation>Выберите итоговую папку</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="294"/>
+        <location filename="../src/wizarddialog.cpp" line="296"/>
         <source>Input folder is not selected.</source>
         <translation>Исходная папка не задана.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="297"/>
+        <location filename="../src/wizarddialog.cpp" line="299"/>
         <source>Output folder is not selected.</source>
         <translation>Итоговая папка не задана.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="303"/>
+        <location filename="../src/wizarddialog.cpp" line="305"/>
         <source>Input folder is not exist.</source>
         <translation>Исходная папка не существует.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="306"/>
+        <location filename="../src/wizarddialog.cpp" line="308"/>
         <source>Input folder did not contain any svg, svgz files.</source>
         <translation>Исходная папка не содержит svg, svgz файлов.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="309"/>
+        <location filename="../src/wizarddialog.cpp" line="311"/>
         <source>You must install 7-Zip to use SVG Cleaner.</source>
         <translation>Вы должны установить 7-Zip для использования SVG Cleaner.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="312"/>
+        <location filename="../src/wizarddialog.cpp" line="314"/>
         <source>You must install Perl to use SVG Cleaner.</source>
         <translation>Вы должны установить Perl для использования SVG Cleaner.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="424"/>
+        <location filename="../src/wizarddialog.cpp" line="426"/>
         <source>You cannot remove default preset.</source>
         <translation>Вы не можете удалить стандартный пресет.</translation>
     </message>
@@ -499,7 +546,7 @@ Processing will be stopped now.</source>
         <translation type="obsolete">Итоговая папка не задана.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="300"/>
+        <location filename="../src/wizarddialog.cpp" line="302"/>
         <source>You must set prefix and suffix for this save method.</source>
         <translation>Вы должны задать префикс или суффикс для этого метода.</translation>
     </message>
@@ -518,18 +565,18 @@ Processing will be stopped now.</source>
         <translation type="obsolete">Исходная папка не содержит svg, svgz файлов.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="320"/>
-        <location filename="../src/wizarddialog.cpp" line="364"/>
+        <location filename="../src/wizarddialog.cpp" line="322"/>
+        <location filename="../src/wizarddialog.cpp" line="366"/>
         <source>Warning</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="356"/>
+        <location filename="../src/wizarddialog.cpp" line="358"/>
         <source>You must set preset name.</source>
         <translation>Вы должны задать имя пресета.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="365"/>
+        <location filename="../src/wizarddialog.cpp" line="367"/>
         <source>Preset already exist.
 Overwrite?</source>
         <translation>Пресет уже существует.

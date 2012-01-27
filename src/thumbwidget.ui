@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>459</width>
-    <height>109</height>
+    <height>110</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -270,7 +270,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Cleaning time:</string>
+         <string>Processing time:</string>
         </property>
        </widget>
       </item>

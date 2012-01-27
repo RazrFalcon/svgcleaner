@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
     cmbSort = new QComboBox();
     cmbSort->addItem(tr("Sort by name"));
     cmbSort->addItem(tr("Sort by size"));
+    cmbSort->addItem(tr("Sort by compression"));
     cmbSort->addItem(tr("Sort by attributes"));
     cmbSort->addItem(tr("Sort by elements"));
     cmbSort->addItem(tr("Sort by time"));
@@ -294,10 +295,12 @@ bool caseInsensitiveLessThan(SVGInfo &s1, SVGInfo &s2)
     else if (sortValue == 1)
         return s1.sizes.last() < s2.sizes.last();
     else if (sortValue == 2)
-        return s1.attrFinal < s2.attrFinal;
+        return s1.compress > s2.compress;
     else if (sortValue == 3)
-        return s1.elemFinal < s2.elemFinal;
+        return s1.attrFinal < s2.attrFinal;
     else if (sortValue == 4)
+        return s1.elemFinal < s2.elemFinal;
+    else if (sortValue == 5)
         return s1.time < s2.time;
     return s1.paths.last().toLower() < s2.paths.last().toLower();
 }

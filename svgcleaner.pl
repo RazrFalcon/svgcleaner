@@ -2051,7 +2051,7 @@ if ($args{'unused_def'} eq "delete" && $defs && @ref_id) {
     }
   }
 }
-elsif ($args{'unused_def'} eq "delete" && !@ref_id) {
+elsif ($args{'unused_def'} eq "delete" && $defs && !@ref_id) {
 
   $root->first_child('defs')->delete;
   undef $defs;

@@ -505,21 +505,6 @@ Processing will stop now.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="410"/>
-        <source>Save cleaned files into the output folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="423"/>
-        <source>Save cleaned files into the current folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="436"/>
-        <source>Overwrite original files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/wizarddialog.ui" line="472"/>
         <source>Select a preset:</source>
         <translation type="unfinished"></translation>
@@ -575,16 +560,19 @@ Processing will stop now.</source>
         <translation>Prohledávání složek včetně podsložek</translation>
     </message>
     <message>
+        <location filename="../src/wizarddialog.ui" line="410"/>
         <source>save cleaned files into the output folder</source>
-        <translation type="obsolete">Uložit uklizené soubory do výstupní složky</translation>
+        <translation type="unfinished">Uložit uklizené soubory do výstupní složky</translation>
     </message>
     <message>
+        <location filename="../src/wizarddialog.ui" line="423"/>
         <source>save cleaned files into the current folder</source>
-        <translation type="obsolete">Uložit uklizené soubory do nynější složky</translation>
+        <translation type="unfinished">Uložit uklizené soubory do nynější složky</translation>
     </message>
     <message>
+        <location filename="../src/wizarddialog.ui" line="436"/>
         <source>overwrite original files</source>
-        <translation type="obsolete">Přepsat původní soubory</translation>
+        <translation type="unfinished">Přepsat původní soubory</translation>
     </message>
     <message>
         <source>Select preset:</source>

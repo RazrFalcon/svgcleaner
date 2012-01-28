@@ -107,7 +107,7 @@ void CleanerThread::readyReadError()
 void CleanerThread::finished(int)
 {
     if (QFileInfo(currentOut).suffix() == "svgz") {
-        if (currentOut == currentIn) // because 7zip can't overwrite svgz, for some reason
+        if (currentOut == currentIn) // because 7zip can't overwrite the svgz, for some reason
             QFile(currentIn).remove();
         QFile(currentOut).remove(); // if it's already exist
 

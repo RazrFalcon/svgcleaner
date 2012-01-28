@@ -407,7 +407,7 @@
                 <string notr="true">1</string>
                </property>
                <property name="text">
-                <string>Save cleaned files into the output folder</string>
+                <string>save cleaned files into the output folder</string>
                </property>
                <property name="checked">
                 <bool>true</bool>
@@ -420,7 +420,7 @@
                 <string notr="true">2</string>
                </property>
                <property name="text">
-                <string>Save cleaned files into the current folder</string>
+                <string>save cleaned files into the current folder</string>
                </property>
                <property name="checked">
                 <bool>false</bool>
@@ -433,7 +433,7 @@
                 <string notr="true">3</string>
                </property>
                <property name="text">
-                <string>Overwrite original files</string>
+                <string>overwrite original files</string>
                </property>
                <property name="checked">
                 <bool>false</bool>

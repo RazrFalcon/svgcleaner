@@ -497,17 +497,12 @@ Processing will be stopped now.</source>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="410"/>
-        <source>Save cleaned files into the output folder</source>
+        <source>save cleaned files into the output folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="423"/>
-        <source>Save cleaned files into the current folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="436"/>
-        <source>Overwrite original files</source>
+        <source>save cleaned files into the current folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -529,8 +524,9 @@ Processing will be stopped now.</source>
         <translation type="obsolete">сохранить очищенные файлы в текущую папку</translation>
     </message>
     <message>
+        <location filename="../src/wizarddialog.ui" line="436"/>
         <source>overwrite original files</source>
-        <translation type="obsolete">перезаписать исходные файлы</translation>
+        <translation type="unfinished">перезаписать исходные файлы</translation>
     </message>
     <message>
         <source>Select preset:</source>

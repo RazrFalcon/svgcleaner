@@ -32,8 +32,7 @@ QString SomeUtils::prepareTime(int ms)
                                              .arg(dt.toString("mm"))
                                              .arg(dt.toString("ss"))
                                              .arg(dt.toString("zzz"));
-    // slightly stupid, but works
-    return timeStr.remove(QRegExp("^\\s*00h\\s*(00m\\s*)?(00s\\s*)?"));
+    return timeStr.remove(QRegExp("^(00. )*"));
 }
 
 QString SomeUtils::findFile(QString name, QString defaultFolder)

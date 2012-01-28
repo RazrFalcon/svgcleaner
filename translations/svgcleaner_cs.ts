@@ -6,6 +6,7 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../src/aboutdialog.ui" line="14"/>
+        <location filename="../src/aboutdialog.ui" line="45"/>
         <source>About</source>
         <translation>O</translation>
     </message>
@@ -15,17 +16,66 @@
         <translation>SVG Cleaner 0.3</translation>
     </message>
     <message>
-        <location filename="../src/aboutdialog.ui" line="41"/>
+        <location filename="../src/aboutdialog.ui" line="51"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SVG Cleaner is an application that cleans SVG images from unnecessary data in batch mode.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size, but not add quality.&lt;br /&gt;SVG Cleaner could help you to clean up your SVG files from unnecessary data. It works in batch mode and basically does two things:&lt;br /&gt;- removing elements and attributes that don&apos;t contribute to the final rendering; &lt;br /&gt;- making those elements and attributes that are actually used more compact.&lt;br /&gt;The app has a lot of options for cleanup and optimization and provides multithreaded file processing on the multicore processors.&lt;br /&gt;Usually, images cleaned by SVG Cleaner may be as small as 10-60% of the original sizes.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Important! Internal image viewer in SVG Cleaner uses QtSvg for rendering SVG images. Since Qt supports only the static features of SVG 1.2 Tiny that imposes a number of restrictions on rendering of advanced features. For instance, elements such as clipPath, mask, filters etc. will not be rendered at all.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;We apologize in advance for any bugs. Please send bug reports to svgcleanerteam@gmail.com.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aboutdialog.ui" line="65"/>
+        <source>Authors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aboutdialog.ui" line="71"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Raizner Evgeniy &amp;lt;razrfalcon@gmail.com&amp;gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Andrey Bayrak &amp;lt;andrey.bayrak@gmail.com&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aboutdialog.ui" line="84"/>
+        <source>License</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aboutdialog.ui" line="90"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This package was written by Raizner Evgeniy &amp;lt;razrfalcon@gmail.com&amp;gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Sat, 21 Jan 2012 02:00:00 +0200.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Autors:&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The core Perl script was written by Andrey Bayrak, and the user interface (Qt4) was written by Eugene Raizner.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The following copyright applies to this package:&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SVG Cleaner is licensed under the GNU General Public License, Version 3.&lt;br /&gt;The GNU General Public License is a free, copyleft license for software and other kinds of works.&lt;br /&gt;&lt;a href=&quot;http://www.gnu.org/copyleft/gpl.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;http://www.gnu.org/copyleft/gpl.html&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; Copyright: Raizner Evgeniy, Andrey Bayrak 2011&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; This program is free software; you can redistribute it and/or modify it&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; under the terms of the GNU General Public License as published by the Free&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; Software Foundation; either version 3 of the License, or (at your option)&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; any later version.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; This program is distributed in the hope that it will be useful, but WITHOUT&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; more details.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; You should have received a copy of the GNU General Public License along&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; with this program; if not, write to the Free Software Foundation, Inc.,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;On Debian GNU/Linux systems, the complete text of the GNU General&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Public License can be found in `/usr/share/common-licenses/GPL&apos;.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -53,7 +103,7 @@ Licence: GNU GPL v3</translation>
     <name>CleanerThread</name>
     <message>
         <location filename="../src/cleanerthread.cpp" line="102"/>
-        <source>You must install XML-Twig.</source>
+        <source>You have to install XML-Twig.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -68,9 +118,8 @@ Licence: GNU GPL v3</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/mainwindow.ui" line="94"/>
         <source>Tool Bar</source>
-        <translation>Nástrojový pruh</translation>
+        <translation type="obsolete">Nástrojový pruh</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="124"/>
@@ -131,6 +180,11 @@ Licence: GNU GPL v3</translation>
         <translation type="obsolete">0</translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.ui" line="94"/>
+        <source>ToolBar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/mainwindow.ui" line="160"/>
         <source>Cleaned:</source>
         <translation>Vyčištěno:</translation>
@@ -174,7 +228,7 @@ Licence: GNU GPL v3</translation>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Show wizard &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Show the wizard &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -314,7 +368,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/mainwindow.cpp" line="231"/>
         <source>
-Processing will be stopped now.</source>
+Processing will stop now.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -446,6 +500,36 @@ Processing will be stopped now.</source>
         <translation>Otevřít soubory ze vstupní složky a:</translation>
     </message>
     <message>
+        <location filename="../src/wizarddialog.ui" line="201"/>
+        <source>Open an input folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="410"/>
+        <source>Save cleaned files into the output folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="423"/>
+        <source>Save cleaned files into the current folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="436"/>
+        <source>Overwrite original files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="472"/>
+        <source>Select a preset:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="519"/>
+        <source>Save current settings as a preset:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>...</source>
         <translation type="obsolete">...</translation>
     </message>
@@ -455,6 +539,11 @@ Processing will be stopped now.</source>
         <translation>Vstupní složka:</translation>
     </message>
     <message>
+        <location filename="../src/wizarddialog.ui" line="263"/>
+        <source>Open an output folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/wizarddialog.ui" line="282"/>
         <source>Output folder:</source>
         <translation>Výstupní složka:</translation>
@@ -462,16 +551,6 @@ Processing will be stopped now.</source>
     <message>
         <source>.svg</source>
         <translation type="obsolete">.svg</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="201"/>
-        <source>Open input folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="263"/>
-        <source>Open output folder</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="364"/>
@@ -496,16 +575,6 @@ Processing will be stopped now.</source>
         <translation>Prohledávání složek včetně podsložek</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="410"/>
-        <source>save cleaned files into output folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="423"/>
-        <source>save cleaned files into current folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>save cleaned files into the output folder</source>
         <translation type="obsolete">Uložit uklizené soubory do výstupní složky</translation>
     </message>
@@ -514,14 +583,12 @@ Processing will be stopped now.</source>
         <translation type="obsolete">Uložit uklizené soubory do nynější složky</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="436"/>
         <source>overwrite original files</source>
-        <translation>Přepsat původní soubory</translation>
+        <translation type="obsolete">Přepsat původní soubory</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="472"/>
         <source>Select preset:</source>
-        <translation>Nastavit přednastavení:</translation>
+        <translation type="obsolete">Nastavit přednastavení:</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -536,9 +603,8 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="519"/>
         <source>Save current settings as preset:</source>
-        <translation>Uložit nynější nastavení jako přednastavení:</translation>
+        <translation type="obsolete">Uložit nynější nastavení jako přednastavení:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="533"/>
@@ -580,55 +646,79 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/wizarddialog.cpp" line="272"/>
+        <source>Select an input folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="285"/>
+        <source>Select an output folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="296"/>
+        <source>An input folder is not selected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="299"/>
+        <source>An output folder is not selected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="302"/>
+        <source>You have to set a prefix and a suffix for this save method.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="305"/>
+        <source>An input folder is not exist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="308"/>
+        <source>An input folder did not contain any svg, svgz files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="311"/>
+        <source>You have to install 7-Zip to use SVG Cleaner.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="314"/>
+        <source>You have to install Perl to use SVG Cleaner.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="358"/>
+        <source>You have to set preset name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="367"/>
+        <source>This preset already exists.
+Overwrite?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="426"/>
+        <source>You cannot remove the default preset.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/wizarddialog.cpp" line="46"/>
         <location filename="../src/wizarddialog.cpp" line="258"/>
         <source>_cleaned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="272"/>
         <source>Select input folder</source>
-        <translation>Vybrat vstupní složku</translation>
+        <translation type="obsolete">Vybrat vstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="285"/>
         <source>Select output folder</source>
-        <translation>Vybrat výstupní složku</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="296"/>
-        <source>Input folder is not selected.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="299"/>
-        <source>Output folder is not selected.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="305"/>
-        <source>Input folder is not exist.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="308"/>
-        <source>Input folder did not contain any svg, svgz files.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="311"/>
-        <source>You must install 7-Zip to use SVG Cleaner.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="314"/>
-        <source>You must install Perl to use SVG Cleaner.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="426"/>
-        <source>You cannot remove default preset.</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Vybrat výstupní složku</translation>
     </message>
     <message>
         <source>Input dir is not selected.</source>
@@ -639,9 +729,8 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Výstupní adresář není vybrán.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="302"/>
         <source>You must set prefix and suffix for this save method.</source>
-        <translation>Pro tento způsob ukládání musíte vybrat předponu a příponu.</translation>
+        <translation type="obsolete">Pro tento způsob ukládání musíte vybrat předponu a příponu.</translation>
     </message>
     <message>
         <source>Input dir is not exist.</source>
@@ -664,15 +753,13 @@ p, li { white-space: pre-wrap; }
         <translation>Varování</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="358"/>
         <source>You must set preset name.</source>
-        <translation>Musíte nastavit název přednastavení.</translation>
+        <translation type="obsolete">Musíte nastavit název přednastavení.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="367"/>
         <source>Preset already exist.
 Overwrite?</source>
-        <translation>Přednastavení již existuje.
+        <translation type="obsolete">Přednastavení již existuje.
 Přepsat?</translation>
     </message>
     <message>

@@ -33,17 +33,7 @@ QString SomeUtils::prepareTime(int ms)
                                              .arg(dt.toString("ss"))
                                              .arg(dt.toString("zzz"));
     // slightly stupid, but works
-    return timeStr.remove(QRegExp("^00. ")).remove(QRegExp("^00. ")).remove(QRegExp("^00. "));
-}
-
-int SomeUtils::getTotalSize(const QStringList &list, int count)
-{
-    int size = 0;
-    if (count == -1)
-        count = list.count();
-    for (int i = 0; i < count; ++i)
-        size += QFileInfo(list.at(i)).size();
-    return size;
+    return timeStr.remove(QRegExp("^\\s*00h\\s*(00m\\s*)?(00s\\s*)?"));
 }
 
 QString SomeUtils::findFile(QString name, QString defaultFolder)

@@ -36,6 +36,8 @@ RESOURCES   += icons/icons.qrc
 CODECFORSRC  = UTF-8
 windows:RC_FILE = icons/icon.rc
 
+#include(translations/translations.pri)
+
 unix {
     isEmpty (PREFIX):PREFIX = /usr
 

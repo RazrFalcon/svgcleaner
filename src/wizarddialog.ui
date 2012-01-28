@@ -198,7 +198,7 @@
              <item row="1" column="2" colspan="2">
               <widget class="QToolButton" name="btnOpenInDir">
                <property name="toolTip">
-                <string>Open input folder</string>
+                <string>Open an input folder</string>
                </property>
                <property name="text">
                 <string notr="true">...</string>
@@ -260,7 +260,7 @@
              <item row="1" column="2">
               <widget class="QToolButton" name="btnOpenOutDir">
                <property name="toolTip">
-                <string>Open output folder</string>
+                <string>Open an output folder</string>
                </property>
                <property name="text">
                 <string notr="true">...</string>
@@ -407,7 +407,7 @@
                 <string notr="true">1</string>
                </property>
                <property name="text">
-                <string>save cleaned files into output folder</string>
+                <string>Save cleaned files into the output folder</string>
                </property>
                <property name="checked">
                 <bool>true</bool>
@@ -420,7 +420,7 @@
                 <string notr="true">2</string>
                </property>
                <property name="text">
-                <string>save cleaned files into current folder</string>
+                <string>Save cleaned files into the current folder</string>
                </property>
                <property name="checked">
                 <bool>false</bool>
@@ -433,7 +433,7 @@
                 <string notr="true">3</string>
                </property>
                <property name="text">
-                <string>overwrite original files</string>
+                <string>Overwrite original files</string>
                </property>
                <property name="checked">
                 <bool>false</bool>
@@ -469,7 +469,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Select preset:</string>
+             <string>Select a preset:</string>
             </property>
            </widget>
           </item>
@@ -516,7 +516,7 @@ p, li { white-space: pre-wrap; }
           <item row="3" column="0" colspan="3">
            <widget class="QLabel" name="label">
             <property name="text">
-             <string>Save current settings as preset:</string>
+             <string>Save current settings as a preset:</string>
             </property>
            </widget>
           </item>

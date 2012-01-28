@@ -228,7 +228,7 @@ void MainWindow::errorHandler(const QString &text)
 {
     killThreads();
     QMessageBox::critical(this,tr("Error"),
-                          text+tr("\nProcessing will be stopped now."),
+                          text+tr("\nProcessing will stop now."),
                           QMessageBox::Ok);
 }
 

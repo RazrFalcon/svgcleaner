@@ -232,7 +232,9 @@ ${INSTALL_TYPE}
 RmDir /r "$INSTDIR"
 RmDir /r "C:\strawberry"
 
-${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin"
+${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "C:\strawberry\c\bin"
+${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "C:\strawberry\perl\site\bin"
+${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "C:\strawberry\perl\bin"
 
 !ifdef WEB_SITE
 Delete "$INSTDIR\${APP_NAME} website.url"

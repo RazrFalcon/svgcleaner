@@ -20,6 +20,9 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
     iconLayout->addWidget(btnOut);
     connect(btnIn,SIGNAL(clicked()),this,SLOT(openSVG()));
     connect(btnOut,SIGNAL(clicked()),this,SLOT(openSVG()));
+#ifdef Q_OS_WIN
+    frame->setFrameShadow(QFrame::Plain);
+#endif
 
     iconLayout->setSpacing(4);
     refill(info,compare);

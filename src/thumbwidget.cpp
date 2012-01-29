@@ -1,6 +1,5 @@
 #include <QResizeEvent>
 #include <QFileInfo>
-#include <QtDebug>
 
 #include "thumbwidget.h"
 #include "someutils.h"
@@ -9,6 +8,9 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(this);
+#ifdef Q_OS_WIN
+    frame->setFrameShadow(QFrame::Plain);
+#endif
 
 //    iconsWidget = new IconsWidget();
 //    gridLayout->addWidget(iconsWidget,0,0,5,1);

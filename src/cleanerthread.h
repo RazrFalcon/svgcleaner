@@ -14,7 +14,6 @@ class CleanerThread : public QObject
 
 public:
     explicit CleanerThread(ToThread args, QObject *parent = 0);
-    ~CleanerThread();
     void startNext(const QString &inFile,const QString &outFile);
 
 signals:
@@ -30,7 +29,6 @@ private:
     QTime cleaningTime;
     QTimer *cleaningTimer;
     ToThread arguments;
-
     int findValue(const QString &text);
     QString prepareFile(const QString &file);
     SVGInfo info();

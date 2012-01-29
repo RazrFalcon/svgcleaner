@@ -7,7 +7,7 @@ SVG Cleaner depend on:
 If you use Ubuntu - you can use this ppa:
 ppa:svg-cleaner-team/svgcleaner
 
-For windows you can use our installer.
+For windows you can use our installer hosted on github.
 
 To compile from source:
 1) qmake

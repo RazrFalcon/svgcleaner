@@ -250,7 +250,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Cleaning time:</string>
+         <string>Processing time:</string>
         </property>
        </widget>
       </item>

@@ -13,7 +13,5 @@ public:
     QString findFile(QString name, QString defaultFolder);
     QString prepareSize(int bytes);
     QString prepareTime(int ms);
-    int getTotalSize(const QStringList &list, int count = -1);
 };
-
 #endif // SOMEUTILS_H

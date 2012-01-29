@@ -26,6 +26,7 @@ private:
     int position;
     int timeMax;
     int timeMin;
+    float timeFull;
     QComboBox *cmbSort;
     QList<CleanerThread *> cleanerList;
     QList<SVGInfo> itemList;

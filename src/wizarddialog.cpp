@@ -269,7 +269,7 @@ void WizardDialog::on_btnOpenInDir_clicked()
     if (currPath.isEmpty())
         currPath = QDir::homePath();
 
-    QString path = QFileDialog::getExistingDirectory(this,tr("Select input folder"),
+    QString path = QFileDialog::getExistingDirectory(this,tr("Select an input folder"),
                                                      currPath,
                                                      QFileDialog::ShowDirsOnly);
     if (!path.isEmpty())
@@ -282,7 +282,7 @@ void WizardDialog::on_btnOpenOutDir_clicked()
     if (currPath.isEmpty())
         currPath = QDir::homePath();
 
-    QString path = QFileDialog::getExistingDirectory(this,tr("Select output folder"),
+    QString path = QFileDialog::getExistingDirectory(this,tr("Select an output folder"),
                                                      currPath,
                                                      QFileDialog::ShowDirsOnly);
     if (!path.isEmpty())
@@ -293,25 +293,25 @@ bool WizardDialog::checkForWarnings()
 {
     bool check = true;
     if (lineEditInDir->text().isEmpty()) {
-        createWarning(tr("Input folder is not selected."));
+        createWarning(tr("An input folder is not selected."));
         check = false;
     } else if (lineEditOutDir->text().isEmpty()) {
-        createWarning(tr("Output folder is not selected."));
+        createWarning(tr("An output folder is not selected."));
         check = false;
     } else if (lineEditPrefix->text().isEmpty() && lineEditSuffix->text().isEmpty()) {
-        createWarning(tr("You must set prefix and suffix for this save method."));
+        createWarning(tr("You have to set a prefix and a suffix for this save method."));
         check = false;
     } else if (!QDir(lineEditInDir->text()).exists()) {
-        createWarning(tr("Input folder is not exist."));
+        createWarning(tr("An input folder is not exist."));
         check = false;
     } else if (fileList.isEmpty()) {
-        createWarning(tr("Input folder did not contain any svg, svgz files."));
+        createWarning(tr("An input folder did not contain any svg, svgz files."));
         check = false;
     } else if (!checkFor7z()) {
-        createWarning(tr("You must install 7-Zip to use SVG Cleaner."));
+        createWarning(tr("You have to install 7-Zip to use SVG Cleaner."));
         check = false;
     } else if (!checkForPerl()) {
-        createWarning(tr("You must install Perl to use SVG Cleaner."));
+        createWarning(tr("You have to install Perl to use SVG Cleaner."));
         check = false;
     }
     return check;
@@ -355,7 +355,7 @@ void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &name)
 void WizardDialog::on_btnSavePreset_clicked()
 {
     if (linePresetName->text().isEmpty()) {
-        createWarning(tr("You must set preset name."));
+        createWarning(tr("You have to set preset name."));
         return;
     }
 
@@ -364,7 +364,7 @@ void WizardDialog::on_btnSavePreset_clicked()
     // overwrite old preset?
     if (QFile(path+linePresetName->text()+".preset").exists()) {
         int ansver = QMessageBox::warning(this,tr("Warning"),
-                                          tr("Preset already exist.\nOverwrite?"),
+                                          tr("This preset already exists.\nOverwrite?"),
                                           QMessageBox::Yes | QMessageBox::No);
         if (ansver == QMessageBox::No)
             return;
@@ -423,7 +423,7 @@ void WizardDialog::on_btnRmPreset_clicked()
         file.remove();
         cmbBoxPreset->removeItem(cmbBoxPreset->currentIndex());
     } else {
-        createWarning(tr("You cannot remove default preset."));
+        createWarning(tr("You cannot remove the default preset."));
     }
 }
 

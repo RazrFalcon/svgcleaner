@@ -43,14 +43,12 @@ windows:RC_FILE = icons/icon.rc
 unix {
     isEmpty (PREFIX):PREFIX = /usr
 
-    INSTALLS          += target desktop logo script presets interface #trans
+    INSTALLS          += target desktop logo script presets interface
 
     desktop.path       = $$PREFIX/share/applications
     desktop.files     += svgcleaner.desktop
     logo.path          = $$PREFIX/share/icons/hicolor/scalable/apps
     logo.files        += icons/svgcleaner.svg
-#    trans.path         = $$PREFIX/share/svgcleaner/translations
-#    trans.files       += svgcleaner_ru.qm svgcleaner_cs.qm
     interface.path     = $$PREFIX/share/svgcleaner
     interface.files   += interface.xml
     presets.path       = $$PREFIX/share/svgcleaner/presets

@@ -6,11 +6,11 @@
 #include <QMessageBox>
 #include <QtDebug>
 
-#include "wizarddialog.h"
-#include "thumbwidget.h"
+#include "aboutdialog.h"
 #include "cleanerthread.h"
 #include "someutils.h"
-#include "aboutdialog.h"
+#include "thumbwidget.h"
+#include "wizarddialog.h"
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     cmbSort = new QComboBox();
     cmbSort->addItem(tr("Sort by name"));
     cmbSort->addItem(tr("Sort by size"));
+    cmbSort->addItem(tr("Sort by compression"));
     cmbSort->addItem(tr("Sort by attributes"));
     cmbSort->addItem(tr("Sort by elements"));
     cmbSort->addItem(tr("Sort by time"));
@@ -120,6 +121,7 @@ void MainWindow::prepareStart()
     compressMin = 99;
     timeMax = 0;
     timeMin = 999999999;
+    timeFull = 0;
     inputSize = 0;
     outputSize = 0;
     enableButtons(false);
@@ -182,6 +184,7 @@ void MainWindow::progress(SVGInfo info)
         if (info.compress < compressMin && info.compress > 0)   compressMin = info.compress;
         if (info.time > timeMax) timeMax = info.time;
         if (info.time < timeMin) timeMin = info.time;
+        timeFull += info.time;
     }
 
     int available = scrollArea->height()/itemLayout->itemAt(0)->geometry().height();
@@ -217,15 +220,16 @@ void MainWindow::createStatistics()
     lblIFullTime->setText(utils.prepareTime(fullTime));
     lblIMaxTime->setText(utils.prepareTime(timeMax));
     if (lblICleaned->text().toInt() != 0)
-        lblIAverageTime->setText(utils.prepareTime(fullTime/lblICleaned->text().toInt()));
-    lblIMinTime->setText(utils.prepareTime(timeMin));
+        lblIAverageTime->setText(utils.prepareTime(timeFull/lblICleaned->text().toInt()));
+    if (timeMin != 999999999)
+        lblIMinTime->setText(utils.prepareTime(timeMin));
 }
 
 void MainWindow::errorHandler(const QString &text)
 {
     killThreads();
     QMessageBox::critical(this,tr("Error"),
-                          text+tr("\nProcessing will be stopped now."),
+                          text+tr("\nProcessing will stop now."),
                           QMessageBox::Ok);
 }
 
@@ -292,10 +296,12 @@ bool caseInsensitiveLessThan(SVGInfo &s1, SVGInfo &s2)
     else if (sortValue == 1)
         return s1.sizes.last() < s2.sizes.last();
     else if (sortValue == 2)
-        return s1.attrFinal < s2.attrFinal;
+        return s1.compress > s2.compress;
     else if (sortValue == 3)
-        return s1.elemFinal < s2.elemFinal;
+        return s1.attrFinal < s2.attrFinal;
     else if (sortValue == 4)
+        return s1.elemFinal < s2.elemFinal;
+    else if (sortValue == 5)
         return s1.time < s2.time;
     return s1.paths.last().toLower() < s2.paths.last().toLower();
 }

@@ -19,6 +19,7 @@ public:
     ~MainWindow();
 
 private:
+    bool pause;
     float compressMax;
     float compressMin;
     int inputSize;
@@ -38,6 +39,7 @@ private:
     void enableButtons(bool value);
     void killThreads();
     void removeThumbs();
+    void startNext();
 
 private slots:
     void cleaningFinished();

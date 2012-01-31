@@ -14,9 +14,14 @@
 GuiInfo::GuiInfo(QObject *parent) :
     QObject(parent)
 {
+//    QString locale = QLocale::system().name().remove(QRegExp("_.*"));
+//    qDebug()<<locale;
+//    locale = "ru";
+
     QDomDocument doc;
-    SomeUtils utils;
-    doc.setContent(loadFile(utils.findFile("interface.xml","/usr/share/svgcleaner/")));
+    doc.setContent(loadFile("/usr/share/svgcleaner/interface.xml"));
+//    doc.setContent(loadFile(SomeUtils::findFile("interface_"+locale+".xml",
+//                                                "/usr/share/svgcleaner/")));
     presetMap.insert("None",doc);
 
     // load presets

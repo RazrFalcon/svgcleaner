@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
     setupUi(this);
     qRegisterMetaType<SVGInfo>("SVGInfo");
 
+//    static const QString foo;
+    const QString foo = QT_TR_NOOP("foo");
+
     // setup GUI
     actionWizard->setIcon(QIcon(":/wizard.svgz"));
     actionStart->setIcon(QIcon(":/start.svgz"));
@@ -85,12 +88,23 @@ void MainWindow::on_actionWizard_triggered()
         arguments = wizard.threadArguments();
         actionStart->setEnabled(true);
     }
+    qDebug()<<"cli arguments:"<<arguments.args;
 }
 
 void MainWindow::on_actionStart_triggered()
 {
-    if (!actionStart->isEnabled())
-        return;
+//    if (!actionStart->isEnabled())
+//        return;
+
+    if (pause) {
+        actionStart->setIcon(QIcon(":/start.svgz"));
+        pause = true;
+        startNext();
+        actionStop->setEnabled(false);
+    } else {
+        actionStart->setIcon(QIcon(":/pause.svgz"));
+        pause = false;
+    }
 
     time = QTime::currentTime();
     time.start();
@@ -153,7 +167,7 @@ void MainWindow::removeThumbs()
 
 void MainWindow::enableButtons(bool value)
 {
-    actionStart->setEnabled(value);
+//    actionStart->setEnabled(value);
     actionStop->setEnabled(!value);
     actionWizard->setEnabled(value);
     actionThreads->setEnabled(value);
@@ -164,17 +178,9 @@ void MainWindow::enableButtons(bool value)
 
 void MainWindow::progress(SVGInfo info)
 {
-    itemList.append(info);
-    progressBar->setValue(progressBar->value()+1);
-    CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
-    if (position < arguments.inputFiles.count()) {
-        cleaner->startNext(arguments.inputFiles.at(position),arguments.outputFiles.at(position));
-        position++;
-    } else {
-        if (progressBar->value() == progressBar->maximum())
-            cleaningFinished();
-    }
+    startNext();
 
+    itemList.append(info);
     if (info.crashed)
         lblICrashed->setText(QString::number(lblICrashed->text().toInt()+1));
     else {
@@ -200,14 +206,29 @@ void MainWindow::progress(SVGInfo info)
     createStatistics();
 }
 
+void MainWindow::startNext()
+{
+    if (pause)
+        return;
+
+    progressBar->setValue(progressBar->value()+1);
+    CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
+    if (position < arguments.inputFiles.count()) {
+        cleaner->startNext(arguments.inputFiles.at(position),
+                           arguments.outputFiles.at(position));
+        position++;
+    } else {
+        if (progressBar->value() == progressBar->maximum())
+            cleaningFinished();
+    }
+}
+
 void MainWindow::createStatistics()
 {
-    SomeUtils utils;
-
     // files
     lblICleaned->setText(QString::number(progressBar->value()-lblICrashed->text().toInt()));
-    lblITotalSizeBefore->setText(utils.prepareSize(inputSize));
-    lblITotalSizeAfter->setText(utils.prepareSize(outputSize));
+    lblITotalSizeBefore->setText(SomeUtils::prepareSize(inputSize));
+    lblITotalSizeAfter->setText(SomeUtils::prepareSize(outputSize));
 
     // cleaned
     if (outputSize != 0 && inputSize != 0)
@@ -217,12 +238,12 @@ void MainWindow::createStatistics()
 
     // time
     int fullTime = time.elapsed();
-    lblIFullTime->setText(utils.prepareTime(fullTime));
-    lblIMaxTime->setText(utils.prepareTime(timeMax));
+    lblIFullTime->setText(SomeUtils::prepareTime(fullTime));
+    lblIMaxTime->setText(SomeUtils::prepareTime(timeMax));
     if (lblICleaned->text().toInt() != 0)
-        lblIAverageTime->setText(utils.prepareTime(timeFull/lblICleaned->text().toInt()));
+        lblIAverageTime->setText(SomeUtils::prepareTime(timeFull/lblICleaned->text().toInt()));
     if (timeMin != 999999999)
-        lblIMinTime->setText(utils.prepareTime(timeMin));
+        lblIMinTime->setText(SomeUtils::prepareTime(timeMin));
 }
 
 void MainWindow::errorHandler(const QString &text)

@@ -25,7 +25,7 @@ private:
     bool checkFor7z();
     bool checkForPerl();
     bool checkForWarnings();
-    QString argLine();
+    QString argsLine();
     QStringList getInFiles();
     QStringList getOutFiles();
     void createWarning(const QString &text);

@@ -6,14 +6,13 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../src/aboutdialog.ui" line="14"/>
+        <source>Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/aboutdialog.ui" line="45"/>
         <source>About</source>
         <translation>О программе</translation>
-    </message>
-    <message>
-        <location filename="../src/aboutdialog.ui" line="31"/>
-        <source>SVG Cleaner 0.3</source>
-        <translation></translation>
     </message>
     <message>
         <location filename="../src/aboutdialog.ui" line="51"/>
@@ -21,14 +20,9 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size, but not add quality.&lt;br /&gt;SVG Cleaner could help you to clean up your SVG files from unnecessary data. It works in batch mode and basically does two things:&lt;br /&gt;- removing elements and attributes that don&apos;t contribute to the final rendering; &lt;br /&gt;- making those elements and attributes that are actually used more compact.&lt;br /&gt;The app has a lot of options for cleanup and optimization and provides multithreaded file processing on the multicore processors.&lt;br /&gt;Usually, images cleaned by SVG Cleaner may be as small as 10-60% of the original sizes.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size, but not add quality.&lt;br /&gt;&lt;br /&gt;SVG Cleaner could help you to clean up your SVG files from unnecessary data. It works in batch mode and basically does two things:&lt;br /&gt;- removing elements and attributes that don&apos;t contribute to the final rendering; &lt;br /&gt;- making those elements and attributes that are actually used more compact.&lt;br /&gt;The app has a lot of options for cleanup and optimization and provides multithreaded file processing on the multicore processors.&lt;br /&gt;Usually, images cleaned by SVG Cleaner may be as small as 10-60% of the original sizes.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Important! Internal image viewer in SVG Cleaner uses QtSvg for rendering SVG images. Since Qt supports only the static features of SVG 1.2 Tiny that imposes a number of restrictions on rendering of advanced features. For instance, elements such as clipPath, mask, filters etc. will not be rendered at all.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;We apologize in advance for any bugs. Please send bug reports to svgcleanerteam@gmail.com.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/aboutdialog.ui" line="65"/>
-        <source>Authors</source>
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;We apologize in advance for any bugs. Please send bug reports to &lt;/span&gt;&lt;a href=&quot;svgcleanerteam@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;svgcleanerteam@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -37,17 +31,16 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Raizner Evgeniy &amp;lt;razrfalcon@gmail.com&amp;gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Andrey Bayrak &amp;lt;andrey.bayrak@gmail.com&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Developers:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Raizner Evgeniy &amp;lt;&lt;a href=&quot;razrfalcon@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;razrfalcon@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Bayrak Andrey &amp;lt;&lt;a href=&quot;andrey.bayrak@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;andrey.bayrak@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Special thanks:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Prokoudine Alexandre &amp;lt;&lt;a href=&quot;alexandre.prokoudine@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;alexandre.prokoudine@gmail.com&lt;/span&gt;&lt;/a&gt;&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aboutdialog.ui" line="84"/>
-        <source>License</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/aboutdialog.ui" line="90"/>
+        <location filename="../src/aboutdialog.ui" line="94"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -57,7 +50,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The following copyright applies to this package:&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; Copyright: Raizner Evgeniy, Andrey Bayrak 2011&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; Copyright: Raizner Evgeniy, Bayrak Andrey 2012&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; This program is free software; you can redistribute it and/or modify it&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; under the terms of the GNU General Public License as published by the Free&lt;/p&gt;
@@ -76,6 +69,21 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;On Debian GNU/Linux systems, the complete text of the GNU General&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Public License can be found in `/usr/share/common-licenses/GPL&apos;.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aboutdialog.ui" line="31"/>
+        <source>SVG Cleaner 0.3</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/aboutdialog.ui" line="65"/>
+        <source>Authors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/aboutdialog.ui" line="88"/>
+        <source>License</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -108,6 +116,14 @@ Perl-скрипт   Andrey Bayrak &lt;andrey.bayrak@gmail.com&gt;
     <message>
         <location filename="../src/cleanerthread.cpp" line="102"/>
         <source>You have to install XML-Twig.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>IconsWidget</name>
+    <message>
+        <location filename="../src/iconswidget.cpp" line="110"/>
+        <source>Crashed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -220,6 +236,11 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.ui" line="484"/>
+        <source>Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -275,9 +296,8 @@ p, li { white-space: pre-wrap; }
         <translation>Количество потоков</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="484"/>
         <source>About</source>
-        <translation>О программе</translation>
+        <translation type="obsolete">О программе</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="498"/>
@@ -285,48 +305,53 @@ p, li { white-space: pre-wrap; }
         <translation>Включить сравнение</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="40"/>
-        <source>Sort by name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="41"/>
-        <source>Sort by size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="42"/>
-        <source>Sort by compression</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="43"/>
-        <source>Sort by attributes</source>
+        <location filename="../src/mainwindow.cpp" line="23"/>
+        <source>foo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="44"/>
-        <source>Sort by elements</source>
+        <source>Sort by name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="45"/>
+        <source>Sort by size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="46"/>
+        <source>Sort by compression</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="47"/>
+        <source>Sort by attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="48"/>
+        <source>Sort by elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="49"/>
         <source>Sort by time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="63"/>
-        <location filename="../src/mainwindow.cpp" line="262"/>
+        <location filename="../src/mainwindow.cpp" line="67"/>
+        <location filename="../src/mainwindow.cpp" line="283"/>
         <source>Threads selected: </source>
         <translation>Потоков выбрано:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="230"/>
+        <location filename="../src/mainwindow.cpp" line="251"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="231"/>
+        <location filename="../src/mainwindow.cpp" line="252"/>
         <source>
 Processing will stop now.</source>
         <translation type="unfinished"></translation>
@@ -369,27 +394,27 @@ Processing will be stopped now.</source>
 <context>
     <name>ThumbWidget</name>
     <message>
-        <location filename="../src/thumbwidget.ui" line="51"/>
+        <location filename="../src/thumbwidget.ui" line="282"/>
         <source>File name:</source>
         <translation>Имя файла:</translation>
     </message>
     <message>
-        <location filename="../src/thumbwidget.ui" line="92"/>
+        <location filename="../src/thumbwidget.ui" line="72"/>
         <source>Size:</source>
         <translation>Размер:</translation>
     </message>
     <message>
-        <location filename="../src/thumbwidget.ui" line="161"/>
+        <location filename="../src/thumbwidget.ui" line="141"/>
         <source>Elements:</source>
         <translation>Элементов:</translation>
     </message>
     <message>
-        <location filename="../src/thumbwidget.ui" line="217"/>
+        <location filename="../src/thumbwidget.ui" line="197"/>
         <source>Attributes:</source>
         <translation>Атрибутов:</translation>
     </message>
     <message>
-        <location filename="../src/thumbwidget.ui" line="273"/>
+        <location filename="../src/thumbwidget.ui" line="253"/>
         <source>Processing time:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -398,15 +423,13 @@ Processing will be stopped now.</source>
         <translation type="obsolete">Время очистки:</translation>
     </message>
     <message>
-        <location filename="../src/thumbwidget.cpp" line="60"/>
+        <location filename="../src/thumbwidget.cpp" line="23"/>
         <source>Input file: </source>
         <translation>Исходный файл:</translation>
     </message>
     <message>
-        <location filename="../src/thumbwidget.cpp" line="76"/>
-        <location filename="../src/thumbwidget.cpp" line="79"/>
         <source>crashed</source>
-        <translation>ошибка</translation>
+        <translation type="obsolete">ошибка</translation>
     </message>
 </context>
 <context>
@@ -475,13 +498,13 @@ Processing will be stopped now.</source>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="364"/>
-        <location filename="../src/wizarddialog.cpp" line="433"/>
+        <location filename="../src/wizarddialog.cpp" line="432"/>
         <source>filename</source>
         <translation>имя</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="371"/>
-        <location filename="../src/wizarddialog.cpp" line="432"/>
+        <location filename="../src/wizarddialog.cpp" line="431"/>
         <source>Example: </source>
         <translation>Пример:</translation>
     </message>
@@ -572,69 +595,69 @@ Processing will be stopped now.</source>
         <translation>Пресеты</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="272"/>
+        <location filename="../src/wizarddialog.cpp" line="271"/>
         <source>Select an input folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="285"/>
+        <location filename="../src/wizarddialog.cpp" line="284"/>
         <source>Select an output folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="296"/>
+        <location filename="../src/wizarddialog.cpp" line="295"/>
         <source>An input folder is not selected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="299"/>
+        <location filename="../src/wizarddialog.cpp" line="298"/>
         <source>An output folder is not selected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="302"/>
+        <location filename="../src/wizarddialog.cpp" line="301"/>
         <source>You have to set a prefix and a suffix for this save method.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="305"/>
+        <location filename="../src/wizarddialog.cpp" line="304"/>
         <source>An input folder is not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="308"/>
+        <location filename="../src/wizarddialog.cpp" line="307"/>
         <source>An input folder did not contain any svg, svgz files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="311"/>
+        <location filename="../src/wizarddialog.cpp" line="310"/>
         <source>You have to install 7-Zip to use SVG Cleaner.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="314"/>
+        <location filename="../src/wizarddialog.cpp" line="313"/>
         <source>You have to install Perl to use SVG Cleaner.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="358"/>
+        <location filename="../src/wizarddialog.cpp" line="357"/>
         <source>You have to set preset name.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="367"/>
+        <location filename="../src/wizarddialog.cpp" line="366"/>
         <source>This preset already exists.
 Overwrite?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="426"/>
+        <location filename="../src/wizarddialog.cpp" line="425"/>
         <source>You cannot remove the default preset.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="46"/>
-        <location filename="../src/wizarddialog.cpp" line="258"/>
+        <location filename="../src/wizarddialog.cpp" line="257"/>
         <source>_cleaned</source>
         <translation>_очищенный</translation>
     </message>
@@ -711,8 +734,8 @@ Overwrite?</source>
         <translation type="obsolete">Исходная папка не содержит svg, svgz файлов.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="322"/>
-        <location filename="../src/wizarddialog.cpp" line="366"/>
+        <location filename="../src/wizarddialog.cpp" line="321"/>
+        <location filename="../src/wizarddialog.cpp" line="365"/>
         <source>Warning</source>
         <translation>Ошибка</translation>
     </message>

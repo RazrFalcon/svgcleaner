@@ -481,7 +481,7 @@ p, li { white-space: pre-wrap; }
     <string notr="true">info</string>
    </property>
    <property name="toolTip">
-    <string>About</string>
+    <string>Information</string>
    </property>
   </action>
   <action name="actionCompareView">

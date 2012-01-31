@@ -141,17 +141,16 @@ void WizardDialog::on_buttonBox_clicked(QAbstractButton *button)
 
 ToThread WizardDialog::threadArguments()
 {
-    SomeUtils utils;
     ToThread threadArgs;
-    threadArgs.args = argLine();
+    threadArgs.args = argsLine();
     threadArgs.inputFiles = getInFiles();
     threadArgs.outputFiles = getOutFiles();
     threadArgs.level = QString::number(spinBoxCompress->value());
-    threadArgs.cleanerPath = utils.findFile("svgcleaner.pl","/usr/bin/");
+    threadArgs.cleanerPath = SomeUtils::findFile("svgcleaner.pl","/usr/bin/");
     return threadArgs;
 }
 
-QString WizardDialog::argLine()
+QString WizardDialog::argsLine()
 {
     QString tmpStr;
     foreach(QWidget *w, this->findChildren<QWidget *>()) {
@@ -172,7 +171,7 @@ QString WizardDialog::argLine()
             tmpStr.append(":");
         }
     }
-    tmpStr.remove(QRegExp("::"));
+    tmpStr.replace(QRegExp("::*"),":");
     return tmpStr;
 }
 

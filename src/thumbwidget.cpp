@@ -1,5 +1,6 @@
 #include <QResizeEvent>
 #include <QFileInfo>
+#include <QtDebug>
 
 #include "thumbwidget.h"
 #include "someutils.h"
@@ -11,10 +12,6 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
 #ifdef Q_OS_WIN
     frame->setFrameShadow(QFrame::Plain);
 #endif
-
-//    iconsWidget = new IconsWidget();
-//    gridLayout->addWidget(iconsWidget,0,0,5,1);
-
     refill(info,compare);
 }
 
@@ -25,8 +22,6 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
     lblName->setText(QFileInfo(info.paths[SVGInfo::OUTPUT]).fileName());
     lblName->setToolTip(tr("Input file: ")+info.paths[SVGInfo::INPUT]);
 
-    SomeUtils utils;
-
     // elements
     lblElemB->setText(QString::number(info.elemInitial));
     lblElemA->setText(QString::number(info.elemFinal));
@@ -36,8 +31,9 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
     lblAttrA->setText(QString::number(info.attrFinal));
 
     // time
-    lblTime->setText(utils.prepareTime(info.time));
+    lblTime->setText(SomeUtils::prepareTime(info.time));
 
+    iconsWidget->setPaths(info.paths[SVGInfo::INPUT],info.paths[SVGInfo::OUTPUT],compare);
     if (info.crashed) {
         lblElemP->setText("(0.00%)");
         lblAttrP->setText("(0.00%)");
@@ -47,11 +43,11 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
         lblSizeB->setText("0");
         lblSizeA->setText("0");
         lblSizeP->setText("(0.00%)");
+        iconsWidget->setCrashed(true);
     } else {
-        iconsWidget->setPaths(info.paths[SVGInfo::INPUT],info.paths[SVGInfo::OUTPUT],compare);
         // size
-        lblSizeB->setText(utils.prepareSize(info.sizes[SVGInfo::INPUT]));
-        lblSizeA->setText(utils.prepareSize(info.sizes[SVGInfo::OUTPUT]));
+        lblSizeB->setText(SomeUtils::prepareSize(info.sizes[SVGInfo::INPUT]));
+        lblSizeA->setText(SomeUtils::prepareSize(info.sizes[SVGInfo::OUTPUT]));
         lblSizeP->setText("("+QString::number(info.compress,'f',2)+"%)");
 
         lblElemP->setText("("+QString::number(((float)info.elemFinal/

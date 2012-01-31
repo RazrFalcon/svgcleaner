@@ -15,7 +15,6 @@ IconsWidget::IconsWidget(QWidget *parent) :
     toolTip = new QLabel();
     toolTip->setWindowFlags(Qt::SplashScreen);
     setMouseTracking(true);
-//    setFixedWidth(200); // didn't work
 }
 
 void IconsWidget::setPaths(const QString &pathIn,const QString &pathOut,const bool compare)
@@ -27,7 +26,7 @@ void IconsWidget::setPaths(const QString &pathIn,const QString &pathOut,const bo
     QPixmap pix2(pathOut);
     QImage image(pix1.width()+pix2.width()+20,pix2.height()+20,QImage::Format_ARGB32);
     image.fill(0);
-    mainPix = QPixmap::fromImage(image, Qt::NoOpaqueDetection | Qt::AutoColor);
+    mainPix = QPixmap::fromImage(image,Qt::NoOpaqueDetection|Qt::AutoColor);
     QPainter painter(&mainPix);
     QPalette pal;
     painter.setRenderHint(QPainter::Antialiasing);
@@ -41,7 +40,6 @@ void IconsWidget::setPaths(const QString &pathIn,const QString &pathOut,const bo
                        (image.height()-pix2.height())/2,pix2.width(),pix2.height(),pix2);
     painter.end();
 
-
     if (compare) {
         setFixedWidth(200);
     } else {
@@ -52,13 +50,14 @@ void IconsWidget::setPaths(const QString &pathIn,const QString &pathOut,const bo
         mainPix = mainPix.scaledToWidth(600,Qt::SmoothTransformation);
     toolTip->setPixmap(mainPix);
     toolTip->setMask(mainPix.mask());
-    isCrashed = false;
+    crashed = false;
     repaint();
 }
 
-void IconsWidget::crashed()
+void IconsWidget::setCrashed(bool flag)
 {
-    isCrashed = true;
+    crashed = flag;
+    repaint();
 }
 
 void IconsWidget::enterEvent(QEvent *)
@@ -73,6 +72,9 @@ void IconsWidget::leaveEvent(QEvent *)
 
 void IconsWidget::showToolTip()
 {
+    if (crashed)
+        return;
+
     QCursor curs;
     QPoint cursPos = mapFromGlobal(curs.pos());
     if (cursPos.x() > 0 && cursPos.y() > 0 && cursPos.y() < height() && cursPos.x() < width()) {
@@ -82,6 +84,9 @@ void IconsWidget::showToolTip()
 
 void IconsWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    if (crashed)
+        return;
+
     QCursor curs;
     QPoint cursPos = mapFromGlobal(curs.pos());
     if (cursPos.x() > 0 && cursPos.y() > 0 && cursPos.y() < height() && cursPos.x() < width()) {
@@ -100,12 +105,13 @@ void IconsWidget::mouseMoveEvent(QMouseEvent *event)
 void IconsWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    if (isCrashed) {
+    if (crashed) {
         painter.setPen(QPen(Qt::red));
-        painter.drawText(rect(),Qt::AlignCenter,tr("Creahed"));
+        painter.drawText(rect(),Qt::AlignCenter,tr("Crashed"));
     } else {
         QPixmap in = QPixmap(inpath).scaled(height(),height(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
         int heightBorder = (height()-in.height())/2;
+//        qDebug()<<in.width()<<in.height();
         painter.drawPixmap(0,heightBorder,in.width(),in.height(),in);
         if (!outpath.isEmpty()) {
             QPixmap out = QPixmap(outpath).scaled(height(),height(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
@@ -117,6 +123,8 @@ void IconsWidget::paintEvent(QPaintEvent *)
 void IconsWidget::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() != Qt::LeftButton)
+        return;
+    if (crashed)
         return;
 
     if (event->x() < width()/2)

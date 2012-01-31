@@ -11,13 +11,13 @@ class IconsWidget : public QWidget
 public:
     explicit IconsWidget(QWidget *parent = 0);
     void setPaths(const QString &pathIn, const QString &pathOut, const bool compare);
-    void crashed();
+    void setCrashed(bool flag);
 
 private:
     QString inpath;
     QString outpath;
     QLabel *toolTip;
-    bool isCrashed;
+    bool crashed;
     QPixmap mainPix;
     
 private slots:

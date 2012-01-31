@@ -172,7 +172,7 @@ QString WizardDialog::argLine()
             tmpStr.append(":");
         }
     }
-    tmpStr.remove(QRegExp("::"));
+    tmpStr.replace(QRegExp("::*"),":");
     return tmpStr;
 }
 

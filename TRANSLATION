@@ -1,0 +1,17 @@
+If you want to translate SVG Cleaner to your native language:
+
+    1) add new string to the translations/translations.pri file. 
+       TRANSLATIONS += translations/svgcleaner_(your country code).ts
+
+       For example: translations/svgcleaner_ru.ts
+
+    2) run "lupdate" from console or from Qt Creator (with SVG Cleaner source)
+       "Tools -> External -> Linguist -> Update translations (lupdate)".
+       This will create new file in "translations" folder with name, that you select in "translations.pri" file.
+
+    3) Open this file with "Qt Linguist" and now you can start translating.
+	
+Qt Linguist manual: http://developer.qt.nokia.com/doc/qt-4.8/linguist-translators.html
+
+Then you could send your translation to the our email:
+svgcleanerteam@gmail.com

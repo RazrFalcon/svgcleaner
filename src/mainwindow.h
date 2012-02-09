@@ -19,7 +19,6 @@ public:
     ~MainWindow();
 
 private:
-    bool pause;
     float compressMax;
     float compressMin;
     int inputSize;
@@ -37,7 +36,6 @@ private:
 
     void createStatistics();
     void enableButtons(bool value);
-    void killThreads();
     void removeThumbs();
     void startNext();
 
@@ -47,6 +45,7 @@ private slots:
     void on_actionCompareView_triggered();
     void on_actionInfo_triggered();
     void on_actionStart_triggered();
+    void on_actionPause_triggered();
     void on_actionStop_triggered();
     void on_actionWizard_triggered();
     void on_itemScroll_valueChanged(int value);

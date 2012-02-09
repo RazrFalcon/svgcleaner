@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QProcess>
 #include <QTime>
-#include <QTimer>
 
 #include "arguments.h"
 
@@ -27,7 +26,6 @@ private:
     QString outSVG;
     QString scriptOutput;
     QTime cleaningTime;
-    QTimer *cleaningTimer;
     ToThread arguments;
     int findValue(const QString &text);
     QString prepareFile(const QString &file);

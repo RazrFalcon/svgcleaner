@@ -5,7 +5,6 @@
 #include <QPushButton>
 
 #include "arguments.h"
-//#include "iconswidget.h"
 #include "ui_thumbwidget.h"
 
 class ThumbWidget : public QWidget, private Ui::ThumbWidget
@@ -18,7 +17,6 @@ public:
 
 private:
     SVGInfo fullInfo;
-//    IconsWidget *iconsWidget;
 
 protected:
     void resizeEvent(QResizeEvent *);

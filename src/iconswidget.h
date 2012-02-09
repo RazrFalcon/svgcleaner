@@ -18,6 +18,8 @@ private:
     QString outpath;
     QLabel *toolTip;
     bool crashed;
+    bool compareView;
+    bool toolTipEnabled;
     QPixmap mainPix;
     
 private slots:
@@ -28,6 +30,7 @@ protected:
     void leaveEvent(QEvent *);
     void mouseMoveEvent(QMouseEvent *);
     void mousePressEvent(QMouseEvent *);
+    void wheelEvent(QWheelEvent *);
     void paintEvent(QPaintEvent *);
 };
 

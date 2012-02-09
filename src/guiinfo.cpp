@@ -3,6 +3,8 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QComboBox>
+#include <QRadioButton>
+#include <QLineEdit>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QDir>
@@ -14,9 +16,9 @@
 GuiInfo::GuiInfo(QObject *parent) :
     QObject(parent)
 {
-//    QString locale = QLocale::system().name().remove(QRegExp("_.*"));
+    QString locale = QLocale::system().name().remove(QRegExp("_.*"));
 //    qDebug()<<locale;
-//    locale = "ru";
+    locale = "ru";
 
     QDomDocument doc;
     doc.setContent(loadFile("/usr/share/svgcleaner/interface.xml"));
@@ -91,6 +93,8 @@ void GuiInfo::start()
                 layout->addWidget(createComboBox(itemList.at(item)));
             else if (type == "spinBox")
                 layout->addWidget(createSpinBox(itemList.at(item)));
+            else if (type == "lineEdit")
+                layout->addWidget(createLineEdit(itemList.at(item)));
             else if (type == "chBox_sub")
                 layout->addWidget(createSub(itemList.at(item)));
         }
@@ -150,6 +154,7 @@ QCheckBox* GuiInfo::createCheckBox(const QDomNode &node)
 {
     QCheckBox *chBox = new QCheckBox(node.toElement().attribute("name"));
     chBox->setChecked(interDefValue(node));
+    chBox->setToolTip(node.toElement().attribute("tooltip"));
     chBox->setAccessibleName(node.toElement().tagName());
 
     return chBox;
@@ -161,6 +166,7 @@ QWidget* GuiInfo::createComboBox(const QDomNode &node)
 
     QComboBox *cmbBox = new QComboBox();
     cmbBox->setAccessibleName(node.toElement().tagName());
+    cmbBox->setToolTip(node.toElement().attribute("tooltip"));
     cmbBox->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     QDomNodeList valueList = node.childNodes();
     for (int i = 0; i < valueList.count(); ++i)
@@ -191,11 +197,43 @@ QWidget* GuiInfo::createSpinBox(const QDomNode &node)
     float max = node.toElement().attribute("max").toFloat();
     float step = node.toElement().attribute("step").toFloat();
     QString tagName = node.toElement().tagName();
+    QString tooltip = node.toElement().attribute("tooltip");
 
     if (step >= 1)
-        lay->addWidget(F1<QSpinBox>(defaultValue,min,max,step,tagName));
+        lay->addWidget(F1<QSpinBox>(defaultValue,min,max,step,tagName,tooltip));
     else
-        lay->addWidget(F1<QDoubleSpinBox>(defaultValue,min,max,step,tagName));
+        lay->addWidget(F1<QDoubleSpinBox>(defaultValue,min,max,step,tagName,tooltip));
+    widget->setLayout(lay);
+
+    return widget;
+}
+
+QWidget* GuiInfo::createRadioBtn(const QDomNode &node)
+{
+    QRadioButton *radioBtn = new QRadioButton(node.toElement().attribute("name"));
+    radioBtn->setChecked(interDefValue(node));
+    radioBtn->setToolTip(node.toElement().attribute("tooltip"));
+    radioBtn->setAccessibleName(node.toElement().tagName());
+
+    return radioBtn;
+}
+
+QWidget* GuiInfo::createLineEdit(const QDomNode &node)
+{
+    QLabel *lblTitle = new QLabel(node.toElement().attribute("name"));
+
+    QLineEdit *lineEdit = new QLineEdit();
+    qDebug()<<node.toElement().attribute("default");
+    lineEdit->setText(node.toElement().attribute("default"));
+    lineEdit->setToolTip(node.toElement().attribute("tooltip"));
+    lineEdit->setAccessibleName(node.toElement().tagName());
+    lineEdit->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+
+    QWidget *widget = new QWidget();
+    QHBoxLayout *lay = new QHBoxLayout();
+    lay->setContentsMargins(0,0,0,0);
+    lay->addWidget(lblTitle);
+    lay->addWidget(lineEdit);
     widget->setLayout(lay);
 
     return widget;
@@ -205,6 +243,7 @@ QWidget* GuiInfo::createSub(const QDomNode &node)
 {
     QCheckBox *chBox = new QCheckBox(node.toElement().attribute("name"));
     chBox->setChecked(interDefValue(node));
+    chBox->setToolTip(node.toElement().attribute("tooltip"));
     chBox->setAccessibleName(node.toElement().tagName());
 
     QWidget *widget = new QWidget();
@@ -227,6 +266,10 @@ QWidget* GuiInfo::createSub(const QDomNode &node)
             laySub->addWidget(createComboBox(itemList.at(i)));
         else if (type == "spinBox")
             laySub->addWidget(createSpinBox(itemList.at(i)));
+        else if (type == "radioBtn")
+            laySub->addWidget(createRadioBtn(itemList.at(i)));
+        else if (type == "lineEdit")
+            laySub->addWidget(createLineEdit(itemList.at(i)));
         else if (type == "chBox_sub")
             laySub->addWidget(createSub(itemList.at(i)));
 

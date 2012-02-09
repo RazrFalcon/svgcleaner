@@ -9,6 +9,7 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(this);
+    // fix Windows ugly frames...
 #ifdef Q_OS_WIN
     frame->setFrameShadow(QFrame::Plain);
 #endif
@@ -33,7 +34,9 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
     // time
     lblTime->setText(SomeUtils::prepareTime(info.time));
 
+    iconsWidget->setMinimumHeight(height()-20);
     iconsWidget->setPaths(info.paths[SVGInfo::INPUT],info.paths[SVGInfo::OUTPUT],compare);
+
     if (info.crashed) {
         lblElemP->setText("(0.00%)");
         lblAttrP->setText("(0.00%)");
@@ -65,4 +68,3 @@ void ThumbWidget::resizeEvent(QResizeEvent *event)
                                       Qt::ElideLeft,size);
     lblName->setText(normalStr);
 }
-

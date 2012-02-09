@@ -1,11 +1,10 @@
 QT       += core gui xml svg
 TEMPLATE  = app
-VERSION   = 0.3
+VERSION   = 0.4
 unix:TARGET    = svgcleaner-gui
 windows:TARGET = SVGCleaner
 
 SOURCES  += src/main.cpp \
-            src/guiinfo.cpp \
             src/thumbwidget.cpp \
             src/mainwindow.cpp \
             src/cleanerthread.cpp \
@@ -16,8 +15,7 @@ SOURCES  += src/main.cpp \
             src/wizarddialog.cpp \
             src/iconswidget.cpp
 		
-HEADERS  += src/guiinfo.h \
-            src/thumbwidget.h \
+HEADERS  += src/thumbwidget.h \
             src/mainwindow.h \
             src/cleanerthread.h \
             src/arguments.h \
@@ -33,7 +31,6 @@ FORMS    += src/thumbwidget.ui \
             src/aboutdialog.ui \
             src/wizarddialog.ui
 
-OTHER_FILES += interface.xml
 RESOURCES   += icons/icons.qrc
 CODECFORSRC  = UTF-8
 windows:RC_FILE = icons/icon.rc

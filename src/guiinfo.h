@@ -8,7 +8,7 @@
 #include <QMap>
 
 template <class SPIN>
-QWidget* F1(float value,float min,float max,float step, QString tagName)
+QWidget* F1(float value,float min,float max,float step, QString tagName, QString tooltip)
 {
     SPIN* spinBox = new SPIN;
     spinBox->setValue(value);
@@ -16,6 +16,7 @@ QWidget* F1(float value,float min,float max,float step, QString tagName)
     spinBox->setMaximum(max);
     spinBox->setSingleStep(step);
     spinBox->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+    spinBox->setToolTip(tooltip);
     spinBox->setAccessibleName(tagName);
     return spinBox;
 }
@@ -43,6 +44,8 @@ private:
     QString findInterface();
     QWidget* createComboBox(const QDomNode &node);
     QWidget* createSpinBox(const QDomNode &node);
+    QWidget* createRadioBtn(const QDomNode &node);
+    QWidget* createLineEdit(const QDomNode &node);
     QWidget* createSub(const QDomNode &node);
 
 signals:

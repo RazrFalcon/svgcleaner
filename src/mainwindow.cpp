@@ -19,18 +19,18 @@ MainWindow::MainWindow(QWidget *parent) :
     setupUi(this);
     qRegisterMetaType<SVGInfo>("SVGInfo");
 
-//    static const QString foo;
-    const QString foo = QT_TR_NOOP("foo");
-
     // setup GUI
     actionWizard->setIcon(QIcon(":/wizard.svgz"));
     actionStart->setIcon(QIcon(":/start.svgz"));
+    actionPause->setIcon(QIcon(":/pause.svgz"));
     actionStop->setIcon(QIcon(":/stop.svgz"));
     actionThreads->setIcon(QIcon(":/cpu.svgz"));
     actionInfo->setIcon(QIcon(":/information.svgz"));
     scrollArea->installEventFilter(this);
     progressBar->hide();
     itemScroll->hide();
+    dockStatistics->hide();
+    actionPause->setVisible(false);
 
     // load settings
     settings = new QSettings(QSettings::NativeFormat, QSettings::UserScope,
@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     cmbSort->addItem(tr("Sort by elements"));
     cmbSort->addItem(tr("Sort by time"));
     cmbSort->setMinimumHeight(toolBar->height());
+    cmbSort->hide();
     connect(cmbSort,SIGNAL(currentIndexChanged(int)),this,SLOT(sortingChanged(int)));
     toolBar->addWidget(cmbSort);
 
@@ -88,32 +89,38 @@ void MainWindow::on_actionWizard_triggered()
         arguments = wizard.threadArguments();
         actionStart->setEnabled(true);
     }
-    qDebug()<<"cli arguments:"<<arguments.args;
 }
 
 void MainWindow::on_actionStart_triggered()
 {
-//    if (!actionStart->isEnabled())
-//        return;
+    if (!actionStart->isEnabled())
+        return;
 
-    if (pause) {
-        actionStart->setIcon(QIcon(":/start.svgz"));
-        pause = true;
-        startNext();
-        actionStop->setEnabled(false);
-    } else {
-        actionStart->setIcon(QIcon(":/pause.svgz"));
-        pause = false;
+    if (itemList.isEmpty() || !actionStop->isEnabled()) {
+        time = QTime::currentTime();
+        time.start();
+        prepareStart();
+        actionCompareView->setEnabled(true);
+        dockStatistics->show();
     }
 
-    time = QTime::currentTime();
-    time.start();
+    if (!actionPause->isVisible()) {
+        enableButtons(false);
+        actionPause->setVisible(true);
+        actionStart->setVisible(false);
+    }
 
-    prepareStart();
     int threadCount = settings->value("threadCount",QThread::idealThreadCount()).toInt();
     if (arguments.inputFiles.count() < threadCount)
         threadCount = arguments.inputFiles.count();
 
+    if (position == arguments.inputFiles.count())
+        return;
+
+    qDebug()<<"start cleaning using:"<<arguments.cleanerPath;
+    qDebug()<<"with keys:";
+    foreach (QString key, arguments.args)
+        qDebug()<<key;
     for (int i = 0; i < threadCount; ++i) {
         QThread *thread = new QThread(this);
         CleanerThread *cleaner = new CleanerThread(arguments);
@@ -138,8 +145,8 @@ void MainWindow::prepareStart()
     timeFull = 0;
     inputSize = 0;
     outputSize = 0;
-    enableButtons(false);
     removeThumbs();
+    enableButtons(false);
     itemScroll->hide();
     itemScroll->setMaximum(0);
     itemScroll->setValue(0);
@@ -167,17 +174,19 @@ void MainWindow::removeThumbs()
 
 void MainWindow::enableButtons(bool value)
 {
-//    actionStart->setEnabled(value);
+    actionStart->setVisible(value);
+    actionPause->setVisible(!value);
     actionStop->setEnabled(!value);
     actionWizard->setEnabled(value);
     actionThreads->setEnabled(value);
     actionInfo->setEnabled(value);
-    cmbSort->setEnabled(value);
+    cmbSort->setVisible(value);
     progressBar->setVisible(!value);
 }
 
 void MainWindow::progress(SVGInfo info)
 {
+    progressBar->setValue(progressBar->value()+1);
     startNext();
 
     itemList.append(info);
@@ -208,19 +217,28 @@ void MainWindow::progress(SVGInfo info)
 
 void MainWindow::startNext()
 {
-    if (pause)
-        return;
-
-    progressBar->setValue(progressBar->value()+1);
     CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
-    if (position < arguments.inputFiles.count()) {
+    if (position < arguments.inputFiles.count() && actionPause->isVisible() && actionStop->isEnabled()) {
+        qDebug()<<"next";
         cleaner->startNext(arguments.inputFiles.at(position),
                            arguments.outputFiles.at(position));
         position++;
-    } else {
+    } else if (actionPause->isVisible() && actionStop->isEnabled()) {
+        qDebug()<<"finished";
         if (progressBar->value() == progressBar->maximum())
             cleaningFinished();
+    } else if (!actionStop->isEnabled() || !actionPause->isVisible()) {
+        qDebug()<<"stop";
+        cleaner->thread()->quit();
+        cleaner->thread()->wait();
+        cleaner->thread()->deleteLater();
     }
+}
+
+void MainWindow::on_actionPause_triggered()
+{
+    actionPause->setVisible(false);
+    actionStart->setVisible(true);
 }
 
 void MainWindow::createStatistics()
@@ -248,7 +266,7 @@ void MainWindow::createStatistics()
 
 void MainWindow::errorHandler(const QString &text)
 {
-    killThreads();
+    enableButtons(true);
     QMessageBox::critical(this,tr("Error"),
                           text+tr("\nProcessing will stop now."),
                           QMessageBox::Ok);
@@ -258,22 +276,16 @@ void MainWindow::on_actionStop_triggered()
 {
     if (!actionStop->isEnabled())
         return;
-    killThreads();
+    actionPause->setVisible(false);
+    enableButtons(true);
 }
 
 void MainWindow::cleaningFinished()
-{
-    killThreads();
-}
-
-void MainWindow::killThreads()
 {
     foreach (QThread *th, findChildren<QThread *>()) {
         th->quit();
         th->deleteLater();
     }
-    foreach (CleanerThread *cleaner, findChildren<CleanerThread *>())
-        cleaner->deleteLater();
     enableButtons(true);
 }
 
@@ -384,5 +396,10 @@ void MainWindow::resizeEvent(QResizeEvent *)
 
 void MainWindow::closeEvent(QCloseEvent *)
 {
-    killThreads();
+    foreach (QThread *th, findChildren<QThread *>()) {
+        qDebug()<<"QThread";
+        th->quit();
+        th->wait();
+        th->deleteLater();
+    }
 }

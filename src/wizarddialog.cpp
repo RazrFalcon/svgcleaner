@@ -20,9 +20,9 @@ WizardDialog::WizardDialog(QWidget *parent) :
             <<tr("Presets")
             <<tr("Elements")
             <<tr("Attributes")
+            <<tr("Paths")
             <<tr("Optimization")
-            <<tr("Output")
-            <<tr("Paths");
+            <<tr("Output");
     loadSettings();
     setupGUI();
 
@@ -191,8 +191,8 @@ QStringList WizardDialog::argsLine()
         if (!name.isEmpty()) {
             if (w->inherits("QCheckBox") && !qobject_cast<QCheckBox *>(w)->isChecked())
                 tmpList.append("--"+name+"=no");
-            else if (w->inherits("QRadioButton") && !qobject_cast<QRadioButton *>(w)->isChecked())
-                tmpList.append("--"+name+"=no");
+            else if (w->inherits("QRadioButton") && !isDefault(w))
+                tmpList.append("--"+name);
             else if (w->inherits("QLineEdit") && !isDefault(w))
                 tmpList.append("--"+name+"="+qobject_cast<QLineEdit *>(w)->text());
             else if (w->inherits("QComboBox") && !isDefault(w))
@@ -218,6 +218,10 @@ bool WizardDialog::isDefault(QWidget *w)
     if      ("QComboBox" == className
              && description.toInt() != qobject_cast<QComboBox *>(w)->currentIndex())
         flag = false;
+    else if ("QRadioButton" == className
+             && description != qobject_cast<QRadioButton *>(w)->accessibleName())
+        if (qobject_cast<QRadioButton *>(w)->isChecked())
+            flag = false;
     else if ("QLineEdit" == className
              && description != qobject_cast<QLineEdit *>(w)->text())
         flag = false;

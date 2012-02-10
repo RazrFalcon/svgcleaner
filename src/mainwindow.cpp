@@ -29,7 +29,6 @@ MainWindow::MainWindow(QWidget *parent) :
     scrollArea->installEventFilter(this);
     progressBar->hide();
     itemScroll->hide();
-    dockStatistics->hide();
     actionPause->setVisible(false);
 
     // load settings
@@ -48,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     cmbSort->addItem(tr("Sort by elements"));
     cmbSort->addItem(tr("Sort by time"));
     cmbSort->setMinimumHeight(toolBar->height());
-    cmbSort->hide();
+    cmbSort->setEnabled(false);
     connect(cmbSort,SIGNAL(currentIndexChanged(int)),this,SLOT(sortingChanged(int)));
     toolBar->addWidget(cmbSort);
 
@@ -88,6 +87,12 @@ void MainWindow::on_actionWizard_triggered()
     if (wizard.exec()) {
         arguments = wizard.threadArguments();
         actionStart->setEnabled(true);
+        if (!arguments.args.isEmpty()) {
+            qDebug()<<"start cleaning using:"<<arguments.cleanerPath;
+            qDebug()<<"with keys:";
+            foreach (QString key, arguments.args)
+                qDebug()<<key;
+        }
     }
 }
 
@@ -101,7 +106,6 @@ void MainWindow::on_actionStart_triggered()
         time.start();
         prepareStart();
         actionCompareView->setEnabled(true);
-        dockStatistics->show();
     }
 
     if (!actionPause->isVisible()) {
@@ -117,10 +121,10 @@ void MainWindow::on_actionStart_triggered()
     if (position == arguments.inputFiles.count())
         return;
 
-    qDebug()<<"start cleaning using:"<<arguments.cleanerPath;
-    qDebug()<<"with keys:";
-    foreach (QString key, arguments.args)
-        qDebug()<<key;
+//    qDebug()<<"start cleaning using:"<<arguments.cleanerPath;
+//    qDebug()<<"with keys:";
+//    foreach (QString key, arguments.args)
+//        qDebug()<<key;
     for (int i = 0; i < threadCount; ++i) {
         QThread *thread = new QThread(this);
         CleanerThread *cleaner = new CleanerThread(arguments);
@@ -180,7 +184,7 @@ void MainWindow::enableButtons(bool value)
     actionWizard->setEnabled(value);
     actionThreads->setEnabled(value);
     actionInfo->setEnabled(value);
-    cmbSort->setVisible(value);
+    cmbSort->setEnabled(value);
     progressBar->setVisible(!value);
 }
 
@@ -284,6 +288,7 @@ void MainWindow::cleaningFinished()
 {
     foreach (QThread *th, findChildren<QThread *>()) {
         th->quit();
+        th->wait();
         th->deleteLater();
     }
     enableButtons(true);
@@ -298,8 +303,11 @@ void MainWindow::threadsCountChanged()
 
 void MainWindow::on_itemScroll_valueChanged(int value)
 {
+    QTime fillTime = QTime::currentTime();
+    fillTime.start();
     foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
         item->refill(itemList.at(value++),actionCompareView->isChecked());
+    qDebug()<<fillTime.elapsed();
 }
 
 void MainWindow::on_actionCompareView_triggered()

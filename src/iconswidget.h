@@ -19,8 +19,10 @@ private:
     QLabel *toolTip;
     bool crashed;
     bool compareView;
-    bool toolTipEnabled;
+    bool newToolTip;
     QPixmap mainPix;
+    void makeToolTip();
+    void renderSvg(const QString path, QPainter *painter, QRect rect);
     
 private slots:
     void showToolTip();

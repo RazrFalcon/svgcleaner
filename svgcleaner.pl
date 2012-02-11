@@ -144,6 +144,12 @@ my %arg_limits =  (
   'remove-fill-props' => ['yes', 'no'],
   'remove-clippath-atts' => ['yes', 'no'],
   'remove-grad-coords' => ['yes', 'no'],
+  'remove-uwsp-path' => ['yes', 'no'],
+  'remove-empty-segments' => ['yes', 'no'],
+  'convert-lines-hv' => ['yes', 'no'],
+  'convert-curves-lines' => ['yes', 'no'],
+  'convert-curves-cs' => ['yes', 'no'],
+  'convert-curves-qt' => ['yes', 'no'],
   'enable-viewbox' => ['yes', 'no'],
   'convert-style-atts' => ['yes', 'no'],
   'convert-units-px' => ['yes', 'no'],
@@ -200,6 +206,12 @@ my %args =  (
   'remove-fill-props' => 'yes',
   'remove-clippath-atts' => 'yes',
   'remove-grad-coords' => 'yes',
+  'remove-uwsp-path' => 'yes',
+  'remove-empty-segments' => 'yes',
+  'convert-lines-hv' => 'yes',
+  'convert-curves-lines' => 'yes',
+  'convert-curves-cs' => 'yes',
+  'convert-curves-qt' => 'yes',
   'enable-viewbox' => 'yes',
   'convert-style-atts' => 'yes',
   'convert-units-px' => 'yes',
@@ -2964,128 +2976,52 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # преобразование абсолютных координат в относительные в атрибуте d
+#     if ($att eq "d" &&
+# 	$args{'convert-abs-paths'} eq "yes" &&
+# 	$att_val=~ /[MZLHVCSQTA]/) {
     if ($att eq "d" &&
-	$args{'convert-abs-paths'} eq "yes" &&
-	$att_val=~ /[MZLHVCSQTA]/) {
+	$args{'convert-abs-paths'} eq "yes") {
 
       # ПРАВИЛО РЕНДЕРИНГА: обработка команд и их параметров производится до выявления первой же ошибки (после нее путь дальше уже не отрисовывается)
 
-      # создаем массив с командами и их параметрами 
-      my @d = split(/([MZLHVCSQTAmzlhvcsqta])/, $att_val);
+      # новые данные path; последняя команда из новых данных path; текущие абсолютные координаты X и Y; абсолютные координаты X и Y из последней команды "moveto" (к этим координатам осуществляется переход после команды "closepath"); текущие относительные координаты X и Y
+      my ($d, $lrcmd, $cpX, $cpY, $lmX, $lmY, $dx, $dy);
+      # координаты для кривых Безье и параметры дуг
+      my ($dx1, $dy1, $dx2, $dy2, $rx, $ry, $xar, $laf, $sf);
+      # координаты контрольных точек для преобразования кривых Безье
+      my ($scpx, $scpy, $tcpx, $tcpy);
 
-      # новые данные path
-      my $d;
-      # последняя команда из новой строки path
-      my $rcmd;
-      # текущие абсолютные координаты X и Y
-      my $cpX; my $cpY;
-      # абсолютные координаты X и Y последней команды "moveto" (к этим координатам осуществляется переход после команды "closepath")
-      my $mX; my $mY;
-      # текущие относительные координаты X и Y
-      my $dx; my $dy;
-      # координаты для кривых Безье
-      my $dx1; my $dy1; my $dx2; my $dy2;
-      # параметры дуг
-      my $rx; my $ry; my $xar; my $laf; my $sf;
+    # разбиваем значение атрибута 'd' на массив с командами и их параметрами 
+    my @d = split(/([MZLHVCSQTAmzlhvcsqta])/, $att_val);
 
       # цикл обработки обработки данных текущего элемента path
       CYCLE_D:
       while (@d) {
-	# берем команду
+
+	# извлекаем имя команды
 	my $cmd = shift @d;
 
-	# обрабатываем команду "closepath": Z|z
+	# ОБРАБАТЫВАЕМ КОМАНДЫ
+
+	# "closepath": Z|z
 	if ($cmd~~['Z', 'z']) {
-	  ($cpX, $cpY) = ($mX, $mY);
+	  ($cpX, $cpY) = ($lmX, $lmY);
 	  $d = $d."z";
-	  $rcmd = "z";
+	  $lrcmd = "z";
 	}
 
-	# обрабатываем команду "moveto": M|m (x y)+
-	elsif ($cmd~~['M', 'm']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # обнуляем значение переменной $rcmd  
-	  undef $rcmd;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	# "moveto", "lineto", "smooth-quadratic-bezier-curveto":
+	# M|m|L|l|T|t (x y)+
+	elsif ($cmd~~['M', 'm', 'L', 'l', 'T', 't']) {
+	  # новые данные, которые получатся в результате обработки параметров текущей команды
 	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num)/, $param);
+	  # обнуляем значение переменной $lrcmd, если комадой является "moveto"
+	  undef $lrcmd if ($cmd~~['M', 'm']);
+	  # создаем массив с координатами
+	  my @param = split(/($num$cwsp?$num)/, shift @d);
 
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
-
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$cwsp?($num)$/) {
-	      # у самой первой команды "moveto" координаты всегда абсолютные
-	      if (!$d && !$data) {
-		($dx, $dy, $cpX, $cpY) = ($1, $2, $1, $2);
-	      }
-	      else {
-		($dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $1, $2) if ($cmd eq "M");
-		($dx, $dy, $cpX, $cpY) = ($1, $2, $cpX+$1, $cpY+$2) if ($cmd eq "m");
-	      }
-
-	      # округляем относительные координаты
-	      $dx = &round_num($dx,'',$args{'dp-coords'}) if ($args{'round-numbers'} eq "yes" && $dx=~ /\./);
-	      $dy = &round_num($dy,'',$args{'dp-coords'}) if ($args{'round-numbers'} eq "yes" && $dy=~ /\./);
-
-	      if (!$rcmd) {
-		($mX, $mY) = ($cpX, $cpY);
-		$data = $data."m$dx,$dy";
-		$rcmd = "m";
-	      }
-	      elsif ($rcmd~~['m','l'] && $dx && $dy) {
-		$data = $data." $dx,$dy";
-		$rcmd = "l";
-	      }
-	      elsif ($rcmd~~['h','v'] && $dx && $dy) {
-		$data = $data."l$dx,$dy";
-		$rcmd = "l";
-	      }
-	      elsif ($rcmd~~['m','l','v'] && $dx && !$dy) {
-		$data = $data."h$dx";
-		$rcmd = "h";
-	      }
-	      elsif ($rcmd eq "h" && $dx && !$dy) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dx += $1;
-		$data = $data." $dx";
-		$rcmd = "h";
-	      }
-	      elsif ($rcmd~~['m','l','h'] && !$dx && $dy) {
-		$data = $data."v$dy";
-		$rcmd = "v";
-	      }
-	      elsif ($rcmd eq "v" && !$dx && $dy) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dy += $1;
-		$data = $data." $dy";
-		$rcmd = "v";
-	      }
-	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
-	      last CYCLE_D;
-	    }
-	  }
-	  $d = $d.$data;
-	}
-
-	# обрабатываем команду "lineto": L|l (x y)
-	elsif ($cmd~~['L', 'l']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num)/, $param);
-
-	  # обрабатываем вышеуказанный массив
+	  # обрабатываем все координаты
+	  CYCLE_MLT:
 	  while (@param) {
 	    my $param = shift @param;
 
@@ -3093,7 +3029,10 @@ foreach my $elt ($root->descendants_or_self) {
 	    if ($param=~ /^($num)$cwsp?($num)$/) {
 
 	      # рассчитываем координаты
-	      if ($cmd eq "L") {
+	      if (!$d && !$data && $cmd~~['M', 'm']) {
+		($dx, $dy, $cpX, $cpY) = ($1, $2, $1, $2);
+	      }
+	      elsif ($cmd~~['M', 'L', 'T']) {
 		($dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $1, $2);
 	      }
 	      else {
@@ -3104,36 +3043,65 @@ foreach my $elt ($root->descendants_or_self) {
 	      $dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx=~ /\./);
 	      $dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy=~ /\./);
 
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd~~['m','l'] && $dx && $dy) {
-		$data = $data." $dx,$dy";
-		$rcmd = "l";
+	      # удаляем пустые сегменты (remove empty segments)
+	      # 'm0,0' (если это не самая первая команда), 'l0,0' и 't0,0'
+	      if ($args{'remove-empty-segments'} eq "yes" &&
+		  $d && !$dx && !$dy) {
+# 		print "Remove empty segments - $cmd\n";
+		next CYCLE_MLT;
 	      }
-	      elsif (!($rcmd~~['m','l']) && $dx && $dy) {
-		$data = $data."l$dx,$dy";
-		$rcmd = "l";
+
+	      # формируем переменную $data в зависимости от $lrcmd
+	      # для команды "smooth-quadratic-bezier-curveto"
+	      if ($cmd~~['T', 't']) {
+		if ($lrcmd eq "t") {
+		  $data = $data." $dx,$dy";
+		}
+		else {
+		  $data = $data."t$dx,$dy";
+		}
+		$lrcmd = "t";
 	      }
-	      elsif ($rcmd ne "h" && $dx && !$dy) {
-		$data = $data."h$dx";
-		$rcmd = "h";
-	      }
-	      elsif ($rcmd eq "h" && $dx && !$dy) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dx += $1;
-		$data = $data." $dx";
-		$rcmd = "h";
-	      }
-	      elsif ($rcmd ne "v" && !$dx && $dy) {
-		$data = $data."v$dy";
-		$rcmd = "v";
-	      }
-	      elsif ($rcmd eq "v" && !$dx && $dy) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dy += $1;
-		$data = $data." $dy";
-		$rcmd = "v";
+	      # для команд "moveto" и "lineto"
+	      else {
+		if ($args{'convert-lines-hv'} eq "yes" && $lrcmd &&
+		    (($dx && !$dy) || (!$dx && $dy))) {
+		  if ($dx && !$dy) {
+# 		    print "PathSegmentsReduced - $cmd->H\n";
+		    if ($lrcmd eq "h") {
+		      $data = $data." $dx";
+		    }
+		    else {
+		      $data = $data."h$dx";
+		    }
+		    $lrcmd = "h";
+		  }
+		  elsif (!$dx && $dy) {
+# 		    print "PathSegmentsReduced - $cmd->V\n";
+		    if ($lrcmd eq "v") {
+		      $data = $data." $dy";
+		    }
+		    else {
+		      $data = $data."v$dy";
+		    }
+		    $lrcmd = "v";
+		  }
+		}
+		else {
+		  if (!$lrcmd) {
+		    ($lmX, $lmY) = ($cpX, $cpY);
+		    $data = $data."m$dx,$dy";
+		  }
+		  else {
+		    if ($lrcmd eq "l") {
+		      $data = $data." $dx,$dy";
+		    }
+		    else {
+		      $data = $data."l$dx,$dy";
+		    }
+		  }
+		  $lrcmd = "l";
+		}
 	      }
 	    }
 	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
@@ -3145,93 +3113,198 @@ foreach my $elt ($root->descendants_or_self) {
 	  $d = $d.$data if ($data);
 	}
 
-	# обрабатываем команду "horizontal-lineto": H|h x
-	elsif ($cmd~~['H', 'h']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	# "horizontal-lineto", "vertical-lineto":
+	# H|h x+   V|v y+
+	elsif ($cmd~~['H', 'h', 'V', 'v']) {
+	  # новые данные, которые получатся в результате обработки параметров текущей команды
 	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num)/, $param);
+	  # создаем массив с координатами
+	  my @param = split(/($num)/, shift @d);
 
-	  # обрабатываем вышеуказанный массив
+	  # обрабатываем все координаты
+	  CYCLE_HV:
 	  while (@param) {
 	    my $param = shift @param;
 
-	    # если параметром является пара координат
+	    # если параметром является координата
 	    if ($param=~ /^($num)$/) {
 
 	      # рассчитываем координаты
-	      if ($cmd eq "H") {
-		($dx, $cpX) = ($1-$cpX, $1);
+	      ($dx, $cpX) = ($1-$cpX, $1) if ($cmd eq "H");
+	      ($dx, $cpX) = ($1, $cpX+$1) if ($cmd eq "h");
+	      ($dy, $cpY) = ($1-$cpY, $1) if ($cmd eq "V");
+	      ($dy, $cpY) = ($1, $cpY+$1) if ($cmd eq "v");
+
+	      # округляем относительные координаты
+	      $dx = &round_num($dx,'',$args{'dp-coords'}) if ($cmd~~['H', 'h'] && $dx=~ /\./);
+	      $dy = &round_num($dy,'',$args{'dp-coords'}) if ($cmd~~['V', 'v'] && $dy=~ /\./);
+
+	      # удаляем пустые сегменты (remove empty segments)
+	      # 'h0' и 'v0'
+	      if ($args{'remove-empty-segments'} eq "yes") {
+		if (($cmd~~['H', 'h'] && !$dx) ||
+		    ($cmd~~['V', 'v'] && !$dy)) {
+# 		  print "Remove empty segments - $cmd\n";
+		  next CYCLE_HV;
+		}
+	      }
+
+	      # формируем переменную $data в зависимости от $lrcmd
+	      # для команды "horizontal-lineto"
+	      if ($cmd~~['H', 'h']) {
+		if ($lrcmd eq "h") {
+		  $data = $data." $dx";
+		}
+		else {
+		  $data = $data."h$dx";
+		}
+		$lrcmd = "h";
+	      }
+	      # для команды "vertical-lineto"
+	      else {
+		if ($lrcmd eq "v") {
+		  $data = $data." $dy";
+		}
+		else {
+		  $data = $data."v$dy";
+		}
+		$lrcmd = "v";
+	      }
+	    }
+	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
+	    elsif ($param!~ /^$cwsp?$/) {
+	      $d = $d.$data if ($data);
+	      last CYCLE_D;
+	    }
+	  }
+	  $d = $d.$data if ($data);
+	}
+
+	# "smooth-curveto", "quadratic-bezier-curveto":
+	# S|s|Q|q (x1 y1 x y)+
+	elsif ($cmd~~['S', 's', 'Q', 'q']) {
+	  # новые данные, которые получатся в результате обработки параметров текущей команды
+	  my $data;
+	  # создаем массив с координатами
+	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num)/, shift @d);
+
+	  # обрабатываем все координаты
+	  CYCLE_SQ:
+	  while (@param) {
+	    my $param = shift @param;
+
+	    # если параметром являются координаты
+	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
+
+	      # рассчитываем координаты
+	      if ($cmd~~['S', 'Q']) {
+		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY, $3, $4);
 	      }
 	      else {
-		($dx, $cpX) = ($1, $cpX+$1);
+		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1, $2, $3, $4, $cpX+$3, $cpY+$4);
 	      }
 
 	      # округляем относительные координаты
+	      $dx1 = &round_num($dx1,'',$args{'dp-coords'}) if ($dx1=~ /\./);
+	      $dy1 = &round_num($dy1,'',$args{'dp-coords'}) if ($dy1=~ /\./);
 	      $dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx=~ /\./);
-
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "h" && $dx) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dx += $1;
-		$data = $data." $dx";
-		$rcmd = "h";
-	      }
-	      elsif ($rcmd ne "h" && $dx) {
-		$data = $data."h$dx";
-		$rcmd = "h";
-	      }
-	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
-	      last CYCLE_D;
-	    }
-	  }
-	  $d = $d.$data if ($data);
-	}
-
-	# обрабатываем команду "vertical-lineto": V|v y
-	elsif ($cmd~~['V', 'v']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num)/, $param);
-
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
-
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$/) {
-
-	      # рассчитываем координаты
-	      if ($cmd eq "V") {
-		($dy, $cpY) = ($1-$cpY, $1);
-	      }
-	      else {
-		($dy, $cpY) = ($1, $cpY+$1);
-	      }
-
-	      # округляем относительные координаты
 	      $dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy=~ /\./);
 
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "v" && $dy) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dy += $1;
-		$data = $data." $dy";
-		$rcmd = "v";
+
+# 	      print "dx1=$dx1 dy1=$dy1\ndx=$dx, dy=$dy\n";
+
+
+	      # удаляем пустые сегменты (remove empty segments)
+	      # 's0,0 0,0' и 'q0,0 0,0'
+	      if ($args{'remove-empty-segments'} eq "yes" &&
+		  $d && !$dx1 && !$dy1 && !$dx && !$dy) {
+# 		print "Remove empty segments - $cmd\n";
+		next CYCLE_SQ;
 	      }
-	      elsif ($rcmd ne "v" && $dy) {
-		$data = $data."v$dy";
-		$rcmd = "v";
+
+	      # преобразовываем прямые кривые в линии
+	      if ($args{'convert-curves-lines'} eq "yes" &&
+		  $cmd~~['Q', 'q'] && ((!$dx && !$dx1) || (!$dy && !$dy1) ||
+		  ($dx && $dy1 == ($dy*$dx1/$dx)))) {
+# 		print "Convert straight curve into line - $cmd\n";
+		if ($args{'convert-lines-hv'} eq "yes" &&
+		    (($dx && !$dy) || (!$dx && $dy))) {
+		  if ($dx && !$dy) {
+# 		    print "PathSegmentsReduced - $cmd->H\n";
+		    if ($lrcmd eq "h") {
+		      $data = $data." $dx";
+		    }
+		    else {
+		      $data = $data."h$dx";
+		    }
+		    $lrcmd = "h";
+		  }
+		  elsif (!$dx && $dy) {
+# 		    print "PathSegmentsReduced - $cmd->V\n";
+		    if ($lrcmd eq "v") {
+		      $data = $data." $dy";
+		    }
+		    else {
+		      $data = $data."v$dy";
+		    }
+		    $lrcmd = "v";
+		  }
+		}
+		else {
+		  if ($lrcmd eq "l") {
+		    $data = $data." $dx,$dy";
+		  }
+		  else {
+		    $data = $data."l$dx,$dy";
+		  }
+		  $lrcmd = "l";
+		}
+		next CYCLE_SQ;
+	      }
+
+	      # преобразование "quadratic-bezier-curveto" в "smooth-quadratic-bezier-curveto"
+	      if ($args{'convert-curves-qt'} eq "yes") {
+		my $i;
+		if ($cmd~~['Q', 'q'] && $lrcmd~~['q', 't'] && 
+		    &equal($dx1, $tcpx, 3) && &equal($dy1, $tcpy, 3)) {
+		    
+# 		  print "PathSegmentsReduced - Q->T\n";
+		  $i = 1;
+		  if ($lrcmd eq "q") {
+		    $data = $data."t$dx,$dy";
+		  }
+		  else {
+		    $data = $data." $dx,$dy";
+		  }
+		  $lrcmd = "t";
+		}
+
+		($tcpx, $tcpy) = ($dx-$dx1,$dy-$dy1);
+# 		print "\ntcpx=$dx-$dx1 tcpy=$dy-$dy1\n";
+# 		print "tcpx=$tcpx tcpy=$tcpy\n\n";
+		next CYCLE_SQ if ($i);
+	      }
+
+	      # формируем переменную $data в зависимости от $lrcmd
+	      # для команды "smooth-curveto"
+	      if ($cmd~~['S', 's']) {
+		if ($lrcmd eq "s") {
+		  $data = $data." $dx1,$dy1 $dx,$dy";
+		}
+		else {
+		  $data = $data."s$dx1,$dy1 $dx,$dy";
+		}
+		$lrcmd = "s";
+	      }
+	      # для команды "quadratic-bezier-curveto"
+	      else {
+		if ($lrcmd eq "q") {
+		  $data = $data." $dx1,$dy1 $dx,$dy";
+		}
+		else {
+		  $data = $data."q$dx1,$dy1 $dx,$dy";
+		}
+		$lrcmd = "q";
 	      }
 	    }
 	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
@@ -3243,20 +3316,20 @@ foreach my $elt ($root->descendants_or_self) {
 	  $d = $d.$data if ($data);
 	}
 
-	# обрабатываем команду "curveto": C|c (x1 y1 x2 y2 x y)
+	# "curveto":
+	# C|c (x1 y1 x2 y2 x y)+
 	elsif ($cmd~~['C', 'c']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	  # новые данные, которые получатся в результате обработки параметров текущей команды
 	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num$cwsp?$num$cwsp?$num)/, $param);
+	  # создаем массив с координатами
+	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num$cwsp?$num$cwsp?$num)/, shift @d);
 
-	  # обрабатываем вышеуказанный массив
+	  # обрабатываем все координаты
+	  CYCLE_C:
 	  while (@param) {
 	    my $param = shift @param;
 
-	    # если параметром является пара координат
+	    # если параметром являются координаты
 	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
 
 	      # рассчитываем координаты
@@ -3277,15 +3350,86 @@ foreach my $elt ($root->descendants_or_self) {
 	      $dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx=~ /\./);
 	      $dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy=~ /\./);
 
-	      # формируем переменную $data в зависимости от $rcmd
-		  if ($rcmd eq "c") {
-		    $data = $data." $dx1,$dy1 $dx2,$dy2 $dx,$dy";
-		    $rcmd = "c";
+# 	      print "dx1=$dx1 dy1=$dy1\ndx=$dx, dy=$dy\n";
+
+	      # удаляем пустые сегменты (remove empty segments)
+	      # 'c0,0 0,0 0,0'
+	      if ($args{'remove-empty-segments'} eq "yes" &&
+		  $d && !$dx1 && !$dy1 && !$dx2 && !$dy2 && !$dx && !$dy) {
+# 		print "Remove empty segments - $cmd\n";
+		next CYCLE_C;
+	      }
+
+	      # преобразовываем прямые кривые в линии
+	      if ($args{'convert-curves-lines'} eq "yes" &&
+		  ((!$dx && !$dx1 && !$dx2) ||
+		  (!$dy && !$dy1 && !$dy2) ||
+		  ($dx && $dy1 == ($dy*$dx1/$dx) && $dy2 == ($dy*$dx2/$dx)))) {
+# 		print "Convert straight curve into line - $cmd\n";
+
+		if ($args{'convert-lines-hv'} eq "yes" &&
+		    (($dx && !$dy) || (!$dx && $dy))) {
+		  if ($dx && !$dy) {
+# 		    print "PathSegmentsReduced - $cmd->H\n";
+		    if ($lrcmd eq "h") {
+		      $data = $data." $dx";
+		    }
+		    else {
+		      $data = $data."h$dx";
+		    }
+		    $lrcmd = "h";
+		  }
+		  elsif (!$dx && $dy) {
+# 		    print "PathSegmentsReduced - $cmd->V\n";
+		    if ($lrcmd eq "v") {
+		      $data = $data." $dy";
+		    }
+		    else {
+		      $data = $data."v$dy";
+		    }
+		    $lrcmd = "v";
+		  }
+		}
+		else {
+		  if ($lrcmd eq "l") {
+		    $data = $data." $dx,$dy";
 		  }
 		  else {
-		    $data = $data."c$dx1,$dy1 $dx2,$dy2 $dx,$dy";
-		    $rcmd = "c";
+		    $data = $data."l$dx,$dy";
 		  }
+		  $lrcmd = "l";
+		}
+		next CYCLE_C;
+	      }
+
+	      # преобразование "curveto" в "smooth-curveto"
+	      if ($args{'convert-curves-cs'} eq "yes") {
+		my $i;
+		if ($lrcmd~~['c', 's'] && &equal($dx1, $scpx, 3) && &equal($dy1, $scpy, 3)) {
+		    
+# 		  print "PathSegmentsReduced - C->S\n";
+		  $i = 1;
+		  if ($lrcmd eq "c") {
+		    $data = $data."s$dx2,$dy2 $dx,$dy";
+		  }
+		  else {
+		    $data = $data." $dx2,$dy2 $dx,$dy";
+		  }
+		  $lrcmd = "s";
+		}
+
+		($scpx, $scpy) = ($dx-$dx2,$dy-$dy2);
+		next CYCLE_C if ($i);
+	      }
+
+	      # формируем переменную $data в зависимости от $lrcmd
+	      if ($lrcmd eq "c") {
+		$data = $data." $dx1,$dy1 $dx2,$dy2 $dx,$dy";
+	      }
+	      else {
+		$data = $data."c$dx1,$dy1 $dx2,$dy2 $dx,$dy";
+	      }
+	      $lrcmd = "c";
 	    }
 	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
 	    elsif ($param!~ /^$cwsp?$/) {
@@ -3293,168 +3437,23 @@ foreach my $elt ($root->descendants_or_self) {
 	      last CYCLE_D;
 	    }
 	  }
-	  $d = $d.$data;
+	  $d = $d.$data if ($data);
 	}
 
-	# обрабатываем команду "smooth-curveto": S|s (x2 y2 x y)
-	elsif ($cmd~~['S', 's']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num)/, $param);
-
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
-
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
-
-	      # рассчитываем координаты
-	      if ($cmd eq "S") {
-		($dx2, $dy2, $dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY, $3, $4);
-	      }
-	      else {
-		($dx2, $dy2, $dx, $dy, $cpX, $cpY) = ($1, $2, $3, $4, $cpX+$3, $cpY+$4);
-	      }
-
-	      # округляем относительные координаты
-	      $dx2 = &round_num($dx2,'',$args{'dp-coords'}) if ($dx2=~ /\./);
-	      $dy2 = &round_num($dy2,'',$args{'dp-coords'}) if ($dy2=~ /\./);
-	      $dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx=~ /\./);
-	      $dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy=~ /\./);
-
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "s") {
-		$data = $data." $dx2,$dy2 $dx,$dy";
-		$rcmd = "s";
-	      }
-	      else {
-		$data = $data."s$dx2,$dy2 $dx,$dy";
-		$rcmd = "s";
-	      }
-	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
-	      last CYCLE_D;
-	    }
-	  }
-	  $d = $d.$data;
-	}
-
-	# обрабатываем команду "quadratic-bezier-curveto": Q|q (x1 y1 x y)
-	elsif ($cmd~~['Q', 'q']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num)/, $param);
-
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
-
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
-
-	      # рассчитываем координаты
-	      if ($cmd eq "Q") {
-		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY, $3, $4);
-	      }
-	      else {
-		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1, $2, $3, $4, $cpX+$3, $cpY+$4);
-	      }
-
-	      # округляем относительные координаты
-	      $dx1 = &round_num($dx1,'',$args{'dp-coords'}) if ($dx1=~ /\./);
-	      $dy1 = &round_num($dy1,'',$args{'dp-coords'}) if ($dy1=~ /\./);
-	      $dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx=~ /\./);
-	      $dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy=~ /\./);
-
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "q") {
-		$data = $data." $dx1,$dy1 $dx,$dy";
-		$rcmd = "q";
-	      }
-	      else {
-		$data = $data."q$dx1,$dy1 $dx,$dy";
-		$rcmd = "q";
-	      }
-	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
-	      last CYCLE_D;
-	    }
-	  }
-	  $d = $d.$data;
-	}
-
-	# обрабатываем команду "smooth-quadratic-bezier-curveto": T|t (x y)
-	elsif ($cmd~~['T', 't']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num)/, $param);
-
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
-
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$cwsp?($num)$/) {
-
-	      # рассчитываем координаты
-	      if ($cmd eq "T") {
-		($dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $1, $2);
-	      }
-	      else {
-		($dx, $dy, $cpX, $cpY) = ($1, $2, $cpX+$1, $cpY+$2);
-	      }
-
-	      # округляем относительные координаты
-	      $dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx=~ /\./);
-	      $dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy=~ /\./);
-
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "t") {
-		$data = $data." $dx,$dy";
-		$rcmd = "t";
-	      }
-	      else {
-		$data = $data."t$dx,$dy";
-		$rcmd = "t";
-	      }
-	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
-	      last CYCLE_D;
-	    }
-	  }
-	  $d = $d.$data;
-	}
-
-	# обрабатываем команду "elliptical-arc": A|a (rx ry x-axis-rotation large-arc-flag sweep-flag x y)
+	# "elliptical-arc":
+	# A|a (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
 	elsif ($cmd~~['A', 'a']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
+	  # новые данные, которые получатся в результате обработки параметров текущей команды
 	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp$flag$cwsp?$flag$cwsp?$num$cwsp?$num)/, $param);
+	  # создаем массив с координатами
+	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp$flag$cwsp?$flag$cwsp?$num$cwsp?$num)/, shift @d);
 
-	  # обрабатываем вышеуказанный массив
+	  # обрабатываем все координаты
+	  CYCLE_A:
 	  while (@param) {
 	    my $param = shift @param;
 
-	    # если параметром является пара координат
+	    # если параметром являются координаты
 	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp(0|1)$cwsp?(0|1)$cwsp?($num)$cwsp?($num)$/) {
 
 	      # рассчитываем координаты
@@ -3481,14 +3480,22 @@ foreach my $elt ($root->descendants_or_self) {
 		last CYCLE_D;
 	      }
 
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "a") {
+	      # удаляем пустые сегменты (remove empty segments)
+	      # 'a$rx,$ry $xar $laf,$sf 0,0'
+	      if ($args{'remove-empty-segments'} eq "yes" &&
+		  $d && !$dx && !$dy) {
+# 		print "Remove empty segments - $cmd\n";
+		next CYCLE_A;
+	      }
+
+	      # формируем переменную $data в зависимости от $lrcmd
+	      if ($lrcmd eq "a") {
 		$data = $data." $rx,$ry $xar $laf,$sf $dx,$dy";
-		$rcmd = "a";
+		$lrcmd = "a";
 	      }
 	      else {
 		$data = $data."a$rx,$ry $xar $laf,$sf $dx,$dy";
-		$rcmd = "a";
+		$lrcmd = "a";
 	      }
 	    }
 	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
@@ -3497,7 +3504,7 @@ foreach my $elt ($root->descendants_or_self) {
 	      last CYCLE_D;
 	    }
 	  }
-	  $d = $d.$data;
+	  $d = $d.$data if ($data);
 	}
 
 	# пропускаем пробелы и пустые значения
@@ -3508,10 +3515,13 @@ foreach my $elt ($root->descendants_or_self) {
 	else {
 	  last CYCLE_D;
 	}
-      } # цикл CYCLE_D
+
+      } # CYCLE_D
 
       $elt->set_att($att => $d);
       &crt_att($elt,$att,"absolute coordinates converted to relative ones",$i,$elt_name,$elt_id);
+      # удаляем значение переменной для экономии памяти.
+      undef $d;
       next CYCLE_ATTS;
     }
 
@@ -3519,7 +3529,7 @@ foreach my $elt ($root->descendants_or_self) {
     # округление всех чисел и удаление ненужных пробелов в значениях атрибутов d, если не используется преобразование абсолютных координат в относительные
     if ($att eq "d" &&
 	($args{'round-numbers'} eq "yes" ||
-	$args{'remove-unnec-wsp'} eq "yes")) {
+	$args{'remove-uwsp-path'} eq "yes")) {
 
       # создаем из $att_val массив, в котором числа будут являться отдельными элементами
       my @d = split(/($num)/, $att_val);
@@ -3542,10 +3552,10 @@ foreach my $elt ($root->descendants_or_self) {
 	elsif ($data=~ /^\s*[A-Za-z]\s*$/) {
 
 	  last CYCLE_RND if ($data!~ /[MZLHVCSQTAmzlhvcsqta]/);
-	  $data=~ s/\s+//g if ($args{'remove-unnec-wsp'} eq "yes" && $data=~ /\s+/);
+	  $data=~ s/\s+//g if ($args{'remove-uwsp-path'} eq "yes" && $data=~ /\s+/);
 	}
 	# обрабатываем пробелы и запятые
-	elsif ($args{'remove-unnec-wsp'} eq "yes" &&
+	elsif ($args{'remove-uwsp-path'} eq "yes" &&
 	       $data=~ /^$cwsp$/) {
       
 	  if ($data=~ /,/) {

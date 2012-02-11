@@ -150,6 +150,10 @@ SVGInfo CleanerThread::info()
 
     info.time = cleaningTime.elapsed();
     info.crashed = scriptOutput.isEmpty(); // true - mean crash
+
+    if (arguments.args.contains("--quiet=no"))
+        qDebug()<<scriptOutput;
+
     return info;
 }
 

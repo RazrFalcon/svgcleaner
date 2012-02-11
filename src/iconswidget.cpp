@@ -1,12 +1,12 @@
+#include <QBitmap>
+#include <QCursor>
 #include <QDesktopServices>
 #include <QMouseEvent>
-#include <QUrl>
-#include <QBitmap>
-#include <QSvgRenderer>
-#include <QTimer>
-#include <QCursor>
 #include <QPainter>
+#include <QSvgRenderer>
 #include <QtDebug>
+#include <QTimer>
+#include <QUrl>
 
 #include "iconswidget.h"
 
@@ -20,7 +20,6 @@ IconsWidget::IconsWidget(QWidget *parent) :
 
 void IconsWidget::setPaths(const QString &pathIn,const QString &pathOut,const bool compare)
 {
-    qDebug()<<Q_FUNC_INFO;
     inpath = pathIn;
     outpath = pathOut;
     compareView = compare;
@@ -37,9 +36,14 @@ void IconsWidget::setPaths(const QString &pathIn,const QString &pathOut,const bo
     repaint();
 }
 
+void IconsWidget::setCrashed(bool flag)
+{
+    crashed = flag;
+    repaint();
+}
+
 void IconsWidget::makeToolTip()
 {
-    qDebug()<<Q_FUNC_INFO;
     QImage image(620,310,QImage::Format_ARGB32);
     image.fill(0);
     mainPix = QPixmap::fromImage(image,Qt::NoOpaqueDetection|Qt::AutoColor);
@@ -65,34 +69,16 @@ void IconsWidget::makeToolTip()
 
     toolTip->setPixmap(mainPix);
     toolTip->setMask(mainPix.mask());
-//    toolTip->repaint();
     newToolTip = false;
-}
-
-void IconsWidget::setCrashed(bool flag)
-{
-    crashed = flag;
-    repaint();
 }
 
 void IconsWidget::enterEvent(QEvent *)
 {
-    qDebug()<<Q_FUNC_INFO;
     QTimer::singleShot(500,this,SLOT(showToolTip()));
-}
-
-void IconsWidget::leaveEvent(QEvent *)
-{
-    qDebug()<<Q_FUNC_INFO;
-    QCursor curs;
-    QPoint cursPos = mapFromGlobal(curs.pos());
-    if (!rect().contains(cursPos))
-        toolTip->hide();
 }
 
 void IconsWidget::showToolTip()
 {
-    qDebug()<<Q_FUNC_INFO;
     if (crashed)
         return;
 
@@ -108,7 +94,6 @@ void IconsWidget::showToolTip()
 
 void IconsWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    qDebug()<<Q_FUNC_INFO;
     if (crashed)
         return;
 
@@ -127,6 +112,14 @@ void IconsWidget::mouseMoveEvent(QMouseEvent *event)
                                   mainPix.width(),mainPix.height());
         }
     }
+}
+
+void IconsWidget::leaveEvent(QEvent *)
+{
+    QCursor curs;
+    QPoint cursPos = mapFromGlobal(curs.pos());
+    if (!rect().contains(cursPos))
+        toolTip->hide();
 }
 
 void IconsWidget::paintEvent(QPaintEvent *)
@@ -153,7 +146,6 @@ void IconsWidget::paintEvent(QPaintEvent *)
 //        ,out);
     } else {
         renderSvg(outpath,&painter,QRect(0,0,width(),height()));
-
 //        QPixmap out(outpath);
 //        if (out.height() > height() || out.width() > width())
 //            out = out.scaled(height(),height(),Qt::KeepAspectRatio,Qt::SmoothTransformation);

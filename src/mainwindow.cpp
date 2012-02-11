@@ -87,12 +87,6 @@ void MainWindow::on_actionWizard_triggered()
     if (wizard.exec()) {
         arguments = wizard.threadArguments();
         actionStart->setEnabled(true);
-        if (!arguments.args.isEmpty()) {
-            qDebug()<<"start cleaning using:"<<arguments.cleanerPath;
-            qDebug()<<"with keys:";
-            foreach (QString key, arguments.args)
-                qDebug()<<key;
-        }
     }
 }
 
@@ -121,10 +115,12 @@ void MainWindow::on_actionStart_triggered()
     if (position == arguments.inputFiles.count())
         return;
 
-//    qDebug()<<"start cleaning using:"<<arguments.cleanerPath;
-//    qDebug()<<"with keys:";
-//    foreach (QString key, arguments.args)
-//        qDebug()<<key;
+    qDebug()<<"start cleaning using:"<<arguments.cleanerPath;
+    if (!arguments.args.isEmpty()) {
+        qDebug()<<"with keys:";
+        foreach (QString key, arguments.args)
+            qDebug()<<key;
+    }
     for (int i = 0; i < threadCount; ++i) {
         QThread *thread = new QThread(this);
         CleanerThread *cleaner = new CleanerThread(arguments);
@@ -169,25 +165,6 @@ void MainWindow::prepareStart()
     lblITotalFiles->setText(QString::number(arguments.outputFiles.count()));
 }
 
-void MainWindow::removeThumbs()
-{
-    QLayoutItem *item;
-    while ((item = itemLayout->takeAt(0)) != 0)
-        item->widget()->deleteLater();
-}
-
-void MainWindow::enableButtons(bool value)
-{
-    actionStart->setVisible(value);
-    actionPause->setVisible(!value);
-    actionStop->setEnabled(!value);
-    actionWizard->setEnabled(value);
-    actionThreads->setEnabled(value);
-    actionInfo->setEnabled(value);
-    cmbSort->setEnabled(value);
-    progressBar->setVisible(!value);
-}
-
 void MainWindow::progress(SVGInfo info)
 {
     progressBar->setValue(progressBar->value()+1);
@@ -222,17 +199,15 @@ void MainWindow::progress(SVGInfo info)
 void MainWindow::startNext()
 {
     CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
-    if (position < arguments.inputFiles.count() && actionPause->isVisible() && actionStop->isEnabled()) {
-        qDebug()<<"next";
+    if (position < arguments.inputFiles.count()
+            && actionPause->isVisible() && actionStop->isEnabled()) {
         cleaner->startNext(arguments.inputFiles.at(position),
                            arguments.outputFiles.at(position));
         position++;
     } else if (actionPause->isVisible() && actionStop->isEnabled()) {
-        qDebug()<<"finished";
         if (progressBar->value() == progressBar->maximum())
             cleaningFinished();
     } else if (!actionStop->isEnabled() || !actionPause->isVisible()) {
-        qDebug()<<"stop";
         cleaner->thread()->quit();
         cleaner->thread()->wait();
         cleaner->thread()->deleteLater();
@@ -286,12 +261,42 @@ void MainWindow::on_actionStop_triggered()
 
 void MainWindow::cleaningFinished()
 {
+    deleteThreads();
+    enableButtons(true);
+}
+
+void MainWindow::removeThumbs()
+{
+    QLayoutItem *item;
+    while ((item = itemLayout->takeAt(0)) != 0)
+        item->widget()->deleteLater();
+}
+
+void MainWindow::enableButtons(bool value)
+{
+    actionStart->setVisible(value);
+    actionPause->setVisible(!value);
+    actionStop->setEnabled(!value);
+    actionWizard->setEnabled(value);
+    actionThreads->setEnabled(value);
+    actionInfo->setEnabled(value);
+    cmbSort->setEnabled(value);
+    progressBar->setVisible(!value);
+}
+
+void MainWindow::deleteThreads()
+{
     foreach (QThread *th, findChildren<QThread *>()) {
         th->quit();
         th->wait();
         th->deleteLater();
     }
-    enableButtons(true);
+}
+
+void MainWindow::on_itemScroll_valueChanged(int value)
+{
+    foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
+        item->refill(itemList.at(value++),actionCompareView->isChecked());
 }
 
 void MainWindow::threadsCountChanged()
@@ -299,15 +304,6 @@ void MainWindow::threadsCountChanged()
     QAction *action = qobject_cast<QAction *>(sender());
     settings->setValue("threadCount",action->text());
     actionThreads->setToolTip(tr("Threads selected: ")+action->text());
-}
-
-void MainWindow::on_itemScroll_valueChanged(int value)
-{
-    QTime fillTime = QTime::currentTime();
-    fillTime.start();
-    foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
-        item->refill(itemList.at(value++),actionCompareView->isChecked());
-    qDebug()<<fillTime.elapsed();
 }
 
 void MainWindow::on_actionCompareView_triggered()
@@ -404,10 +400,5 @@ void MainWindow::resizeEvent(QResizeEvent *)
 
 void MainWindow::closeEvent(QCloseEvent *)
 {
-    foreach (QThread *th, findChildren<QThread *>()) {
-        qDebug()<<"QThread";
-        th->quit();
-        th->wait();
-        th->deleteLater();
-    }
+    deleteThreads();
 }

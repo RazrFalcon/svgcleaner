@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
-    <height>585</height>
+    <width>643</width>
+    <height>627</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -95,13 +95,20 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
           <property name="horizontalSpacing">
            <number>-1</number>
           </property>
+          <item row="10" column="0">
+           <widget class="QCheckBox" name="chBoxFullLog">
+            <property name="text">
+             <string>Show full cleaning log in console</string>
+            </property>
+           </widget>
+          </item>
           <item row="11" column="0">
            <widget class="QGroupBox" name="gBoxCompress">
             <property name="title">
@@ -544,6 +551,26 @@
         </widget>
         <widget class="QWidget" name="page_2">
          <layout class="QGridLayout" name="gridLayout_2">
+          <item row="1" column="0" colspan="3">
+           <widget class="Line" name="line_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="btnRemovePreset">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Remove</string>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="2">
            <widget class="QComboBox" name="cmbBoxPreset">
             <property name="sizePolicy">
@@ -576,6 +603,9 @@
              </sizepolicy>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
+             <property name="margin">
+              <number>0</number>
+             </property>
              <item row="0" column="2">
               <widget class="QPushButton" name="btnSavePreset">
                <property name="enabled">
@@ -612,26 +642,6 @@
             </layout>
            </widget>
           </item>
-          <item row="1" column="0" colspan="3">
-           <widget class="QCheckBox" name="chBoxPreset">
-            <property name="text">
-             <string>Save current settings as preset</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="btnRemovePreset">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Remove</string>
-            </property>
-           </widget>
-          </item>
           <item row="3" column="0" colspan="3">
            <spacer name="verticalSpacer_7">
             <property name="orientation">
@@ -665,8 +675,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>580</width>
-               <height>451</height>
+               <width>613</width>
+               <height>493</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -917,7 +927,7 @@
                     <string>std-deviation-limit</string>
                    </property>
                    <property name="accessibleDescription">
-                    <string notr="true">0.2</string>
+                    <string notr="true">0.20</string>
                    </property>
                    <property name="minimum">
                     <double>0.010000000000000</double>
@@ -973,8 +983,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>580</width>
-               <height>451</height>
+               <width>613</width>
+               <height>493</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1236,8 +1246,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>580</width>
-               <height>451</height>
+               <width>613</width>
+               <height>493</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -1256,7 +1266,7 @@
                  <string>Keep existing paths data</string>
                 </property>
                 <property name="checked">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -1307,6 +1317,9 @@
                 </property>
                 <property name="text">
                  <string>Convert absolute paths to relative ones</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -1436,8 +1449,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>496</width>
-               <height>384</height>
+               <width>580</width>
+               <height>451</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1537,19 +1550,6 @@
                 </property>
                 <property name="text">
                  <string>Convert basic shapes to paths</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_36">
-                <property name="accessibleName">
-                 <string notr="true">convert-abs-paths</string>
-                </property>
-                <property name="text">
-                 <string>Convert absolute paths to relative ones</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1784,8 +1784,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>439</width>
-               <height>115</height>
+               <width>580</width>
+               <height>451</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">
@@ -2112,22 +2112,6 @@
     <hint type="destinationlabel">
      <x>304</x>
      <y>193</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chBoxPreset</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetPreset</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>304</x>
-     <y>122</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>304</x>
-     <y>153</y>
     </hint>
    </hints>
   </connection>

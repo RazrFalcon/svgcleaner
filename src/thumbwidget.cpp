@@ -18,10 +18,9 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
 
 void ThumbWidget::refill(const SVGInfo &info, bool compare)
 {
-    fullInfo = info;
-
     lblName->setText(QFileInfo(info.paths[SVGInfo::OUTPUT]).fileName());
     lblName->setToolTip(tr("Input file: ")+info.paths[SVGInfo::INPUT]);
+    lblName->setAccessibleName(QFileInfo(info.paths[SVGInfo::OUTPUT]).fileName());
 
     // elements
     lblElemB->setText(QString::number(info.elemInitial));
@@ -64,7 +63,6 @@ void ThumbWidget::resizeEvent(QResizeEvent *event)
 {
     QFontMetrics fm(QFont().defaultFamily());
     int size = event->size().width()-lbl1->width()-iconsWidget->width()-25;
-    QString normalStr = fm.elidedText(QFileInfo(fullInfo.paths[SVGInfo::OUTPUT]).fileName(),
-                                      Qt::ElideLeft,size);
+    QString normalStr = fm.elidedText(lblName->accessibleName(),Qt::ElideLeft,size);
     lblName->setText(normalStr);
 }

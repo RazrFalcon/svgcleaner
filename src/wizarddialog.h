@@ -27,31 +27,31 @@ private:
     bool checkForPerl();
     bool checkForWarnings();
     bool isDefault(QWidget *w);
+    QString compressValue();
     QStringList argsLine();
     QStringList getInFiles();
     QStringList getOutFiles();
     void createWarning(const QString &text);
-    void loadSettings();
     void loadPresets();
+    void loadSettings();
     void resetFields();
     void resetToDefault();
-    QString compressValue();
     void saveSettings();
     void setupGUI();
 
 private slots:
-    void resetItems(const QString &preset);
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);
     void createExample();
     void loadFiles();
     void on_btnOpenInDir_clicked();
     void on_btnOpenOutDir_clicked();
-    void on_buttonBox_clicked(QAbstractButton *button);
-    void radioSelected();
-    void on_btnSavePreset_clicked();
-    void on_linePresetName_textChanged(const QString &text);
     void on_btnRemovePreset_clicked();
+    void on_btnSavePreset_clicked();
+    void on_buttonBox_clicked(QAbstractButton *button);
     void on_cmbBoxPreset_currentIndexChanged(const QString &text);
+    void on_linePresetName_textChanged(const QString &text);
+    void radioSelected();
+    void setPreset(const QString &preset);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

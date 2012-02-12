@@ -12,6 +12,8 @@ struct ToThread
     QStringList args;
     QString level;
     QString cleanerPath;
+    QString zipPath;
+    QString perlPath;
 };
 
 struct SVGInfo

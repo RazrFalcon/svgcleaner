@@ -13,15 +13,6 @@ WizardDialog::WizardDialog(QWidget *parent) :
     QDialog(parent)
 {
     setupUi(this);
-
-    // list of all pages in wizard
-    pageList<<tr("Files")
-            <<tr("Presets")
-            <<tr("Elements")
-            <<tr("Attributes")
-            <<tr("Paths")
-            <<tr("Optimization")
-            <<tr("Output");
     loadSettings();
     setupGUI();
     adjustSize();
@@ -34,7 +25,7 @@ WizardDialog::~WizardDialog()
 
 void WizardDialog::loadSettings()
 {
-    settings = new QSettings(QSettings::NativeFormat, QSettings::UserScope,
+    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
                              "svgcleaner", "config");
 
     chBoxRecursive->setChecked(settings->value("Wizard/recursive").toBool());
@@ -80,13 +71,22 @@ void WizardDialog::setupGUI()
     connect(lineEditSuffix,SIGNAL(textChanged(QString)),this,SLOT(createExample()));
     createExample();
 
+    // list of all pages in wizard
+    QStringList pageList;
+    pageList<<tr("Files")
+            <<tr("Presets")
+            <<tr("Elements")
+            <<tr("Attributes")
+            <<tr("Paths")
+            <<tr("Optimization")
+            <<tr("Output");
     // create icons for pages in "tabbar", which is QListWidget
     for (int i = 0; i < pageList.count(); ++i) {
         QListWidgetItem *item = new QListWidgetItem(listWidget);
-        ItemWidget *widgetFiles = new ItemWidget(pageList.at(i));
+        ItemWidget *w = new ItemWidget(i);
         item->setToolTip(pageList.at(i));
         item->setSizeHint(QSize(64,64));
-        listWidget->setItemWidget(item,widgetFiles);
+        listWidget->setItemWidget(item,w);
     }
     listWidget->setFixedWidth(64*listWidget->count()+5);
     connect(listWidget,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
@@ -163,7 +163,7 @@ void WizardDialog::changePage(QListWidgetItem *current, QListWidgetItem *previou
     if (!current)
          current = previous;
     stackedWidget->setCurrentIndex(listWidget->row(current));
-    groupBoxMain->setTitle(pageList.at(stackedWidget->currentIndex()));
+    groupBoxMain->setTitle(current->toolTip());
 }
 
 void WizardDialog::on_buttonBox_clicked(QAbstractButton *button)
@@ -189,6 +189,13 @@ ToThread WizardDialog::threadArguments()
     threadArgs.outputFiles = getOutFiles();
     threadArgs.level = compressValue();
     threadArgs.cleanerPath = SomeUtils::findFile("svgcleaner.pl","/usr/bin/");
+#ifdef Q_OS_WIN
+    threadArgs.zipPath     = SomeUtils::findFile("7za.exe","");
+    threadArgs.perlPath    = SomeUtils::findFile("perl.exe","C:/strawberry/perl/bin/");
+#else
+    threadArgs.zipPath     = SomeUtils::findFile("7z","/usr/bin/");
+    threadArgs.perlPath    = SomeUtils::findFile("perl","/usr/bin/");
+#endif
 
     // save current settings to temp preset
     linePresetName->setText("last");
@@ -424,10 +431,10 @@ bool WizardDialog::checkForWarnings()
     } else if (fileList.isEmpty()) {
         createWarning(tr("An input folder did not contain any svg, svgz files."));
         check = false;
-    } else if (!checkFor7z()) {
+    } else if (!checkFor("7za")) {
         createWarning(tr("You have to install 7-Zip to use SVG Cleaner."));
         check = false;
-    } else if (!checkForPerl()) {
+    } else if (!checkFor("perl")) {
         createWarning(tr("You have to install Perl to use SVG Cleaner."));
         check = false;
     }
@@ -441,28 +448,20 @@ void WizardDialog::createWarning(const QString &text)
 
 /*
     On Windows:
-    You have to download 7-Zip CLI. Then rename 7za.exe to 7z.exe
-    and put it right to SVGCleaner.exe.
+    1) You have to download 7-Zip CLI. Then put 7za.exe right to SVGCleaner.exe.
 
-    http://downloads.sourceforge.net/sevenzip/7za920.zip
+    2) You have to install Strawberry Perl in to default install folder.
+    Then install XML-Twig plugin.
+
+    On Linux:
+    Install: p7zip, perl, xml-twig.
 */
-bool WizardDialog::checkFor7z()
+bool WizardDialog::checkFor(const QString &name)
 {
-    QProcess zipProc;
-    zipProc.start("7z");
-    zipProc.waitForFinished();
-    return !QString(zipProc.readAll()).isEmpty();
-}
-
-bool WizardDialog::checkForPerl()
-{
-#ifdef Q_OS_LINUX
-    QProcess perlProc;
-    perlProc.start("which",QStringList("perl"));
-    perlProc.waitForFinished();
-    return !QString(perlProc.readAll()).contains("which: no perl in");
+#ifdef Q_OS_WIN //! delete it
+    return QFile(SomeUtils::findFile(name+".exe","C:/strawberry/perl/bin/")).exists();
 #else
-    return true;
+    return QFile(SomeUtils::findFile(name,"/usr/bin/")).exists();
 #endif
 }
 

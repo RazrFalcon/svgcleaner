@@ -41,7 +41,7 @@ QString SomeUtils::findFile(QString name, QString defaultFolder)
         return "../SVGCleaner/"+name;
     else if (QFile(name).exists()) // next to exe. Usual build/Windows.
         return name;
-    else if (QFile(defaultFolder+name).exists()) // linux path
+    else if (QFile(defaultFolder+name).exists()) // custom path
         return defaultFolder+name;
     return name;
 }

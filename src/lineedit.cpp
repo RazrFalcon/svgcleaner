@@ -8,7 +8,7 @@ LineEdit::LineEdit(QWidget *parent) :
 
     lbl->setObjectName("files");
     lbl->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-    lbl->setStyleSheet("QLabel#files { border: none; padding: 4px; padding-left: 1px;"
+    lbl->setStyleSheet("QLabel#files { border: none; padding: 3px; padding-left: 1px;"
                        "background-color: rgba(255, 255, 255, 0); color: #808080; }");
 }
 

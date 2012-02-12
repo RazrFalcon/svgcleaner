@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actionPause->setVisible(false);
 
     // load settings
-    settings = new QSettings(QSettings::NativeFormat, QSettings::UserScope,
+    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
                              "svgcleaner", "config");
 
     // create sorting combobox

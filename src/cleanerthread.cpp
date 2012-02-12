@@ -42,7 +42,7 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
     args.append("--in-file="+outSVG);
     args.append("--out-file="+outSVG);
     args.append(arguments.args);
-    proc->start("perl",args);
+    proc->start(arguments.perlPath,args);
 }
 
 // remove attribute xml:space before starting a script,
@@ -58,7 +58,7 @@ QString CleanerThread::prepareFile(const QString &file)
         QProcess proc;
         QStringList args;
         args<<"e"<<"-so"<<file;
-        proc.start("7z",args);
+        proc.start(arguments.zipPath,args);
         proc.waitForFinished();
         inputDom.setContent(&proc);
     }
@@ -111,7 +111,7 @@ void CleanerThread::finished(int)
         QProcess procZip;
         QStringList args;
         args<<"a"<<"-tgzip"<<"-mx"+arguments.level<<currentOut<<outSVG;
-        procZip.start("7z",args);
+        procZip.start(arguments.zipPath,args);
         procZip.waitForFinished();
         QFile(outSVG).remove();
     }

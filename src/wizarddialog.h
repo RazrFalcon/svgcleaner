@@ -21,10 +21,8 @@ private:
     QFileInfoList fileList;
     QFileInfoList presets;
     QSettings *settings;
-    QStringList pageList;
 
-    bool checkFor7z();
-    bool checkForPerl();
+    bool checkFor(const QString &name);
     bool checkForWarnings();
     bool isDefault(QWidget *w);
     QString compressValue();

@@ -1,6 +1,7 @@
 #include <QtGui/QApplication>
 #include <QTextCodec>
 #include <QTranslator>
+#include <QLibraryInfo>
 #include <QtDebug>
 
 #include "someutils.h"
@@ -19,12 +20,19 @@ int main(int argc, char *argv[])
     QString path = SomeUtils::findFile("svgcleaner_"+locale+".qm",
                                        "/usr/share/svgcleaner/");
 
+    // load translation for SVG Cleaner
     QTranslator *translator = new QTranslator;
     if (translator->load(path)) {
-        qApp->installTranslator(translator);
+        app.installTranslator(translator);
         qDebug()<<"translator path:"<<path;
     } else if (locale != "en")
         qDebug()<<"can't load the translation";
+
+    // load translation for Qt
+    QTranslator qtTranslator;
+    qtTranslator.load("qt_" + QLocale::system().name(),
+                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(&qtTranslator);
 
     MainWindow w;
     w.show();

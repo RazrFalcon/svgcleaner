@@ -10,8 +10,8 @@ class SomeUtils : public QObject
 
 public:
     explicit SomeUtils(QObject *parent = 0);
-    static QString findFile(QString name, QString defaultFolder);
-    static QString prepareSize(int bytes);
-    static QString prepareTime(int ms);
+    static QString findFile(const QString &name, const QString &defaultFolder);
+    static QString prepareSize(const float bytes);
+    static QString prepareTime(const float ms);
 };
 #endif // SOMEUTILS_H

@@ -22,8 +22,8 @@ private:
     float compressMax;
     float compressMin;
     float timeFull;
-    int inputSize;
-    int outputSize;
+    float inputSize;
+    float outputSize;
     int position;
     int timeMax;
     int timeMin;

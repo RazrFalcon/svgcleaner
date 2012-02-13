@@ -229,7 +229,7 @@ void MainWindow::createStatistics()
 
     // cleaned
     if (outputSize != 0 && inputSize != 0)
-        lblIAverComp->setText(QString::number(((float)outputSize/inputSize)*100,'f',2)+"%");
+        lblIAverComp->setText(QString::number((outputSize/inputSize)*100,'f',2)+"%");
     lblIMaxCompress->setText(QString::number(100-compressMin,'f',2)+"%");
     lblIMinCompress->setText(QString::number(100-compressMax,'f',2)+"%");
 

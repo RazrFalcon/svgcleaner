@@ -80,10 +80,13 @@ void WizardDialog::setupGUI()
             <<tr("Paths")
             <<tr("Optimization")
             <<tr("Output");
+    QStringList pageListNotTr;
+    pageListNotTr<<"files"<<"presets"<<"elements"<<"attributes"<<"paths"
+            <<"optimization"<<"output";
     // create icons for pages in "tabbar", which is QListWidget
     for (int i = 0; i < pageList.count(); ++i) {
         QListWidgetItem *item = new QListWidgetItem(listWidget);
-        ItemWidget *w = new ItemWidget(i);
+        ItemWidget *w = new ItemWidget(pageListNotTr.at(i));
         item->setToolTip(pageList.at(i));
         item->setSizeHint(QSize(64,64));
         listWidget->setItemWidget(item,w);

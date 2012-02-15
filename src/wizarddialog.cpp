@@ -426,7 +426,7 @@ bool WizardDialog::checkForWarnings()
         createWarning(tr("An output folder is not selected."));
         check = false;
     } else if (lineEditPrefix->text().isEmpty() && lineEditSuffix->text().isEmpty()) {
-        createWarning(tr("You have to set a prefix and a suffix for this save method."));
+        createWarning(tr("You have to set a prefix or a suffix for this save method."));
         check = false;
     } else if (!QDir(lineEditInDir->text()).exists()) {
         createWarning(tr("An input folder is not exist."));

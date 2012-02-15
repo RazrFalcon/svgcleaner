@@ -28,7 +28,7 @@
       </font>
      </property>
      <property name="text">
-      <string>SVG Cleaner 0.4</string>
+      <string notr="true">SVG Cleaner 0.4</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

@@ -39,9 +39,10 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
 
     QStringList args;
     args.append(arguments.cleanerPath);
-    args.append(outSVG);
+    args.append("--in-file="+outSVG);
+    args.append("--out-file="+outSVG);
     args.append(arguments.args);
-    proc->start("perl",args);
+    proc->start(arguments.perlPath,args);
 }
 
 // remove attribute xml:space before starting a script,
@@ -57,11 +58,7 @@ QString CleanerThread::prepareFile(const QString &file)
         QProcess proc;
         QStringList args;
         args<<"e"<<"-so"<<file;
-#ifdef Q_OS_WIN
-        proc.start("7-Zip/7za.exe",args);
-#else
-        proc.start("7z",args);
-#endif
+        proc.start(arguments.zipPath,args);
         proc.waitForFinished();
         inputDom.setContent(&proc);
     }
@@ -101,7 +98,7 @@ void CleanerThread::readyReadError()
     if (error.contains("Can't locate XML/Twig.pm in"))
         emit criticalError(tr("You have to install XML-Twig."));
     else
-        qDebug()<<error<<"in"<<currentIn;
+        qDebug()<<error<<tr("in file")<<currentIn;
 }
 
 void CleanerThread::finished(int)
@@ -114,11 +111,7 @@ void CleanerThread::finished(int)
         QProcess procZip;
         QStringList args;
         args<<"a"<<"-tgzip"<<"-mx"+arguments.level<<currentOut<<outSVG;
-#ifdef Q_OS_WIN
-        procZip.start("7-Zip/7za.exe",args);
-#else
-        procZip.start("7z",args);
-#endif
+        procZip.start(arguments.zipPath,args);
         procZip.waitForFinished();
         QFile(outSVG).remove();
     }
@@ -157,6 +150,10 @@ SVGInfo CleanerThread::info()
 
     info.time = cleaningTime.elapsed();
     info.crashed = scriptOutput.isEmpty(); // true - mean crash
+
+    if (arguments.args.contains("--quiet=no"))
+        qDebug()<<scriptOutput;
+
     return info;
 }
 
@@ -168,4 +165,3 @@ int CleanerThread::findValue(const QString &text)
     QString tmpStr = scriptOutput.split("\n").filter(text).first();
     return tmpStr.remove(QRegExp("[A-Za-z]|%| ")).toInt();
 }
-

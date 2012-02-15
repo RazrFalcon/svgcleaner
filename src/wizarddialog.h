@@ -5,7 +5,6 @@
 #include <QSettings>
 #include <QFileInfoList>
 
-#include "guiinfo.h"
 #include "arguments.h"
 #include "ui_wizarddialog.h"
 
@@ -19,34 +18,38 @@ public:
     ToThread threadArguments();
 
 private:
-    GuiInfo *gInfo;
     QFileInfoList fileList;
+    QFileInfoList presets;
     QSettings *settings;
-    bool checkFor7z();
-    bool checkForPerl();
+
+    bool checkFor(const QString &name);
     bool checkForWarnings();
-    QString argLine();
+    bool isDefault(QWidget *w);
+    QString compressValue();
+    QStringList argsLine();
     QStringList getInFiles();
     QStringList getOutFiles();
     void createWarning(const QString &text);
+    void loadPresets();
     void loadSettings();
     void resetFields();
-    void resetItems(const QString &preset);
+    void resetToDefault();
     void saveSettings();
     void setupGUI();
 
 private slots:
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);
     void createExample();
-    void createPage(const QString &name, const QString &iconName, QWidget *widget);
     void loadFiles();
     void on_btnOpenInDir_clicked();
     void on_btnOpenOutDir_clicked();
-    void on_btnRmPreset_clicked();
+    void on_btnRemovePreset_clicked();
     void on_btnSavePreset_clicked();
     void on_buttonBox_clicked(QAbstractButton *button);
-    void on_cmbBoxPreset_currentIndexChanged(const QString &name);
+    void on_cmbBoxPreset_currentIndexChanged(const QString &text);
+    void on_linePresetName_textChanged(const QString &text);
     void radioSelected();
+    void setPreset(const QString &preset);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

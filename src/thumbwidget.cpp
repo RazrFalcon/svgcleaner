@@ -1,7 +1,6 @@
-#include <QDesktopServices>
 #include <QResizeEvent>
 #include <QFileInfo>
-#include <QUrl>
+#include <QtDebug>
 
 #include "thumbwidget.h"
 #include "someutils.h"
@@ -10,59 +9,18 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(this);
-    btnIn = new QPushButton(this);
-    btnIn->setFixedSize(80,80);
-    btnIn->setFlat(true);
-    btnOut = new QPushButton(this);
-    btnOut->setFixedSize(80,80);
-    btnOut->setFlat(true);
-    iconLayout->addWidget(btnIn);
-    iconLayout->addWidget(btnOut);
-    connect(btnIn,SIGNAL(clicked()),this,SLOT(openSVG()));
-    connect(btnOut,SIGNAL(clicked()),this,SLOT(openSVG()));
+    // fix Windows ugly frames...
 #ifdef Q_OS_WIN
     frame->setFrameShadow(QFrame::Plain);
 #endif
-
-    iconLayout->setSpacing(4);
     refill(info,compare);
 }
 
 void ThumbWidget::refill(const SVGInfo &info, bool compare)
 {
-    fullInfo = info;
-
-    if (compare) {
-        QPixmap pixIn(info.paths[SVGInfo::INPUT]);
-        if (pixIn.width() > 74)
-            pixIn = pixIn.scaled(74,74,Qt::KeepAspectRatio,Qt::SmoothTransformation);
-        btnIn->show();
-        btnIn->setIcon(QIcon(pixIn));
-        btnIn->setIconSize(pixIn.size());
-        btnIn->setAccessibleName(info.paths[SVGInfo::INPUT]);
-        if (pixIn.isNull() || info.crashed) {
-        } else {
-            btnIn->setText("");
-        }
-    } else {
-        btnIn->hide();
-    }
-
-    QPixmap pixOut(info.paths[SVGInfo::OUTPUT]);
-    if (pixOut.width() > 74)
-        pixOut = pixOut.scaled(74,74,Qt::KeepAspectRatio,Qt::SmoothTransformation);
-    btnOut->setIcon(QIcon(pixOut));
-    btnOut->setIconSize(pixOut.size());
-    btnOut->setAccessibleName(info.paths[SVGInfo::OUTPUT]);
-    if (pixOut.isNull() || info.crashed) {
-
-    } else
-        btnOut->setText("");
-
     lblName->setText(QFileInfo(info.paths[SVGInfo::OUTPUT]).fileName());
     lblName->setToolTip(tr("Input file: ")+info.paths[SVGInfo::INPUT]);
-
-    SomeUtils utils;
+    lblName->setAccessibleName(QFileInfo(info.paths[SVGInfo::OUTPUT]).fileName());
 
     // elements
     lblElemB->setText(QString::number(info.elemInitial));
@@ -73,15 +31,12 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
     lblAttrA->setText(QString::number(info.attrFinal));
 
     // time
-    lblTime->setText(utils.prepareTime(info.time));
+    lblTime->setText(SomeUtils::prepareTime(info.time));
+
+    iconsWidget->setMinimumHeight(height()-20);
+    iconsWidget->setPaths(info.paths[SVGInfo::INPUT],info.paths[SVGInfo::OUTPUT],compare);
 
     if (info.crashed) {
-        btnIn->setText(tr("crashed"));
-        btnIn->setIcon(QIcon());
-
-        btnOut->setText(tr("crashed"));
-        btnOut->setIcon(QIcon());
-
         lblElemP->setText("(0.00%)");
         lblAttrP->setText("(0.00%)");
         lblTime->setText("0");
@@ -90,10 +45,11 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
         lblSizeB->setText("0");
         lblSizeA->setText("0");
         lblSizeP->setText("(0.00%)");
+        iconsWidget->setCrashed(true);
     } else {
         // size
-        lblSizeB->setText(utils.prepareSize(info.sizes[SVGInfo::INPUT]));
-        lblSizeA->setText(utils.prepareSize(info.sizes[SVGInfo::OUTPUT]));
+        lblSizeB->setText(SomeUtils::prepareSize(info.sizes[SVGInfo::INPUT]));
+        lblSizeA->setText(SomeUtils::prepareSize(info.sizes[SVGInfo::OUTPUT]));
         lblSizeP->setText("("+QString::number(info.compress,'f',2)+"%)");
 
         lblElemP->setText("("+QString::number(((float)info.elemFinal/
@@ -103,17 +59,10 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
     }
 }
 
-void ThumbWidget::openSVG()
-{
-    QPushButton *btn = qobject_cast<QPushButton *>(sender());
-    QDesktopServices::openUrl(QUrl(btn->accessibleName()));
-}
-
 void ThumbWidget::resizeEvent(QResizeEvent *event)
 {
     QFontMetrics fm(QFont().defaultFamily());
-    int size = event->size().width()-lbl1->width()-iconLayout->sizeHint().width()-25;
-    QString normalStr = fm.elidedText(QFileInfo(fullInfo.paths[SVGInfo::OUTPUT]).fileName(),
-                                      Qt::ElideLeft,size);
+    int size = event->size().width()-lbl1->width()-iconsWidget->width()-25;
+    QString normalStr = fm.elidedText(lblName->accessibleName(),Qt::ElideLeft,size);
     lblName->setText(normalStr);
 }

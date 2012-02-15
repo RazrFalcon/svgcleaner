@@ -9,21 +9,21 @@ SomeUtils::SomeUtils(QObject *parent) :
 {
 }
 
-QString SomeUtils::prepareSize(int bytes)
+QString SomeUtils::prepareSize(const float bytes)
 {
-    double size = bytes;
+    float size = bytes;
     int i = 0;
-    while (size > 1024 && i < 4) {
+    while (size > 1024 && i < 2) {
         size = size/1024;
         i++;
     }
     QStringList list;
-    list<<tr("B")<<tr("KiB")<<tr("MiB")<<tr("GiB");
+    list<<tr("B")<<tr("KiB")<<tr("MiB");
 
     return QString::number(size,'f',1)+list.at(i);
 }
 
-QString SomeUtils::prepareTime(int ms)
+QString SomeUtils::prepareTime(const float ms)
 {
     QTime dt = QTime::fromString("0", "z");
     dt = dt.addMSecs(ms);
@@ -35,13 +35,13 @@ QString SomeUtils::prepareTime(int ms)
     return timeStr.remove(QRegExp("^(00. )*"));
 }
 
-QString SomeUtils::findFile(QString name, QString defaultFolder)
+QString SomeUtils::findFile(const QString &name, const QString &defaultFolder)
 {
     if (QFile( "../SVGCleaner/"+name).exists()) // Qt Creator shadow build
         return "../SVGCleaner/"+name;
     else if (QFile(name).exists()) // next to exe. Usual build/Windows.
         return name;
-    else if (QFile(defaultFolder+name).exists()) // linux path
+    else if (QFile(defaultFolder+name).exists()) // custom path
         return defaultFolder+name;
     return name;
 }

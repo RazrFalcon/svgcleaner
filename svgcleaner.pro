@@ -1,11 +1,10 @@
 QT       += core gui xml svg
 TEMPLATE  = app
-VERSION   = 0.3
+VERSION   = 0.4
 unix:TARGET    = svgcleaner-gui
 windows:TARGET = SVGCleaner
 
 SOURCES  += src/main.cpp \
-            src/guiinfo.cpp \
             src/thumbwidget.cpp \
             src/mainwindow.cpp \
             src/cleanerthread.cpp \
@@ -13,10 +12,10 @@ SOURCES  += src/main.cpp \
             src/itemwidget.cpp \
             src/aboutdialog.cpp \
             src/lineedit.cpp \
-            src/wizarddialog.cpp
+            src/wizarddialog.cpp \
+            src/iconswidget.cpp
 		
-HEADERS  += src/guiinfo.h \
-            src/thumbwidget.h \
+HEADERS  += src/thumbwidget.h \
             src/mainwindow.h \
             src/cleanerthread.h \
             src/arguments.h \
@@ -24,35 +23,37 @@ HEADERS  += src/guiinfo.h \
             src/itemwidget.h \
             src/aboutdialog.h \
             src/lineedit.h \
-            src/wizarddialog.h
+            src/wizarddialog.h \
+            src/iconswidget.h
 
 FORMS    += src/thumbwidget.ui \
             src/mainwindow.ui \
             src/aboutdialog.ui \
             src/wizarddialog.ui
 
-OTHER_FILES += interface.xml
 RESOURCES   += icons/icons.qrc
 CODECFORSRC  = UTF-8
 windows:RC_FILE = icons/icon.rc
 
-#include(translations/translations.pri)
+include(translations/translations.pri)
 
 unix {
     isEmpty (PREFIX):PREFIX = /usr
 
-    INSTALLS          += target desktop logo script presets interface
+    INSTALLS           += target desktop logo script presets interface translations
 
-    desktop.path       = $$PREFIX/share/applications
-    desktop.files     += svgcleaner.desktop
-    logo.path          = $$PREFIX/share/icons/hicolor/scalable/apps
-    logo.files        += icons/svgcleaner.svg
-    interface.path     = $$PREFIX/share/svgcleaner
-    interface.files   += interface.xml
-    presets.path       = $$PREFIX/share/svgcleaner/presets
-    presets.files     += presets/soft.preset presets/normal.preset \
-                         presets/optimal.preset presets/vacuum-defs.preset
-    script.path        = $$PREFIX/bin
-    script.files      += svgcleaner.pl
-    target.path        = $$PREFIX/bin
+    desktop.path        = $$PREFIX/share/applications
+    desktop.files      += svgcleaner.desktop
+    logo.path           = $$PREFIX/share/icons/hicolor/scalable/apps
+    logo.files         += icons/svgcleaner.svg
+    interface.path      = $$PREFIX/share/svgcleaner
+    interface.files    += interface.xml
+    presets.path        = $$PREFIX/share/svgcleaner/presets
+    presets.files      += presets/soft.preset presets/normal.preset \
+                          presets/optimal.preset presets/vacuum-defs.preset
+    translations.path   = $$PREFIX/share/svgcleaner/translations
+    translations.files += svgcleaner_cs.qm svgcleaner_ru.qm
+    script.path         = $$PREFIX/bin
+    script.files       += svgcleaner.pl
+    target.path         = $$PREFIX/bin
 }

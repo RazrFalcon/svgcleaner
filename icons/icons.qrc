@@ -15,5 +15,7 @@
         <file>wizard.svgz</file>
         <file>thumbs-off.svgz</file>
         <file>thumbs-on.svgz</file>
+        <file>pause.svgz</file>
+        <file>paths.svgz</file>
     </qresource>
 </RCC>

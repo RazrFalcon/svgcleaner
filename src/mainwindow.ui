@@ -33,10 +33,26 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
+    <item row="0" column="1" colspan="3">
+     <widget class="QScrollBar" name="itemScroll">
+      <property name="maximum">
+       <number>0</number>
+      </property>
+      <property name="pageStep">
+       <number>1</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QScrollArea" name="scrollArea">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
       </property>
       <property name="verticalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -52,8 +68,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>461</width>
-         <height>508</height>
+         <width>464</width>
+         <height>510</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="itemLayout">
@@ -64,20 +80,7 @@
       </widget>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QScrollBar" name="itemScroll">
-      <property name="maximum">
-       <number>0</number>
-      </property>
-      <property name="pageStep">
-       <number>1</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="2">
+    <item row="1" column="0" colspan="4">
      <widget class="QProgressBar" name="progressBar">
       <property name="value">
        <number>0</number>
@@ -107,6 +110,7 @@
    </attribute>
    <addaction name="actionWizard"/>
    <addaction name="actionStart"/>
+   <addaction name="actionPause"/>
    <addaction name="actionStop"/>
    <addaction name="separator"/>
    <addaction name="actionThreads"/>
@@ -481,7 +485,7 @@ p, li { white-space: pre-wrap; }
     <string notr="true">info</string>
    </property>
    <property name="toolTip">
-    <string>About</string>
+    <string>Information</string>
    </property>
   </action>
   <action name="actionCompareView">
@@ -491,11 +495,19 @@ p, li { white-space: pre-wrap; }
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string notr="true">compareView</string>
    </property>
    <property name="toolTip">
     <string>Compare view</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="text">
+    <string notr="true">pause</string>
    </property>
   </action>
  </widget>

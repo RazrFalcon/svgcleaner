@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # Copyright 2011, 2012 Andrey Bayrak.
-# This script is a part of SVG Cleaner.
+# This script is part of SVG Cleaner.
 # SVG Cleaner is licensed under the GNU General Public License, Version 3.
 # The GNU General Public License is a free, copyleft license for software and other kinds of works.
 # http://www.gnu.org/copyleft/gpl.html
@@ -22,7 +22,257 @@ use XML::Twig;
 use Term::ANSIColor;
 
 # преобразуем строку аргументов оптимизации в хэш
-my %args = map { split("=",$_) } split(":",$ARGV[1]);
+# my %args = map { split("=",$_) } split(":",$ARGV[1]);
+
+
+####################
+# СЛУЖЕБНЫЕ ДАННЫЕ #
+####################
+
+# ширина и высота холста
+my $actual_width;
+my $actual_height;
+
+# хэш описания элементов секции defs
+my %desc_elts;
+
+# хэш со ссылками идентичных элементов на первый по счету из них
+my %comp_elts;
+
+# массив, содержащий id удаленных элементов
+my @del_elts;
+
+# количество удаленных неиспользуемых id
+my $id_removed;
+
+# массив, содержащий префиксы пространств имен Adobe Illustrator
+my @adobe_pref = ();
+
+# id последнего удаленного элемента
+my $del_id;
+
+# массив, содержащий список id на которые имеются ссылки
+my @ref_id = ();
+
+# ссылка на другой элемент
+my $link;
+
+# хэш с id (ключ) и списками удаленных атрибутов градиентов (значение)
+my %rem_gratts;
+
+# хэш для определения количества ссылок одних градиентов на другие
+my %xlinks;
+
+# индекс, искользующийся для вывода результатов обработки атрибутов
+my $i;
+
+# шаблон числа с плавающей запятой
+my $fpnum = qr/[-+]?\d*\.?\d+/;
+
+# шаблон числа в экспоненциальном формате 
+my $scinum = qr/[-+]?\d*\.?\d+[eE][-+]?\d+/;
+
+# шаблон всех чисел (обычных и в экспоненциальном формате)
+# my $num = qr/$scinum|$fpnum/;
+my $exp = qr/[eE][+-]?\d+/;
+my $fract_const = qr/\d*\.\d+|\d+\./;
+my $fp_const = qr/$fract_const$exp?|\d+$exp/;
+my $num = qr/[+-]?$fp_const|[+-]?\d+/;
+my $flag = qr/0|1/;
+
+# шаблон едениц измерения
+my $unit = qr/px|pt|pc|mm|cm|m|in|ft|em|ex|%/;
+
+# шаблон разделителя comma-wsp
+my $cwsp = qr/\s+,?\s*|,\s*/;
+
+# шаблон трансформации translate
+my $translate = qr/translate\s*\(\s*($num)$cwsp?($num)?\s*\)/;
+
+# шаблон трансформации scale
+my $scale = qr/scale\s*\(\s*($num)$cwsp?($num)?\s*\)/;
+
+# шаблон трансформации skewX
+my $skewX = qr/skewX\s*\(\s*($num)\s*\)/;
+
+# шаблон трансформации skewY
+my $skewY = qr/skewY\s*\(\s*($num)\s*\)/;
+
+# шаблон трансформации rotate_a
+my $rotate_a = qr/rotate\s*\(\s*($num)\s*\)/;
+
+# шаблон трансформации rotate_axy
+my $rotate_axy = qr/rotate\s*\(\s*($num)$cwsp($num)$cwsp($num)\s*\)/;
+
+# шаблон трансформации rotate
+my $rotate = qr/rotate\s*\(\s*($num)$cwsp?($num)?$cwsp?($num)?\s*\)/;
+
+# шаблон трансформации matrix
+my $matrix = qr/matrix\s*\(\s*($num)$cwsp($num)$cwsp($num)$cwsp($num)$cwsp($num)$cwsp($num)\s*\)/;
+
+
+# хэш с возможными параметрами чистки и их значениями
+my %arg_limits =  (
+  'quiet' => ['yes', 'no'],
+  'remove-prolog' => ['yes', 'no'],
+  'remove-comments' => ['yes', 'no'],
+  'remove-unused-defs' => ['yes', 'no'],
+  'remove-nonsvg-elts' => ['yes', 'no'],
+  'remove-metadata' => ['yes', 'no'],
+  'remove-inkscape-elts' => ['yes', 'no'],
+  'remove-sodipodi-elts' => ['yes', 'no'],
+  'remove-ai-elts' => ['yes', 'no'],
+  'remove-msvisio-elts' => ['yes', 'no'],
+  'remove-invisible-elts' => ['yes', 'no'],
+  'collapse-groups' => ['yes', 'no'],
+  'remove-empty-groups' => ['yes', 'no'],
+  'remove-dupl-defs' => ['yes', 'no'],
+  'remove-singly-grads' => ['yes', 'no'],
+  'remove-gaussian-blur' => ['yes', 'no'],
+  'std-deviation-limit' => ['0.01', '0.5'],
+  'remove-unused-ns' => ['yes', 'no'],
+  'remove-unref-ids' => ['yes', 'no'],
+  'keep-letter-ids' => ['yes', 'no'],
+  'remove-nonsvg-atts' => ['yes', 'no'],
+  'remove-notappl-atts' => ['yes', 'no'],
+  'remove-default-atts' => ['yes', 'no'],
+  'remove-inkscape-atts' => ['yes', 'no'],
+  'remove-sodipodi-atts' => ['yes', 'no'],
+  'remove-ai-atts' => ['yes', 'no'],
+  'remove-msvisio-atts' => ['yes', 'no'],
+  'remove-stroke-props' => ['yes', 'no'],
+  'remove-fill-props' => ['yes', 'no'],
+  'remove-clippath-atts' => ['yes', 'no'],
+  'remove-grad-coords' => ['yes', 'no'],
+  'remove-uwsp-path' => ['yes', 'no'],
+  'remove-empty-segments' => ['yes', 'no'],
+  'convert-lines-hv' => ['yes', 'no'],
+  'convert-curves-lines' => ['yes', 'no'],
+  'convert-curves-cs' => ['yes', 'no'],
+  'convert-curves-qt' => ['yes', 'no'],
+  'enable-viewbox' => ['yes', 'no'],
+  'convert-style-atts' => ['yes', 'no'],
+  'convert-units-px' => ['yes', 'no'],
+  'convert-colors-rrggbb' => ['yes', 'no'],
+  'convert-colors-rgb' => ['yes', 'no'],
+  'convert-bs-paths' => ['yes', 'no'],
+  'convert-abs-paths' => ['yes', 'no'],
+  'remove-unnec-wsp' => ['yes', 'no'],
+  'convert-transfs-matrix' => ['yes', 'no'],
+  'recalc-coords' => ['yes', 'no'],
+  'sort-defs' => ['yes', 'no'],
+  'round-numbers' => ['yes', 'no'],
+  'dp-transfs' => ['0', '9'],
+  'dp-coords' => ['0', '9'],
+  'dp-other-atts' => ['0', '9'],
+  'pretty-print  ' => ['nice', 'none', 'nsgmls', 'indented', 'indented_c', 'wrapped', 'record', 'record_c'],
+  'indent' => ['0', '5'],
+  'empty-tags' => ['normal', 'html', 'expand'],
+  'quote-char' => ['double', 'single']);
+
+my @num_args = ('std-deviation-limit','dp-transfs','dp-coords','dp-other-atts','indent');
+
+
+# хэш параметров очистки (по началу - дефолтные значения)
+my %args =  (
+  'quiet' => 'yes',
+  'remove-prolog' => 'yes',
+  'remove-comments' => 'yes',
+  'remove-unused-defs' => 'yes',
+  'remove-nonsvg-elts' => 'yes',
+  'remove-metadata' => 'yes',
+  'remove-inkscape-elts' => 'yes',
+  'remove-sodipodi-elts' => 'yes',
+  'remove-ai-elts' => 'yes',
+  'remove-msvisio-elts' => 'yes',
+  'remove-invisible-elts' => 'yes',
+  'collapse-groups' => 'yes',
+  'remove-empty-groups' => 'yes',
+  'remove-dupl-defs' => 'yes',
+  'remove-singly-grads' => 'yes',
+  'remove-gaussian-blur' => 'yes',
+  'std-deviation-limit' => '0.2',
+  'remove-unused-ns' => 'yes',
+  'remove-unref-ids' => 'yes',
+  'keep-letter-ids' => 'yes',
+  'remove-nonsvg-atts' => 'yes',
+  'remove-notappl-atts' => 'yes',
+  'remove-default-atts' => 'yes',
+  'remove-inkscape-atts' => 'yes',
+  'remove-sodipodi-atts' => 'yes',
+  'remove-ai-atts' => 'yes',
+  'remove-msvisio-atts' => 'yes',
+  'remove-stroke-props' => 'yes',
+  'remove-fill-props' => 'yes',
+  'remove-clippath-atts' => 'yes',
+  'remove-grad-coords' => 'yes',
+  'remove-uwsp-path' => 'yes',
+  'remove-empty-segments' => 'yes',
+  'convert-lines-hv' => 'yes',
+  'convert-curves-lines' => 'yes',
+  'convert-curves-cs' => 'yes',
+  'convert-curves-qt' => 'yes',
+  'enable-viewbox' => 'yes',
+  'convert-style-atts' => 'yes',
+  'convert-units-px' => 'yes',
+  'convert-colors-rrggbb' => 'yes',
+  'convert-colors-rgb' => 'yes',
+  'convert-bs-paths' => 'yes',
+  'convert-abs-paths' => 'yes',
+  'remove-unnec-wsp' => 'yes',
+  'convert-transfs-matrix' => 'yes',
+  'recalc-coords' => 'yes',
+  'sort-defs' => 'yes',
+  'round-numbers' => 'yes',
+  'dp-transfs' => '5',
+  'dp-coords' => '4',
+  'dp-other-atts' => '3',
+  'pretty-print' => 'nice',
+  'indent' => '1',
+  'empty-tags' => 'normal',
+  'quote-char' => 'double');
+
+my ($in_file, $out_file);
+
+# добавляем параметры очистки из командной строки
+# начинаем обработку, если задан входящий файл
+if (grep { $in_file = $1 if $_=~/^--in-file=(.+\.svg)$/ } @ARGV) {
+  # обрабатываем аргуметы, полученные из командной строки
+  foreach (@ARGV) {
+
+    if ($_=~/^--(.+)=(.+)$/) {
+
+      my ($arg, $arg_val) = ($1, $2);
+      if ($arg eq "out-file" && $arg_val=~/^(.+\.svg)$/) {
+
+	$out_file = $arg_val;
+      }
+      elsif (($arg~~@num_args && $arg_val=~/^$num$/ &&
+	      $arg_val>=$arg_limits{$arg}[0] && $arg_val<=$arg_limits{$arg}[1]) ||
+	      ($arg_val~~$arg_limits{$arg})) {
+
+	$args{$arg} = $arg_val;
+      }
+    }
+  }
+  $out_file = "cleaned-".$in_file unless ($out_file);
+}
+# в противном случае прекращаем обработку
+else {
+  die "\nThere is no input file!\n\n";
+}
+
+if ($args{'remove-prolog'} eq "yes") {
+  $args{'remove-prolog'} = "1";
+} else {
+  $args{'remove-prolog'} = "0";
+}
+
+if ($args{'remove-comments'} eq "yes") {
+  $args{'remove-comments'} = "drop";
+} else {
+  $args{'remove-comments'} = "keep";
+}
 
 # массив с именами всех элементов SVG
 my @svg_elts = (
@@ -641,92 +891,6 @@ my @lingrad_atts = ('gradientUnits','spreadMethod','gradientTransform','x1','y1'
 my @radgrad_atts = ('gradientUnits','spreadMethod','gradientTransform','fx','fy','cx','cy','r');
 
 
-####################
-# СЛУЖЕБНЫЕ ДАННЫЕ #
-####################
-
-# ширина и высота холста
-my $actual_width;
-my $actual_height;
-
-# хэш описания элементов секции defs
-my %desc_elts;
-
-# хэш со ссылками идентичных элементов на первый по счету из них
-my %comp_elts;
-
-# массив, содержащий id удаленных элементов
-my @del_elts;
-
-# количество удаленных неиспользуемых id
-my $id_removed;
-
-# массив, содержащий префиксы пространств имен Adobe Illustrator
-my @adobe_pref = ();
-
-# id последнего удаленного элемента
-my $del_id;
-
-# массив, содержащий список id на которые имеются ссылки
-my @ref_id = ();
-
-# ссылка на другой элемент
-my $link;
-
-# хэш с id (ключ) и списками удаленных атрибутов градиентов (значение)
-my %rem_gratts;
-
-# хэш для определения количества ссылок одних градиентов на другие
-my %xlinks;
-
-# индекс, искользующийся для вывода результатов обработки атрибутов
-my $i;
-
-# шаблон числа с плавающей запятой
-my $fpnum = qr/[-+]?\d*\.?\d+/;
-
-# шаблон числа в экспоненциальном формате 
-my $scinum = qr/[-+]?\d*\.?\d+[eE][-+]?\d+/;
-
-# шаблон всех чисел (обычных и в экспоненциальном формате)
-# my $num = qr/$scinum|$fpnum/;
-my $exp = qr/[eE][+-]?\d+/;
-my $fract_const = qr/\d*\.\d+|\d+\./;
-my $fp_const = qr/$fract_const$exp?|\d+$exp/;
-my $num = qr/[+-]?$fp_const|[+-]?\d+/;
-my $flag = qr/0|1/;
-
-# шаблон едениц измерения
-my $unit = qr/px|pt|pc|mm|cm|m|in|ft|em|ex|%/;
-
-# шаблон разделителя comma-wsp
-my $cwsp = qr/\s+,?\s*|,\s*/;
-
-# шаблон трансформации translate
-my $translate = qr/translate\s*\(\s*($num)$cwsp?($num)?\s*\)/;
-
-# шаблон трансформации scale
-my $scale = qr/scale\s*\(\s*($num)$cwsp?($num)?\s*\)/;
-
-# шаблон трансформации skewX
-my $skewX = qr/skewX\s*\(\s*($num)\s*\)/;
-
-# шаблон трансформации skewY
-my $skewY = qr/skewY\s*\(\s*($num)\s*\)/;
-
-# шаблон трансформации rotate_a
-my $rotate_a = qr/rotate\s*\(\s*($num)\s*\)/;
-
-# шаблон трансформации rotate_axy
-my $rotate_axy = qr/rotate\s*\(\s*($num)$cwsp($num)$cwsp($num)\s*\)/;
-
-# шаблон трансформации rotate
-my $rotate = qr/rotate\s*\(\s*($num)$cwsp?($num)?$cwsp?($num)?\s*\)/;
-
-# шаблон трансформации matrix
-my $matrix = qr/matrix\s*\(\s*($num)$cwsp($num)$cwsp($num)$cwsp($num)$cwsp($num)$cwsp($num)\s*\)/;
-
-
 ################
 # ПОДПРОГРАММЫ #
 ################
@@ -737,7 +901,7 @@ sub del_elt {
   $_[0]->delete;
   $del_id = $_[2];
   push @del_elts, $del_id;
-  if ($ARGV[2] && $ARGV[2] ne "quiet") {
+  if ($args{'quiet'} eq "no") {
     print colored (" <$_[1]", 'bold red');
     print " id=\"$_[2]\" ($_[3])\n\n";
   }
@@ -776,7 +940,7 @@ sub desc_elt {
 sub del_att {
   $i++;
   $_[0]->del_att("$_[1]");
-  if ($ARGV[2] && $ARGV[2] ne "quiet") {
+  if ($args{'quiet'} eq "no") {
     if ($_[3] == 1) { print colored (" <$_[4]", 'bold');print " id=\"$_[5]\":" };
     print colored ("\n  •$_[1]", 'red'); print " ($_[2])";
   }
@@ -786,7 +950,7 @@ sub del_att {
 # подпрограмма создания атрибута
 sub crt_att {
   $i++;
-  if ($ARGV[2] && $ARGV[2] ne "quiet") {
+  if ($args{'quiet'} eq "no") {
 
   if ($_[3] == 1) { print colored (" <$_[4]", 'bold');print " id=\"$_[5]\":" };
   print colored ("\n  •$_[1]", 'green'); print " ($_[2])";
@@ -909,8 +1073,8 @@ sub opt_angle {
   my $angle = shift;
   if ($angle < 0) {
     $angle += 360 while ($angle < 0);
-  } elsif ($angle > 360) {
-    $angle -= 360 while ($angle > 360);
+  } elsif ($angle >= 360) {
+    $angle -= 360 while ($angle >= 360);
   }
   return $angle;
 }
@@ -985,8 +1149,7 @@ sub trans_matrix {
       my $cy = $3;
       my $cx_neg = $cx*(-1);
       my $cy_neg = $cy*(-1);
-      $angle = &opt_angle($angle) if ($angle < 0 || $angle > 360);
-      $angle = 0 if ($angle == 360);
+      $angle = &opt_angle($angle) if ($angle < 0 || $angle >= 360);
 
       $transform=~ s/^$rotate_axy//;
       $transform = "translate($cx,$cy) rotate($angle) translate($cx_neg,$cy_neg) ".$transform;
@@ -1016,8 +1179,7 @@ sub trans_matrix {
     # skewX(angle) => matrix(1,0,tg(angle),1,0,0)
     if ($transform=~ /^$skewX/) {
       my $angle = $1;
-      $angle = &opt_angle($angle) if ($angle < 0 || $angle > 360);
-      $angle = 0 if ($angle == 360);
+      $angle = &opt_angle($angle) if ($angle < 0 || $angle >= 360);
       my $tg = &angle_tg($angle);
 
       $transform=~ s/^$skewX//;
@@ -1028,8 +1190,7 @@ sub trans_matrix {
     # skewY(angle) => matrix(1,tg(angle),0,1,0,0)
     if ($transform=~ /^$skewY/) {
       my $angle = $1;
-      $angle = &opt_angle($angle) if ($angle < 0 || $angle > 360);
-      $angle = 0 if ($angle == 360);
+      $angle = &opt_angle($angle) if ($angle < 0 || $angle >= 360);
       my $tg = &angle_tg($angle);
 
       $transform=~ s/^$skewY//;
@@ -1040,8 +1201,7 @@ sub trans_matrix {
     # rotate(angle) => matrix(cos(a),sin(a),-sin(a),cos(a),0,0)
     if ($transform=~ /^$rotate_a/) {
       my $angle = $1;
-      $angle = &opt_angle($angle) if ($angle < 0 || $angle > 360);
-      $angle = 0 if ($angle == 360);
+      $angle = &opt_angle($angle) if ($angle < 0 || $angle >= 360);
       my $cos = &angle_cos($angle);
       my $sin = &angle_sin($angle);
       my $sin_neg = $sin*(-1);
@@ -1071,6 +1231,101 @@ sub trans_matrix {
   return $transform;
 }
 
+# подпрограмма создания сегмента для команд "lineto" и "smooth-quadratic-bezier-curveto"
+sub segment_mlt {
+  my ($dx, $dy, $cmd, $lrcmd) = @_;
+  # устанавливаем символ команды, если это необходимо
+  my $rcmd;
+  if ($cmd eq "m") {
+    $rcmd = "m";
+  }
+  elsif ($cmd eq "l" && !($lrcmd~~['m', 'l'])) {
+    $rcmd = "l";
+  }
+  elsif ($cmd eq "t" && $lrcmd ne "t") {
+    $rcmd = "t";
+  }
+  # аргумент команды
+  my $cmd_arg;
+  # аргумент команды при удалении лишних пробелов
+  if ($args{'remove-uwsp-path'} eq "yes") {
+    ($dy < 0 || ($dx=~/\.\d+$/ && $dy=~/^\./)) ?
+    ($cmd_arg = "$dx$dy") : ($cmd_arg = "$dx,$dy");
+    $cmd_arg = " $cmd_arg" if (!$rcmd && $dx >= 0);
+  }
+  # аргумент команды без удаления лишних пробелов
+  else {
+    $rcmd ? ($cmd_arg = " $dx,$dy ") : ($cmd_arg = "$dx,$dy ");
+  }
+  # добавляем символ команды к аргументу, если это необходимо
+  $cmd_arg = $rcmd.$cmd_arg if ($rcmd);
+
+  return $cmd_arg;
+}
+
+
+# подпрограмма создания сегмента для команд "horizontal-lineto" и "vertical-lineto"
+sub segment_hv {
+  my ($dx, $dy, $lrcmd) = @_;
+  # устанавливаем символ команды, если это необходимо
+  my $rcmd;
+  if ($dx && !$dy && $lrcmd ne "h") {
+    $rcmd = "h";
+  }
+  elsif (!$dx && $dy && $lrcmd ne "v") {
+    $rcmd = "v";
+  }
+  # аргумент команды
+  my $cmd_arg;
+  ($dx && !$dy) ? ($cmd_arg = $dx) : ($cmd_arg = $dy);
+  # аргумент команды при удалении лишних пробелов
+  if ($args{'remove-uwsp-path'} eq "yes") {
+    $cmd_arg = " $cmd_arg" if (!$rcmd && $cmd_arg >= 0);
+  }
+  # аргумент команды без удаления лишних пробелов
+  else {
+    $rcmd ? ($cmd_arg = " $cmd_arg ") : ($cmd_arg = "$cmd_arg ");
+  }
+  # добавляем символ команды к аргументу, если это необходимо
+  $cmd_arg = $rcmd.$cmd_arg if ($rcmd);
+
+  return $cmd_arg;
+}
+
+
+# подпрограмма создания сегмента для команд "smooth-curveto" и "quadratic-bezier-curveto"
+sub segment_sq {
+  my ($dx1, $dy1, $dx, $dy, $cmd, $lrcmd) = @_;
+  # устанавливаем символ команды, если это необходимо
+  my $rcmd;
+  if ($cmd eq "s" && $lrcmd ne "s") {
+    $rcmd = "s";
+  }
+  elsif ($cmd eq "q" && $lrcmd ne "q") {
+    $rcmd = "q";
+  }
+  # аргумент команды
+  my ($cmd_arg, $arg1, $arg2);
+  # аргумент команды при удалении лишних пробелов
+  if ($args{'remove-uwsp-path'} eq "yes") {
+    ($dy1 < 0 || ($dx1=~/\.\d+$/ && $dy1=~/^\./)) ?
+    ($arg1 = "$dx1$dy1") : ($arg1 = "$dx1,$dy1");
+    ($dy < 0 || ($dx=~/\.\d+$/ && $dy=~/^\./)) ?
+    ($arg2 = "$dx$dy") : ($arg2 = "$dx,$dy");
+    ($dx < 0 || ($dy1=~/\.\d+$/ && $dx=~/^\./)) ?
+    ($cmd_arg = "$arg1$arg2") : ($cmd_arg = "$arg1 $arg2");
+    $cmd_arg = " $cmd_arg" if (!$rcmd && $dx1 >= 0);
+  }
+  # аргумент команды без удаления лишних пробелов
+  else {
+    $rcmd ? ($cmd_arg = " $dx1,$dy1 $dx,$dy ") : ($cmd_arg = "$dx1,$dy1 $dx,$dy ");
+  }
+  # добавляем символ команды к аргументу, если это необходимо
+  $cmd_arg = $rcmd.$cmd_arg if ($rcmd);
+
+  return $cmd_arg;
+}
+
 
 #################
 # ПАРСИНГ ФАЙЛА #
@@ -1078,14 +1333,14 @@ sub trans_matrix {
 
 # создаем объект XML::Twig
 my $twig = XML::Twig->new(
-  no_prolog => "$args{'no_prolog'}",
-  comments => "$args{'comments'}",
+  no_prolog => "$args{'remove-prolog'}",
+  comments => "$args{'remove-comments'}",
   output_encoding => 'utf8',
   discard_spaces => 1);
 
 
 # парсим файл
-$twig->parsefile("$ARGV[0]");
+$twig->parsefile($out_file);
 
 
 # выводим имя файла
@@ -1093,7 +1348,7 @@ $twig->parsefile("$ARGV[0]");
 (my $length = length ($file_name))+=2;
 my $line = ('─' x $length);
 
-if ($ARGV[2] && $ARGV[2] ne "quiet") {
+if ($args{'quiet'} eq "no") {
   print "\n\n\n╓$line╖";
   print "\n║ "; print colored ("$file_name", 'bold'); print " ║";
   print "\n╙$line╜\n\n";
@@ -1111,7 +1366,7 @@ my $root = $twig->root;
 # ПРЕДВАРИТЕЛЬНАЯ ОБРАБОТКА #
 #############################
 
-print colored ("\nPREPROCESSING\n\n", 'bold blue underline') if ($ARGV[2] && $ARGV[2] ne "quiet");
+print colored ("\nPREPROCESSING\n\n", 'bold blue underline') if ($args{'quiet'} eq "no");
 
 
 # определяем начальный размер файла
@@ -1242,7 +1497,7 @@ foreach my $elt ($root->descendants_or_self) {
 }
 
 
-if ($ARGV[2] && $ARGV[2] ne "quiet") {
+if ($args{'quiet'} eq "no") {
   # вывод начального размера файла
   print colored (" The initial file size is $size_initial bytes\n", 'bold');
   # вывод начального количества элементов
@@ -1298,16 +1553,16 @@ if ($root->att('width') && $root->att('height')) {
 
 # принудительно увеличиваем точность округления дробных чисел для очень маленьких изображений (во избежание их искажения)
 if (($actual_width < 64 || $actual_height < 64) &&
-    $args{'round_numbers'} eq "yes") {
+    $args{'round-numbers'} eq "yes") {
 
-  $args{'dp_d'} = 5 if ($args{'dp_d'} < 5);
-  $args{'dp_tr'} = 6 if ($args{'dp_tr'} < 6);
+  $args{'dp-coords'} = 5 if ($args{'dp-coords'} < 5);
+  $args{'dp-transfs'} = 6 if ($args{'dp-transfs'} < 6);
 }
 
 
 # определяем префиксы пространств имен Adobe Illustrator
-if ($args{'adobe_elts'} eq "delete" ||
-    $args{'adobe_atts'} eq "delete") {
+if ($args{'remove-ai-elts'} eq "yes" ||
+    $args{'remove-ai-atts'} eq "yes") {
 
   while ((my $att, my $att_val) = each %{$root->atts}) {
 
@@ -1348,7 +1603,7 @@ foreach ($root->descendants) {
       $defs = $root->insert_new_elt('defs');
       $defs->set_id('defs1');
 
-      if ($ARGV[2] && $ARGV[2] ne "quiet") {
+      if ($args{'quiet'} eq "no") {
 	print colored (" <defs", 'bold green');
 	print " id=\"defs1\" (there isn't the main defs section)\n\n";
       }
@@ -1357,7 +1612,7 @@ foreach ($root->descendants) {
     # переносим этот элемент на место последнего потомка элемента defs
     $_->move(last_child => $defs);
 
-    if ($ARGV[2] && $ARGV[2] ne "quiet") {
+    if ($args{'quiet'} eq "no") {
       print colored (" <$elt_name", 'bold magenta');
       print " id=\"$elt_id\" (into the defs section)\n\n";
     }
@@ -1383,7 +1638,7 @@ unless ($root->descendants('defs') == 1) {
 	my $elt_id = $_->id;
 	$_->move(last_child => $defs);
 
-	if ($ARGV[2] && $ARGV[2] ne "quiet") {
+	if ($args{'quiet'} eq "no") {
 	  print colored (" <$elt_name", 'bold magenta');
 	  print " id=\"$elt_id\" (into the main defs section)\n\n";
 	}
@@ -1391,7 +1646,7 @@ unless ($root->descendants('defs') == 1) {
 
       $_->erase;
 
-      if ($ARGV[2] && $ARGV[2] ne "quiet") {
+      if ($args{'quiet'} eq "no") {
 	
 	print colored (" <defs", 'bold red');
 	print " id=\"$defs_id\" (it's not the main defs section)\n\n";
@@ -1406,7 +1661,7 @@ unless ($root->descendants('defs') == 1) {
 # ОБРАБОТКА ЭЛЕМЕНТОВ #
 #######################
 
-print colored ("\nPROCESSING ELEMENTS\n\n", 'bold blue underline') if ($ARGV[2] && $ARGV[2] ne "quiet");
+print colored ("\nPROCESSING ELEMENTS\n\n", 'bold blue underline') if ($args{'quiet'} eq "no");
 
 
 # цикл: обработка всех элементов файла
@@ -1421,7 +1676,7 @@ foreach my $elt ($root->descendants) {
   $elt_id = "none" unless ($elt_id);
 
   # получаем префикс имени элемента
-  (my $elt_pref = $elt_name)=~ s/:.+$// if ($args{'adobe_elts'} eq "delete" && $elt_name=~ /:/);
+  (my $elt_pref = $elt_name)=~ s/:.+$// if ($args{'remove-ai-elts'} eq "yes" && $elt_name=~ /:/);
 
 
   # если обрабатываемый элемент является дочерним элементом удаленного, то пропускаем его обработку
@@ -1431,7 +1686,7 @@ foreach my $elt ($root->descendants) {
 
 
   # удаление не SVG элементов
-  if ($args{'non_svgelts'} eq "delete" &&
+  if ($args{'remove-nonsvg-elts'} eq "yes" &&
       !$elt->is_text &&
       $elt_name!~ /:/ &&
       !($elt_name~~@svg_elts)) {
@@ -1442,7 +1697,7 @@ foreach my $elt ($root->descendants) {
 
 
   # удаление элемента metadata
-  if ($args{'metadata'} eq "delete" &&
+  if ($args{'remove-metadata'} eq "yes" &&
       $elt_name eq "metadata") {
 
     &del_elt($elt,$elt_name,$elt_id,"it's a metadata element");
@@ -1451,7 +1706,7 @@ foreach my $elt ($root->descendants) {
 
 
   # удаление элементов Inkscape
-  if ($args{'inkscape_elts'} eq "delete" &&
+  if ($args{'remove-inkscape-elts'} eq "yes" &&
       $elt_name=~ /^inkscape:/ &&
       $elt_name ne "inkscape:path-effect") {
 
@@ -1461,7 +1716,7 @@ foreach my $elt ($root->descendants) {
 
 
   # удаление элементов Sodipodi
-  if ($args{'sodipodi_elts'} eq "delete" &&
+  if ($args{'remove-sodipodi-elts'} eq "yes" &&
       $elt_name=~ /^sodipodi:/) {
 
     &del_elt($elt,$elt_name,$elt_id,"it's a Sodipodi element");
@@ -1470,14 +1725,14 @@ foreach my $elt ($root->descendants) {
 
 
   # удаление элементов Adobe Illustrator
-  if ($args{'adobe_elts'} eq "delete" && $elt_pref && $elt_pref~~@adobe_pref) {
+  if ($args{'remove-ai-elts'} eq "yes" && $elt_pref && $elt_pref~~@adobe_pref) {
     &del_elt($elt,$elt_name,$elt_id,"it's an Adobe Illustrator element");
     next CYCLE_ELTS;
   }
 
 
   # удаление элементов Adobe Illustrator (продолжение)
-  if ($args{'adobe_elts'} eq "delete" &&
+  if ($args{'remove-ai-elts'} eq "yes" &&
       $elt_name eq "foreignObject" &&
       $elt->att('requiredExtensions')~~@adobe_ns) {
 
@@ -1487,7 +1742,7 @@ foreach my $elt ($root->descendants) {
 
 
   # удаление элементов Microsoft Visio
-  if ($args{'visio_elts'} eq "delete" &&
+  if ($args{'remove-msvisio-elts'} eq "yes" &&
       $elt_name=~ /^v:/) {
 
     &del_elt($elt,$elt_name,$elt_id,"it's a Microsoft Visio element");
@@ -1496,7 +1751,7 @@ foreach my $elt ($root->descendants) {
 
 
   # удаление невидимых элементов
-  if ($args{'invisible_elts'} eq "delete") {
+  if ($args{'remove-invisible-elts'} eq "yes") {
 
     # удаление элементов с атрибутом display="none"
     if ($elt->att('display') &&
@@ -1630,7 +1885,7 @@ foreach my $elt ($root->descendants) {
 
   # удаление пустых групп (элементов g, которые не имеют дочерних элементов)
   if ($elt_name eq "g" &&
-      $args{'empty_groups'} eq "delete") {
+      $args{'remove-empty-groups'} eq "yes") {
 
     # если группа не имеет дочерних элементов
     unless ($elt->children) {
@@ -1657,8 +1912,8 @@ foreach my $elt ($root->descendants) {
   }
 
 
-  # удаляем элементы filter (Gaussian blur), у которых атрибут stdDeviation дочернего элемента feGaussianBlur меньше значения $args{'std_dev'} (по-умолчанию 0.2 - действие таких фильтров практически незаметно)
-  if ($args{'gaussian_blur'} eq "delete" &&
+  # удаляем элементы filter (Gaussian blur), у которых атрибут stdDeviation дочернего элемента feGaussianBlur меньше значения $args{'std-deviation-limit'} (по-умолчанию 0.2 - действие таких фильтров практически незаметно)
+  if ($args{'remove-gaussian-blur'} eq "yes" &&
       $elt_name eq "filter" && $elt->children_count == 1 &&
       $elt->all_children_are ('feGaussianBlur')) {
 
@@ -1666,8 +1921,8 @@ foreach my $elt ($root->descendants) {
     my $stddev = $elt->first_child->att('stdDeviation');
     (my $stddevX, my $stddevY) = ($1, $2) if ($stddev=~ /^($num)$cwsp?($num)?$/);
 
-    if (($stddevX && !$stddevY && $stddevX < $args{'std_dev'}) ||
-	($stddevX && $stddevY && $stddevX < $args{'std_dev'} && $stddevY < $args{'std_dev'})) {
+    if (($stddevX && !$stddevY && $stddevX < $args{'std-deviation-limit'}) ||
+	($stddevX && $stddevY && $stddevX < $args{'std-deviation-limit'} && $stddevY < $args{'std-deviation-limit'})) {
 
       &del_elt($elt,$elt_name,$elt_id,"it's an unused filter");
       next CYCLE_ELTS;
@@ -1732,7 +1987,7 @@ foreach my $elt ($root->descendants) {
 
 
   # преобразование элементов basic shape в path
-  if ($args{'bs_path'} eq "yes") {
+  if ($args{'convert-bs-paths'} eq "yes") {
 
     # преобразование элемента circle в path
     if ($elt_name eq "circle" && $elt->att('r')) {
@@ -1753,7 +2008,7 @@ foreach my $elt ($root->descendants) {
       $elt->del_att('cx', 'cy', 'r');
 #       $elt->set_att('d' => "M$x1,$y A$r,$r 0 1 0 $x2,$y A$r,$r 0 1 0 $x1,$y z");
       $elt->set_att('d' => "M$x1,$y A$r,$r 0 1 0 $x2,$y A$r,$r 0 1 0 $x1,$y");
-      &bs_path($elt_name,$elt_id) if ($ARGV[2] && $ARGV[2] ne "quiet");
+      &bs_path($elt_name,$elt_id) if ($args{'quiet'} eq "no");
     }
 
 
@@ -1778,7 +2033,7 @@ foreach my $elt ($root->descendants) {
       $elt->del_att('cx', 'cy', 'rx', 'ry');
 #       $elt->set_att('d' => "M$x1,$y A$rx,$ry 0 1 0 $x2,$y A$rx,$ry 0 1 0 $x1,$y z");
       $elt->set_att('d' => "M$x1,$y A$rx,$ry 0 1 0 $x2,$y A$rx,$ry 0 1 0 $x1,$y");
-      &bs_path($elt_name,$elt_id) if ($ARGV[2] && $ARGV[2] ne "quiet");
+      &bs_path($elt_name,$elt_id) if ($args{'quiet'} eq "no");
     }
 
 
@@ -1791,7 +2046,7 @@ foreach my $elt ($root->descendants) {
 	$elt->set_tag('path');
 	$elt->del_att('points');
 	$elt->set_att('d' => "M$d z");
-	&bs_path($elt_name,$elt_id) if ($ARGV[2] && $ARGV[2] ne "quiet");
+	&bs_path($elt_name,$elt_id) if ($args{'quiet'} eq "no");
       }
     }
 
@@ -1805,7 +2060,7 @@ foreach my $elt ($root->descendants) {
 	$elt->set_tag('path');
 	$elt->del_att('points');
 	$elt->set_att('d' => "M$d");
-	&bs_path($elt_name,$elt_id) if ($ARGV[2] && $ARGV[2] ne "quiet");
+	&bs_path($elt_name,$elt_id) if ($args{'quiet'} eq "no");
       }
     }
 
@@ -1829,7 +2084,7 @@ foreach my $elt ($root->descendants) {
       $elt->set_tag('path');
       $elt->del_att('x1', 'y1', 'x2', 'y2');
       $elt->set_att('d' => "M$x1,$y1 $x2,$y2");
-      &bs_path($elt_name,$elt_id) if ($ARGV[2] && $ARGV[2] ne "quiet");
+      &bs_path($elt_name,$elt_id) if ($args{'quiet'} eq "no");
     }
 
 
@@ -1870,13 +2125,13 @@ foreach my $elt ($root->descendants) {
 	my $y3 = $y+$h;
 	$elt->set_att('d' => "M$x1,$y H$x2 A$rx,$ry 0 0 1 $x3,$y1 V$y2 A$rx,$ry 0 0 1 $x2,$y3 H$x1 A$rx,$ry 0 0 1 $x,$y2 V$y1 A$rx,$ry 0 0 1 $x1,$y");
       }
-      &bs_path($elt_name,$elt_id) if ($ARGV[2] && $ARGV[2] ne "quiet");
+      &bs_path($elt_name,$elt_id) if ($args{'quiet'} eq "no");
     }
   }
 
 
   # если группа и все входящие в нее элементы содержат атрибут transform, то производим перерасчет этих атрибутов у дочерних элементов, а атрибут группы удаляем после перерасчета
-  if ($args{'conc_trans'} eq "yes" &&
+  if ($args{'convert-transfs-matrix'} eq "yes" &&
       $elt_name eq "g" && !($twig->get_xpath("//*[\@xlink:href=\"#$elt_id\"]")) &&
       $elt->att('transform') && $elt->children &&
       $elt->all_children_are('*[@transform]')) {
@@ -1890,7 +2145,7 @@ foreach my $elt ($root->descendants) {
 
       my $matrix1 = $elt->att('transform');
 
-      if ($ARGV[2] && $ARGV[2] ne "quiet") {
+      if ($args{'quiet'} eq "no") {
 
       print colored (" <g",'bold'); print " id=$elt_id\n";
       print colored ("  •transform=$matrix1\n",'red');
@@ -1911,13 +2166,13 @@ foreach my $elt ($root->descendants) {
 
 	$_->set_att('transform' => $matrix2);
 
-	if ($ARGV[2] && $ARGV[2] ne "quiet") {
+	if ($args{'quiet'} eq "no") {
 
 	print colored ("   <$ch_name",'bold'); print " id=$ch_id\n";
 	print colored ("    •transform=$matrix2\n",'green');
 	}
       }
-	print "\n" if ($ARGV[2] && $ARGV[2] ne "quiet");
+	print "\n" if ($args{'quiet'} eq "no");
     }
   }
 
@@ -1927,7 +2182,7 @@ foreach my $elt ($root->descendants) {
 ####################
 
   # если удаляются неиспользуемые элементы из секции defs и/или неиспользуемые id и предком обрабатываемого элемента не является defs
-  if (($args{'unused_def'} eq "delete" || $args{'unref_id'} eq "delete") &&
+  if (($args{'remove-unused-defs'} eq "yes" || $args{'remove-unref-ids'} eq "yes") &&
       !$elt->parent('defs')) {
 
     # отдельно обрабатываем элемент style
@@ -1964,7 +2219,7 @@ foreach my $elt ($root->descendants) {
 		(defined $elt->att('stroke-opacity') && $elt->att('stroke-opacity') == 0) ||
 		(defined $elt->att('stroke-width') && $elt->att('stroke-width') eq "0")) {
 
-	      $elt->delete if ($args{'invisible_elts'} eq "delete");
+	      $elt->delete if ($args{'remove-invisible-elts'} eq "yes");
 	    }
 	  }
 	} else {
@@ -1984,8 +2239,8 @@ my @out_link = @ref_id;
 # ЧИСТКА ЭЛЕМЕНТА DEFS #
 ########################
 
-if (($args{'unused_def'} eq "delete" ||
-    $args{'unref_id'} eq "delete") && @ref_id) {
+if (($args{'remove-unused-defs'} eq "yes" ||
+    $args{'remove-unref-ids'} eq "yes") && @ref_id) {
 
   # цикл: обрабатываем все id из массива @ref_id
   foreach (@ref_id) {
@@ -2008,14 +2263,14 @@ if (($args{'unused_def'} eq "delete" ||
 	  }
 	  # если ссылки еще нет в массиве @ref_id и элемент 'use' имеет родителя 'clipPath', а ссылка берется из атрибута 'xlink:href', то записываем ссылку в массив @ref_id
 	  elsif (!($1 ~~ @ref_id) &&
-		 $args{'clip_atts'} eq "delete" && $elt->parent('clipPath') &&
+		 $args{'remove-clippath-atts'} eq "yes" && $elt->parent('clipPath') &&
 		 $elt->name('use') && $att eq "xlink:href") {
 
 	    push @ref_id, $1;
 	  }
 	  # если ссылки еще нет в массиве @ref_id и отключена опция удаления неиспользующихся атрибутов у дочерних элементов элемента clipPath, то записываем ссылку в массив @ref_id
 	  elsif (!($1 ~~ @ref_id) && 
-		 !($args{'clip_atts'} eq "delete" && $elt->parent('clipPath'))) {
+		 !($args{'remove-clippath-atts'} eq "yes" && $elt->parent('clipPath'))) {
 
 	    push @ref_id, $1;
 	  }
@@ -2026,7 +2281,7 @@ if (($args{'unused_def'} eq "delete" ||
 }
 
 
-if ($args{'unused_def'} eq "delete" && $defs && @ref_id) {
+if ($args{'remove-unused-defs'} eq "yes" && $defs && @ref_id) {
 
   # цикл: обрабатываем все дочерние элементы элемента defs
   foreach my $elt ($defs->children) {
@@ -2051,7 +2306,7 @@ if ($args{'unused_def'} eq "delete" && $defs && @ref_id) {
     }
   }
 }
-elsif ($args{'unused_def'} eq "delete" && $defs && !@ref_id) {
+elsif ($args{'remove-unused-defs'} eq "yes" && $defs && !@ref_id) {
 
   $root->first_child('defs')->delete;
   undef $defs;
@@ -2059,7 +2314,7 @@ elsif ($args{'unused_def'} eq "delete" && $defs && !@ref_id) {
 
 
 # удаляем пустую секцию defs
-if ($args{'empty_defs'} eq "delete" &&
+if ($args{'remove-empty-groups'} eq "yes" &&
     $defs && !$defs->children) {
 
   my $elt_id = $defs->id; $elt_id = "none" unless ($elt_id);
@@ -2068,7 +2323,7 @@ if ($args{'empty_defs'} eq "delete" &&
 
 
 # поиск и удаление дубликатов элементов из секции defs - первый проход
-if ($args{'dupl_defs'} eq "yes" && $defs) {
+if ($args{'remove-dupl-defs'} eq "yes" && $defs) {
 
   # обработка всех элементов из секции defs
   foreach my $elt ($defs->children) {
@@ -2091,7 +2346,7 @@ if ($args{'dupl_defs'} eq "yes" && $defs) {
 	$comp_elts{$elt_id} = $desc_elts{$desc};
 	$elt->delete;
 
-	if ($ARGV[2] && $ARGV[2] ne "quiet") {
+	if ($args{'quiet'} eq "no") {
 
 	print colored (" <$elt_name", 'bold red');
 	print " id=\"$elt_id\" (it's a duplicated element)\n\n";
@@ -2114,7 +2369,7 @@ if ($args{'dupl_defs'} eq "yes" && $defs) {
 # matrix(1,0,0,1,e,f) - перемещение
 # matrix(a,0,0,d,e,f) - масштабирование и перемещение
 # (x,y) = (ax+e, dy+f) - формула расчета новых координат
-if ($args{'opt_trans'} eq "yes" && $defs) {
+if ($args{'recalc-coords'} eq "yes" && $defs) {
 
   foreach my $elt ($defs->get_xpath('./*[@gradientTransform]')) {
 
@@ -2154,7 +2409,7 @@ if ($args{'opt_trans'} eq "yes" && $defs) {
 
       (my $x11,my $x22,my $y11,my $y22) = ($a*$x1+$e,$a*$x2+$e,$d*$y1+$f,$d*$y2+$f);
 
-      if ($ARGV[2] && $ARGV[2] ne "quiet") {
+      if ($args{'quiet'} eq "no") {
 
 	print colored (" <$elt_name", 'bold');
 	print " id=$elt_id:\n";
@@ -2209,7 +2464,7 @@ if ($args{'opt_trans'} eq "yes" && $defs) {
       my $cy1 = $d*$cy+$f;
       my $fy1 = $d*$fy+$f if ($fy);
 
-      if ($ARGV[2] && $ARGV[2] ne "quiet") {
+      if ($args{'quiet'} eq "no") {
 
 	print colored (" <$elt_name", 'bold');
 	print " id=$elt_id:\n";
@@ -2245,7 +2500,7 @@ if ($args{'opt_trans'} eq "yes" && $defs) {
 # ОБРАБОТКА АТРИБУТОВ #
 #######################
 
-print colored ("\nPROCESSING ATTRIBUTES\n\n", 'bold blue underline') if ($ARGV[2] && $ARGV[2] ne "quiet");
+print colored ("\nPROCESSING ATTRIBUTES\n\n", 'bold blue underline') if ($args{'quiet'} eq "no");
 
 
 # цикл: обработка всех элементов файла
@@ -2257,7 +2512,7 @@ foreach my $elt ($root->descendants_or_self) {
   my $elt_name = $elt->name;
 
   # получаем префикс имени элемента
-  (my $elt_pref = $elt_name)=~ s/:.+$// if ($args{'adobe_atts'} eq "delete" && $elt_name=~ /:/);
+  (my $elt_pref = $elt_name)=~ s/:.+$// if ($args{'remove-ai-atts'} eq "yes" && $elt_name=~ /:/);
 
   # получаем id элемента
   my $elt_id = $elt->id;
@@ -2265,7 +2520,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 
   # создаем атрибут viewBox
-  if ($args{'viewbox'} eq "yes" &&
+  if ($args{'enable-viewbox'} eq "yes" &&
       $elt_name eq "svg") {
 
     if (!$root->att('viewBox')) {
@@ -2294,7 +2549,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # удаление не SVG атрибутов
-    if ($args{'non_svgatts'} eq "delete" &&
+    if ($args{'remove-nonsvg-atts'} eq "yes" &&
 	$att!~ /:/ &&
 	!($att~~@present_atts) &&
 	!($att~~@regular_atts)) {
@@ -2305,7 +2560,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # удаление атрибутов, которые не используются элементом в котором они находятся
-    if ($args{'nonspec_atts'} eq "delete") {
+    if ($args{'remove-notappl-atts'} eq "yes") {
 
       # удаление атрибутов Regular attributes, если они находятся в элементе, который их не использует
       if (exists($reg_atts{$att}) &&
@@ -2355,15 +2610,15 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # получаем префикс имени атрибута
-    (my $att_pref = $att)=~ s/:.+$// if ($args{'adobe_atts'} eq "delete" && $att=~ /:/);
+    (my $att_pref = $att)=~ s/:.+$// if ($args{'remove-ai-atts'} eq "yes" && $att=~ /:/);
 
 
     # удаление неиспользуемых имен id
-    if ($args{'unref_id'} eq "yes" &&
+    if ($args{'remove-unref-ids'} eq "yes" &&
 	$att eq "id" &&
 	!($att_val ~~ @ref_id)) {
 
-      next CYCLE_ATTS if ($args{'protect_id'} eq "yes" && $att_val=~ /^[a-zA-Z]+$/);
+      next CYCLE_ATTS if ($args{'keep-letter-ids'} eq "yes" && $att_val=~ /^[a-zA-Z]+$/);
 
       &del_att($elt,$att,"it's an unreferenced id",$i,$elt_name,$elt_id);
       next CYCLE_ATTS; 
@@ -2371,11 +2626,11 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # удаление неиспользуемых пространств имен
-    if ($args{'unused_ns'} eq "delete" &&
+    if ($args{'remove-unused-ns'} eq "yes" &&
 	$att=~ /^xmlns:/) {
 
       # удаление пространств имен metadata
-      if ($args{'metadata'} eq "delete" &&
+      if ($args{'remove-metadata'} eq "yes" &&
 	  $att~~['xmlns:rdf','xmlns:cc','xmlns:dc']) {
 
 	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
@@ -2383,8 +2638,8 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       # удаление пространств имен Inkscape, если в файле отсутствуют элементы inkscape:path-effect
-      if ($args{'inkscape_elts'} eq "delete" &&
-	  $args{'inkscape_atts'} eq "delete" &&
+      if ($args{'remove-inkscape-elts'} eq "yes" &&
+	  $args{'remove-inkscape-atts'} eq "yes" &&
 	  !($root->descendants('inkscape:path-effect')) &&
 	  $att eq "xmlns:inkscape") {
 
@@ -2393,8 +2648,8 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       # удаление пространств имен Sodipodi
-      if ($args{'sodipodi_elts'} eq "delete" &&
-	  $args{'sodipodi_atts'} eq "delete" &&
+      if ($args{'remove-sodipodi-elts'} eq "yes" &&
+	  $args{'remove-sodipodi-atts'} eq "yes" &&
 	  $att eq "xmlns:sodipodi") {
 
 	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
@@ -2402,8 +2657,8 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       # удаление пространств имен Adobe Illustrator
-      if ($args{'adobe_elts'} eq "delete" &&
-	  $args{'adobe_atts'} eq "delete" &&
+      if ($args{'remove-ai-elts'} eq "yes" &&
+	  $args{'remove-ai-atts'} eq "yes" &&
 	  $att_val~~@adobe_ns) {
 
 	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
@@ -2411,8 +2666,8 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       # удаление пространств имен Microsoft Visio
-      if ($args{'visio_elts'} eq "delete" &&
-	  $args{'visio_atts'} eq "delete" &&
+      if ($args{'remove-msvisio-elts'} eq "yes" &&
+	  $args{'remove-msvisio-atts'} eq "yes" &&
 	  $att eq "xmlns:v") {
 
 	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
@@ -2430,16 +2685,16 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # удаление атрибутов Inkscape
-    if ($args{'inkscape_elts'} ne "delete" &&
-	$args{'inkscape_atts'} eq "delete" &&
+    if ($args{'remove-inkscape-elts'} ne "yes" &&
+	$args{'remove-inkscape-atts'} eq "yes" &&
 	$elt_name!~ /^inkscape:/ &&
 	$att=~ /^inkscape:/) {
 
       &del_att($elt,$att,"it's an Inkscape attribute",$i,$elt_name,$elt_id);
       next CYCLE_ATTS;
     }
-    elsif ($args{'inkscape_elts'} eq "delete" &&
-	   $args{'inkscape_atts'} eq "delete" &&
+    elsif ($args{'remove-inkscape-elts'} eq "yes" &&
+	   $args{'remove-inkscape-atts'} eq "yes" &&
 	   $elt_name ne "inkscape:path-effect" &&
 	   $att=~ /^inkscape:/) {
 
@@ -2449,16 +2704,16 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # удаление атрибутов Sodipodi
-    if ($args{'sodipodi_elts'} ne "delete" &&
+    if ($args{'remove-sodipodi-elts'} ne "yes" &&
 	$elt_name!~ /^sodipodi:/ &&
-	$args{'sodipodi_atts'} eq "delete" &&
+	$args{'remove-sodipodi-atts'} eq "yes" &&
 	$att=~ /^sodipodi:/) {
 
       &del_att($elt,$att,"it's a Sodipodi attribute",$i,$elt_name,$elt_id);
       next CYCLE_ATTS;
     }
-    elsif ($args{'sodipodi_elts'} eq "delete" &&
-	   $args{'sodipodi_atts'} eq "delete" &&
+    elsif ($args{'remove-sodipodi-elts'} eq "yes" &&
+	   $args{'remove-sodipodi-atts'} eq "yes" &&
 	   $att=~ /^sodipodi:/) {
 
       &del_att($elt,$att,"it's a Sodipodi attribute",$i,$elt_name,$elt_id);
@@ -2467,16 +2722,16 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # удаление атрибутов Adobe Illustrator
-    if ($args{'adobe_elts'} ne "delete" &&
-	$args{'adobe_atts'} eq "delete" &&
+    if ($args{'remove-ai-elts'} ne "yes" &&
+	$args{'remove-ai-atts'} eq "yes" &&
 	$att_pref && $att_pref~~@adobe_pref &&
 	!($elt_pref~~@adobe_pref)) {
 
       &del_att($elt,$att,"it's an Adobe Illustrator attribute",$i,$elt_name,$elt_id);
       next CYCLE_ATTS;
     }
-    elsif ($args{'adobe_elts'} eq "delete" &&
-	   $args{'adobe_atts'} eq "delete" &&
+    elsif ($args{'remove-ai-elts'} eq "yes" &&
+	   $args{'remove-ai-atts'} eq "yes" &&
 	   $att_pref && $att_pref~~@adobe_pref) {
 
       &del_att($elt,$att,"it's an Adobe Illustrator attribute",$i,$elt_name,$elt_id);
@@ -2485,16 +2740,16 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # удаление атрибутов Microsoft Visio
-    if ($args{'visio_elts'} ne "delete" &&
+    if ($args{'remove-msvisio-elts'} ne "yes" &&
 	$elt_name!~ /^v:/ &&
-	$args{'visio_atts'} eq "delete" &&
+	$args{'remove-msvisio-atts'} eq "yes" &&
 	$att=~ /^v:/) {
 
       &del_att($elt,$att,"it's a Microsoft Visio attribute",$i,$elt_name,$elt_id);
       next CYCLE_ATTS;
     }
-    elsif ($args{'visio_elts'} eq "delete" &&
-	   $args{'visio_atts'} eq "delete" &&
+    elsif ($args{'remove-msvisio-elts'} eq "yes" &&
+	   $args{'remove-msvisio-atts'} eq "yes" &&
 	   $att=~ /^v:/) {
 
       &del_att($elt,$att,"it's a Microsoft Visio attribute",$i,$elt_name,$elt_id);
@@ -2503,7 +2758,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     #  удаление атрибутов определяющих обводку (stroke), если обводка отсутствует (stroke отсутствует ИЛИ stroke=none ИЛИ stroke-opacity=0 ИЛИ stroke-width=0)
-    if ($args{'stroke_atts'} eq "delete" &&
+    if ($args{'remove-stroke-props'} eq "yes" &&
 	$att=~ /^stroke-/) {
 
       if ((!$elt->att('stroke') && !$elt->parent('[@stroke]')) ||
@@ -2530,7 +2785,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     #  удаление атрибутов определяющих заполнение (fill), если заполнение отсутствует (fill=none ИЛИ fill-opacity=0)
-    if ($args{'fill_atts'} eq "delete" &&
+    if ($args{'remove-fill-props'} eq "yes" &&
 	$att=~ /^fill-/) {
 
       if (($elt->att('fill') && $elt->att('fill') eq "none") ||
@@ -2550,7 +2805,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # удаление неиспользующихся атрибутов у всех потомков элемента clipPath
-    if ($args{'clip_atts'} eq "delete" &&
+    if ($args{'remove-clippath-atts'} eq "yes" &&
 	$elt->parent('clipPath') && !($att~~@clip_atts)) {
 
 	&del_att($elt,$att,"it's not a clipPath used attribute",$i,$elt_name,$elt_id);
@@ -2561,7 +2816,7 @@ foreach my $elt ($root->descendants_or_self) {
     ###############################################################################
     # перерасчет значения атрибута в зависимости от его еденицы измерения (юнита) #
     ###############################################################################
-    if ($args{'units_px'} eq "yes" &&
+    if ($args{'convert-units-px'} eq "yes" &&
 	$att_val=~ /^($num)($unit)$/) {
 
       # первоначальное значение атрибута
@@ -2584,7 +2839,7 @@ foreach my $elt ($root->descendants_or_self) {
     ##########################################
     # округление цифровых значений атрибутов #
     ##########################################
-    if ($args{'round_numbers'} eq "yes" &&
+    if ($args{'round-numbers'} eq "yes" &&
 	$elt_name ne "svg" &&
 	$att_val=~ /\./ &&
 	$att_val=~ /^($fpnum)($unit)?$/) {
@@ -2598,10 +2853,10 @@ foreach my $elt ($root->descendants_or_self) {
       # новое значение атрибута
       if ($att=~ /[Hh]eight$|[Ww]idth$|^[xy]$|^[cdfr][xy]$|^[xy][12]$|^r$|^ref[XY]$/) {
 
-	$att_val = &round_num($number,$unit,$args{'dp_d'});
+	$att_val = &round_num($number,$unit,$args{'dp-coords'});
       } else {
 
-	$att_val = &round_num($number,$unit,$args{'dp_att'});
+	$att_val = &round_num($number,$unit,$args{'dp-other-atts'});
       }
 
       # сохраняем значение атрибута, если оно было изменено
@@ -2613,7 +2868,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # обработка атрибутов цвета
-    if ($args{'color_rrggbb'} eq "yes" &&
+    if ($args{'convert-colors-rrggbb'} eq "yes" &&
 	$att=~ /^fill$|^stroke$|color$/ &&
 	$att_val!~ /^#([\da-f]){3}$|^url\(#/) {
 
@@ -2621,7 +2876,7 @@ foreach my $elt ($root->descendants_or_self) {
       my $old_att = $att_val;
 
       # новое значение атрибута
-      $att_val = &color_rrggbb($att_val,$args{'color_rgb'});
+      $att_val = &color_rrggbb($att_val,$args{'convert-colors-rgb'});
 
       # сохраняем значение атрибута, если оно было изменено
       if ("$att_val" ne "$old_att") {
@@ -2629,7 +2884,7 @@ foreach my $elt ($root->descendants_or_self) {
 	&crt_att($elt,$att,"\"$old_att\" => \"$att_val\"",$i,$elt_name,$elt_id);
       }
 
-      if ($args{'default_atts'} ne "delete" &&
+      if ($args{'remove-default-atts'} ne "yes" &&
 	  (($att ne "lighting-color" && $att_val!~/^#fff(fff)?$/) || $att_val!~/^#000(000)?$/)) {
 	next CYCLE_ATTS;
       }
@@ -2637,7 +2892,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # удаление атрибутов с дефолтными значениями
-    if ($args{'default_atts'} eq "delete" &&
+    if ($args{'remove-default-atts'} eq "yes" &&
 	exists($default_atts{$att})) {
 
       if ($att eq "lighting-color" &&
@@ -2677,7 +2932,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # удаление атрибутов с дефолтными значениями (продолжение)
-    if ($args{'default_atts'} eq "delete") {
+    if ($args{'remove-default-atts'} eq "yes") {
 
       if ($elt_name eq 'linearGradient') {
 	if (($att~~['x1','y1','y2'] && $att_val=~/^[-+]?0(\.0+)?$unit?$/) ||
@@ -2737,7 +2992,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # удаление координат у градиентов
-    if ($args{'grad_coord'} eq "yes") {
+    if ($args{'remove-grad-coords'} eq "yes") {
 
       # обработка атрибутов x1 и x2 элемента linearGradient
       if ($elt_name eq "linearGradient" &&
@@ -2812,136 +3067,71 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # преобразование абсолютных координат в относительные в атрибуте d
+#     if ($att eq "d" &&
+# 	$args{'convert-abs-paths'} eq "yes" &&
+# 	$att_val=~ /[MZLHVCSQTA]/) {
     if ($att eq "d" &&
-	$args{'abs_rel'} eq "yes" &&
-	$att_val=~ /[MZLHVCSQTA]/) {
+	$args{'convert-abs-paths'} eq "yes") {
 
       # ПРАВИЛО РЕНДЕРИНГА: обработка команд и их параметров производится до выявления первой же ошибки (после нее путь дальше уже не отрисовывается)
 
-      # создаем массив с командами и их параметрами 
-      my @d = split(/([MZLHVCSQTAmzlhvcsqta])/, $att_val);
+      # новые данные path; последняя команда из новых данных path; текущие абсолютные координаты X и Y; абсолютные координаты X и Y из последней команды "moveto" (к этим координатам осуществляется переход после команды "closepath"); текущие относительные координаты X и Y
+      my ($d, $lrcmd, $cpX, $cpY, $lmX, $lmY, $dx, $dy);
+      # координаты для кривых Безье и параметры дуг
+      my ($dx1, $dy1, $dx2, $dy2, $rx, $ry, $xar, $laf, $sf);
+      # координаты контрольных точек для преобразования кривых Безье
+      my ($scpx, $scpy, $tcpx, $tcpy);
 
-      # новые данные path
-      my $d;
-      # последняя команда из новой строки path
-      my $rcmd;
-      # текущие абсолютные координаты X и Y
-      my $cpX; my $cpY;
-      # абсолютные координаты X и Y последней команды "moveto" (к этим координатам осуществляется переход после команды "closepath")
-      my $mX; my $mY;
-      # текущие относительные координаты X и Y
-      my $dx; my $dy;
-      # координаты для кривых Безье
-      my $dx1; my $dy1; my $dx2; my $dy2;
-      # параметры дуг
-      my $rx; my $ry; my $xar; my $laf; my $sf;
+      # разбиваем значение атрибута 'd' на массив с командами и их аргументами 
+      my @d = split(/([MZLHVCSQTAmzlhvcsqta])/, $att_val);
 
       # цикл обработки обработки данных текущего элемента path
       CYCLE_D:
       while (@d) {
-	# берем команду
+
+	# извлекаем имя команды
 	my $cmd = shift @d;
 
-	# обрабатываем команду "closepath": Z|z
+	# ОБРАБАТЫВАЕМ КОМАНДЫ
+
+	# "closepath": Z|z
 	if ($cmd~~['Z', 'z']) {
-	  ($cpX, $cpY) = ($mX, $mY);
-	  $d = $d."z";
-	  $rcmd = "z";
-	}
+	  # присваеваем текущим абсолютным координатам значения абсолютных координат последней команды "moveto"
+	  ($cpX, $cpY) = ($lmX, $lmY);
 
-	# обрабатываем команду "moveto": M|m (x y)+
-	elsif ($cmd~~['M', 'm']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # обнуляем значение переменной $rcmd  
-	  undef $rcmd;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num)/, $param);
-
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
-
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$cwsp?($num)$/) {
-	      # у самой первой команды "moveto" координаты всегда абсолютные
-	      if (!$d && !$data) {
-		($dx, $dy, $cpX, $cpY) = ($1, $2, $1, $2);
-	      }
-	      else {
-		($dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $1, $2) if ($cmd eq "M");
-		($dx, $dy, $cpX, $cpY) = ($1, $2, $cpX+$1, $cpY+$2) if ($cmd eq "m");
-	      }
-
-	      # округляем относительные координаты
-	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($args{'round_numbers'} eq "yes" && $dx=~ /\./);
-	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($args{'round_numbers'} eq "yes" && $dy=~ /\./);
-
-	      if (!$rcmd) {
-		($mX, $mY) = ($cpX, $cpY);
-		$data = $data."m$dx,$dy";
-		$rcmd = "m";
-	      }
-	      elsif ($rcmd~~['m','l'] && $dx && $dy) {
-		$data = $data." $dx,$dy";
-		$rcmd = "l";
-	      }
-	      elsif ($rcmd~~['h','v'] && $dx && $dy) {
-		$data = $data."l$dx,$dy";
-		$rcmd = "l";
-	      }
-	      elsif ($rcmd~~['m','l','v'] && $dx && !$dy) {
-		$data = $data."h$dx";
-		$rcmd = "h";
-	      }
-	      elsif ($rcmd eq "h" && $dx && !$dy) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dx += $1;
-		$data = $data." $dx";
-		$rcmd = "h";
-	      }
-	      elsif ($rcmd~~['m','l','h'] && !$dx && $dy) {
-		$data = $data."v$dy";
-		$rcmd = "v";
-	      }
-	      elsif ($rcmd eq "v" && !$dx && $dy) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dy += $1;
-		$data = $data." $dy";
-		$rcmd = "v";
-	      }
-	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
-	      last CYCLE_D;
-	    }
+	  # ФОРМИРУЕМ НОВЫЕ ДАННЫЕ ПУТИ
+	  # с удалением лишних пробелов
+	  if ($args{'remove-uwsp-path'} eq "yes") {
+	    $d = $d."z";
 	  }
-	  $d = $d.$data;
+	  # без удаления лишних пробелов
+	  else {
+	    $d = $d."z ";
+	  }
+	  $lrcmd = "z";
 	}
 
-	# обрабатываем команду "lineto": L|l (x y)
-	elsif ($cmd~~['L', 'l']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num)/, $param);
+	# "moveto", "lineto", "smooth-quadratic-bezier-curveto":
+	# M|m|L|l|T|t (x y)+
+	elsif ($cmd~~['M', 'm', 'L', 'l', 'T', 't']) {
+	  # сбрасываем значение переменной $lrcmd, если комадой является "moveto"
+	  undef $lrcmd if ($cmd~~['M', 'm']);
+	  # создаем массив с аргументами
+	  my @cmd_args = split(/($num$cwsp?$num)/, shift @d);
 
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
+	  # обрабатываем все аргументы
+	  CYCLE_MLT:
+	  while (@cmd_args) {
+	    my $arg = shift @cmd_args;
 
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$cwsp?($num)$/) {
+	    # если аргумент корректный
+	    if ($arg=~ /^($num)$cwsp?($num)$/) {
 
 	      # рассчитываем координаты
-	      if ($cmd eq "L") {
+	      if (!$d && $cmd~~['M', 'm']) {
+		($dx, $dy, $cpX, $cpY) = ($1, $2, $1, $2);
+	      }
+	      elsif ($cmd~~['M', 'L', 'T']) {
 		($dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $1, $2);
 	      }
 	      else {
@@ -2949,163 +3139,213 @@ foreach my $elt ($root->descendants_or_self) {
 	      }
 
 	      # округляем относительные координаты
-	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
-	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
+	      if ($args{'round-numbers'} eq "yes") {
+		$dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx=~ /\./);
+		$dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy=~ /\./);
+	      }
 
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd~~['m','l'] && $dx && $dy) {
-		$data = $data." $dx,$dy";
-		$rcmd = "l";
+	      # удаляем пустые сегменты 'm0,0'(кроме самой первой команды), 'l0,0' и 't0,0'
+	      if ($args{'remove-empty-segments'} eq "yes" &&
+		  $d && !$dx && !$dy) {
+		next CYCLE_MLT;
 	      }
-	      elsif (!($rcmd~~['m','l']) && $dx && $dy) {
-		$data = $data."l$dx,$dy";
-		$rcmd = "l";
+
+	      # преобразуем линии в их короткие эквиваленты
+	      if ($args{'convert-lines-hv'} eq "yes" && $lrcmd &&
+		  !($cmd~~['T', 't']) && (($dx && !$dy) || (!$dx && $dy))) {
+
+		# формируем новые данные пути
+		$d = $d.&segment_hv($dx, $dy, $lrcmd);
+		# задаем последнюю команду новых данных
+		($dx && !$dy) ? ($lrcmd = "h") : ($lrcmd = "v");
+		next CYCLE_MLT;
 	      }
-	      elsif ($rcmd ne "h" && $dx && !$dy) {
-		$data = $data."h$dx";
-		$rcmd = "h";
+
+	      # преобразовываем прямые кривые в линии
+	      if ($args{'convert-curves-lines'} eq "yes" && 
+		  $cmd~~['T', 't'] && $lrcmd~~['l', 'h', 'v']) {
+
+		if ($args{'convert-lines-hv'} eq "yes" &&
+		    (($dx && !$dy) || (!$dx && $dy))) {
+		  $d = $d.&segment_hv($dx, $dy, $lrcmd);
+		  ($dx && !$dy) ? ($lrcmd = "h") : ($lrcmd = "v");
+		}
+		else {
+		  $d = $d.&segment_mlt($dx, $dy, "l", $lrcmd);
+		  $lrcmd = "l";
+		}
+		next CYCLE_MLT;
 	      }
-	      elsif ($rcmd eq "h" && $dx && !$dy) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dx += $1;
-		$data = $data." $dx";
-		$rcmd = "h";
+
+	      # ФОРМИРУЕМ НОВЫЕ ДАННЫЕ ПУТИ
+	      # устанавливаем символ команды и абсолютные координаты команды "moveto", если это необходимо
+	      if (!$lrcmd) {
+		($lmX, $lmY) = ($cpX, $cpY);
+		$d = $d.&segment_mlt($dx, $dy, "m", $lrcmd);
 	      }
-	      elsif ($rcmd ne "v" && !$dx && $dy) {
-		$data = $data."v$dy";
-		$rcmd = "v";
+	      elsif ($cmd~~['M', 'm', 'L', 'l']) {
+		$d = $d.&segment_mlt($dx, $dy, "l", $lrcmd);
 	      }
-	      elsif ($rcmd eq "v" && !$dx && $dy) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dy += $1;
-		$data = $data." $dy";
-		$rcmd = "v";
+	      elsif ($cmd~~['T', 't']) {
+		$d = $d.&segment_mlt($dx, $dy, "t", $lrcmd);
 	      }
+
+	      # задаем последнюю команду новых данных
+	      $cmd~~['T', 't'] ? ($lrcmd = "t") : ($lrcmd = "l");
 	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
+	    # прекращаем обработку данных, если найден некорректный аргумент
+	    elsif ($arg!~ /^$cwsp?$/) {
 	      last CYCLE_D;
 	    }
 	  }
-	  $d = $d.$data if ($data);
 	}
 
-	# обрабатываем команду "horizontal-lineto": H|h x
-	elsif ($cmd~~['H', 'h']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num)/, $param);
+	# "horizontal-lineto", "vertical-lineto":
+	# H|h x+   V|v y+
+	elsif ($cmd~~['H', 'h', 'V', 'v']) {
+	  # создаем массив с аргументами
+	  my @cmd_args = split(/($num)/, shift @d);
 
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
+	  # обрабатываем все аргументы
+	  CYCLE_HV:
+	  while (@cmd_args) {
+	    my $arg = shift @cmd_args;
 
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$/) {
+	    # если аргумент корректный
+	    if ($arg=~ /^($num)$/) {
 
 	      # рассчитываем координаты
-	      if ($cmd eq "H") {
-		($dx, $cpX) = ($1-$cpX, $1);
+	      ($dx, $dy, $cpX) = ($1-$cpX, 0, $1) if ($cmd eq "H");
+	      ($dx, $dy, $cpX) = ($1, 0, $cpX+$1) if ($cmd eq "h");
+	      ($dx, $dy, $cpY) = (0, $1-$cpY, $1) if ($cmd eq "V");
+	      ($dx, $dy, $cpY) = (0, $1, $cpY+$1) if ($cmd eq "v");
+
+	      # округляем относительные координаты
+	      if ($args{'round-numbers'} eq "yes") {
+		$dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx && $dx=~ /\./);
+		$dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy && $dy=~ /\./);
+	      }
+
+	      # удаляем пустые сегменты 'h0' и 'v0'
+	      if ($args{'remove-empty-segments'} eq "yes" &&
+		  (($cmd~~['H', 'h'] && !$dx) || ($cmd~~['V', 'v'] && !$dy))) {
+		next CYCLE_HV;
+	      }
+
+	      # ФОРМИРУЕМ НОВЫЕ ДАННЫЕ ПУТИ
+	      $d = $d.&segment_hv($dx, $dy, $lrcmd);
+
+	      # задаем последнюю команду новых данных
+	      ($dx && !$dy) ? ($lrcmd = "h") : ($lrcmd = "v");
+	    }
+	    # прекращаем обработку данных, если найден некорректный аргумент
+	    elsif ($arg!~ /^$cwsp?$/) {
+	      last CYCLE_D;
+	    }
+	  }
+	}
+
+	# "smooth-curveto", "quadratic-bezier-curveto":
+	# S|s|Q|q (x1 y1 x y)+
+	elsif ($cmd~~['S', 's', 'Q', 'q']) {
+	  # создаем массив с аргументами
+	  my @cmd_args = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num)/, shift @d);
+
+	  # обрабатываем все аргументы
+	  CYCLE_SQ:
+	  while (@cmd_args) {
+	    my $arg = shift @cmd_args;
+
+	    # если аргумент корректный
+	    if ($arg=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
+
+	      # рассчитываем координаты
+	      if ($cmd~~['S', 'Q']) {
+		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY, $3, $4);
 	      }
 	      else {
-		($dx, $cpX) = ($1, $cpX+$1);
+		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1, $2, $3, $4, $cpX+$3, $cpY+$4);
 	      }
 
 	      # округляем относительные координаты
-	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
-
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "h" && $dx) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dx += $1;
-		$data = $data." $dx";
-		$rcmd = "h";
+	      if ($args{'round-numbers'} eq "yes") {
+		$dx1 = &round_num($dx1,'',$args{'dp-coords'}) if ($dx1=~ /\./);
+		$dy1 = &round_num($dy1,'',$args{'dp-coords'}) if ($dy1=~ /\./);
+		$dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx=~ /\./);
+		$dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy=~ /\./);
 	      }
-	      elsif ($rcmd ne "h" && $dx) {
-		$data = $data."h$dx";
-		$rcmd = "h";
+
+	      # удаляем пустые сегменты 's0,0 0,0' и 'q0,0 0,0'
+	      if ($args{'remove-empty-segments'} eq "yes" &&
+		  !$dx1 && !$dy1 && !$dx && !$dy) {
+		next CYCLE_SQ;
 	      }
-	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
-	      last CYCLE_D;
-	    }
-	  }
-	  $d = $d.$data if ($data);
-	}
 
-	# обрабатываем команду "vertical-lineto": V|v y
-	elsif ($cmd~~['V', 'v']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num)/, $param);
+	      # преобразовываем прямые кривые в линии
+	      if ($args{'convert-curves-lines'} eq "yes" && 
+		  ($cmd~~['Q', 'q'] || ($cmd~~['S', 's'] && $lrcmd~~['l', 'h', 'v'])) &&
+		  ((!$dx && !$dx1) || (!$dy && !$dy1) ||
+		  ($dx && &equal($dy1, ($dy*$dx1/$dx), 2)))) {
 
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
-
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$/) {
-
-	      # рассчитываем координаты
-	      if ($cmd eq "V") {
-		($dy, $cpY) = ($1-$cpY, $1);
+		if ($args{'convert-lines-hv'} eq "yes" &&
+		    (($dx && !$dy) || (!$dx && $dy))) {
+		  $d = $d.&segment_hv($dx, $dy, $lrcmd);
+		  ($dx && !$dy) ? ($lrcmd = "h") : ($lrcmd = "v");
+		}
+		else {
+		  $d = $d.&segment_mlt($dx, $dy, "l", $lrcmd);
+		  $lrcmd = "l";
+		}
+		next CYCLE_SQ;
 	      }
+
+	      # преобразование "quadratic-bezier-curveto" в "smooth-quadratic-bezier-curveto"
+	      if ($args{'convert-curves-qt'} eq "yes" &&
+		  $cmd~~['Q', 'q'] && $lrcmd~~['q', 't'] &&
+		  &equal($dx1, $tcpx, 2) && &equal($dy1, $tcpy, 2)) {
+		    
+		$d = $d.&segment_mlt($dx, $dy, "t", $lrcmd);
+		$lrcmd = "t";
+		($tcpx, $tcpy) = ($dx-$dx1,$dy-$dy1);
+		next CYCLE_SQ;
+	      }
+
+	      # ФОРМИРУЕМ НОВЫЕ ДАННЫЕ ПУТИ
+	      # для команды "smooth-curveto"
+	      if ($cmd~~['S', 's']) {
+		$d = $d.&segment_sq($dx1, $dy1, $dx, $dy, "s", $lrcmd);
+	      }
+	      # для команды "quadratic-bezier-curveto"
 	      else {
-		($dy, $cpY) = ($1, $cpY+$1);
+		$d = $d.&segment_sq($dx1, $dy1, $dx, $dy, "q", $lrcmd);
 	      }
 
-	      # округляем относительные координаты
-	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
+	      # вычисляем координаты контрольных точек
+	      ($tcpx, $tcpy) = ($dx-$dx1,$dy-$dy1) if ($args{'convert-curves-qt'} eq "yes" && $cmd~~['Q', 'q']);
 
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "v" && $dy) {
-# 		$data=~ s/($num)$// if ($data);
-# 		$d=~ s/($num)$// if (!$data);
-# 		$dy += $1;
-		$data = $data." $dy";
-		$rcmd = "v";
-	      }
-	      elsif ($rcmd ne "v" && $dy) {
-		$data = $data."v$dy";
-		$rcmd = "v";
-	      }
+	      # задаем последнюю команду новых данных
+	      $cmd~~['S', 's'] ? ($lrcmd = "s") : ($lrcmd = "q");
 	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
+	    # прекращаем обработку данных, если найден некорректный аргумент
+	    elsif ($arg!~ /^$cwsp?$/) {
 	      last CYCLE_D;
 	    }
 	  }
-	  $d = $d.$data if ($data);
 	}
 
-	# обрабатываем команду "curveto": C|c (x1 y1 x2 y2 x y)
+	# "curveto":
+	# C|c (x1 y1 x2 y2 x y)+
 	elsif ($cmd~~['C', 'c']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num$cwsp?$num$cwsp?$num)/, $param);
+	  # создаем массив с аргументами
+	  my @cmd_args = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num$cwsp?$num$cwsp?$num)/, shift @d);
 
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
+	  # обрабатываем все аргументы
+	  CYCLE_C:
+	  while (@cmd_args) {
+	    my $arg = shift @cmd_args;
 
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
+	    # если аргумент корректный
+	    if ($arg=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
 
 	      # рассчитываем координаты
 	      if ($cmd eq "C") {
@@ -3118,195 +3358,122 @@ foreach my $elt ($root->descendants_or_self) {
 	      }
 
 	      # округляем относительные координаты
-	      $dx1 = &round_num($dx1,'',$args{'dp_d'}) if ($dx1=~ /\./);
-	      $dy1 = &round_num($dy1,'',$args{'dp_d'}) if ($dy1=~ /\./);
-	      $dx2 = &round_num($dx2,'',$args{'dp_d'}) if ($dx2=~ /\./);
-	      $dy2 = &round_num($dy2,'',$args{'dp_d'}) if ($dy2=~ /\./);
-	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
-	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
+	      if ($args{'round-numbers'} eq "yes") {
+		$dx1 = &round_num($dx1,'',$args{'dp-coords'}) if ($dx1=~ /\./);
+		$dy1 = &round_num($dy1,'',$args{'dp-coords'}) if ($dy1=~ /\./);
+		$dx2 = &round_num($dx2,'',$args{'dp-coords'}) if ($dx2=~ /\./);
+		$dy2 = &round_num($dy2,'',$args{'dp-coords'}) if ($dy2=~ /\./);
+		$dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx=~ /\./);
+		$dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy=~ /\./);
+	      }
 
-	      # формируем переменную $data в зависимости от $rcmd
-		  if ($rcmd eq "c") {
-		    $data = $data." $dx1,$dy1 $dx2,$dy2 $dx,$dy";
-		    $rcmd = "c";
-		  }
-		  else {
-		    $data = $data."c$dx1,$dy1 $dx2,$dy2 $dx,$dy";
-		    $rcmd = "c";
-		  }
+	      # удаляем пустые сегменты 'c0,0 0,0 0,0'
+	      if ($args{'remove-empty-segments'} eq "yes" &&
+		  !$dx1 && !$dy1 && !$dx2 && !$dy2 && !$dx && !$dy) {
+		next CYCLE_C;
+	      }
+
+	      # преобразовываем прямые кривые в линии
+	      if ($args{'convert-curves-lines'} eq "yes" &&
+		  ((!$dx && !$dx1 && !$dx2) || (!$dy && !$dy1 && !$dy2) ||
+		  ($dx && &equal($dy1, ($dy*$dx1/$dx), 2) && &equal($dy2, ($dy*$dx2/$dx), 2)))) {
+
+		if ($args{'convert-lines-hv'} eq "yes" &&
+		    (($dx && !$dy) || (!$dx && $dy))) {
+		  $d = $d.&segment_hv($dx, $dy, $lrcmd);
+		  ($dx && !$dy) ? ($lrcmd = "h") : ($lrcmd = "v");
+		}
+		else {
+		  $d = $d.&segment_mlt($dx, $dy, "l", $lrcmd);
+		  $lrcmd = "l";
+		}
+		next CYCLE_C;
+	      }
+
+	      # преобразование "curveto" в "smooth-curveto"
+	      if ($args{'convert-curves-cs'} eq "yes" && $lrcmd~~['c', 's'] &&
+		  &equal($dx1, $scpx, 2) && &equal($dy1, $scpy, 2)) {
+		    
+		$d = $d.&segment_sq($dx2, $dy2, $dx, $dy, "s", $lrcmd);
+		$lrcmd = "s";
+		($scpx, $scpy) = ($dx-$dx2,$dy-$dy2);
+		next CYCLE_C;
+	      }
+
+	      # ФОРМИРУЕМ НОВЫЕ ДАННЫЕ ПУТИ
+	      # устанавливаем символ команды, если это необходимо
+	      my $rcmd;
+	      if ($cmd~~['C', 'c'] && $lrcmd ne "c") {
+		$rcmd = "c";
+	      }
+
+	      # аргумент команды
+	      my ($cmd_arg, $arg1, $arg2, $arg3);
+
+	      # аргумент команды при удалении лишних пробелов
+	      if ($args{'remove-uwsp-path'} eq "yes") {
+
+		($dy1 < 0 || ($dx1=~/\.\d+$/ && $dy1=~/^\./)) ?
+		($arg1 = "$dx1$dy1") : ($arg1 = "$dx1,$dy1");
+
+		($dy2 < 0 || ($dx2=~/\.\d+$/ && $dy2=~/^\./)) ?
+		($arg2 = "$dx2$dy2") : ($arg2 = "$dx2,$dy2");
+
+		($dy < 0 || ($dx=~/\.\d+$/ && $dy=~/^\./)) ?
+		($arg3 = "$dx$dy") : ($arg3 = "$dx,$dy");
+
+		($dx2 < 0 || ($dy1=~/\.\d+$/ && $dx2=~/^\./)) ?
+		($cmd_arg = "$arg1$arg2") : ($cmd_arg = "$arg1 $arg2");
+
+		($dx < 0 || ($dy2=~/\.\d+$/ && $dx=~/^\./)) ?
+		($cmd_arg = "$cmd_arg$arg3") : ($cmd_arg = "$cmd_arg $arg3");
+
+		$cmd_arg = " $cmd_arg" if (!$rcmd && $dx1 >= 0);
+	      }
+	      # аргумент команды без удаления лишних пробелов
+	      else {
+		$rcmd ? ($cmd_arg = " $dx1,$dy1 $dx2,$dy2 $dx,$dy ") : ($cmd_arg = "$dx1,$dy1 $dx2,$dy2 $dx,$dy ");
+	      }
+
+	      # добавляем символ команды к аргументу, если это необходимо
+	      $cmd_arg = $rcmd.$cmd_arg if ($rcmd);
+
+	      # добавляем аргумент
+	      $d = $d.$cmd_arg;
+
+	      # вычисляем координаты контрольных точек
+	      ($scpx, $scpy) = ($dx-$dx2,$dy-$dy2) if ($args{'convert-curves-cs'} eq "yes");
+
+	      # задаем последнюю команду новых данных
+	      $lrcmd = "c";
 	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
+	    # прекращаем обработку данных, если найден некорректный аргумент
+	    elsif ($arg!~ /^$cwsp?$/) {
 	      last CYCLE_D;
 	    }
 	  }
-	  $d = $d.$data;
 	}
 
-	# обрабатываем команду "smooth-curveto": S|s (x2 y2 x y)
-	elsif ($cmd~~['S', 's']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num)/, $param);
-
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
-
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
-
-	      # рассчитываем координаты
-	      if ($cmd eq "S") {
-		($dx2, $dy2, $dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY, $3, $4);
-	      }
-	      else {
-		($dx2, $dy2, $dx, $dy, $cpX, $cpY) = ($1, $2, $3, $4, $cpX+$3, $cpY+$4);
-	      }
-
-	      # округляем относительные координаты
-	      $dx2 = &round_num($dx2,'',$args{'dp_d'}) if ($dx2=~ /\./);
-	      $dy2 = &round_num($dy2,'',$args{'dp_d'}) if ($dy2=~ /\./);
-	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
-	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
-
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "s") {
-		$data = $data." $dx2,$dy2 $dx,$dy";
-		$rcmd = "s";
-	      }
-	      else {
-		$data = $data."s$dx2,$dy2 $dx,$dy";
-		$rcmd = "s";
-	      }
-	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
-	      last CYCLE_D;
-	    }
-	  }
-	  $d = $d.$data;
-	}
-
-	# обрабатываем команду "quadratic-bezier-curveto": Q|q (x1 y1 x y)
-	elsif ($cmd~~['Q', 'q']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp?$num)/, $param);
-
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
-
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp?($num)$/) {
-
-	      # рассчитываем координаты
-	      if ($cmd eq "Q") {
-		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY, $3, $4);
-	      }
-	      else {
-		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1, $2, $3, $4, $cpX+$3, $cpY+$4);
-	      }
-
-	      # округляем относительные координаты
-	      $dx1 = &round_num($dx1,'',$args{'dp_d'}) if ($dx1=~ /\./);
-	      $dy1 = &round_num($dy1,'',$args{'dp_d'}) if ($dy1=~ /\./);
-	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
-	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
-
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "q") {
-		$data = $data." $dx1,$dy1 $dx,$dy";
-		$rcmd = "q";
-	      }
-	      else {
-		$data = $data."q$dx1,$dy1 $dx,$dy";
-		$rcmd = "q";
-	      }
-	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
-	      last CYCLE_D;
-	    }
-	  }
-	  $d = $d.$data;
-	}
-
-	# обрабатываем команду "smooth-quadratic-bezier-curveto": T|t (x y)
-	elsif ($cmd~~['T', 't']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num)/, $param);
-
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
-
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$cwsp?($num)$/) {
-
-	      # рассчитываем координаты
-	      if ($cmd eq "T") {
-		($dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $1, $2);
-	      }
-	      else {
-		($dx, $dy, $cpX, $cpY) = ($1, $2, $cpX+$1, $cpY+$2);
-	      }
-
-	      # округляем относительные координаты
-	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
-	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
-
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "t") {
-		$data = $data." $dx,$dy";
-		$rcmd = "t";
-	      }
-	      else {
-		$data = $data."t$dx,$dy";
-		$rcmd = "t";
-	      }
-	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
-	      last CYCLE_D;
-	    }
-	  }
-	  $d = $d.$data;
-	}
-
-	# обрабатываем команду "elliptical-arc": A|a (rx ry x-axis-rotation large-arc-flag sweep-flag x y)
+	# "elliptical-arc":
+	# A|a (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
 	elsif ($cmd~~['A', 'a']) {
-	  # берем параметр команды
-	  my $param = shift @d;
-	  # новые данные, которые получатся в результате обработки параметра текущей команды
-	  my $data;
-	  # создаем массив, содержащий пары координат текущей команды
-	  my @param = split(/($num$cwsp?$num$cwsp?$num$cwsp$flag$cwsp?$flag$cwsp?$num$cwsp?$num)/, $param);
+	  # создаем массив с аргументами
+	  my @cmd_args = split(/($num$cwsp?$num$cwsp?$num$cwsp$flag$cwsp?$flag$cwsp?$num$cwsp?$num)/, shift @d);
 
-	  # обрабатываем вышеуказанный массив
-	  while (@param) {
-	    my $param = shift @param;
+	  # обрабатываем все аргументы
+	  CYCLE_A:
+	  while (@cmd_args) {
+	    my $arg = shift @cmd_args;
 
-	    # если параметром является пара координат
-	    if ($param=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp(0|1)$cwsp?(0|1)$cwsp?($num)$cwsp?($num)$/) {
+	    # если аргумент корректный
+	    if ($arg=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp(0|1)$cwsp?(0|1)$cwsp?($num)$cwsp?($num)$/) {
+
+	      ($rx, $ry, $xar, $laf, $sf) = ($1, $2, $3, $4, $5);
+
+	      # прекращаем обработку данных, если хотя бы один из радиусов дуги меньше нуля
+	      last CYCLE_D if ($rx < 0 || $ry < 0);
 
 	      # рассчитываем координаты
-	      ($rx, $ry, $xar, $laf, $sf) = ($1, $2, $3, $4, $5);
 	      if ($cmd eq "A") {
 		($dx, $dy, $cpX, $cpY) = ($6-$cpX, $7-$cpY, $6, $7);
 	      }
@@ -3315,59 +3482,103 @@ foreach my $elt ($root->descendants_or_self) {
 	      }
 
 	      # округляем относительные координаты
-	      $rx = &round_num($rx,'',$args{'dp_d'}) if ($rx=~ /\./);
-	      $ry = &round_num($ry,'',$args{'dp_d'}) if ($ry=~ /\./);
-	      $xar = &round_num($xar,'',$args{'dp_att'}) if ($xar=~ /\./ && $args{'dp_att'});
-	      $xar = &opt_angle($xar) if ($xar < 0 || $xar > 360);
-	      $xar = 0 if ($xar == 360);
-	      $dx = &round_num($dx,'',$args{'dp_d'}) if ($dx=~ /\./);
-	      $dy = &round_num($dy,'',$args{'dp_d'}) if ($dy=~ /\./);
-
-	      # прекращаем обработку данных, если радиусы дуги меньше нуля - это ошибка
-	      if ($rx < 0 || $ry < 0) {
-		$d = $d.$data if ($data);
-		last CYCLE_D;
+	      if ($args{'round-numbers'} eq "yes") {
+		$rx = &round_num($rx,'',$args{'dp-coords'}) if ($rx=~ /\./ && $rx>0.1);
+		$ry = &round_num($ry,'',$args{'dp-coords'}) if ($ry=~ /\./ && $ry>0.1);
+		$xar = &round_num($xar,'',$args{'dp-other-atts'}) if ($xar=~ /\./);
+		$dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx=~ /\./);
+		$dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy=~ /\./);
 	      }
 
-	      # формируем переменную $data в зависимости от $rcmd
-	      if ($rcmd eq "a") {
-		$data = $data." $rx,$ry $xar $laf,$sf $dx,$dy";
+	      # оптимизируем значение угла
+	      $xar = &opt_angle($xar) if ($xar < 0 || $xar >= 360);
+
+	      # удаляем пустые сегменты 'a$rx,$ry $xar $laf,$sf 0,0'
+	      if ($args{'remove-empty-segments'} eq "yes" &&
+		  $d && !$dx && !$dy) {
+		next CYCLE_A;
+	      }
+
+	      # преобразовываем прямые кривые в линии
+	      if ($args{'convert-curves-lines'} eq "yes" &&
+		  (!$rx || !$ry)) {
+
+		if ($args{'convert-lines-hv'} eq "yes" &&
+		    (($dx && !$dy) || (!$dx && $dy))) {
+		  $d = $d.&segment_hv($dx, $dy, $lrcmd);
+		  ($dx && !$dy) ? ($lrcmd = "h") : ($lrcmd = "v");
+		}
+		else {
+		  $d = $d.&segment_mlt($dx, $dy, "l", $lrcmd);
+		  $lrcmd = "l";
+		}
+		next CYCLE_A;
+	      }
+
+	      # ФОРМИРУЕМ НОВЫЕ ДАННЫЕ ПУТИ
+	      # устанавливаем символ команды, если это необходимо
+	      my $rcmd;
+	      if ($cmd~~['A', 'a'] && $lrcmd ne "a") {
 		$rcmd = "a";
 	      }
+
+	      # аргумент команды
+	      my $cmd_arg;
+
+	      # аргумент команды при удалении лишних пробелов
+	      if ($args{'remove-uwsp-path'} eq "yes") {
+
+		($dy < 0 || ($dx=~/\.\d+$/ && $dy=~/^\./)) ?
+		($cmd_arg = "$rx,$ry $xar $laf,$sf $dx$dy") : ($cmd_arg = "$rx,$ry $xar $laf,$sf $dx,$dy");
+
+		$cmd_arg = " $cmd_arg" if (!$rcmd);
+	      }
+	      # аргумент команды без удаления лишних пробелов
 	      else {
-		$data = $data."a$rx,$ry $xar $laf,$sf $dx,$dy";
-		$rcmd = "a";
+		$rcmd ? ($cmd_arg = " $rx,$ry $xar $laf,$sf $dx,$dy ") : ($cmd_arg = "$rx,$ry $xar $laf,$sf $dx,$dy ");
 	      }
+
+	      # добавляем символ команды к аргументу, если это необходимо
+	      $cmd_arg = $rcmd.$cmd_arg if ($rcmd);
+
+	      # добавляем аргумент
+	      $d = $d.$cmd_arg;
+
+	      # задаем последнюю команду новых данных
+	      $lrcmd = "a";
 	    }
-	    # прекращаем обработку данных, если параметр не содержит пар координат или пробелов, разделяющих пары координат
-	    elsif ($param!~ /^$cwsp?$/) {
-	      $d = $d.$data if ($data);
+	    # прекращаем обработку данных, если найден некорректный аргумент
+	    elsif ($arg!~ /^$cwsp?$/) {
 	      last CYCLE_D;
 	    }
 	  }
-	  $d = $d.$data;
 	}
 
 	# пропускаем пробелы и пустые значения
 	elsif ($cmd=~ /^$cwsp?$/) {
 	  next CYCLE_D;
 	}
-	# прекращаем обработку данных, если командой является любая другая буква
+	# прекращаем обработку данных, если командой является любая другая буква или символ
 	else {
 	  last CYCLE_D;
 	}
-      } # цикл CYCLE_D
+
+      } # CYCLE_D
+
+      chop $d if ($args{'remove-uwsp-path'} eq "no");
 
       $elt->set_att($att => $d);
       &crt_att($elt,$att,"absolute coordinates converted to relative ones",$i,$elt_name,$elt_id);
+      # удаляем значение переменной для экономии памяти.
+      undef $d;
       next CYCLE_ATTS;
     }
 
 
     # округление всех чисел и удаление ненужных пробелов в значениях атрибутов d, если не используется преобразование абсолютных координат в относительные
     if ($att eq "d" &&
-	($args{'round_numbers'} eq "yes" ||
-	$args{'spf_space'} eq "delete")) {
+	($args{'round-numbers'} eq "yes" ||
+	$args{'remove-uwsp-path'} eq "yes")) {
 
       # создаем из $att_val массив, в котором числа будут являться отдельными элементами
       my @d = split(/($num)/, $att_val);
@@ -3381,19 +3592,19 @@ foreach my $elt ($root->descendants_or_self) {
 	my $data = shift @d;
 
 	# округляем числа
-	if ($args{'round_numbers'} eq "yes" &&
+	if ($args{'round-numbers'} eq "yes" &&
 	    $data=~ /^$num$/ && $data=~ /\./ && $data!~ /[Ee]/) {
 
-	  $data = &round_num($data,'',$args{'dp_d'});
+	  $data = &round_num($data,'',$args{'dp-coords'});
 	}
 	# удаляем пробелы возле букв команд или прекращаем обработку данных, если буква не соответствует команде path
 	elsif ($data=~ /^\s*[A-Za-z]\s*$/) {
 
 	  last CYCLE_RND if ($data!~ /[MZLHVCSQTAmzlhvcsqta]/);
-	  $data=~ s/\s+//g if ($args{'spf_space'} eq "delete" && $data=~ /\s+/);
+	  $data=~ s/\s+//g if ($args{'remove-uwsp-path'} eq "yes" && $data=~ /\s+/);
 	}
 	# обрабатываем пробелы и запятые
-	elsif ($args{'spf_space'} eq "delete" &&
+	elsif ($args{'remove-uwsp-path'} eq "yes" &&
 	       $data=~ /^$cwsp$/) {
       
 	  if ($data=~ /,/) {
@@ -3414,8 +3625,8 @@ foreach my $elt ($root->descendants_or_self) {
 
     # округление всех чисел и удаление ненужных пробелов в значениях атрибутов points
     if ($att eq "points" &&
-	($args{'round_numbers'} eq "yes" ||
-	$args{'spf_space'} eq "delete")) {
+	($args{'round-numbers'} eq "yes" ||
+	$args{'remove-unnec-wsp'} eq "yes")) {
 
       # создаем из $att_val массив, в котором числа будут являться отдельными элементами
       my @points = split(/($num)/, $att_val);
@@ -3428,13 +3639,13 @@ foreach my $elt ($root->descendants_or_self) {
 	my $data = shift @points;
 
 	# округляем числа
-	if ($args{'round_numbers'} eq "yes" &&
+	if ($args{'round-numbers'} eq "yes" &&
 	    $data=~ /^$num$/ && $data=~ /\./ && $data!~ /[Ee]/) {
 
-	  $data = &round_num($data,'',$args{'dp_d'});
+	  $data = &round_num($data,'',$args{'dp-coords'});
 	}
 	# обрабатываем пробелы и запятые
-	elsif ($args{'spf_space'} eq "delete" &&
+	elsif ($args{'remove-unnec-wsp'} eq "yes" &&
 	       $data=~ /^$cwsp$/) {
       
 	  if ($data=~ /,/) {
@@ -3495,7 +3706,7 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       # преобразование нескольких трансформаций в одну трансформацию matrix
-	$att_val = &trans_matrix($att_val) if ($args{'conc_trans'} eq "yes" && $att_val=~ /\).+\)/);
+	$att_val = &trans_matrix($att_val) if ($args{'convert-transfs-matrix'} eq "yes" && $att_val=~ /\).+\)/);
 
       # форматирование параметров атрибутов transform, gradientTransform и patternTransform
       # translate - перемещение
@@ -3503,8 +3714,8 @@ foreach my $elt ($root->descendants_or_self) {
 
 	(my $a,my $b) = ($1,$2);
 
-	$a = &round_num($a,'',$args{'dp_d'}) if ($args{'dp_d'} && $a!~ /^$scinum$/ && $a=~ /\./);
-	$b = &round_num($b,'',$args{'dp_d'}) if ($args{'dp_d'} && $b && $b!~ /^$scinum$/ && $b=~ /\./);
+	$a = &round_num($a,'',$args{'dp-coords'}) if ($args{'dp-coords'} && $a!~ /^$scinum$/ && $a=~ /\./);
+	$b = &round_num($b,'',$args{'dp-coords'}) if ($args{'dp-coords'} && $b && $b!~ /^$scinum$/ && $b=~ /\./);
 
 	$att_val = "translate($a,$b)" if ($b);
 	$att_val = "translate($a)" if (!$b || $b == 0);
@@ -3515,8 +3726,8 @@ foreach my $elt ($root->descendants_or_self) {
 
 	(my $a,my $b) = ($1,$2);
 
-	$a = &round_num($a,'',$args{'dp_att'}) if ($args{'dp_att'} && $a!~ /^$scinum$/ && $a=~ /\./);
-	$b = &round_num($b,'',$args{'dp_att'}) if ($args{'dp_att'} && $b && $b!~ /^$scinum$/ && $b=~ /\./);
+	$a = &round_num($a,'',$args{'dp-other-atts'}) if ($args{'dp-other-atts'} && $a!~ /^$scinum$/ && $a=~ /\./);
+	$b = &round_num($b,'',$args{'dp-other-atts'}) if ($args{'dp-other-atts'} && $b && $b!~ /^$scinum$/ && $b=~ /\./);
 
 	$att_val = "scale($a,$b)" if ($b && $a != $b);
 	$att_val = "scale($a)" if (!$b || $a == $b);
@@ -3527,12 +3738,11 @@ foreach my $elt ($root->descendants_or_self) {
 
 	(my $a,my $b,my $c) = ($1,$2,$3);
 
-	$a = &opt_angle($a) if ($a < 0 || $a > 360);
-	$a = 0 if ($a == 360);
+	$a = &opt_angle($a) if ($a < 0 || $a >= 360);
 
-	$a = &round_num($a,'',$args{'dp_att'}) if ($args{'dp_att'} && $a!~ /^$scinum$/ && $a=~ /\./);
-	$b = &round_num($b,'',$args{'dp_d'}) if ($args{'dp_d'} && $b && $b!~ /^$scinum$/ && $b=~ /\./);
-	$c = &round_num($c,'',$args{'dp_d'}) if ($args{'dp_d'} && $c && $c!~ /^$scinum$/ && $c=~ /\./);
+	$a = &round_num($a,'',$args{'dp-other-atts'}) if ($args{'dp-other-atts'} && $a!~ /^$scinum$/ && $a=~ /\./);
+	$b = &round_num($b,'',$args{'dp-coords'}) if ($args{'dp-coords'} && $b && $b!~ /^$scinum$/ && $b=~ /\./);
+	$c = &round_num($c,'',$args{'dp-coords'}) if ($args{'dp-coords'} && $c && $c!~ /^$scinum$/ && $c=~ /\./);
 
 	$att_val = "rotate($a,$b,$c)" if ($b && $c);
 	$att_val = "rotate($a)" unless ($b && $c);
@@ -3543,9 +3753,8 @@ foreach my $elt ($root->descendants_or_self) {
 
 	my $a = $1;
 
-	$a = &opt_angle($a) if ($a < 0 || $a > 360);
-	$a = 0 if ($a == 360);
-	$a = &round_num($a,'',$args{'dp_att'}) if ($args{'dp_att'} && $a!~ /^$scinum$/ && $a=~ /\./);
+	$a = &opt_angle($a) if ($a < 0 || $a >= 360);
+	$a = &round_num($a,'',$args{'dp-other-atts'}) if ($args{'dp-other-atts'} && $a!~ /^$scinum$/ && $a=~ /\./);
 
 	$att_val = "skewX($a)";
       }
@@ -3555,9 +3764,8 @@ foreach my $elt ($root->descendants_or_self) {
 
 	my $a = $1;
 
-	$a = &opt_angle($a) if ($a < 0 || $a > 360);
-	$a = 0 if ($a == 360);
-	$a = &round_num($a,'',$args{'dp_att'}) if ($args{'dp_att'} && $a!~ /^$scinum$/ && $a=~ /\./);
+	$a = &opt_angle($a) if ($a < 0 || $a >= 360);
+	$a = &round_num($a,'',$args{'dp-other-atts'}) if ($args{'dp-other-atts'} && $a!~ /^$scinum$/ && $a=~ /\./);
 
 	$att_val = "skewY($a)";
       }
@@ -3567,13 +3775,13 @@ foreach my $elt ($root->descendants_or_self) {
 
 	(my $a,my $b,my $c,my $d,my $e,my $f) = ($1,$2,$3,$4,$5,$6);
 
-	if ($args{'dp_tr'}) {
-	  $a = &round_num($a,'',$args{'dp_tr'}) if ($a!~ /^$scinum$/ && $a=~ /\./);
-	  $b = &round_num($b,'',$args{'dp_tr'}) if ($b!~ /^$scinum$/ && $b=~ /\./);
-	  $c = &round_num($c,'',$args{'dp_tr'}) if ($c!~ /^$scinum$/ && $c=~ /\./);
-	  $d = &round_num($d,'',$args{'dp_tr'}) if ($d!~ /^$scinum$/ && $d=~ /\./);
-	  $e = &round_num($e,'',$args{'dp_tr'}) if ($e!~ /^$scinum$/ && $e=~ /\./);
-	  $f = &round_num($f,'',$args{'dp_tr'}) if ($f!~ /^$scinum$/ && $f=~ /\./);
+	if ($args{'dp-transfs'}) {
+	  $a = &round_num($a,'',$args{'dp-transfs'}) if ($a!~ /^$scinum$/ && $a=~ /\./);
+	  $b = &round_num($b,'',$args{'dp-transfs'}) if ($b!~ /^$scinum$/ && $b=~ /\./);
+	  $c = &round_num($c,'',$args{'dp-transfs'}) if ($c!~ /^$scinum$/ && $c=~ /\./);
+	  $d = &round_num($d,'',$args{'dp-transfs'}) if ($d!~ /^$scinum$/ && $d=~ /\./);
+	  $e = &round_num($e,'',$args{'dp-transfs'}) if ($e!~ /^$scinum$/ && $e=~ /\./);
+	  $f = &round_num($f,'',$args{'dp-transfs'}) if ($f!~ /^$scinum$/ && $f=~ /\./);
 	}
 
 	$att_val = "matrix($a,$b,$c,$d,$e,$f)";
@@ -3606,7 +3814,7 @@ foreach my $elt ($root->descendants_or_self) {
       }
     }
   } # цикл: обработка всех атрибутов текущего элемента
-    print "\n\n" if ($i != 0 && $ARGV[2] && $ARGV[2] ne "quiet");
+    print "\n\n" if ($i != 0 && $args{'quiet'} eq "no");
 } # цикл: обработка всех элементов файла
 
 
@@ -3615,11 +3823,11 @@ foreach my $elt ($root->descendants_or_self) {
 # ЗАВЕРШИТЕЛЬНАЯ ОБРАБОТКА #
 ############################
 
-print colored ("\nPOST-PROCESSING\n\n", 'bold blue underline') if ($ARGV[2] && $ARGV[2] ne "quiet");
+print colored ("\nPOST-PROCESSING\n\n", 'bold blue underline') if ($args{'quiet'} eq "no");
 
 
 # поиск и удаление дубликатов элементов из секции defs - второй проход
-if ($args{'dupl_defs'} eq "yes" && $defs) {
+if ($args{'remove-dupl-defs'} eq "yes" && $defs) {
 
   # очищаем хэш со ссылками идентичных элементов на первый по счету из них для экономии памяти
   %comp_elts = ();
@@ -3662,7 +3870,7 @@ if ($args{'dupl_defs'} eq "yes" && $defs) {
 	$comp_elts{$elt_id} = $desc_elts{$desc};
 	$elt->delete;
 
-	if ($ARGV[2] && $ARGV[2] ne "quiet") {
+	if ($args{'quiet'} eq "no") {
 
 	print colored (" <$elt_name", 'bold red');
 	print " id=\"$elt_id\" (it's a duplicated element)\n\n";
@@ -3696,7 +3904,7 @@ if ($args{'dupl_defs'} eq "yes" && $defs) {
 
 
 # объединение градиентов, если на градиент существует только одна ссылка
-if ($args{'singly_grads'} eq "yes" && $defs) {
+if ($args{'remove-singly-grads'} eq "yes" && $defs) {
 
   # первый проход - определяем одиночные ссылки
   foreach my $elt ($defs->get_xpath('./linearGradient[@xlink:href]'), $defs->get_xpath('./radialGradient[@xlink:href]')) {
@@ -3724,7 +3932,7 @@ if ($args{'singly_grads'} eq "yes" && $defs) {
       my $elt_name = $elt->name;
       my $elt_id = $elt->id;
 
-      if ($ARGV[2] && $ARGV[2] ne "quiet") {
+      if ($args{'quiet'} eq "no") {
 
 	print colored (" <$elt_name", 'bold green');
 	print " id=$elt_id:\n";
@@ -3764,15 +3972,15 @@ if ($args{'singly_grads'} eq "yes" && $defs) {
 
 
 # разгруппировываем группу, если элемент g не содержит атрибутов или содержит только атрибут id, который не входит в список использующихся id
-if ($args{'erase_groups'} eq "yes" ||
-    $args{'empty_groups'} eq "delete") {
+if ($args{'collapse-groups'} eq "yes" ||
+    $args{'remove-empty-groups'} eq "yes") {
 
   foreach my $elt ($root->get_xpath('//g')) {
 
     my $elt_id = $elt->id;
 
     # удаляем пустые группы
-    if ($args{'empty_groups'} eq "delete") {
+    if ($args{'remove-empty-groups'} eq "yes") {
 
       # удаляем пустую группу, если она не содержит дочерних элементов
       $elt->delete unless ($elt->children);
@@ -3792,13 +4000,13 @@ if ($args{'erase_groups'} eq "yes" ||
 
 
     # разгруппировываем группы, если их родительским элементом не является элемент switch
-    if ($args{'erase_groups'} eq "yes" &&
+    if ($args{'collapse-groups'} eq "yes" &&
 	!($elt->parent('switch')) &&
 	$elt->children) {
 
       # если группа содержит только атрибут id, который не содержится в списке использующихся id и содержит цифру в случае использования защиты id, состоящих только из букв
       if ($elt->att_nb == 1 && $elt_id && !($elt_id ~~ @ref_id) &&
-	  ($args{'protect_id'} ne "yes" || ($args{'protect_id'} eq "yes" && $elt_id=~/\d/))) {
+	  ($args{'keep-letter-ids'} ne "yes" || ($args{'keep-letter-ids'} eq "yes" && $elt_id=~/\d/))) {
 
 	$elt->erase;
       }
@@ -3813,7 +4021,7 @@ if ($args{'erase_groups'} eq "yes" ||
 
 
 # сортировка элементов в секции defs
-if ($args{'sort_defs'} eq "yes" && 
+if ($args{'sort-defs'} eq "yes" && 
     $root->children('defs')) {
 
   foreach my $defs_elt (@defs_elts) {
@@ -3850,7 +4058,7 @@ if ($args{'sort_defs'} eq "yes" &&
 }
 
 # преобразовываем SVG атрибуты в свойства атрибута style
-if ($args{'style_prop'} ne "yes") {
+if ($args{'convert-style-atts'} ne "yes") {
 
   # обрабатываем все элементы файла
   foreach my $elt ($root->descendants_or_self) {
@@ -3890,7 +4098,7 @@ foreach my $elt ($root->descendants_or_self) {
 }
 
 
-if ($ARGV[2] && $ARGV[2] ne "quiet") {
+if ($args{'quiet'} eq "no") {
   # вывод конечного размера файла
   print colored (" The final file size is $size_final bytes\n", 'bold');
   # вывод конечного количества элементов
@@ -3910,14 +4118,16 @@ if ($ARGV[2] && $ARGV[2] ne "quiet") {
 # ОТЧЕТ #
 #########
 
-print colored ("\nREPORT\n\n", 'bold blue underline') if ($ARGV[2] && $ARGV[2] ne "quiet");
+print colored ("\nREPORT\n\n", 'bold blue underline') if ($args{'quiet'} eq "no");
 
 # размер оптимизированного файла по отношению к оригинальному в процентах
 my $size_diff = sprintf("%.2f", $size_final/$size_initial*100);
 my $elts_diff = $elts_initial-$elts_final;
 my $atts_diff = $atts_initial-$atts_final;
 
-if ($ARGV[2] && $ARGV[2] ne "quiet") {
+die " This file doesn't need cleaning!\n" if ($size_diff>=100);
+
+if ($args{'quiet'} eq "no") {
   # вывод нового размера файла (в процентах)
   print colored (" The new file size is $size_diff%\n", 'bold');
   # вывод количества удаленых элементов
@@ -3936,34 +4146,26 @@ if ($ARGV[2] && $ARGV[2] ne "quiet") {
 ####################
 
 # устанавливаем стиль размещения элементов
-$twig->set_pretty_print($args{'pretty_print'});
+$twig->set_pretty_print($args{'pretty-print'});
 
 # устанавливаем число отступов перед тэгами
 $twig->set_indent(' ' x $args{'indent'});
 
 # устанавливаем стиль пустых тэгов
-$twig->set_empty_tag_style($args{'empty_tags'});
+$twig->set_empty_tag_style($args{'empty-tags'});
 
 # устанавливаем стиль кавычек ('double' или 'single')
-$twig->set_quote($args{'quote'});
+$twig->set_quote($args{'quote-char'});
 
 # сохраняем результаты в файл
-$twig->print_to_file($ARGV[0]);
+$twig->print_to_file($out_file);
 
 # очищаем память
 $twig->purge;
 
-# форматирование в стиле Inkscape
-# exec "bash /home/andrew/inkscapepp.sh $ARGV[0]";
 
 exit;
 __END__
-
-# переименовывает и сжимает файл svg в svgz (удаление svg не нужно)
-# gzip -S z /home/kubuntu/Development/OutputSVG/folder-old.svg
-
-# сохраняет оригинальный файл
-# gzip -c folder-old.svg > folder-old.svgz
 
 # максимальные параметры оптимизации у scour
 # time scour -i input.svg -o output.svg --enable-id-stripping --enable-comment-stripping --remove-metadata --strip-xml-prolog --enable-viewboxing --indent=none

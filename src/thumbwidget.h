@@ -2,7 +2,6 @@
 #define THUMBWIDGET_H
 
 #include <QWidget>
-#include <QPushButton>
 
 #include "arguments.h"
 #include "ui_thumbwidget.h"
@@ -14,14 +13,6 @@ class ThumbWidget : public QWidget, private Ui::ThumbWidget
 public:
     ThumbWidget(const SVGInfo &info, bool compare = false, QWidget *parent = 0);
     void refill(const SVGInfo &info, bool compare = false);
-
-private:
-    SVGInfo fullInfo;
-    QPushButton *btnIn;
-    QPushButton *btnOut;
-
-private slots:
-    void openSVG();
 
 protected:
     void resizeEvent(QResizeEvent *);

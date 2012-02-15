@@ -1,7 +1,5 @@
 Rewrite NSIS instaler or fix Perl adding to PATH/installing.
-Add pause support.
 Make script work without GUI, like usual CLI.
 Add translations.
-Add tooltip to the thumbs.
 Add tooltip to the cleaning options.
 Rewrite presets window.

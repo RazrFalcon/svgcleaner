@@ -40,18 +40,20 @@ include(translations/translations.pri)
 unix {
     isEmpty (PREFIX):PREFIX = /usr
 
-    INSTALLS          += target desktop logo script presets interface
+    INSTALLS           += target desktop logo script presets interface translations
 
-    desktop.path       = $$PREFIX/share/applications
-    desktop.files     += svgcleaner.desktop
-    logo.path          = $$PREFIX/share/icons/hicolor/scalable/apps
-    logo.files        += icons/svgcleaner.svg
-    interface.path     = $$PREFIX/share/svgcleaner
-    interface.files   += interface.xml
-    presets.path       = $$PREFIX/share/svgcleaner/presets
-    presets.files     += presets/soft.preset presets/normal.preset \
-                         presets/optimal.preset presets/vacuum-defs.preset
-    script.path        = $$PREFIX/bin
-    script.files      += svgcleaner.pl
-    target.path        = $$PREFIX/bin
+    desktop.path        = $$PREFIX/share/applications
+    desktop.files      += svgcleaner.desktop
+    logo.path           = $$PREFIX/share/icons/hicolor/scalable/apps
+    logo.files         += icons/svgcleaner.svg
+    interface.path      = $$PREFIX/share/svgcleaner
+    interface.files    += interface.xml
+    presets.path        = $$PREFIX/share/svgcleaner/presets
+    presets.files      += presets/soft.preset presets/normal.preset \
+                          presets/optimal.preset presets/vacuum-defs.preset
+    translations.path   = $$PREFIX/share/svgcleaner/translations
+    translations.files += svgcleaner_cs.qm svgcleaner_ru.qm
+    script.path         = $$PREFIX/bin
+    script.files       += svgcleaner.pl
+    target.path         = $$PREFIX/bin
 }

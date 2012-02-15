@@ -13,7 +13,7 @@ QString SomeUtils::prepareSize(const float bytes)
 {
     float size = bytes;
     int i = 0;
-    while (size > 1024 && i < 3) {
+    while (size > 1024 && i < 2) {
         size = size/1024;
         i++;
     }

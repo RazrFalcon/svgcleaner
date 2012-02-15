@@ -1,4 +1,3 @@
-#include <QResizeEvent>
 #include <QFileInfo>
 #include <QtDebug>
 
@@ -9,7 +8,7 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(this);
-    // fix Windows ugly frames...
+    // fix Windows no-frame to ugly frame...
 #ifdef Q_OS_WIN
     frame->setFrameShadow(QFrame::Plain);
 #endif
@@ -18,51 +17,40 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
 
 void ThumbWidget::refill(const SVGInfo &info, bool compare)
 {
-    lblName->setText(QFileInfo(info.paths[SVGInfo::OUTPUT]).fileName());
-    lblName->setToolTip(tr("Input file: ")+info.paths[SVGInfo::INPUT]);
-    lblName->setAccessibleName(QFileInfo(info.paths[SVGInfo::OUTPUT]).fileName());
-
-    // elements
-    lblElemB->setText(QString::number(info.elemInitial));
-    lblElemA->setText(QString::number(info.elemFinal));
-
-    // attributes
-    lblAttrB->setText(QString::number(info.attrInitial));
-    lblAttrA->setText(QString::number(info.attrFinal));
-
-    // time
-    lblTime->setText(SomeUtils::prepareTime(info.time));
-
     iconsWidget->setMinimumHeight(height()-20);
     iconsWidget->setPaths(info.paths[SVGInfo::INPUT],info.paths[SVGInfo::OUTPUT],compare);
 
-    if (info.crashed) {
-        lblElemP->setText("(0.00%)");
-        lblAttrP->setText("(0.00%)");
-        lblTime->setText("0");
+    lblValues->setAccessibleName(QFileInfo(info.paths[SVGInfo::OUTPUT]).fileName());
+    QString name = QFileInfo(info.paths[SVGInfo::OUTPUT]).fileName();
+    if (name.count() > 40)
+        name = "..."+name.rightRef(40).toString();
 
-        // size
-        lblSizeB->setText("0");
-        lblSizeA->setText("0");
-        lblSizeP->setText("(0.00%)");
+    if (info.crashed) {
+        lblValues->setText("");
         iconsWidget->setCrashed(true);
     } else {
-        // size
-        lblSizeB->setText(SomeUtils::prepareSize(info.sizes[SVGInfo::INPUT]));
-        lblSizeA->setText(SomeUtils::prepareSize(info.sizes[SVGInfo::OUTPUT]));
-        lblSizeP->setText("("+QString::number(info.compress,'f',2)+"%)");
-
-        lblElemP->setText("("+QString::number(((float)info.elemFinal/
-                                               info.elemInitial)*100,'f',2)+"%)");
-        lblAttrP->setText("("+QString::number(((float)info.attrFinal/
-                                               info.attrInitial)*100,'f',2)+"%)");
+        float elemPerc = ((float)info.elemFinal/info.elemInitial)*100;
+        float attrPerc = ((float)info.attrFinal/info.attrInitial)*100;
+        lblValues->setText(QString("%1<table align=right>"
+            "<tr><td></td><td style=line-height:110% align=center>%2 </td><td>-&gt; </td>"
+                                   "<td align=center>%3 </td><td align=right>(%4)</td></tr>"
+            "<tr><td></td><td style=line-height:110% align=center>%5 </td><td>-&gt; </td>"
+                                   "<td align=center>%6 </td><td align=right>(%7)</td></tr>"
+            "<tr><td></td><td style=line-height:110% align=center>%8 </td><td>-&gt; </td>"
+                                   "<td align=center>%9 </td><td align=right>(%10)</td></tr>"
+            "<tr><td></td><td style=line-height:110% colspan=5 align=right>%11</td></tr>"
+            "</table>")
+             .arg(name)
+             .arg(SomeUtils::prepareSize(info.sizes[SVGInfo::INPUT]))
+             .arg(SomeUtils::prepareSize(info.sizes[SVGInfo::OUTPUT]))
+             .arg(QString::number(info.compress,'f',2))
+             .arg(info.elemInitial)
+             .arg(info.elemFinal)
+             .arg(QString::number(elemPerc,'f',2))
+             .arg(info.attrInitial)
+             .arg(info.attrFinal)
+             .arg(QString::number(attrPerc,'f',2))
+             .arg(SomeUtils::prepareTime(info.time))
+             );
     }
-}
-
-void ThumbWidget::resizeEvent(QResizeEvent *event)
-{
-    QFontMetrics fm(QFont().defaultFamily());
-    int size = event->size().width()-lbl1->width()-iconsWidget->width()-25;
-    QString normalStr = fm.elidedText(lblName->accessibleName(),Qt::ElideLeft,size);
-    lblName->setText(normalStr);
 }

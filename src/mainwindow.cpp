@@ -204,9 +204,8 @@ void MainWindow::startNext()
         cleaner->startNext(arguments.inputFiles.at(position),
                            arguments.outputFiles.at(position));
         position++;
-    } else if (actionPause->isVisible() && actionStop->isEnabled()) {
-        if (progressBar->value() == progressBar->maximum())
-            cleaningFinished();
+    } else if (progressBar->value() == progressBar->maximum()) {
+        cleaningFinished();
     } else if (!actionStop->isEnabled() || !actionPause->isVisible()) {
         cleaner->thread()->quit();
         cleaner->thread()->wait();

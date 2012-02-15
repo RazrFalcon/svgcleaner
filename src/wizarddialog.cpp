@@ -130,7 +130,7 @@ void WizardDialog::createExample()
 void WizardDialog::loadPresets()
 {
     cmbBoxPreset->clear();
-    cmbBoxPreset->addItem("None");
+    cmbBoxPreset->addItem("Full");
     presets.clear();
     presets += QDir("presets").entryInfoList(QStringList("*.preset"));
     presets += QDir("/usr/share/svgcleaner/presets/")
@@ -180,7 +180,7 @@ void WizardDialog::on_buttonBox_clicked(QAbstractButton *button)
         close();
     } else if (buttonBox->standardButton(button) == QDialogButtonBox::Reset) {
         resetFields();
-        setPreset("None");
+        setPreset("Full");
     }
 }
 
@@ -313,7 +313,7 @@ QString WizardDialog::compressValue()
 
 void WizardDialog::setPreset(const QString &preset)
 {
-    if (preset == "None") {
+    if (preset == "Full") {
         resetToDefault();
         return;
     }

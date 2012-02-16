@@ -1,13 +1,13 @@
-############################################################################################
-#      NSIS Installation Script created by NSIS Quick Setup Script Generator v1.09.18
-#               Entirely Edited with NullSoft Scriptable Installation System                
-#              by Vlasis K. Barkas aka Red Wine red_wine@freemail.gr Sep 2006               
+############################################################################################       
+#                    SVG Cleaner setup script by Raizner Evgeniy
 ############################################################################################
 
+# Information
+
 !define APP_NAME "SVG Cleaner"
-!define COMP_NAME "SVG Cleaner"
-!define VERSION "00.00.00.03"
-!define COPYRIGHT "SVGCleanerTeam © 2012"
+!define COMP_NAME "SVG Cleaner Team"
+!define VERSION "00.00.00.04"
+!define COPYRIGHT "SVG Cleaner Team © 2012"
 !define DESCRIPTION "Application"
 !define INSTALLER_NAME "setup.exe"
 !define MAIN_APP_EXE "svgcleaner.exe"
@@ -18,7 +18,7 @@
 
 ######################################################################
 
-VIProductVersion  "${VERSION}"
+VIProductVersion "${VERSION}"
 VIAddVersionKey "ProductName"  "${APP_NAME}"
 VIAddVersionKey "CompanyName"  "${COMP_NAME}"
 VIAddVersionKey "LegalCopyright"  "${COPYRIGHT}"
@@ -27,30 +27,29 @@ VIAddVersionKey "FileVersion"  "${VERSION}"
 
 ######################################################################
 
+# Compression
+
 SetCompressor ZLIB
 Name "${APP_NAME}"
 Caption "${APP_NAME}"
 OutFile "${INSTALLER_NAME}"
-BrandingText "${APP_NAME}"
+BrandingText "${COMP_NAME}"
 XPStyle on
 InstallDirRegKey "${REG_ROOT}" "${REG_APP_PATH}" ""
 InstallDir "$PROGRAMFILES\${APP_NAME}"
 
 ######################################################################
 
-!include "MUI.nsh"
+!include "MUI2.nsh"
 !include "EnvVarUpdate.nsh"
 
 !define MUI_ABORTWARNING
 !define MUI_UNABORTWARNING
+!define MUI_LANGDLL_ALLLANGUAGES
+!define MUI_RESERVEFILE_LANGDLL 
 !define MUI_ICON "svgcleaner.ico"
 
 !insertmacro MUI_PAGE_WELCOME
-
-!ifdef LICENSE_TXT
-!insertmacro MUI_PAGE_LICENSE "${LICENSE_TXT}"
-!endif
-
 !insertmacro MUI_PAGE_DIRECTORY
 
 !ifdef REG_START_MENU
@@ -62,63 +61,95 @@ InstallDir "$PROGRAMFILES\${APP_NAME}"
 !insertmacro MUI_PAGE_STARTMENU Application $SM_Folder
 !endif
 
+#!insertmacro MUI_PAGE_LICENSE "${NSISDIR}\Docs\Modern UI\License.txt"
 !insertmacro MUI_PAGE_INSTFILES
-
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_CONFIRM
-
 !insertmacro MUI_UNPAGE_INSTFILES
-
 !insertmacro MUI_UNPAGE_FINISH
 
 !insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "Russian"
+
+!insertmacro MUI_RESERVEFILE_LANGDLL
+
+Function .onInit
+#  !insertmacro MUI_LANGDLL_DISPLAY
+  SetRebootFlag true
+FunctionEnd
 
 ######################################################################
 
-Section -MainProgram
-${INSTALL_TYPE}
-SetOverwrite ifnewer
-SetOutPath "$INSTDIR"
-File "SVGCleaner.exe"
-File "svgcleaner.pl"
-File "QtCore4.dll"
-File "QtGui4.dll"
-File "QtSvg4.dll"
-File "QtXml4.dll"
-File "libgcc_s_dw2-1.dll"
-File "mingwm10.dll"
-File "interface.xml"
-SetOutPath "$INSTDIR\7-Zip"
-File "7-Zip\7za.exe"
-File "7-Zip\license.txt"
-SetOutPath "$INSTDIR\iconengines"
-File "iconengines\qsvgicon4.dll"
-SetOutPath "$INSTDIR\imageformats"
-File "imageformats\qico4.dll"
-File "imageformats\qsvg4.dll"
-SetOutPath "$INSTDIR\presets"
-File "presets\normal.preset"
-File "presets\optimal.preset"
-File "presets\soft.preset"
-File "presets\vacuum-defs.preset"
-SetOutPath "C:\strawberry\perl\site\lib\XML"
-File "XML-Twig\site\lib\XML\Twig.pm"
-SetOutPath "C:\strawberry\perl\site\lib\XML\Twig"
-File "XML-Twig\site\lib\XML\Twig\XPath.pm"
-SetOutPath "C:\strawberry\perl\site\lib\auto\XML\Twig"
-File "XML-Twig\site\lib\auto\XML\Twig\.packlist"
-SetOutPath "C:\strawberry\perl\bin"
-File "XML-Twig\bin\xml_grep"
-File "XML-Twig\bin\xml_grep.bat"
-File "XML-Twig\bin\xml_merge"
-File "XML-Twig\bin\xml_merge.bat"
-File "XML-Twig\bin\xml_pp"
-File "XML-Twig\bin\xml_pp.bat"
-File "XML-Twig\bin\xml_spellcheck"
-File "XML-Twig\bin\xml_spellcheck.bat"
-File "XML-Twig\bin\xml_split"
-File "XML-Twig\bin\xml_split.bat"
+# Installation
+
+Section "SVG Cleaner Install" SEC_PERL
+ 
+SectionIn Ro
+
+; find current dir
+Push $EXEPATH
+Call GetExeDir
+Exch $0
+StrCpy $EXEDIR $0
+	
+MessageBox MB_YESNO "Install Strawberry Perl?" /SD IDYES IDNO endStrawberryPerl
+	IfFileExists "$EXEDIR\strawberry-perl-5.12.3.0.msi" myinstall mydownload
+			
+	mydownload:
+		DetailPrint "Downloading Strawberry Perl..."
+		NSISdl::download http://strawberry-perl.googlecode.com/files/strawberry-perl-5.12.3.0.msi "$EXEDIR\strawberry-perl-5.12.3.0.msi"
+		Pop $R0
+		StrCmp $R0 "success" +3
+		MessageBox MB_OK "Download failed: $R0"
+		
+	myinstall:
+		DetailPrint "Installing Strawberry Perl..."
+		nsExec::Exec '"msiExec" /a "$EXEDIR\strawberry-perl-5.12.3.0.msi" /qn TARGETDIR="C:\strawberry"' $0
+		; need check for the presence of
+		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin"
+		DetailPrint "Installing SVG Cleaner..."
+		${INSTALL_TYPE}
+		SetOverwrite ifnewer
+		SetOutPath "$INSTDIR"
+		File "SVGCleaner.exe"
+		File "svgcleaner.pl"
+		File "QtCore4.dll"
+		File "QtGui4.dll"
+		File "QtSvg4.dll"
+		File "QtXml4.dll"
+		File "libgcc_s_dw2-1.dll"
+		File "mingwm10.dll"
+		File "interface.xml"
+		File "7za.exe"
+		SetOutPath "$INSTDIR\imageformats"
+		File "imageformats\qico4.dll"
+		File "imageformats\qsvg4.dll"
+		SetOutPath "$INSTDIR\presets"
+		File "presets\normal.preset"
+		File "presets\optimal.preset"
+		File "presets\soft.preset"
+		File "presets\vacuum-defs.preset"
+		SetOutPath "C:\strawberry\perl\site\lib\XML"
+		File "XML-Twig\site\lib\XML\Twig.pm"
+		SetOutPath "C:\strawberry\perl\site\lib\XML\Twig"
+		File "XML-Twig\site\lib\XML\Twig\XPath.pm"
+		SetOutPath "C:\strawberry\perl\site\lib\auto\XML\Twig"
+		File "XML-Twig\site\lib\auto\XML\Twig\.packlist"
+		SetOutPath "C:\strawberry\perl\bin"
+		File "XML-Twig\bin\xml_grep"
+		File "XML-Twig\bin\xml_grep.bat"
+		File "XML-Twig\bin\xml_merge"
+		File "XML-Twig\bin\xml_merge.bat"
+		File "XML-Twig\bin\xml_pp"
+		File "XML-Twig\bin\xml_pp.bat"
+		File "XML-Twig\bin\xml_spellcheck"
+		File "XML-Twig\bin\xml_spellcheck.bat"
+		File "XML-Twig\bin\xml_split"
+		File "XML-Twig\bin\xml_split.bat"
+	DetailPrint "Finished Strawberry Perl Setup"
+	Goto endStrawberryPerl
+endStrawberryPerl:
 SectionEnd
 
 ######################################################################
@@ -133,11 +164,6 @@ CreateDirectory "$SMPROGRAMS\$SM_Folder"
 CreateShortCut "$SMPROGRAMS\$SM_Folder\${APP_NAME}.lnk" "$INSTDIR\${MAIN_APP_EXE}"
 CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${MAIN_APP_EXE}"
 CreateShortCut "$SMPROGRAMS\$SM_Folder\Uninstall ${APP_NAME}.lnk" "$INSTDIR\uninstall.exe"
-
-!ifdef WEB_SITE
-WriteIniStr "$INSTDIR\${APP_NAME} website.url" "InternetShortcut" "URL" "${WEB_SITE}"
-CreateShortCut "$SMPROGRAMS\$SM_Folder\${APP_NAME} Website.lnk" "$INSTDIR\${APP_NAME} website.url"
-!endif
 !insertmacro MUI_STARTMENU_WRITE_END
 !endif
 
@@ -146,11 +172,6 @@ CreateDirectory "$SMPROGRAMS\${APP_NAME}"
 CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\${MAIN_APP_EXE}"
 CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${MAIN_APP_EXE}"
 CreateShortCut "$SMPROGRAMS\${APP_NAME}\Uninstall ${APP_NAME}.lnk" "$INSTDIR\uninstall.exe"
-
-!ifdef WEB_SITE
-WriteIniStr "$INSTDIR\${APP_NAME} website.url" "InternetShortcut" "URL" "${WEB_SITE}"
-CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME} Website.lnk" "$INSTDIR\${APP_NAME} website.url"
-!endif
 !endif
 
 WriteRegStr ${REG_ROOT} "${REG_APP_PATH}" "" "$INSTDIR\${MAIN_APP_EXE}"
@@ -160,42 +181,6 @@ WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayIcon" "$INSTDIR\${MAIN_APP_
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayVersion" "${VERSION}"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "Publisher" "${COMP_NAME}"
 
-!ifdef WEB_SITE
-WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "URLInfoAbout" "${WEB_SITE}"
-!endif
-SectionEnd
-
-Section "Strawberry Perl Install" SEC_PERL
- 
-SectionIn Ro
-
-; find current dir
-Push $EXEPATH
-Call GetExeDir
-Exch $0
-StrCpy $EXEDIR $0
-	
-MessageBox MB_YESNO "Install Strawberry Perl?" /SD IDYES IDNO endStrawberryPerl
-	DetailPrint "Running Strawberry Perl Setup..."
-	IfFileExists "$EXEDIR\strawberry-perl-5.12.3.0.msi" myinstall mydownload
-			
-	mydownload:
-		DetailPrint "Downloading Strawberry Perl"
-		NSISdl::download http://strawberry-perl.googlecode.com/files/strawberry-perl-5.12.3.0.msi "$EXEDIR\strawberry-perl-5.12.3.0.msi"
-		Pop $R0
-		StrCmp $R0 "success" +3
-		MessageBox MB_OK "Download failed: $R0"
-		
-	myinstall:
-		DetailPrint "Installing Strawberry Perl..."
-		nsExec::Exec '"msiExec" /a "$EXEDIR\strawberry-perl-5.12.3.0.msi" /qn TARGETDIR="C:\strawberry"' $0
-		; need check for the presence of
-		${EnvVarUpdate} $0 "PATH" "A" "HKLM" "C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin"
-	DetailPrint "Finished Strawberry Perl Setup"
-	Goto endStrawberryPerl
-endStrawberryPerl:
-	MessageBox MB_YESNO|MB_ICONQUESTION "Do you wish to reboot the system?" IDNO +2
-		Reboot
 SectionEnd
 
 Function GetExeDir
@@ -227,28 +212,24 @@ FunctionEnd
 
 ######################################################################
 
+# Uninstallation
+
 Section Uninstall
 ${INSTALL_TYPE}
 RmDir /r "$INSTDIR"
+RmDir "$INSTDIR"
+MessageBox MB_YESNO "Delete Strawberry Perl?" /SD IDYES IDNO endStrawberryPerl
 RmDir /r "C:\strawberry"
+endStrawberryPerl:
 
 ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "C:\strawberry\c\bin"
 ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "C:\strawberry\perl\site\bin"
 ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "C:\strawberry\perl\bin"
 
-!ifdef WEB_SITE
-Delete "$INSTDIR\${APP_NAME} website.url"
-!endif
-
-RmDir "$INSTDIR"
-
 !ifdef REG_START_MENU
 !insertmacro MUI_STARTMENU_GETFOLDER "Application" $SM_Folder
 Delete "$SMPROGRAMS\$SM_Folder\${APP_NAME}.lnk"
 Delete "$SMPROGRAMS\$SM_Folder\Uninstall ${APP_NAME}.lnk"
-!ifdef WEB_SITE
-Delete "$SMPROGRAMS\$SM_Folder\${APP_NAME} Website.lnk"
-!endif
 Delete "$DESKTOP\${APP_NAME}.lnk"
 
 RmDir "$SMPROGRAMS\$SM_Folder"
@@ -257,9 +238,6 @@ RmDir "$SMPROGRAMS\$SM_Folder"
 !ifndef REG_START_MENU
 Delete "$SMPROGRAMS\SVG Cleaner\${APP_NAME}.lnk"
 Delete "$SMPROGRAMS\SVG Cleaner\Uninstall ${APP_NAME}.lnk"
-!ifdef WEB_SITE
-Delete "$SMPROGRAMS\SVG Cleaner\${APP_NAME} Website.lnk"
-!endif
 Delete "$DESKTOP\${APP_NAME}.lnk"
 
 RmDir "$SMPROGRAMS\SVG Cleaner"
@@ -270,4 +248,3 @@ DeleteRegKey ${REG_ROOT} "${UNINSTALL_PATH}"
 SectionEnd
 
 ######################################################################
-

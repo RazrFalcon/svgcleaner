@@ -556,9 +556,8 @@ Zpracování se nyní zastaví.</translation>
         <translation>Stlačit vše do svgz</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="133"/>
         <source>Use input file suffix</source>
-        <translation>Použít příponu vstupního souboru</translation>
+        <translation type="obsolete">Použít příponu vstupního souboru</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="206"/>
@@ -572,7 +571,6 @@ Zpracování se nyní zastaví.</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="216"/>
-        <location filename="../src/wizarddialog.ui" line="1944"/>
         <source>normal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -692,11 +690,6 @@ Zpracování se nyní zastaví.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="930"/>
-        <source>std-deviation-limit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/wizarddialog.ui" line="1003"/>
         <source>Remove unused namespaces</source>
         <translation type="unfinished"></translation>
@@ -767,25 +760,8 @@ Zpracování se nyní zastaví.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1263"/>
-        <source>convert-abs-paths=no</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1266"/>
-        <location filename="../src/wizarddialog.ui" line="1316"/>
-        <location filename="../src/wizarddialog.ui" line="1319"/>
-        <source>convert-abs-paths=yes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/wizarddialog.ui" line="1269"/>
         <source>Keep existing paths data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1300"/>
-        <source>remove-uwsp-path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -794,18 +770,8 @@ Zpracování se nyní zastaví.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1353"/>
-        <source>remove-empty-segments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/wizarddialog.ui" line="1356"/>
         <source>Remove empty line and curve segments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1366"/>
-        <source>convert-lines-hv</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -814,23 +780,8 @@ Zpracování se nyní zastaví.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1379"/>
-        <source>convert-curves-lines</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1392"/>
-        <source>convert-curves-cs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/wizarddialog.ui" line="1395"/>
         <source>Convert cubic curve segments into shorthand equivalents when possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1405"/>
-        <source>convert-curves-qt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -879,6 +830,11 @@ Zpracování se nyní zastaví.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/wizarddialog.ui" line="133"/>
+        <source>According to file extensions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/wizarddialog.ui" line="1568"/>
         <source>Remove unnecessary whitespace from path data and lists of points</source>
         <translation type="unfinished"></translation>
@@ -924,61 +880,6 @@ Zpracování se nyní zastaví.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1824"/>
-        <source>none</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1829"/>
-        <source>nsgmls</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1834"/>
-        <source>nice</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1839"/>
-        <source>indented</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1844"/>
-        <source>indented_c</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1849"/>
-        <source>indented_a</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1854"/>
-        <source>indented_close_tag</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1859"/>
-        <source>cvs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1864"/>
-        <source>wrapped</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1869"/>
-        <source>record</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1874"/>
-        <source>record_c</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/wizarddialog.ui" line="1895"/>
         <source>The indentation for the pretty print style:</source>
         <translation type="unfinished"></translation>
@@ -989,28 +890,8 @@ Zpracování se nyní zastaví.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1949"/>
-        <source>html</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1954"/>
-        <source>expand</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/wizarddialog.ui" line="1962"/>
         <source>The quote character for attributes:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1982"/>
-        <source>double</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1987"/>
-        <source>single</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

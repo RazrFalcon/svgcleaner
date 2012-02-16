@@ -98,7 +98,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>4</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -130,7 +130,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>Use input file suffix</string>
+                <string>According to file extensions</string>
                </property>
                <property name="checked">
                 <bool>true</bool>
@@ -678,8 +678,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>607</width>
-               <height>492</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -927,7 +927,7 @@
                     </sizepolicy>
                    </property>
                    <property name="accessibleName">
-                    <string>std-deviation-limit</string>
+                    <string notr="true">std-deviation-limit</string>
                    </property>
                    <property name="accessibleDescription">
                     <string notr="true">0.20</string>
@@ -986,8 +986,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>282</width>
-               <height>322</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1249,8 +1249,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>420</width>
-               <height>184</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -1260,10 +1260,10 @@
               <item>
                <widget class="QRadioButton" name="radioBtnKeepPaths">
                 <property name="accessibleName">
-                 <string>convert-abs-paths=no</string>
+                 <string notr="true">convert-abs-paths=no</string>
                 </property>
                 <property name="accessibleDescription">
-                 <string>convert-abs-paths=yes</string>
+                 <string notr="true">convert-abs-paths=yes</string>
                 </property>
                 <property name="text">
                  <string>Keep existing paths data</string>
@@ -1297,7 +1297,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_13">
                    <property name="accessibleName">
-                    <string>remove-uwsp-path</string>
+                    <string notr="true">remove-uwsp-path</string>
                    </property>
                    <property name="text">
                     <string>Remove unnecessary whitespace between commands and coordinates</string>
@@ -1313,10 +1313,10 @@
               <item>
                <widget class="QRadioButton" name="radioBtnConvertPaths">
                 <property name="accessibleName">
-                 <string>convert-abs-paths=yes</string>
+                 <string notr="true">convert-abs-paths=yes</string>
                 </property>
                 <property name="accessibleDescription">
-                 <string>convert-abs-paths=yes</string>
+                 <string notr="true">convert-abs-paths=yes</string>
                 </property>
                 <property name="text">
                  <string>Convert absolute paths to relative ones</string>
@@ -1350,7 +1350,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_17">
                    <property name="accessibleName">
-                    <string>remove-empty-segments</string>
+                    <string notr="true">remove-empty-segments</string>
                    </property>
                    <property name="text">
                     <string>Remove empty line and curve segments</string>
@@ -1363,7 +1363,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_44">
                    <property name="accessibleName">
-                    <string>convert-lines-hv</string>
+                    <string notr="true">convert-lines-hv</string>
                    </property>
                    <property name="text">
                     <string>Convert lines into horizontal/vertical line segments where possible</string>
@@ -1376,7 +1376,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_43">
                    <property name="accessibleName">
-                    <string>convert-curves-lines</string>
+                    <string notr="true">convert-curves-lines</string>
                    </property>
                    <property name="text">
                     <string>Convert straight curves into lines when possible</string>
@@ -1389,7 +1389,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_42">
                    <property name="accessibleName">
-                    <string>convert-curves-cs</string>
+                    <string notr="true">convert-curves-cs</string>
                    </property>
                    <property name="text">
                     <string>Convert cubic curve segments into shorthand equivalents when possible</string>
@@ -1402,7 +1402,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_33">
                    <property name="accessibleName">
-                    <string>convert-curves-qt</string>
+                    <string notr="true">convert-curves-qt</string>
                    </property>
                    <property name="text">
                     <string>Convert quadratic curve segments into shorthand equivalents when possible</string>
@@ -1452,8 +1452,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>367</width>
-               <height>331</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1787,8 +1787,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>325</width>
-               <height>104</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">
@@ -1817,61 +1817,61 @@
                  <string notr="true">2</string>
                 </property>
                 <property name="currentIndex">
-                 <number>2</number>
+                 <number>0</number>
                 </property>
                 <item>
                  <property name="text">
-                  <string>none</string>
+                  <string notr="true">none</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>nsgmls</string>
+                  <string notr="true">nsgmls</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>nice</string>
+                  <string notr="true">nice</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>indented</string>
+                  <string notr="true">indented</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>indented_c</string>
+                  <string notr="true">indented_c</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>indented_a</string>
+                  <string notr="true">indented_a</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>indented_close_tag</string>
+                  <string notr="true">indented_close_tag</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>cvs</string>
+                  <string notr="true">cvs</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>wrapped</string>
+                  <string notr="true">wrapped</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>record</string>
+                  <string notr="true">record</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>record_c</string>
+                  <string notr="true">record_c</string>
                  </property>
                 </item>
                </widget>
@@ -1941,17 +1941,17 @@
                 </property>
                 <item>
                  <property name="text">
-                  <string>normal</string>
+                  <string notr="true">normal</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>html</string>
+                  <string notr="true">html</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>expand</string>
+                  <string notr="true">expand</string>
                  </property>
                 </item>
                </widget>
@@ -1979,12 +1979,12 @@
                 </property>
                 <item>
                  <property name="text">
-                  <string>double</string>
+                  <string notr="true">double</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>single</string>
+                  <string notr="true">single</string>
                  </property>
                 </item>
                </widget>

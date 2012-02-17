@@ -1380,37 +1380,103 @@ my $elts_initial = scalar($root->descendants_or_self);
 # определяем начальное количество атрибутов в файле, а также преобразуем параметры атрибута style в атрибуты XML (это необходимо для последующих операций по оптимизации, которые используют XPath (XML Path Language) — язык запросов к элементам XML-документа)
 my $atts_initial = 0;
 
+# переменная и хэш для хранения данных внутренней таблицы стилей - internal style sheet
+my $iss;
+my %iss;
+
+# обрабатываем внутренние таблицы стилей, если они существуют
+if (my @styles = $root->get_xpath('//style')) {
+
+  # поскольку не исключена корявая структура файла, то обрабатываем всех потомков всех элементов style для поиска CDATA и создания строки с описанием внутренней таблицы стилей
+  foreach (@styles) {
+    foreach ($_->descendants) {
+      if (my $cdata = $_->cdata) {
+	$iss = $iss.$cdata; }
+    }
+    $_->delete;
+  }
+
+  foreach (split(/([^\s]+\s*{[^}]+})/,$iss)) {
+
+    if ($_=~/^\s*([^\s]+)\s*{\s*([^}]+)}\s*$/) {
+      my ($key, $block) = ($1, $2);
+
+      foreach (split(/\s*;\s*/,$block)) {
+	push @{$iss{$key}}, $_ if ($_!~/:\s*$/ && $_=~/^[a-z][^:]+:[^:]+$/);
+      }
+    }
+  }
+}
+
 foreach my $elt ($root->descendants_or_self) {
 
   $atts_initial+=($elt->att_nb);
 
+  my ($elt_name, $elt_id) = ($elt->name, $elt->id);
+  my ($class, $style) = ($elt->att('class'), $elt->att('style'));
+
   # удаляем префикс 'svg:' из имен элементов
-  $elt->set_tag($1) if ($elt->name=~ /^svg:(.+)$/);
+  $elt->set_tag($1) if ($elt_name=~ /^svg:(.+)$/);
 
-  # получаем значение атрибута style
-  my $style = $elt->att('style');
-
-  # удаляем атрибут style, если он пустой
-  if (defined $style && $style=~ /^\s*$/) {
-
-    $elt->del_att('style');
+  # преобразовываем внутренние таблицы стилей в атрибуты представления
+  if (%iss) {
+    # для всех элментов (*)
+    if (exists $iss{"*"}) {
+      foreach (@{$iss{"*"}}) {
+	my ($att, $att_val) = (split(/\s*:\s*/,$_));
+	$elt->set_att($att => $att_val) if ($elt_name~~$pres_atts{$att});
+      }
+    }
+    # для конкретного типа элементов
+    if (exists $iss{$elt_name}) {
+      foreach (@{$iss{$elt_name}}) {
+	my ($att, $att_val) = (split(/\s*:\s*/,$_));
+	$elt->set_att($att => $att_val);
+      }
+    }
+    # для конкретного типа класса и конкретного типа элементов и класса
+    if ($class) {
+      foreach my $crt_class (split(/\s+/,$class)) {
+	# для конкретного типа класса
+	if (exists $iss{".$crt_class"}) {
+	  foreach (@{$iss{".$crt_class"}}) {
+	    my ($att, $att_val) = (split(/\s*:\s*/,$_));
+	    $elt->set_att($att => $att_val);
+	  }
+	}
+	# для конкретного типа элементов и класса
+	if (exists $iss{"$elt_name.$crt_class"}) {
+	  foreach (@{$iss{"$elt_name.$crt_class"}}) {
+	    my ($att, $att_val) = (split(/\s*:\s*/,$_));
+	    $elt->set_att($att => $att_val);
+	  }
+	}
+      }
+      $elt->del_att('class');
+    }
+    # для конкретного id
+    if ($elt_id && exists $iss{"#$elt_id"}) {
+      foreach (@{$iss{"#$elt_id"}}) {
+	my ($att, $att_val) = (split(/\s*:\s*/,$_));
+	$elt->set_att($att => $att_val);
+      }
+    }
   }
-  # преобразовываем параметры атрибута style в атрибуты XML
-  elsif ($style && $style!~ /:\s*;/) {
 
-    # создаем хэш, содержащий параметры и их значения
-    my %style = map { split(/\s*:\s*/,$_) } split(/\s*;\s*/,$style);
+  # преобразовываем встроенный стиль в атрибуты представления
+  if ($style) {
+    # создаем атрибуты XML
+    foreach (split(/\s*;\s*/,$style)) {
+      # ключ должен начинаться с буквы, а его значение не должно быть пустым
+      if ($_!~/:\s*$/ && $_=~/^[a-z][^:]+:[^:]+$/) {
+	my ($att, $att_val) = (split(/\s*:\s*/,$_));
+	$elt->set_att($att => $att_val);
+      }
+    }
 
     # удаляем атрибут style
     $elt->del_att('style');
     undef $style;
-
-    # создаем атрибуты XML
-    while ((my $att, my $att_val) = each %style) {
-      # если ключ хэша начинается с буквы (если ключ будет начинатся с иного символа то SVG-файл станет непригодным), то создаем атрибут с именем ключа хэша и параметром равным значению ключа хэша
-
-      $elt->set_att($att => $att_val) if ($att=~ /^[a-z]/);
-    }
   }
 
   # исправление значений атрибутов
@@ -2540,6 +2606,14 @@ foreach my $elt ($root->descendants_or_self) {
     }
   }
 
+  # исправляем ошибку, когда в файле есть ссылки, но не задано пространство имен xmlns:xlink
+  if ($elt_name eq "svg" &&
+      !$root->att('xmlns:xlink') &&
+      $twig->get_xpath('//*[@xlink:href or @xlink:type or @xlink:role or @xlink:arcrole or @xlink:title or @xlink:show or @xlink:actuate]')) {
+
+    $root->set_att('xmlns:xlink' => "http://www.w3.org/1999/xlink");
+    &crt_att($elt,"xmlns:xlink","(it's a file fixup)",$i,$elt_name,$elt_id);
+  }
 
   # цикл: обработка всех атрибутов текущего элемента
   CYCLE_ATTS:

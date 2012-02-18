@@ -28,7 +28,7 @@ private:
     QString compressValue();
     QStringList argsLine();
     QStringList getInFiles();
-    QStringList getOutFiles();
+    QStringList genOutFiles();
     void createWarning(const QString &text);
     void loadPresets();
     void loadSettings();

@@ -98,9 +98,10 @@ void WizardDialog::setupGUI()
     listWidget->installEventFilter(this);
 
     loadPresets();
-    if (QFile(QDir::homePath()+"/.config/svgcleaner/presets/last.preset").exists())
-        cmbBoxPreset->setCurrentIndex(settings->value("Wizard/preset",1).toInt());
-    else
+//    beta
+//    if (QFile(QDir::homePath()+"/.config/svgcleaner/presets/last.preset").exists())
+//        cmbBoxPreset->setCurrentIndex(settings->value("Wizard/preset",1).toInt());
+//    else
         cmbBoxPreset->setCurrentIndex(settings->value("Wizard/preset",0).toInt());
     setPreset(cmbBoxPreset->currentText());
 
@@ -111,6 +112,9 @@ void WizardDialog::setupGUI()
     btnOpenInDir->setIcon(QIcon(":/open.svgz"));
     btnOpenOutDir->setIcon(QIcon(":/open.svgz"));
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
+
+    // beta
+    chBoxLastSettings->hide();
 }
 
 void WizardDialog::radioSelected()
@@ -189,7 +193,7 @@ ToThread WizardDialog::threadArguments()
     ToThread threadArgs;
     threadArgs.args = argsLine();
     threadArgs.inputFiles = getInFiles();
-    threadArgs.outputFiles = getOutFiles();
+    threadArgs.outputFiles = genOutFiles();
     threadArgs.level = compressValue();
     threadArgs.cleanerPath = SomeUtils::findFile("svgcleaner.pl","/usr/bin/");
 #ifdef Q_OS_WIN
@@ -201,8 +205,8 @@ ToThread WizardDialog::threadArguments()
 #endif
 
     // save current settings to temp preset
-    linePresetName->setText("last");
-    on_btnSavePreset_clicked();
+    // beta
+    //on_btnSavePreset_clicked();
 
     return threadArgs;
 }
@@ -272,7 +276,7 @@ QStringList WizardDialog::getInFiles()
     return list;
 }
 
-QStringList WizardDialog::getOutFiles()
+QStringList WizardDialog::genOutFiles()
 {
     QStringList list;
     if        (radioBtn1->isChecked()) {
@@ -440,6 +444,10 @@ bool WizardDialog::checkForWarnings()
     } else if (!checkFor("perl")) {
         createWarning(tr("You have to install Perl to use SVG Cleaner."));
         check = false;
+    } else if (QFileInfo(lineEditOutDir->text()).isDir()
+               && !QFileInfo(lineEditOutDir->text()).isWritable()) {
+        createWarning(tr("Selected output folder is not writable."));
+        check = false;
     }
     return check;
 }
@@ -480,10 +488,15 @@ void WizardDialog::on_btnSavePreset_clicked()
         return;
     }
 
+    if (chBoxLastSettings->isChecked()) {
+
+    }
+
     // generate path
     QString path = QFileInfo(settings->fileName()).absolutePath()+"/presets/";
     // overwrite old preset?
-    if (QFile(path+linePresetName->text()+".preset").exists() && linePresetName->text() != "last") {
+    if (QFile(path+linePresetName->text()+".preset").exists()
+            /*&& linePresetName->text() != "last"*/) {
         int ansver = QMessageBox::warning(this,tr("Warning"),
                                           tr("This preset already exists.\nOverwrite?"),
                                           QMessageBox::Yes | QMessageBox::No);

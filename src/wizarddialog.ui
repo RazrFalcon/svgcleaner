@@ -98,7 +98,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>4</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -609,6 +609,19 @@
              <property name="margin">
               <number>0</number>
              </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Enter preset name:</string>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="2">
               <widget class="QPushButton" name="btnSavePreset">
                <property name="enabled">
@@ -629,16 +642,10 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
+             <item row="1" column="0" colspan="3">
+              <widget class="QCheckBox" name="chBoxLastSettings">
                <property name="text">
-                <string>Enter preset name:</string>
+                <string>Save last settings</string>
                </property>
               </widget>
              </item>
@@ -1452,8 +1459,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>613</width>
-               <height>500</height>
+               <width>496</width>
+               <height>359</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1787,8 +1794,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>613</width>
-               <height>500</height>
+               <width>439</width>
+               <height>115</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">

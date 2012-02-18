@@ -70,6 +70,9 @@
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style=&quot;line-height:125%&quot;&gt;Name:&lt;br/&gt;Sizes:&lt;br/&gt;Elements:&lt;br/&gt;Attributes:&lt;br/&gt;Processing time:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
          </widget>
         </item>
         <item row="0" column="2" rowspan="3">

@@ -90,9 +90,6 @@
    </layout>
   </widget>
   <widget class="QToolBar" name="toolBar">
-   <property name="contextMenuPolicy">
-    <enum>Qt::NoContextMenu</enum>
-   </property>
    <property name="windowTitle">
     <string>ToolBar</string>
    </property>
@@ -119,7 +116,7 @@
   </widget>
   <widget class="QDockWidget" name="dockStatistics">
    <property name="features">
-    <set>QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::NoDockWidgetFeatures</set>
    </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
@@ -143,6 +140,9 @@
           <property name="text">
            <string>Total count:</string>
           </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
          </widget>
         </item>
         <item row="0" column="1">
@@ -162,6 +162,9 @@
          <widget class="QLabel" name="lbl10">
           <property name="text">
            <string>Cleaned:</string>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
           </property>
          </widget>
         </item>
@@ -183,6 +186,9 @@
           <property name="text">
            <string>Crashed:</string>
           </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
          </widget>
         </item>
         <item row="2" column="1" rowspan="3">
@@ -203,12 +209,18 @@
           <property name="text">
            <string>Size before:</string>
           </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
          </widget>
         </item>
         <item row="6" column="0">
          <widget class="QLabel" name="lbl2">
           <property name="text">
            <string>Size after:</string>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
           </property>
          </widget>
         </item>
@@ -252,6 +264,9 @@
           <property name="text">
            <string>Maximum:</string>
           </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
          </widget>
         </item>
         <item row="1" column="1" rowspan="2">
@@ -272,6 +287,9 @@
           <property name="text">
            <string>Minimum:</string>
           </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
          </widget>
         </item>
         <item row="3" column="1" rowspan="3">
@@ -291,6 +309,9 @@
          <widget class="QLabel" name="lbl5">
           <property name="text">
            <string>Total:</string>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
           </property>
          </widget>
         </item>
@@ -321,12 +342,18 @@
           <property name="text">
            <string>Total:</string>
           </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
          </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_2">
           <property name="text">
            <string>Maximum:</string>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
           </property>
          </widget>
         </item>
@@ -335,12 +362,18 @@
           <property name="text">
            <string>Average:</string>
           </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+          </property>
          </widget>
         </item>
         <item row="3" column="0">
          <widget class="QLabel" name="label_3">
           <property name="text">
            <string>Minimum:</string>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
           </property>
          </widget>
         </item>
@@ -425,6 +458,9 @@
    <property name="text">
     <string notr="true">wizard</string>
    </property>
+   <property name="iconText">
+    <string notr="true">wizard</string>
+   </property>
    <property name="toolTip">
     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -441,6 +477,9 @@ p, li { white-space: pre-wrap; }
     <bool>false</bool>
    </property>
    <property name="text">
+    <string notr="true">start</string>
+   </property>
+   <property name="iconText">
     <string notr="true">start</string>
    </property>
    <property name="toolTip">
@@ -461,6 +500,9 @@ p, li { white-space: pre-wrap; }
    <property name="text">
     <string notr="true">stop</string>
    </property>
+   <property name="iconText">
+    <string notr="true">stop</string>
+   </property>
    <property name="toolTip">
     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -476,12 +518,18 @@ p, li { white-space: pre-wrap; }
    <property name="text">
     <string notr="true">threads</string>
    </property>
+   <property name="iconText">
+    <string notr="true">threads</string>
+   </property>
    <property name="toolTip">
     <string>Threads count</string>
    </property>
   </action>
   <action name="actionInfo">
    <property name="text">
+    <string notr="true">info</string>
+   </property>
+   <property name="iconText">
     <string notr="true">info</string>
    </property>
    <property name="toolTip">
@@ -496,9 +544,12 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
+    <string notr="true">compareView</string>
+   </property>
+   <property name="iconText">
     <string notr="true">compareView</string>
    </property>
    <property name="toolTip">
@@ -507,6 +558,9 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionPause">
    <property name="text">
+    <string notr="true">pause</string>
+   </property>
+   <property name="iconText">
     <string notr="true">pause</string>
    </property>
   </action>

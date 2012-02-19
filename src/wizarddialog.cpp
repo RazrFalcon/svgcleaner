@@ -98,11 +98,10 @@ void WizardDialog::setupGUI()
     listWidget->installEventFilter(this);
 
     loadPresets();
-//    beta
-//    if (QFile(QDir::homePath()+"/.config/svgcleaner/presets/last.preset").exists())
-//        cmbBoxPreset->setCurrentIndex(settings->value("Wizard/preset",1).toInt());
-//    else
-        cmbBoxPreset->setCurrentIndex(settings->value("Wizard/preset",0).toInt());
+    int presetNum = settings->value("Wizard/preset",0).toInt();
+    if (presetNum > cmbBoxPreset->count() || presetNum < 0)
+        presetNum = 0;
+    cmbBoxPreset->setCurrentIndex(presetNum);
     setPreset(cmbBoxPreset->currentText());
 
     loadFiles();
@@ -138,9 +137,9 @@ void WizardDialog::loadPresets()
     presets.clear();
     presets += QDir("presets").entryInfoList(QStringList("*.preset"));
     presets += QDir("/usr/share/svgcleaner/presets/")
-            .entryInfoList(QStringList("*.preset"));
+               .entryInfoList(QStringList("*.preset"));
     presets += QDir(QDir::homePath()+"/.config/svgcleaner/presets/")
-            .entryInfoList(QStringList("*.preset"));
+               .entryInfoList(QStringList("*.preset"));
     for (int i = 0; i < presets.count(); ++i)
         cmbBoxPreset->addItem(presets.at(i).baseName());
 }

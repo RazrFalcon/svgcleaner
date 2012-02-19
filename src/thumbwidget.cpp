@@ -26,7 +26,7 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
         name = "..."+name.rightRef(40).toString();
 
     if (info.crashed) {
-        lblValues->setText("");
+        lblValues->setText(name);
         iconsWidget->setCrashed(true);
     } else {
         float elemPerc = ((float)info.elemFinal/info.elemInitial)*100;

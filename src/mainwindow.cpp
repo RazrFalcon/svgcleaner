@@ -99,7 +99,6 @@ void MainWindow::on_actionStart_triggered()
         time = QTime::currentTime();
         time.start();
         prepareStart();
-        actionCompareView->setEnabled(true);
     }
 
     if (!actionPause->isVisible()) {
@@ -307,10 +306,13 @@ void MainWindow::threadsCountChanged()
 
 void MainWindow::on_actionCompareView_triggered()
 {
-    if (actionCompareView->isChecked())
+    if (actionCompareView->isChecked()) {
         actionCompareView->setIcon(QIcon(":/thumbs-on.svgz"));
-    else
+        actionCompareView->setToolTip(tr("Compare view: on"));
+    } else {
         actionCompareView->setIcon(QIcon(":/thumbs-off.svgz"));
+        actionCompareView->setToolTip(tr("Compare view: off"));
+    }
 
     int i = itemScroll->value();
     foreach (ThumbWidget *item, findChildren<ThumbWidget *>())

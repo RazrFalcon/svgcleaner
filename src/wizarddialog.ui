@@ -98,7 +98,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -482,7 +482,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Search for SVG files in subfolders.</string>
+             <string>Search for SVG files in subfolders</string>
             </property>
             <property name="text">
              <string>Recursive folder scanning</string>
@@ -685,8 +685,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>613</width>
-               <height>500</height>
+               <width>454</width>
+               <height>403</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -993,8 +993,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>613</width>
-               <height>500</height>
+               <width>380</width>
+               <height>350</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1256,8 +1256,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>613</width>
-               <height>500</height>
+               <width>557</width>
+               <height>200</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">

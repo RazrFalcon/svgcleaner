@@ -21,17 +21,13 @@ use warnings;
 use XML::Twig;
 use Term::ANSIColor;
 
-# преобразуем строку аргументов оптимизации в хэш
-# my %args = map { split("=",$_) } split(":",$ARGV[1]);
-
 
 ####################
 # СЛУЖЕБНЫЕ ДАННЫЕ #
 ####################
 
 # ширина и высота холста
-my $actual_width;
-my $actual_height;
+my ($actual_width, $aw_unit, $actual_height, $ah_unit, $vb_width, $vb_height);
 
 # хэш описания элементов секции defs
 my %desc_elts;
@@ -46,7 +42,7 @@ my @del_elts;
 my $id_removed;
 
 # массив, содержащий префиксы пространств имен Adobe Illustrator
-my @adobe_pref = ();
+my @ai_pref = ();
 
 # id последнего удаленного элемента
 my $del_id;
@@ -119,9 +115,11 @@ my %arg_limits =  (
   'remove-unused-defs' => ['yes', 'no'],
   'remove-nonsvg-elts' => ['yes', 'no'],
   'remove-metadata' => ['yes', 'no'],
+  'remove-ns-elts' => ['yes', 'no'],
   'remove-inkscape-elts' => ['yes', 'no'],
   'remove-sodipodi-elts' => ['yes', 'no'],
   'remove-ai-elts' => ['yes', 'no'],
+  'remove-cdr-elts' => ['yes', 'no'],
   'remove-msvisio-elts' => ['yes', 'no'],
   'remove-invisible-elts' => ['yes', 'no'],
   'collapse-groups' => ['yes', 'no'],
@@ -130,15 +128,18 @@ my %arg_limits =  (
   'remove-singly-grads' => ['yes', 'no'],
   'remove-gaussian-blur' => ['yes', 'no'],
   'std-deviation-limit' => ['0.01', '0.5'],
+  'remove-version' => ['yes', 'no'],
   'remove-unused-ns' => ['yes', 'no'],
   'remove-unref-ids' => ['yes', 'no'],
   'keep-letter-ids' => ['yes', 'no'],
   'remove-nonsvg-atts' => ['yes', 'no'],
   'remove-notappl-atts' => ['yes', 'no'],
   'remove-default-atts' => ['yes', 'no'],
+  'remove-ns-atts' => ['yes', 'no'],
   'remove-inkscape-atts' => ['yes', 'no'],
   'remove-sodipodi-atts' => ['yes', 'no'],
   'remove-ai-atts' => ['yes', 'no'],
+  'remove-cdr-atts' => ['yes', 'no'],
   'remove-msvisio-atts' => ['yes', 'no'],
   'remove-stroke-props' => ['yes', 'no'],
   'remove-fill-props' => ['yes', 'no'],
@@ -172,7 +173,6 @@ my %arg_limits =  (
 
 my @num_args = ('std-deviation-limit','dp-transfs','dp-coords','dp-other-atts','indent');
 
-
 # хэш параметров очистки (по началу - дефолтные значения)
 my %args =  (
   'quiet' => 'yes',
@@ -181,9 +181,11 @@ my %args =  (
   'remove-unused-defs' => 'yes',
   'remove-nonsvg-elts' => 'yes',
   'remove-metadata' => 'yes',
+  'remove-ns-elts' =>  'yes',
   'remove-inkscape-elts' => 'yes',
   'remove-sodipodi-elts' => 'yes',
   'remove-ai-elts' => 'yes',
+  'remove-cdr-elts' => 'yes',
   'remove-msvisio-elts' => 'yes',
   'remove-invisible-elts' => 'yes',
   'collapse-groups' => 'yes',
@@ -192,15 +194,18 @@ my %args =  (
   'remove-singly-grads' => 'yes',
   'remove-gaussian-blur' => 'yes',
   'std-deviation-limit' => '0.2',
+  'remove-version' => 'yes',
   'remove-unused-ns' => 'yes',
   'remove-unref-ids' => 'yes',
   'keep-letter-ids' => 'yes',
   'remove-nonsvg-atts' => 'yes',
   'remove-notappl-atts' => 'yes',
   'remove-default-atts' => 'yes',
+  'remove-ns-atts' => 'yes',
   'remove-inkscape-atts' => 'yes',
   'remove-sodipodi-atts' => 'yes',
   'remove-ai-atts' => 'yes',
+  'remove-cdr-atts' => 'yes',
   'remove-msvisio-atts' => 'yes',
   'remove-stroke-props' => 'yes',
   'remove-fill-props' => 'yes',
@@ -262,17 +267,12 @@ else {
   die "\nThere is no input file!\n\n";
 }
 
-if ($args{'remove-prolog'} eq "yes") {
-  $args{'remove-prolog'} = "1";
-} else {
-  $args{'remove-prolog'} = "0";
-}
+($args{'remove-prolog'} eq "yes") ?
+($args{'remove-prolog'} = "1") : ($args{'remove-prolog'} = "0");
 
-if ($args{'remove-comments'} eq "yes") {
-  $args{'remove-comments'} = "drop";
-} else {
-  $args{'remove-comments'} = "keep";
-}
+($args{'remove-comments'} eq "yes") ?
+($args{'remove-comments'} = "drop") : ($args{'remove-comments'} = "keep");
+
 
 # массив с именами всех элементов SVG
 my @svg_elts = (
@@ -705,23 +705,33 @@ my %default_atts = (
   'viewport-fill' => 'none',
   'viewport-fill-opacity' => '1');
 
-# массив пространств имен Adobe
-my @adobe_ns = (
-  'http://ns.adobe.com/AdobeIllustrator/10.0/',
-  'http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/',
-  'http://ns.adobe.com/Extensibility/1.0/',
-  'http://ns.adobe.com/Flows/1.0/',
-  'http://ns.adobe.com/Graphs/1.0/',
-  'http://ns.adobe.com/GenericCustomNamespace/1.0/',
-  'http://ns.adobe.com/ImageReplacement/1.0/',
-  'http://ns.adobe.com/SaveForWeb/1.0/',
-  'http://ns.adobe.com/Variables/1.0/',
-  'http://ns.adobe.com/XPath/1.0/',
-  'http://ns.adobe.com/xap/1.0/sType/ResourceRef#',
-  'adobe:ns:meta/',
-  'http://ns.adobe.com/xap/1.0/',
-  'http://ns.adobe.com/xap/1.0/g/img/',
-  'http://ns.adobe.com/xap/1.0/mm/');
+# хэш со ссылками пространств имен
+my %ns_links = (
+  'http://www.inkscape.org/namespaces/inkscape' => 'inkscape',
+  'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd' => 'sodipodi',
+  'http://ns.adobe.com/AdobeIllustrator/10.0/' => 'ai',
+  'http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/' => 'ai',
+  'http://ns.adobe.com/Extensibility/1.0/' => 'ai',
+  'http://ns.adobe.com/Flows/1.0/' => 'ai',
+  'http://ns.adobe.com/Graphs/1.0/' => 'ai',
+  'http://ns.adobe.com/GenericCustomNamespace/1.0/' => 'ai',
+  'http://ns.adobe.com/ImageReplacement/1.0/' => 'ai',
+  'http://ns.adobe.com/SaveForWeb/1.0/' => 'ai',
+  'http://ns.adobe.com/Variables/1.0/' => 'ai',
+  'http://ns.adobe.com/XPath/1.0/' => 'ai',
+  'http://ns.adobe.com/xap/1.0/sType/ResourceRef#' => 'ai',
+  'http://ns.adobe.com/xap/1.0/' => 'ai',
+  'http://ns.adobe.com/xap/1.0/g/img/' => 'ai',
+  'http://ns.adobe.com/xap/1.0/mm/' => 'ai',
+  'adobe:ns:meta/' => 'ai',
+  'http://product.corel.com/CGS/11/cddns/' => 'cdr',
+  'http://schemas.microsoft.com/visio/2003/SVGExtensions/' => 'msvisio',
+  'http://purl.org/dc/elements/1.1/' => 'metadata',
+  'http://creativecommons.org/ns#' => 'metadata',
+  'http://www.w3.org/1999/02/22-rdf-syntax-ns#' => 'metadata');
+
+# хэш с префиксами пространств имен
+my %ns_pfs;
 
 # массив текстовых атрибутов
 my @text_atts = (
@@ -1006,10 +1016,6 @@ sub round_num {
 
 # подпрограмма пересчета всех возможных едениц измерения в пиксели
 sub units_px {
-#   my $elt = $_[0];
-#   my $att = $_[1];
-#   my $att_val = $_[2];
-#   my $unit = $_[3];
   my ($elt, $att, $att_val, $unit) = @_;
   # пересчитываем em и ex в пиксели
   if ($unit~~['em','ex']) {
@@ -1360,6 +1366,13 @@ if ($args{'quiet'} eq "no") {
 # берем корневой элемент
 my $root = $twig->root;
 
+die "It's a not well-formed SVG file!\n" if (($root->name)!~/svg$/);
+
+# определяем префикс корневого элемента, если он существует
+my $svg_prefix = $1 if (($root->name)=~/^([^:]+):svg$/);
+
+# выбираем первый по счету элемент defs
+my $defs = $twig->first_elt('defs');
 
 
 #############################
@@ -1369,16 +1382,68 @@ my $root = $twig->root;
 print colored ("\nPREPROCESSING\n\n", 'bold blue underline') if ($args{'quiet'} eq "no");
 
 
+# определяем ширину и высоту холста
+if ($root->att('width') && ($root->att('width'))=~/^($num)(.*)$/) {
+  ($actual_width, $aw_unit) = ($1, $2);
+}
+
+if ($root->att('height') && ($root->att('height'))=~/^($num)(.*)$/) {
+  ($actual_height, $ah_unit) = ($1, $2);
+}
+
+if ($root->att('viewBox')&& ($root->att('viewBox'))=~/($num)$cwsp($num)$/) {
+  ($vb_width, $vb_height) = ($1, $2);
+}
+
+if (($aw_unit && $aw_unit!~/^$unit$/) ||
+    ($ah_unit && $ah_unit!~/^$unit$/) ||
+    (defined $actual_width && $actual_width <= 0) ||
+    (defined $actual_height && $actual_height <= 0)) {
+
+  die "It's a not well-formed SVG file!\n";
+}
+
+# пересчитываем ширину и высоту холста, если их значения имеют еденицы измерения
+if ($actual_width && $actual_height) {
+
+  if ($aw_unit && $aw_unit eq "%" && $vb_width) {
+    $actual_width = $actual_width*$vb_width/100;
+  }
+  elsif ($aw_unit && !($aw_unit~~['em', 'ex', '%'])) {
+    $actual_width = &units_px($root,"width",$actual_width,$aw_unit);
+  }
+  else {
+    die "It's a not well-formed SVG file!\n" if ($aw_unit);
+  }
+
+  if ($ah_unit && $ah_unit eq "%" && $vb_height) {
+    $actual_height = $actual_height*$vb_width/100;
+  }
+  elsif ($ah_unit && !($ah_unit~~['em', 'ex', '%'])) {
+    $actual_height = &units_px($root,"height",$actual_height,$ah_unit);
+  }
+  else {
+    die "It's a not well-formed SVG file!\n" if ($ah_unit);
+  }
+}
+elsif ($vb_width && $vb_height &&
+       !$actual_width && !$actual_height) {
+
+  ($actual_width, $actual_height) = ($vb_width, $vb_height)
+}
+else {
+  die "It's a not well-formed SVG file!\n";
+}
+
+
 # определяем начальный размер файла
 my $size_initial = length($twig->sprint);
-
 
 # определяем начальное количество элементов в файле
 my $elts_initial = scalar($root->descendants_or_self);
 
-
 # определяем начальное количество атрибутов в файле, а также преобразуем параметры атрибута style в атрибуты XML (это необходимо для последующих операций по оптимизации, которые используют XPath (XML Path Language) — язык запросов к элементам XML-документа)
-my $atts_initial = 0;
+my $atts_initial;
 
 # переменная и хэш для хранения данных внутренней таблицы стилей - internal style sheet
 my $iss;
@@ -1415,8 +1480,13 @@ foreach my $elt ($root->descendants_or_self) {
   my ($elt_name, $elt_id) = ($elt->name, $elt->id);
   my ($class, $style) = ($elt->att('class'), $elt->att('style'));
 
-  # удаляем префикс 'svg:' из имен элементов
-  $elt->set_tag($1) if ($elt_name=~ /^svg:(.+)$/);
+  # удаляем svg-префикс из имен элементов
+  if ($svg_prefix &&
+      $elt_name=~ /^$svg_prefix:(.+)$/) {
+
+    $elt_name = $1;
+    $elt->set_tag($elt_name);
+  }
 
   # преобразовываем внутренние таблицы стилей в атрибуты представления
   if (%iss) {
@@ -1452,6 +1522,7 @@ foreach my $elt ($root->descendants_or_self) {
 	  }
 	}
       }
+      # удаляем атрибут class
       $elt->del_att('class');
     }
     # для конкретного id
@@ -1469,14 +1540,13 @@ foreach my $elt ($root->descendants_or_self) {
     foreach (split(/\s*;\s*/,$style)) {
       # ключ должен начинаться с буквы, а его значение не должно быть пустым
       if ($_!~/:\s*$/ && $_=~/^[a-z][^:]+:[^:]+$/) {
+
 	my ($att, $att_val) = (split(/\s*:\s*/,$_));
 	$elt->set_att($att => $att_val);
       }
     }
-
     # удаляем атрибут style
     $elt->del_att('style');
-    undef $style;
   }
 
   # исправление значений атрибутов
@@ -1560,6 +1630,68 @@ foreach my $elt ($root->descendants_or_self) {
       next CYCLE_FIX;
     }
   }
+
+  # если элемент должен находиться внутри элемента defs, но находится вне его
+  if ($elt_name ~~ @defs_elts &&
+      !$elt->parent('defs')) {
+
+    # создаем элемент defs, если его не существует
+    unless ($defs) {
+      $defs = $root->insert_new_elt('defs');
+      $defs->set_id('defs1');
+
+      if ($args{'quiet'} eq "no") {
+	print colored (" <defs", 'bold green');
+	print " id=\"defs1\" (there isn't the main defs section)\n\n";
+      }
+    }
+
+    # переносим этот элемент на место последнего потомка элемента defs
+    $elt->move(last_child => $defs);
+
+    if ($args{'quiet'} eq "no") {
+      print colored (" <$elt_name", 'bold magenta');
+      $elt_id = "none" unless ($elt_id);
+      print " id=\"$elt_id\" (into the defs section)\n\n";
+    }
+  }
+}
+
+# переносим первый по счету элемент defs на место первого потомка корневого элемента
+$defs->move(first_child => $root) if ($defs);
+
+# если в файле содержится несколько элементов defs, то сводим их в один
+# это довольно редкое, но реально встречающееся явление
+unless ($root->descendants('defs') == 1) {
+
+  # цикл: обрабатываем все элементы defs
+  foreach ($root->get_xpath("//defs")) {
+    # если обрабатываемый элемент defs, не является основным, т.е. первым потомком корневого элемента, то переносим его содержимое в основной элемент defs, а сам элемент стираем
+    unless ($_->cmp($defs) == 0) {
+      my $defs_id = $_->id;
+
+      foreach ($_->children) {
+	my $elt_name = $_->name;
+	my $elt_id = $_->id;
+	$_->move(last_child => $defs);
+
+	if ($args{'quiet'} eq "no") {
+	  print colored (" <$elt_name", 'bold magenta');
+	  $elt_id = "none" unless ($elt_id);
+	  print " id=\"$elt_id\" (into the main defs section)\n\n";
+	}
+      }
+
+      $_->erase;
+
+      if ($args{'quiet'} eq "no") {
+	
+	print colored (" <defs", 'bold red');
+	$defs_id = "none" unless ($defs_id);
+	print " id=\"$defs_id\" (it's not the main defs section)\n\n";
+      }
+    }
+  }
 }
 
 
@@ -1577,46 +1709,6 @@ if ($args{'quiet'} eq "no") {
 }
 
 
-# определяем ширину и высоту холста
-if ($root->att('width') && $root->att('height')) {
-
-  $actual_width = $root->att('width');
-  $actual_height = $root->att('height');
-
-  # пересчитываем $actual_width и $actual_height, если их значения имеют еденицы измерения
-  if ($actual_width=~ /^($num)($unit)$/ && $2 ne "%") {
-
-    $actual_width = &units_px($root,$actual_width,$1,$2);
-  }
-
-  if ($root->att('viewBox') &&
-      $actual_width=~ /%/ &&
-      $root->att('viewBox')=~ /($num)\s*,?\s*($num)$/) {
-
-    $actual_width = substr($actual_width,0,-1)*$1/100;
-  }
-
-  if ($actual_height=~ /^($num)($unit)$/ && $2 ne "%") {
-
-    $actual_height = &units_px($root,"$actual_height",$1,$2);
-  }
-
-  if ($root->att('viewBox') &&
-      $actual_height=~ /%/ &&
-      $root->att('viewBox')=~ /($num)\s*,?\s*($num)$/) {
-
-    $actual_height = substr($actual_height,0,-1)*$2/100;
-  }
-
-} elsif (!$root->att('width') && !$root->att('height') &&
-	 $root->att('viewBox')=~ /($num)$cwsp($num)$/) {
-# 	 $root->att('viewBox')=~ /($num)\s*,?\s*($num)$/) {
-
-  $actual_width = $1;
-  $actual_height = $2;
-}
-
-
 # принудительно увеличиваем точность округления дробных чисел для очень маленьких изображений (во избежание их искажения)
 if (($actual_width < 64 || $actual_height < 64) &&
     $args{'round-numbers'} eq "yes") {
@@ -1626,96 +1718,35 @@ if (($actual_width < 64 || $actual_height < 64) &&
 }
 
 
-# определяем префиксы пространств имен Adobe Illustrator
-if ($args{'remove-ai-elts'} eq "yes" ||
-    $args{'remove-ai-atts'} eq "yes") {
+# определяем префиксы пространств имен
+if ($args{'remove-ns-elts'} eq "yes" ||
+    $args{'remove-ns-atts'} eq "yes" ||
+    $args{'remove-unused-ns'} eq "yes") {
 
   while ((my $att, my $att_val) = each %{$root->atts}) {
 
-    if ($att_val~~@adobe_ns) {
-      $att=~ s/^xmlns://;
-      push @adobe_pref, $att;
-    }
-  }
-}
+    if (exists $ns_links{$att_val} &&
+	$att=~ /^xmlns:(.+)$/) {
 
+      my $ns_pfx = $1;
 
-# выбираем первый по счету элемент defs
-my $defs = $twig->first_elt('defs');
-
-
-# цикл: обрабатываем по порядку все элементы файла
-CYCLE_DEF:
-foreach ($root->descendants) {
-  # получаем имя элемента
-  my $elt_name = $_->name;
-  # получаем id элемента
-  my $elt_id = $_->id;
-  $elt_id = "none" unless ($elt_id);
-
-  # если внутри секции defs содержится элемент style, то выносим его за пределы defs
-  if ($elt_name eq "style" &&
-      $_->parent('defs')) {
-
-    $_->move(after => $defs);
-  }
-
-  # если элемент должен находиться внутри элемента defs, но находится вне его
-  if ($elt_name ~~ @defs_elts &&
-      !$_->parent('defs')) {
-
-    # создаем элемент defs, если его не существует
-    unless ($defs) {
-      $defs = $root->insert_new_elt('defs');
-      $defs->set_id('defs1');
-
-      if ($args{'quiet'} eq "no") {
-	print colored (" <defs", 'bold green');
-	print " id=\"defs1\" (there isn't the main defs section)\n\n";
+      if ($ns_links{$att_val} eq "inkscape") {
+	push @{$ns_pfs{"inkscape"}}, $ns_pfx;
       }
-    }
-
-    # переносим этот элемент на место последнего потомка элемента defs
-    $_->move(last_child => $defs);
-
-    if ($args{'quiet'} eq "no") {
-      print colored (" <$elt_name", 'bold magenta');
-      print " id=\"$elt_id\" (into the defs section)\n\n";
-    }
-  }
-}
-
-# переносим первый по счету элемент defs на место первого потомка корневого элемента
-$defs->move(first_child => $root) if ($defs);
-
-# если в файле содержится несколько элементов defs, то сводим их в один
-# это довольно редкое, но реально встречающееся явление
-unless ($root->descendants('defs') == 1) {
-
-  # цикл: обрабатываем все элементы defs
-  foreach ($root->get_xpath("//defs")) {
-
-    # если обрабатываемый элемент defs, не является основным, т.е. первым потомком корневого элемента, то переносим его содержимое в основной элемент defs, а сам элемент стираем
-    unless ($_->cmp($defs) == 0) {
-      my $defs_id = $_->id; $defs_id = "none" unless ($defs_id);
-
-      foreach ($_->children) {
-	my $elt_name = $_->name;
-	my $elt_id = $_->id;
-	$_->move(last_child => $defs);
-
-	if ($args{'quiet'} eq "no") {
-	  print colored (" <$elt_name", 'bold magenta');
-	  print " id=\"$elt_id\" (into the main defs section)\n\n";
-	}
+      elsif ($ns_links{$att_val} eq "sodipodi") {
+	push @{$ns_pfs{"sodipodi"}}, $ns_pfx;
       }
-
-      $_->erase;
-
-      if ($args{'quiet'} eq "no") {
-	
-	print colored (" <defs", 'bold red');
-	print " id=\"$defs_id\" (it's not the main defs section)\n\n";
+      elsif ($ns_links{$att_val} eq "ai") {
+	push @{$ns_pfs{"ai"}}, $ns_pfx;
+      }
+      elsif ($ns_links{$att_val} eq "cdr") {
+	push @{$ns_pfs{"cdr"}}, $ns_pfx;
+      }
+      elsif ($ns_links{$att_val} eq "msvisio") {
+	push @{$ns_pfs{"msvisio"}}, $ns_pfx;
+      }
+      elsif ($ns_links{$att_val} eq "metadata") {
+	push @{$ns_pfs{"metadata"}}, $ns_pfx;
       }
     }
   }
@@ -1741,8 +1772,15 @@ foreach my $elt ($root->descendants) {
   my $elt_id = $elt->id;
   $elt_id = "none" unless ($elt_id);
 
+
+  # префикс элемента
+  my $elt_pfx;
   # получаем префикс имени элемента
-  (my $elt_pref = $elt_name)=~ s/:.+$// if ($args{'remove-ai-elts'} eq "yes" && $elt_name=~ /:/);
+  if ($args{'remove-ns-elts'} eq "yes" &&
+      $elt_name=~ /^([^:]+):.+$/) {
+
+    $elt_pfx = $1;
+  }
 
 
   # если обрабатываемый элемент является дочерним элементом удаленного, то пропускаем его обработку
@@ -1771,47 +1809,58 @@ foreach my $elt ($root->descendants) {
   }
 
 
-  # удаление элементов Inkscape
-  if ($args{'remove-inkscape-elts'} eq "yes" &&
-      $elt_name=~ /^inkscape:/ &&
-      $elt_name ne "inkscape:path-effect") {
+  # удаление элементов пространств имен
+  if ($args{'remove-ns-elts'} eq "yes" &&
+      $elt_pfx) {
 
-    &del_elt($elt,$elt_name,$elt_id,"it's an Inkscape element");
-    next CYCLE_ELTS;
+    # удаление элементов Inkscape
+    if ($args{'remove-inkscape-elts'} eq "yes" &&
+	$elt_pfx~~$ns_pfs{"inkscape"} &&
+	$elt_name ne "inkscape:path-effect") {
+
+      &del_elt($elt,$elt_name,$elt_id,"it's an Inkscape element");
+      next CYCLE_ELTS;
+    }
+
+    # удаление элементов Sodipodi
+    if ($args{'remove-sodipodi-elts'} eq "yes" &&
+	$elt_pfx~~$ns_pfs{"sodipodi"}) {
+
+      &del_elt($elt,$elt_name,$elt_id,"it's a Sodipodi element");
+      next CYCLE_ELTS;
+    }
+
+    # удаление элементов Adobe Illustrator
+    if ($args{'remove-ai-elts'} eq "yes" &&
+	$elt_pfx~~$ns_pfs{"ai"}) {
+
+      &del_elt($elt,$elt_name,$elt_id,"it's an Adobe Illustrator element");
+      next CYCLE_ELTS;
+    }
+
+    # удаление элементов Corel Draw
+    if ($args{'remove-cdr-elts'} eq "yes" &&
+	$elt_pfx~~$ns_pfs{"cdr"}) {
+
+      &del_elt($elt,$elt_name,$elt_id,"it's a Corel Draw element");
+      next CYCLE_ELTS;
+    }
+
+    # удаление элементов Microsoft Visio
+    if ($args{'remove-msvisio-elts'} eq "yes" &&
+	$elt_pfx~~$ns_pfs{"msvisio"}) {
+
+      &del_elt($elt,$elt_name,$elt_id,"it's a Microsoft Visio element");
+      next CYCLE_ELTS;
+    }
   }
-
-
-  # удаление элементов Sodipodi
-  if ($args{'remove-sodipodi-elts'} eq "yes" &&
-      $elt_name=~ /^sodipodi:/) {
-
-    &del_elt($elt,$elt_name,$elt_id,"it's a Sodipodi element");
-    next CYCLE_ELTS;
-  }
-
-
-  # удаление элементов Adobe Illustrator
-  if ($args{'remove-ai-elts'} eq "yes" && $elt_pref && $elt_pref~~@adobe_pref) {
-    &del_elt($elt,$elt_name,$elt_id,"it's an Adobe Illustrator element");
-    next CYCLE_ELTS;
-  }
-
 
   # удаление элементов Adobe Illustrator (продолжение)
-  if ($args{'remove-ai-elts'} eq "yes" &&
-      $elt_name eq "foreignObject" &&
-      $elt->att('requiredExtensions')~~@adobe_ns) {
+  if ($args{'remove-ns-elts'} eq "yes" && $args{'remove-ai-elts'} eq "yes" &&
+      $elt_name eq "foreignObject" && $elt->att('requiredExtensions') &&
+      $ns_links{($elt->att('requiredExtensions'))} eq "ai") {
 
     &del_elt($elt,$elt_name,$elt_id,"it's an Adobe Illustrator element");
-    next CYCLE_ELTS;
-  }
-
-
-  # удаление элементов Microsoft Visio
-  if ($args{'remove-msvisio-elts'} eq "yes" &&
-      $elt_name=~ /^v:/) {
-
-    &del_elt($elt,$elt_name,$elt_id,"it's a Microsoft Visio element");
     next CYCLE_ELTS;
   }
 
@@ -1830,7 +1879,6 @@ foreach my $elt ($root->descendants) {
     # удаление элементов с атрибутом opacity="0"
     if (defined $elt->att('opacity') &&
 	$elt->att('opacity') == 0) {
-# 	$elt->att('opacity')=~ /^-|^\+?0(\.0+)?$/) {
 
       &del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
       next CYCLE_ELTS;
@@ -1856,8 +1904,6 @@ foreach my $elt ($root->descendants) {
     if ($elt_name~~['pattern','image', 'rect'] &&
 	((defined $elt->att('height') && $elt->att('height') eq "0") ||
 	(defined $elt->att('width') && $elt->att('width') eq "0"))) {
-# 	((defined $elt->att('height') && $elt->att('height')=~ /^-|^\+?0(\.0+)?$unit?$/) ||
-# 	(defined $elt->att('width') && $elt->att('width')=~ /^-|^\+?0(\.0+)?$unit?$/))) {
 
       &del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
       next CYCLE_ELTS;
@@ -1898,7 +1944,6 @@ foreach my $elt ($root->descendants) {
     if ($elt_name eq "circle" &&
 	defined $elt->att('r') &&
 	$elt->att('r') eq "0") {
-# 	$elt->att('r')=~ /^-|^\+?0(\.0+)?$unit?$/) {
 
       &del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
       next CYCLE_ELTS;
@@ -1908,8 +1953,6 @@ foreach my $elt ($root->descendants) {
     if ($elt_name eq "ellipse" &&
 	((defined $elt->att('rx') && $elt->att('rx') eq "0") ||
 	(defined $elt->att('ry') && $elt->att('ry') eq "0"))) {
-# 	((defined $elt->att('rx') && $elt->att('rx')=~ /^-|^\+?0(\.0+)?$unit?$/) ||
-# 	(defined $elt->att('ry') && $elt->att('ry')=~ /^-|^\+?0(\.0+)?$unit?$/))) {
 
       &del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
       next CYCLE_ELTS;
@@ -2577,12 +2620,19 @@ foreach my $elt ($root->descendants_or_self) {
   # получаем имя элемента
   my $elt_name = $elt->name;
 
-  # получаем префикс имени элемента
-  (my $elt_pref = $elt_name)=~ s/:.+$// if ($args{'remove-ai-atts'} eq "yes" && $elt_name=~ /:/);
-
   # получаем id элемента
   my $elt_id = $elt->id;
   $elt_id = "none" unless ($elt_id);
+
+
+  # префикс элемента
+  my $elt_pfx;
+  # получаем префикс имени элемента
+  if ($args{'remove-ns-atts'} eq "yes" &&
+      $elt_name=~ /^([^:]+):.+$/) {
+
+    $elt_pfx = $1;
+  }
 
 
   # создаем атрибут viewBox
@@ -2613,6 +2663,14 @@ foreach my $elt ($root->descendants_or_self) {
 
     $root->set_att('xmlns:xlink' => "http://www.w3.org/1999/xlink");
     &crt_att($elt,"xmlns:xlink","(it's a file fixup)",$i,$elt_name,$elt_id);
+  }
+
+  # исправляем ошибку, когда в корневом элементе не задано пространство имен xmlns
+  if ($elt_name eq "svg" &&
+      !$root->att('xmlns')) {
+
+    $root->set_att('xmlns' => "http://www.w3.org/2000/svg");
+    &crt_att($elt,"xmlns","(it's a file fixup)",$i,$elt_name,$elt_id);
   }
 
   # цикл: обработка всех атрибутов текущего элемента
@@ -2682,9 +2740,23 @@ foreach my $elt ($root->descendants_or_self) {
     # получаем значение атрибута
     my $att_val = $elt->att($att);
 
-
+    # префикс атрибута
+    my $att_pfx;
     # получаем префикс имени атрибута
-    (my $att_pref = $att)=~ s/:.+$// if ($args{'remove-ai-atts'} eq "yes" && $att=~ /:/);
+    if ($args{'remove-ns-elts'} eq "yes" &&
+	$att=~ /^([^:]+):.+$/) {
+
+      $att_pfx = $1;
+    }
+
+
+    # удаление версии SVG
+    if ($args{'remove-version'} eq "yes" &&
+	$elt_name eq "svg" && $att eq "version") {
+
+      &del_att($elt,$att,"it's the SVG language version",$i,$elt_name,$elt_id);
+      next CYCLE_ATTS; 
+    }
 
 
     # удаление неиспользуемых имен id
@@ -2701,11 +2773,20 @@ foreach my $elt ($root->descendants_or_self) {
 
     # удаление неиспользуемых пространств имен
     if ($args{'remove-unused-ns'} eq "yes" &&
-	$att=~ /^xmlns:/) {
+	$elt_name eq "svg" && $att=~ /^xmlns:(.+)$/) {
+
+      my $att_pfx = $1;
+
+      # удаление пространств имен svg
+      if ($att eq "xmlns:svg") {
+
+	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS; 
+      }
 
       # удаление пространств имен metadata
       if ($args{'remove-metadata'} eq "yes" &&
-	  $att~~['xmlns:rdf','xmlns:cc','xmlns:dc']) {
+	  $att_pfx~~$ns_pfs{"metadata"}) {
 
 	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS; 
@@ -2715,7 +2796,7 @@ foreach my $elt ($root->descendants_or_self) {
       if ($args{'remove-inkscape-elts'} eq "yes" &&
 	  $args{'remove-inkscape-atts'} eq "yes" &&
 	  !($root->descendants('inkscape:path-effect')) &&
-	  $att eq "xmlns:inkscape") {
+	  $att_pfx~~$ns_pfs{"inkscape"}) {
 
 	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS; 
@@ -2724,7 +2805,7 @@ foreach my $elt ($root->descendants_or_self) {
       # удаление пространств имен Sodipodi
       if ($args{'remove-sodipodi-elts'} eq "yes" &&
 	  $args{'remove-sodipodi-atts'} eq "yes" &&
-	  $att eq "xmlns:sodipodi") {
+	  $att_pfx~~$ns_pfs{"sodipodi"}) {
 
 	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS; 
@@ -2733,7 +2814,16 @@ foreach my $elt ($root->descendants_or_self) {
       # удаление пространств имен Adobe Illustrator
       if ($args{'remove-ai-elts'} eq "yes" &&
 	  $args{'remove-ai-atts'} eq "yes" &&
-	  $att_val~~@adobe_ns) {
+	  $att_pfx~~$ns_pfs{"ai"}) {
+
+	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS; 
+      }
+
+      # удаление пространств имен Corel Draw
+      if ($args{'remove-cdr-elts'} eq "yes" &&
+	  $args{'remove-cdr-atts'} eq "yes" &&
+	  $att_pfx~~$ns_pfs{"cdr"}) {
 
 	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS; 
@@ -2742,7 +2832,7 @@ foreach my $elt ($root->descendants_or_self) {
       # удаление пространств имен Microsoft Visio
       if ($args{'remove-msvisio-elts'} eq "yes" &&
 	  $args{'remove-msvisio-atts'} eq "yes" &&
-	  $att eq "xmlns:v") {
+	  $att_pfx~~$ns_pfs{"msvisio"}) {
 
 	&del_att($elt,$att,"it's an unused namespace",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS; 
@@ -2758,76 +2848,95 @@ foreach my $elt ($root->descendants_or_self) {
     } # удаление неиспользуемых пространств имен
 
 
-    # удаление атрибутов Inkscape
-    if ($args{'remove-inkscape-elts'} ne "yes" &&
-	$args{'remove-inkscape-atts'} eq "yes" &&
-	$elt_name!~ /^inkscape:/ &&
-	$att=~ /^inkscape:/) {
+    # удаление атрибутов пространств имен
+    if ($args{'remove-ns-atts'} eq "yes" &&
+	$att_pfx) {
 
-      &del_att($elt,$att,"it's an Inkscape attribute",$i,$elt_name,$elt_id);
-      next CYCLE_ATTS;
-    }
-    elsif ($args{'remove-inkscape-elts'} eq "yes" &&
-	   $args{'remove-inkscape-atts'} eq "yes" &&
-	   $elt_name ne "inkscape:path-effect" &&
-	   $att=~ /^inkscape:/) {
+      # удаление атрибутов Inkscape
+      if ($args{'remove-inkscape-elts'} eq "no" &&
+	  $args{'remove-inkscape-atts'} eq "yes" &&
+	  (!$elt_pfx || !($elt_pfx~~$ns_pfs{"inkscape"})) &&
+	  $att_pfx~~$ns_pfs{"inkscape"}) {
 
-      &del_att($elt,$att,"it's an Inkscape attribute",$i,$elt_name,$elt_id);
-      next CYCLE_ATTS;
-    }
+	&del_att($elt,$att,"it's an Inkscape attribute",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS;
+      }
+      elsif ($args{'remove-inkscape-elts'} eq "yes" &&
+	    $args{'remove-inkscape-atts'} eq "yes" &&
+	    $elt_name ne "inkscape:path-effect" &&
+	    $att_pfx~~$ns_pfs{"inkscape"}) {
 
+	&del_att($elt,$att,"it's an Inkscape attribute",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS;
+      }
 
-    # удаление атрибутов Sodipodi
-    if ($args{'remove-sodipodi-elts'} ne "yes" &&
-	$elt_name!~ /^sodipodi:/ &&
-	$args{'remove-sodipodi-atts'} eq "yes" &&
-	$att=~ /^sodipodi:/) {
+      # удаление атрибутов Sodipodi
+      if ($args{'remove-sodipodi-elts'} eq "no" &&
+	  $args{'remove-sodipodi-atts'} eq "yes" &&
+	  (!$elt_pfx || !($elt_pfx~~$ns_pfs{"sodipodi"})) &&
+	  $att_pfx~~$ns_pfs{"sodipodi"}) {
 
-      &del_att($elt,$att,"it's a Sodipodi attribute",$i,$elt_name,$elt_id);
-      next CYCLE_ATTS;
-    }
-    elsif ($args{'remove-sodipodi-elts'} eq "yes" &&
-	   $args{'remove-sodipodi-atts'} eq "yes" &&
-	   $att=~ /^sodipodi:/) {
+	&del_att($elt,$att,"it's a Sodipodi attribute",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS;
+      }
+      elsif ($args{'remove-sodipodi-elts'} eq "yes" &&
+	    $args{'remove-sodipodi-atts'} eq "yes" &&
+	    $att_pfx~~$ns_pfs{"sodipodi"}) {
 
-      &del_att($elt,$att,"it's a Sodipodi attribute",$i,$elt_name,$elt_id);
-      next CYCLE_ATTS;
-    }
+	&del_att($elt,$att,"it's a Sodipodi attribute",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS;
+      }
 
+      # удаление атрибутов Adobe Illustrator
+      if ($args{'remove-ai-elts'} eq "no" &&
+	  $args{'remove-ai-atts'} eq "yes" &&
+	  (!$elt_pfx || !($elt_pfx~~$ns_pfs{"ai"})) &&
+	  $att_pfx~~$ns_pfs{"ai"}) {
 
-    # удаление атрибутов Adobe Illustrator
-    if ($args{'remove-ai-elts'} ne "yes" &&
-	$args{'remove-ai-atts'} eq "yes" &&
-	$att_pref && $att_pref~~@adobe_pref &&
-	!($elt_pref~~@adobe_pref)) {
+	&del_att($elt,$att,"it's an Adobe Illustrator attribute",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS;
+      }
+      elsif ($args{'remove-ai-elts'} eq "yes" &&
+	    $args{'remove-ai-atts'} eq "yes" &&
+	    $att_pfx~~$ns_pfs{"ai"}) {
 
-      &del_att($elt,$att,"it's an Adobe Illustrator attribute",$i,$elt_name,$elt_id);
-      next CYCLE_ATTS;
-    }
-    elsif ($args{'remove-ai-elts'} eq "yes" &&
-	   $args{'remove-ai-atts'} eq "yes" &&
-	   $att_pref && $att_pref~~@adobe_pref) {
+	&del_att($elt,$att,"it's an Adobe Illustrator attribute",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS;
+      }
 
-      &del_att($elt,$att,"it's an Adobe Illustrator attribute",$i,$elt_name,$elt_id);
-      next CYCLE_ATTS;
-    }
+      # удаление атрибутов Corel Draw
+      if ($args{'remove-cdr-elts'} eq "no" &&
+	  $args{'remove-cdr-atts'} eq "yes" &&
+	  (!$elt_pfx || !($elt_pfx~~$ns_pfs{"cdr"})) &&
+	  $att_pfx~~$ns_pfs{"cdr"}) {
 
+	&del_att($elt,$att,"it's a Corel Draw attribute",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS;
+      }
+      elsif ($args{'remove-cdr-elts'} eq "yes" &&
+	    $args{'remove-cdr-atts'} eq "yes" &&
+	    $att_pfx~~$ns_pfs{"cdr"}) {
 
-    # удаление атрибутов Microsoft Visio
-    if ($args{'remove-msvisio-elts'} ne "yes" &&
-	$elt_name!~ /^v:/ &&
-	$args{'remove-msvisio-atts'} eq "yes" &&
-	$att=~ /^v:/) {
+	&del_att($elt,$att,"it's a Corel Draw attribute",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS;
+      }
 
-      &del_att($elt,$att,"it's a Microsoft Visio attribute",$i,$elt_name,$elt_id);
-      next CYCLE_ATTS;
-    }
-    elsif ($args{'remove-msvisio-elts'} eq "yes" &&
-	   $args{'remove-msvisio-atts'} eq "yes" &&
-	   $att=~ /^v:/) {
+      # удаление атрибутов Microsoft Visio
+      if ($args{'remove-msvisio-elts'} eq "no" &&
+	  $args{'remove-msvisio-atts'} eq "yes" &&
+	  (!$elt_pfx || !($elt_pfx~~$ns_pfs{"msvisio"})) &&
+	  $att_pfx~~$ns_pfs{"msvisio"}) {
 
-      &del_att($elt,$att,"it's a Microsoft Visio attribute",$i,$elt_name,$elt_id);
-      next CYCLE_ATTS;
+	&del_att($elt,$att,"it's a Microsoft Visio attribute",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS;
+      }
+      elsif ($args{'remove-msvisio-elts'} eq "yes" &&
+	    $args{'remove-msvisio-atts'} eq "yes" &&
+	    $att_pfx~~$ns_pfs{"msvisio"}) {
+
+	&del_att($elt,$att,"it's a Microsoft Visio attribute",$i,$elt_name,$elt_id);
+	next CYCLE_ATTS;
+      }
     }
 
 
@@ -3144,8 +3253,7 @@ foreach my $elt ($root->descendants_or_self) {
 #     if ($att eq "d" &&
 # 	$args{'convert-abs-paths'} eq "yes" &&
 # 	$att_val=~ /[MZLHVCSQTA]/) {
-    if ($att eq "d" &&
-	$args{'convert-abs-paths'} eq "yes") {
+    if ($att eq "d" && $args{'convert-abs-paths'} eq "yes") {
 
       # ПРАВИЛО РЕНДЕРИНГА: обработка команд и их параметров производится до выявления первой же ошибки (после нее путь дальше уже не отрисовывается)
 
@@ -3440,6 +3548,13 @@ foreach my $elt ($root->descendants_or_self) {
 		$dx = &round_num($dx,'',$args{'dp-coords'}) if ($dx=~ /\./);
 		$dy = &round_num($dy,'',$args{'dp-coords'}) if ($dy=~ /\./);
 	      }
+
+	      # преобразование кубической кривой в квадратичную (dx1=1,5*dx1 и dy1=1,5*dy1)
+# 	      if (&equal(($dx2-$dx1), ($dx/3), 2) && &equal(($dy2-$dy1), ($dy/3), 2)) {
+# 		print "\nBINGO!\n";
+# 		print "dxy2-dx1 = ", ($dx2-$dx1), "   dx/3 = ", ($dx/3), "\n";
+# 		print "dy2-dy1 = ", ($dy2-$dy1), "   dy/3 = ", ($dy/3), "\n\n";
+# 	      }
 
 	      # удаляем пустые сегменты 'c0,0 0,0 0,0'
 	      if ($args{'remove-empty-segments'} eq "yes" &&

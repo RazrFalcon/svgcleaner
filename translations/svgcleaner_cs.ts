@@ -646,191 +646,216 @@ Zpracování se nyní zastaví.</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="767"/>
+        <source>Remove namespaced elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="795"/>
         <source>Remove Inkscape elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="780"/>
+        <location filename="../src/wizarddialog.ui" line="808"/>
         <source>Remove Sodipodi elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="793"/>
+        <location filename="../src/wizarddialog.ui" line="821"/>
         <source>Remove Adobe Illustrator elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="806"/>
+        <location filename="../src/wizarddialog.ui" line="834"/>
+        <source>Remove Corel Draw elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="847"/>
         <source>Remove Microsoft Visio elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="819"/>
+        <location filename="../src/wizarddialog.ui" line="863"/>
         <source>Remove invisible elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="832"/>
+        <location filename="../src/wizarddialog.ui" line="876"/>
         <source>Collapse groups when possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="845"/>
+        <location filename="../src/wizarddialog.ui" line="889"/>
         <source>Remove empty groups</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="858"/>
+        <location filename="../src/wizarddialog.ui" line="902"/>
         <source>Remove duplicated elements inside the defs section</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="871"/>
+        <location filename="../src/wizarddialog.ui" line="915"/>
         <source>Remove gradients that are only referenced by one other gradient</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="884"/>
+        <location filename="../src/wizarddialog.ui" line="928"/>
         <source>Remove Gaussian blur filters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="924"/>
+        <location filename="../src/wizarddialog.ui" line="968"/>
         <source>if their stdDeviation attributes is less than:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1010"/>
+        <location filename="../src/wizarddialog.ui" line="1054"/>
+        <source>Remove the SVG language version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1067"/>
         <source>Remove unused namespaces</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1023"/>
+        <location filename="../src/wizarddialog.ui" line="1080"/>
         <source>Remove unreferenced IDs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1066"/>
+        <location filename="../src/wizarddialog.ui" line="1123"/>
         <source>Always keep IDs that contain only letters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1082"/>
+        <location filename="../src/wizarddialog.ui" line="1139"/>
         <source>Remove non-SVG attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1095"/>
+        <location filename="../src/wizarddialog.ui" line="1152"/>
         <source>Remove attributes that are not applicable to elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1108"/>
+        <location filename="../src/wizarddialog.ui" line="1165"/>
         <source>Remove attributes with default SVG values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1121"/>
+        <location filename="../src/wizarddialog.ui" line="1178"/>
+        <source>Remove namespaced attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1206"/>
         <source>Remove Inkscape attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1134"/>
+        <location filename="../src/wizarddialog.ui" line="1219"/>
         <source>Remove Sodipodi attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1147"/>
+        <location filename="../src/wizarddialog.ui" line="1232"/>
         <source>Remove Adobe Illustrator attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1160"/>
+        <location filename="../src/wizarddialog.ui" line="1245"/>
+        <source>Remove Corel Draw attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1258"/>
         <source>Remove Microsoft Visio attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1173"/>
+        <location filename="../src/wizarddialog.ui" line="1274"/>
         <source>Remove all stroke properties when there&apos;s no stroking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1186"/>
+        <location filename="../src/wizarddialog.ui" line="1287"/>
         <source>Remove all fill properties when there&apos;s no filling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1199"/>
+        <location filename="../src/wizarddialog.ui" line="1300"/>
         <source>Remove all unused attributes from clipPath elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1212"/>
+        <location filename="../src/wizarddialog.ui" line="1313"/>
         <source>Remove gradient coordinates when possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1276"/>
+        <location filename="../src/wizarddialog.ui" line="1377"/>
         <source>Keep existing paths data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1310"/>
+        <location filename="../src/wizarddialog.ui" line="1411"/>
         <source>Remove unnecessary whitespace between commands and coordinates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1363"/>
+        <location filename="../src/wizarddialog.ui" line="1464"/>
         <source>Remove empty line and curve segments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1376"/>
+        <location filename="../src/wizarddialog.ui" line="1477"/>
         <source>Convert lines into horizontal/vertical line segments where possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1402"/>
+        <location filename="../src/wizarddialog.ui" line="1503"/>
         <source>Convert cubic curve segments into shorthand equivalents when possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1415"/>
+        <location filename="../src/wizarddialog.ui" line="1516"/>
         <source>Convert quadratic curve segments into shorthand equivalents when possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1476"/>
+        <location filename="../src/wizarddialog.ui" line="1577"/>
         <source>Convert width/height into a viewBox when possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1489"/>
+        <location filename="../src/wizarddialog.ui" line="1590"/>
         <source>Convert style properties into SVG attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1502"/>
+        <location filename="../src/wizarddialog.ui" line="1603"/>
         <source>Convert units to pixels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1515"/>
+        <location filename="../src/wizarddialog.ui" line="1616"/>
         <source>Convert colors to #RRGGBB format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1546"/>
+        <location filename="../src/wizarddialog.ui" line="1647"/>
         <source>Convert colors to #RGB format when possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1562"/>
+        <location filename="../src/wizarddialog.ui" line="1663"/>
         <source>Convert basic shapes to paths</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1329"/>
+        <location filename="../src/wizarddialog.ui" line="1430"/>
         <source>Convert absolute paths to relative ones</source>
         <translation type="unfinished"></translation>
     </message>
@@ -850,67 +875,67 @@ Zpracování se nyní zastaví.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1575"/>
+        <location filename="../src/wizarddialog.ui" line="1676"/>
         <source>Remove unnecessary whitespace from path data and lists of points</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1588"/>
+        <location filename="../src/wizarddialog.ui" line="1689"/>
         <source>Convert some transformations to the matrix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1601"/>
+        <location filename="../src/wizarddialog.ui" line="1702"/>
         <source>Recalculate coordinates and remove transform attributes when possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1614"/>
+        <location filename="../src/wizarddialog.ui" line="1715"/>
         <source>Sort elements by name inside the defs section</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1627"/>
+        <location filename="../src/wizarddialog.ui" line="1728"/>
         <source>Round numbers (number of digits after the decimal point)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1708"/>
+        <location filename="../src/wizarddialog.ui" line="1815"/>
         <source>transform attributes:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1718"/>
+        <location filename="../src/wizarddialog.ui" line="1825"/>
         <source>coordinate attributes:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1728"/>
+        <location filename="../src/wizarddialog.ui" line="1835"/>
         <source>other attributes:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1808"/>
+        <location filename="../src/wizarddialog.ui" line="1918"/>
         <source>The pretty print style:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1902"/>
+        <location filename="../src/wizarddialog.ui" line="2012"/>
         <source>The indentation for the pretty print style:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1909"/>
+        <location filename="../src/wizarddialog.ui" line="2019"/>
         <source>The empty tag display style:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1969"/>
+        <location filename="../src/wizarddialog.ui" line="2079"/>
         <source>The quote character for attributes:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1389"/>
+        <location filename="../src/wizarddialog.ui" line="1490"/>
         <source>Convert straight curves into lines when possible</source>
         <translation type="unfinished"></translation>
     </message>

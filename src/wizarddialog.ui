@@ -98,7 +98,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -685,8 +685,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>454</width>
-               <height>403</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -759,12 +759,12 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_6">
+               <widget class="QCheckBox" name="chBoxNSElem">
                 <property name="accessibleName">
-                 <string notr="true">remove-inkscape-elts</string>
+                 <string notr="true">remove-ns-elts</string>
                 </property>
                 <property name="text">
-                 <string>Remove Inkscape elements</string>
+                 <string>Remove namespaced elements</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -772,42 +772,86 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_7">
-                <property name="accessibleName">
-                 <string notr="true">remove-sodipodi-elts</string>
-                </property>
-                <property name="text">
-                 <string>Remove Sodipodi elements</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_8">
-                <property name="accessibleName">
-                 <string notr="true">remove-ai-elts</string>
-                </property>
-                <property name="text">
-                 <string>Remove Adobe Illustrator elements</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_9">
-                <property name="accessibleName">
-                 <string notr="true">remove-msvisio-elts</string>
-                </property>
-                <property name="text">
-                 <string>Remove Microsoft Visio elements</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
+               <widget class="QWidget" name="widgetNSElem" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_15">
+                 <property name="leftMargin">
+                  <number>30</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_6">
+                   <property name="accessibleName">
+                    <string notr="true">remove-inkscape-elts</string>
+                   </property>
+                   <property name="text">
+                    <string>Remove Inkscape elements</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_7">
+                   <property name="accessibleName">
+                    <string notr="true">remove-sodipodi-elts</string>
+                   </property>
+                   <property name="text">
+                    <string>Remove Sodipodi elements</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_8">
+                   <property name="accessibleName">
+                    <string notr="true">remove-ai-elts</string>
+                   </property>
+                   <property name="text">
+                    <string>Remove Adobe Illustrator elements</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_41">
+                   <property name="accessibleName">
+                    <string notr="true">remove-cdr-elts</string>
+                   </property>
+                   <property name="text">
+                    <string>Remove Corel Draw elements</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_9">
+                   <property name="accessibleName">
+                    <string notr="true">remove-msvisio-elts</string>
+                   </property>
+                   <property name="text">
+                    <string>Remove Microsoft Visio elements</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
               <item>
@@ -993,14 +1037,27 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>380</width>
-               <height>350</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
               <property name="margin">
                <number>0</number>
               </property>
+              <item>
+               <widget class="QCheckBox" name="checkBox_36">
+                <property name="accessibleName">
+                 <string notr="true">remove-version</string>
+                </property>
+                <property name="text">
+                 <string>Remove the SVG language version</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QCheckBox" name="checkBox_16">
                 <property name="accessibleName">
@@ -1113,12 +1170,12 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_22">
+               <widget class="QCheckBox" name="chBoxNSAttr">
                 <property name="accessibleName">
-                 <string notr="true">remove-inkscape-atts</string>
+                 <string notr="true">remove-ns-atts</string>
                 </property>
                 <property name="text">
-                 <string>Remove Inkscape attributes</string>
+                 <string>Remove namespaced attributes</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1126,42 +1183,86 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_23">
-                <property name="accessibleName">
-                 <string notr="true">remove-sodipodi-atts</string>
-                </property>
-                <property name="text">
-                 <string>Remove Sodipodi attributes</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_24">
-                <property name="accessibleName">
-                 <string notr="true">remove-ai-atts</string>
-                </property>
-                <property name="text">
-                 <string>Remove Adobe Illustrator attributes</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_25">
-                <property name="accessibleName">
-                 <string notr="true">remove-msvisio-atts</string>
-                </property>
-                <property name="text">
-                 <string>Remove Microsoft Visio attributes</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
+               <widget class="QWidget" name="widgetNSAttr" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_16">
+                 <property name="leftMargin">
+                  <number>30</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_22">
+                   <property name="accessibleName">
+                    <string notr="true">remove-inkscape-atts</string>
+                   </property>
+                   <property name="text">
+                    <string>Remove Inkscape attributes</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_23">
+                   <property name="accessibleName">
+                    <string notr="true">remove-sodipodi-atts</string>
+                   </property>
+                   <property name="text">
+                    <string>Remove Sodipodi attributes</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_24">
+                   <property name="accessibleName">
+                    <string notr="true">remove-ai-atts</string>
+                   </property>
+                   <property name="text">
+                    <string>Remove Adobe Illustrator attributes</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_46">
+                   <property name="accessibleName">
+                    <string notr="true">remove-cdr-atts</string>
+                   </property>
+                   <property name="text">
+                    <string>Remove Corel Draw attributes</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBox_25">
+                   <property name="accessibleName">
+                    <string notr="true">remove-msvisio-atts</string>
+                   </property>
+                   <property name="text">
+                    <string>Remove Microsoft Visio attributes</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
               <item>
@@ -1256,8 +1357,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>557</width>
-               <height>200</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -1459,8 +1560,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>496</width>
-               <height>359</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1669,6 +1770,9 @@
                    <property name="accessibleDescription">
                     <string notr="true">4</string>
                    </property>
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
                    <property name="maximum">
                     <number>9</number>
                    </property>
@@ -1690,6 +1794,9 @@
                    </property>
                    <property name="accessibleDescription">
                     <string notr="true">3</string>
+                   </property>
+                   <property name="minimum">
+                    <number>1</number>
                    </property>
                    <property name="maximum">
                     <number>9</number>
@@ -1743,6 +1850,9 @@
                    <property name="accessibleDescription">
                     <string notr="true">5</string>
                    </property>
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
                    <property name="maximum">
                     <number>9</number>
                    </property>
@@ -1794,8 +1904,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>439</width>
-               <height>115</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">
@@ -2141,6 +2251,38 @@
     <hint type="destinationlabel">
      <x>304</x>
      <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chBoxNSElem</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetNSElem</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>321</x>
+     <y>168</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>321</x>
+     <y>243</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chBoxNSAttr</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetNSAttr</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>321</x>
+     <y>168</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>321</x>
+     <y>243</y>
     </hint>
    </hints>
   </connection>

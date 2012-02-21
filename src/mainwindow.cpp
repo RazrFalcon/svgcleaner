@@ -73,8 +73,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QShortcut *quitShortcut = new QShortcut(QKeySequence::Quit,this);
     connect(quitShortcut,SIGNAL(activated()),qApp,SLOT(quit()));
 
-    on_actionWizard_triggered();
-
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
     resize(900,650);
 }

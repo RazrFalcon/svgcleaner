@@ -28,7 +28,7 @@ private:
     QTime cleaningTime;
     ToThread arguments;
     int findValue(const QString &text);
-    QString prepareFile(const QString &file);
+    void unzip(const QString &inPath);
     SVGInfo info();
 
 private slots:

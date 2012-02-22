@@ -1,6 +1,5 @@
 #include <QDir>
 #include <QFileInfo>
-#include <QDomDocument>
 #include <QTime>
 #include <QtDebug>
 
@@ -25,17 +24,11 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
     currentIn = inFile;
     currentOut = outFile;
 
-    QString str = prepareFile(inFile);
-    if (str.isEmpty()) { // == bad svg file
-        emit cleaned(info());
-        return;
-    }
     QDir().mkpath(QFileInfo(outFile).absolutePath());
-    QFile file(outSVG);
-    if (file.open(QFile::WriteOnly)) {
-        QTextStream out(&file);
-        out<<str;
-    }
+    if (QFileInfo(inFile).suffix() == "svg")
+        QFile().copy(inFile,outSVG);
+    else
+        unzip(inFile);
 
     QStringList args;
     args.append(arguments.cleanerPath);
@@ -45,46 +38,19 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
     proc->start(arguments.perlPath,args);
 }
 
-// remove attribute xml:space before starting a script,
-// in the same time copy svg source to the new path
-QString CleanerThread::prepareFile(const QString &file)
+void CleanerThread::unzip(const QString &inPath)
 {
-    QDomDocument inputDom;
-    if (QFileInfo(file).suffix() == "svg") {
-        QFile inputFile(file);
-        if (inputFile.open(QFile::ReadOnly))
-            inputDom.setContent(&inputFile);
-    } else {
-        QProcess proc;
-        QStringList args;
-        args<<"e"<<"-so"<<file;
-        proc.start(arguments.zipPath,args);
-        proc.waitForFinished();
-        inputDom.setContent(&proc);
+    QProcess proc;
+    QStringList args;
+    args<<"e"<<"-so"<<inPath;
+    proc.start(arguments.zipPath,args);
+    proc.waitForFinished();
+    QFile file(outSVG);
+    if (file.open(QFile::WriteOnly)) {
+        QTextStream out(&file);
+        out<<proc.readAll();
+        file.close();
     }
-    QDomNodeList nodeList = inputDom.childNodes();
-    for (int i = 0; i < nodeList.count(); ++i) {
-        if (nodeList.at(i).nodeName().contains(QRegExp("svg|svg:svg"))) {
-//            (width || height ) && !viewBox
-            QDomElement element = nodeList.at(i).toElement();
-            element.removeAttribute("xml:space");
-            QRegExp rx("px|pt|pc|mm|cm|m|in|ft|em|ex|%");
-            QString width = element.attribute("width");
-            width.remove(rx);
-            QString height = element.attribute("height");
-            height.remove(rx);
-            if (width.toInt() < 0 || height.toInt() < 0)
-                return "";
-            else if ((element.attribute("width").contains("%")
-                     || element.attribute("height").contains("%"))
-                      && element.attribute("viewBox").isEmpty())
-                return "";
-            else if (width.toInt() == 0 || height.toInt() == 0)
-                element.setAttribute("viewBox","0 0 0 0");
-            return inputDom.toString();
-        }
-    }
-    return "";
 }
 
 void CleanerThread::readyRead()

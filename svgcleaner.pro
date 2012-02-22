@@ -1,4 +1,4 @@
-QT       += core gui xml svg
+QT       += core gui svg
 TEMPLATE  = app
 VERSION   = 0.4
 unix:TARGET    = svgcleaner-gui

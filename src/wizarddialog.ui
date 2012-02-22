@@ -98,7 +98,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>5</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -554,36 +554,6 @@
         </widget>
         <widget class="QWidget" name="page_2">
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="1" column="0" colspan="3">
-           <widget class="Line" name="line_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="btnRemovePreset">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Remove</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QComboBox" name="cmbBoxPreset">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label_2">
             <property name="sizePolicy">
@@ -652,18 +622,31 @@
             </layout>
            </widget>
           </item>
-          <item row="3" column="0" colspan="3">
-           <spacer name="verticalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="btnRemovePreset">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
+            <property name="text">
+             <string>Remove</string>
             </property>
-           </spacer>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QComboBox" name="cmbBoxPreset">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="3">
+           <widget class="QTextBrowser" name="textPresetInfo"/>
           </item>
          </layout>
         </widget>
@@ -965,7 +948,7 @@
                     <string/>
                    </property>
                    <property name="text">
-                    <string>if their stdDeviation attributes is less than:</string>
+                    <string>if the standard deviation for the blur operation is less than:</string>
                    </property>
                   </widget>
                  </item>
@@ -1456,6 +1439,19 @@
                   <number>0</number>
                  </property>
                  <item>
+                  <widget class="QCheckBox" name="checkBox_45">
+                   <property name="accessibleName">
+                    <string notr="true">remove-uwsp-path</string>
+                   </property>
+                   <property name="text">
+                    <string>Remove unnecessary whitespace between commands and coordinates</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QCheckBox" name="checkBox_17">
                    <property name="accessibleName">
                     <string notr="true">remove-empty-segments</string>
@@ -1560,8 +1556,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>613</width>
-               <height>500</height>
+               <width>496</width>
+               <height>359</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1904,8 +1900,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>613</width>
-               <height>500</height>
+               <width>439</width>
+               <height>115</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">

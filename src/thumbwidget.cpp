@@ -38,7 +38,7 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
                                    "<td align=center>%6 </td><td align=right>(%7)</td></tr>"
             "<tr><td></td><td style=line-height:110% align=center>%8 </td><td>-&gt; </td>"
                                    "<td align=center>%9 </td><td align=right>(%10)</td></tr>"
-            "<tr><td></td><td style=line-height:110% colspan=5 align=right>%11</td></tr>"
+            "<tr><td></td><td style=line-height:110% colspan=4 align=right>%11</td></tr>"
             "</table>")
              .arg(name)
              .arg(SomeUtils::prepareSize(info.sizes[SVGInfo::INPUT]))

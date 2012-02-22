@@ -29,6 +29,9 @@ use Term::ANSIColor;
 # ширина и высота холста
 my ($actual_width, $aw_unit, $actual_height, $ah_unit, $vb_width, $vb_height);
 
+# корневой элемент
+my $root;
+
 # хэш описания элементов секции defs
 my %desc_elts;
 
@@ -41,14 +44,17 @@ my @del_elts;
 # количество удаленных неиспользуемых id
 my $id_removed;
 
-# массив, содержащий префиксы пространств имен Adobe Illustrator
-my @ai_pref = ();
+# префикс корневого элемента и первый по счету элемент defs
+my ($svg_prefix, $defs);
 
 # id последнего удаленного элемента
 my $del_id;
 
 # массив, содержащий список id на которые имеются ссылки
-my @ref_id = ();
+my @ref_id;
+
+# массив внешних ссылок
+my @out_links;
 
 # ссылка на другой элемент
 my $link;
@@ -163,9 +169,9 @@ my %arg_limits =  (
   'recalc-coords' => ['yes', 'no'],
   'sort-defs' => ['yes', 'no'],
   'round-numbers' => ['yes', 'no'],
-  'dp-transfs' => ['0', '9'],
-  'dp-coords' => ['0', '9'],
-  'dp-other-atts' => ['0', '9'],
+  'dp-transfs' => ['1', '9'],
+  'dp-coords' => ['1', '9'],
+  'dp-other-atts' => ['1', '9'],
   'pretty-print  ' => ['nice', 'none', 'nsgmls', 'indented', 'indented_c', 'wrapped', 'record', 'record_c'],
   'indent' => ['0', '5'],
   'empty-tags' => ['normal', 'html', 'expand'],
@@ -211,6 +217,7 @@ my %args =  (
   'remove-fill-props' => 'yes',
   'remove-clippath-atts' => 'yes',
   'remove-grad-coords' => 'yes',
+  'convert-abs-paths' => 'yes',
   'remove-uwsp-path' => 'yes',
   'remove-empty-segments' => 'yes',
   'convert-lines-hv' => 'yes',
@@ -223,7 +230,6 @@ my %args =  (
   'convert-colors-rrggbb' => 'yes',
   'convert-colors-rgb' => 'yes',
   'convert-bs-paths' => 'yes',
-  'convert-abs-paths' => 'yes',
   'remove-unnec-wsp' => 'yes',
   'convert-transfs-matrix' => 'yes',
   'recalc-coords' => 'yes',
@@ -907,13 +913,23 @@ my @radgrad_atts = ('gradientUnits','spreadMethod','gradientTransform','fx','fy'
 
 # подпрограмма удаления элемента
 sub del_elt {
-
-  $_[0]->delete;
-  $del_id = $_[2];
-  push @del_elts, $del_id;
-  if ($args{'quiet'} eq "no") {
-    print colored (" <$_[1]", 'bold red');
-    print " id=\"$_[2]\" ($_[3])\n\n";
+  my ($elt, $elt_id) = ($_[0], $_[2]);
+  foreach ($elt->descendants_or_self) {
+    my $del_id = $_->id;
+    if ($del_id && $del_id~~@out_links) {
+      unless ($defs) {
+	$defs = $root->insert_new_elt('defs');
+	$defs->set_id('defs1');
+      }
+      $_->move(last_child => $defs);
+    } else {
+      $_->delete;
+      push @del_elts, $del_id;
+      if ($args{'quiet'} eq "no") {
+	print colored (" <$_[1]", 'bold red');
+	print " id=\"$elt_id\" ($_[3])\n\n";
+      }
+    }
   }
 }
 
@@ -931,7 +947,6 @@ sub bs_path {
 
 # подпрограмма создающая строку с описанием элемента (имена элементов, атрибуты и их значения)
 sub desc_elt {
-#   my $desc_elt="";
   my $desc_elt;
   foreach my $elt ($_[0]->descendants_or_self) {
     $desc_elt = $desc_elt.$elt->name;
@@ -1000,9 +1015,6 @@ sub color_rrggbb {
 
 # подпрограмма округления десятичного числа
 sub round_num {
-#   my $att_val = $_[0];
-#   my $unit = $_[1];
-#   my $dp = $_[2];
   my ($att_val, $unit, $dp) = @_;
   # +0 нужен для удаления лишних правых крайних нулей
   $att_val = sprintf("%.${dp}f", $att_val)+0 if ($att_val=~ /([\d]*\.[\d][\d]{$dp,})/);
@@ -1120,7 +1132,7 @@ sub angle_sin {
 # подпрограмма сравнения чисел с плавающей запятой
 sub equal {
   my ($num1, $num2, $dp) = @_;
-  return sprintf("%.${dp}f", $num1) eq sprintf("%.${dp}f", $num2);
+  return sprintf("%.${dp}f", $num1)+0 eq sprintf("%.${dp}f", $num2)+0;
 }
 
 
@@ -1337,18 +1349,6 @@ sub segment_sq {
 # ПАРСИНГ ФАЙЛА #
 #################
 
-# создаем объект XML::Twig
-my $twig = XML::Twig->new(
-  no_prolog => "$args{'remove-prolog'}",
-  comments => "$args{'remove-comments'}",
-  output_encoding => 'utf8',
-  discard_spaces => 1);
-
-
-# парсим файл
-$twig->parsefile($out_file);
-
-
 # выводим имя файла
 (my $file_name = $ARGV[0])=~ s/^.+\///;
 (my $length = length ($file_name))+=2;
@@ -1362,18 +1362,32 @@ if ($args{'quiet'} eq "no") {
   print "\n$file_name\n\n";
 }
 
+# создаем объект XML::Twig
+my $twig = XML::Twig->new(
+  no_prolog => "$args{'remove-prolog'}",
+  comments => "$args{'remove-comments'}",
+  output_encoding => 'utf8',
+  discard_spaces => 1);
+
+# парсим файл
+unless ($twig->safe_parsefile($out_file)) {
+  die "It's a not well-formed SVG file!\n";
+}
 
 # берем корневой элемент
-my $root = $twig->root;
+$root = $twig->root;
 
-die "It's a not well-formed SVG file!\n" if (($root->name)!~/svg$/);
+die "It's a not well-formed SVG file!\n" if ($root->name !~ /svg$/);
 
-# определяем префикс корневого элемента, если он существует
-my $svg_prefix = $1 if (($root->name)=~/^([^:]+):svg$/);
+# определяем префикс корневого элемента, если он существует, а также выбираем первый по счету элемент defs
+# my ($svg_prefix, $defs);
 
-# выбираем первый по счету элемент defs
-my $defs = $twig->first_elt('defs');
-
+if ($root->name =~ /^([^:]+):svg$/) {
+  $svg_prefix = $1;
+  $defs = $twig->first_elt("$svg_prefix:defs");
+} else {
+  $defs = $twig->first_elt('defs');
+}
 
 #############################
 # ПРЕДВАРИТЕЛЬНАЯ ОБРАБОТКА #
@@ -1409,6 +1423,12 @@ if ($actual_width && $actual_height) {
   if ($aw_unit && $aw_unit eq "%" && $vb_width) {
     $actual_width = $actual_width*$vb_width/100;
   }
+  elsif ($aw_unit && $aw_unit~~['em', 'ex', '%'] &&
+	 !$vb_width && !$vb_height) {
+    $args{'convert-units-px'} = "no";
+    $args{'enable-viewbox'} = "no";
+    $args{'convert-bs-paths'} = "no";
+  }
   elsif ($aw_unit && !($aw_unit~~['em', 'ex', '%'])) {
     $actual_width = &units_px($root,"width",$actual_width,$aw_unit);
   }
@@ -1418,6 +1438,12 @@ if ($actual_width && $actual_height) {
 
   if ($ah_unit && $ah_unit eq "%" && $vb_height) {
     $actual_height = $actual_height*$vb_width/100;
+  }
+  elsif ($ah_unit && $ah_unit~~['em', 'ex', '%'] &&
+	 !$vb_width && !$vb_height) {
+    $args{'convert-units-px'} = "no";
+    $args{'enable-viewbox'} = "no";
+    $args{'convert-bs-paths'} = "no";
   }
   elsif ($ah_unit && !($ah_unit~~['em', 'ex', '%'])) {
     $actual_height = &units_px($root,"height",$actual_height,$ah_unit);
@@ -1430,6 +1456,15 @@ elsif ($vb_width && $vb_height &&
        !$actual_width && !$actual_height) {
 
   ($actual_width, $actual_height) = ($vb_width, $vb_height)
+}
+elsif (!$vb_width && !$vb_height &&
+       !$actual_width && !$actual_height) {
+
+  $args{'convert-units-px'} = "no";
+  $args{'enable-viewbox'} = "no";
+  $args{'convert-bs-paths'} = "no";
+  ($actual_width, $aw_unit) = (100, "%");
+  ($actual_height, $ah_unit) = (100, "%");
 }
 else {
   die "It's a not well-formed SVG file!\n";
@@ -1455,19 +1490,20 @@ if (my @styles = $root->get_xpath('//style')) {
   # поскольку не исключена корявая структура файла, то обрабатываем всех потомков всех элементов style для поиска CDATA и создания строки с описанием внутренней таблицы стилей
   foreach (@styles) {
     foreach ($_->descendants) {
-      if (my $cdata = $_->cdata) {
+      if (my $cdata = $_->text) {
 	$iss = $iss.$cdata; }
     }
     $_->delete;
   }
 
-  foreach (split(/([^\s]+\s*{[^}]+})/,$iss)) {
+  if ($iss) {
+    foreach (split(/([^\s]+\s*{[^}]+})/,$iss)) {
 
-    if ($_=~/^\s*([^\s]+)\s*{\s*([^}]+)}\s*$/) {
-      my ($key, $block) = ($1, $2);
+      if ($_=~/^\s*([^\s]+)\s*{\s*([^}]+)}\s*$/) {
+	my ($key, $block) = ($1, $2);
 
-      foreach (split(/\s*;\s*/,$block)) {
-	push @{$iss{$key}}, $_ if ($_!~/:\s*$/ && $_=~/^[a-z][^:]+:[^:]+$/);
+	foreach (split(/\s*;\s*/,$block)) {
+	  push @{$iss{$key}}, $_ if ($_!~/:\s*$/ && $_=~/^[a-z][^:]+:[^:]+$/); }
       }
     }
   }
@@ -1549,6 +1585,31 @@ foreach my $elt ($root->descendants_or_self) {
     $elt->del_att('style');
   }
 
+  # если элемент должен находиться внутри элемента defs, но находится вне его
+  if ($elt_name ~~ @defs_elts &&
+      !$elt->parent('defs')) {
+
+    # создаем элемент defs, если его не существует
+    unless ($defs) {
+      $defs = $root->insert_new_elt('defs');
+      $defs->set_id('defs1');
+
+      if ($args{'quiet'} eq "no") {
+	print colored (" <defs", 'bold green');
+	print " id=\"defs1\" (there isn't the main defs section)\n\n";
+      }
+    }
+
+    # переносим этот элемент на место последнего потомка элемента defs
+    $elt->move(last_child => $defs);
+
+    if ($args{'quiet'} eq "no") {
+      print colored (" <$elt_name", 'bold magenta');
+      $elt_id = "none" unless ($elt_id);
+      print " id=\"$elt_id\" (into the defs section)\n\n";
+    }
+  }
+
   # исправление значений атрибутов
   CYCLE_FIX:
   while ((my $att, my $att_val) = each %{$elt->atts}) {
@@ -1579,16 +1640,19 @@ foreach my $elt ($root->descendants_or_self) {
     }
 
     # исправляем значения прозрачности
-    if ($att=~ /opacity$/ &&
-	$att_val=~ /^($num)($unit)?$/) {
+    if ($att=~ /opacity$/) {
 
-      if (($1 > 1 && !$2) || ($1 > 0 && $2)) {
-	$elt->set_att($att => "1");
-	next CYCLE_FIX;
-      }
-      elsif ($1 < 0) {
-	$elt->set_att($att => "0");
-	next CYCLE_FIX;
+      if ($att_val=~ /^($num)($unit)?$/) {
+	if (($1 > 1 && !$2) || ($1 > 0 && $2)) {
+	  $elt->del_att($att);
+	  next CYCLE_FIX;
+	}
+	elsif ($1 < 0) {
+	  $elt->set_att($att => "0");
+	  next CYCLE_FIX;
+	}
+      } else {
+	$elt->del_att($att);
       }
     }
 
@@ -1627,32 +1691,14 @@ foreach my $elt ($root->descendants_or_self) {
 
       $att_val = substr $att_val, 0, -(length $1);
       $elt->set_att($att => $att_val);
-      next CYCLE_FIX;
-    }
-  }
-
-  # если элемент должен находиться внутри элемента defs, но находится вне его
-  if ($elt_name ~~ @defs_elts &&
-      !$elt->parent('defs')) {
-
-    # создаем элемент defs, если его не существует
-    unless ($defs) {
-      $defs = $root->insert_new_elt('defs');
-      $defs->set_id('defs1');
-
-      if ($args{'quiet'} eq "no") {
-	print colored (" <defs", 'bold green');
-	print " id=\"defs1\" (there isn't the main defs section)\n\n";
-      }
+#       next CYCLE_FIX;
     }
 
-    # переносим этот элемент на место последнего потомка элемента defs
-    $elt->move(last_child => $defs);
+    if ($att_val =~ /^url\(#(.+)\)$/ ||
+	($att eq "xlink:href" && $att_val =~ /^#(.+)$/)) {
 
-    if ($args{'quiet'} eq "no") {
-      print colored (" <$elt_name", 'bold magenta');
-      $elt_id = "none" unless ($elt_id);
-      print " id=\"$elt_id\" (into the defs section)\n\n";
+#       print "\"$1\"\n" unless ($1 ~~ @out_links);
+      push @out_links, $1 unless ($1 ~~ @out_links);
     }
   }
 }
@@ -1711,6 +1757,7 @@ if ($args{'quiet'} eq "no") {
 
 # принудительно увеличиваем точность округления дробных чисел для очень маленьких изображений (во избежание их искажения)
 if (($actual_width < 64 || $actual_height < 64) &&
+    !$aw_unit && !$ah_unit &&
     $args{'round-numbers'} eq "yes") {
 
   $args{'dp-coords'} = 5 if ($args{'dp-coords'} < 5);
@@ -1878,7 +1925,7 @@ foreach my $elt ($root->descendants) {
 
     # удаление элементов с атрибутом opacity="0"
     if (defined $elt->att('opacity') &&
-	$elt->att('opacity') == 0) {
+	$elt->att('opacity') == "0") {
 
       &del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
       next CYCLE_ELTS;
@@ -1918,7 +1965,7 @@ foreach my $elt ($root->descendants) {
 
     # удаление элементов path с пустым атрибутом d
     if ($elt_name eq "path" &&
-	!$elt->att('d')) {
+	(!$elt->att('d') || $elt->att('d') !~ /^[Mm]/)) {
 
 	&del_elt($elt,$elt_name,$elt_id,"it's an invisible element");
 	next CYCLE_ELTS;
@@ -2285,7 +2332,7 @@ foreach my $elt ($root->descendants) {
     }
   }
 
-
+#       print colored (" <$elt_name",'bold'); print " id=$elt_id\n";
 ####################
 # ОБРАБОТКА ССЫЛОК #
 ####################
@@ -2293,18 +2340,6 @@ foreach my $elt ($root->descendants) {
   # если удаляются неиспользуемые элементы из секции defs и/или неиспользуемые id и предком обрабатываемого элемента не является defs
   if (($args{'remove-unused-defs'} eq "yes" || $args{'remove-unref-ids'} eq "yes") &&
       !$elt->parent('defs')) {
-
-    # отдельно обрабатываем элемент style
-    if ($elt_name eq "style") {
-      foreach ($elt->children) {
-	if ($_->is_cdata) {
-	  my @urls = split(/(url\s*\(#[^\)]+\))/, ($_->cdata));
-	  foreach (@urls) {
-	    push @ref_id, $1 if ($_=~ /url\s*\(#([^\)]+)\)/ && !($1 ~~ @ref_id));
-	  }
-	}
-      }
-    }
 
     # обрабатываем все атрибуты элемента
     while ((my $att, my $att_val) = each %{$elt->atts}) {
@@ -2340,8 +2375,9 @@ foreach my $elt ($root->descendants) {
   }
 } # УДАЛЕНИЕ ЭЛЕМЕНТОВ
 
-# массив внешних ссылок
-my @out_link = @ref_id;
+# очищаем массив внешних ссылок
+$#out_links = -1;
+@out_links = @ref_id;
 
 
 ########################
@@ -2354,8 +2390,8 @@ if (($args{'remove-unused-defs'} eq "yes" ||
   # цикл: обрабатываем все id из массива @ref_id
   foreach (@ref_id) {
     # цикл: обрабатываем элемент с текущим id и всех его потомков (поскольку они также могут содержать ссылки на другие элементы, как, например, дочерние элементы path у элементов clipPath или mask)
-
-    foreach my $elt ($twig->elt_id($_)->descendants_or_self){
+#     print "\"$_\"\n";
+    foreach my $elt ($twig->elt_id($_)->descendants_or_self) {
 
       # цикл: обрабатываем атрибуты текущего элемента
       while ((my $att, my $att_val) = each %{$elt->atts}) {
@@ -3118,7 +3154,7 @@ foreach my $elt ($root->descendants_or_self) {
     if ($args{'remove-default-atts'} eq "yes") {
 
       if ($elt_name eq 'linearGradient') {
-	if (($att~~['x1','y1','y2'] && $att_val=~/^[-+]?0(\.0+)?$unit?$/) ||
+	if (($att~~['x1','y1','y2'] && $att_val == 0) ||
 	    ($att eq "gradientUnits" && $att_val eq 'objectBoundingBox') ||
 	    ($att eq "spreadMethod" && $att_val eq 'pad')) {
 
@@ -3139,7 +3175,7 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       if ($elt_name eq 'pattern') {
-	if (($att~~['x','y'] && $att_val=~/^[-+]?0(\.0+)?$unit?$/) ||
+	if (($att~~['x','y'] && $att_val == 0) ||
 	    ($att eq "patternUnits" && $att_val eq 'objectBoundingBox') ||
 	    ($att eq "patternContentUnits" && $att_val eq 'userSpaceOnUse')) {
 
@@ -3148,17 +3184,15 @@ foreach my $elt ($root->descendants_or_self) {
 	}
       }
 
-      if ($elt_name eq 'rect' &&
-	  $att~~['x','y'] &&
-	  $att_val=~/^[-+]?0(\.0+)?$unit?$/) {
+      if ($elt_name~~['rect','use'] &&
+	  $att~~['x','y'] && $att_val == 0) {
 
 	&del_att($elt,$att,"\"$att_val\" is the default value for this attribute",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS;
       }
 
       if ($elt_name~~['circle','ellipse'] &&
-	  $att~~['cx','cy'] &&
-	  $att_val=~/^[-+]?0(\.0+)?$unit?$/) {
+	  $att~~['cx','cy'] && $att_val == 0) {
 
 	&del_att($elt,$att,"\"$att_val\" is the default value for this attribute",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS;
@@ -3166,7 +3200,7 @@ foreach my $elt ($root->descendants_or_self) {
 
       if ($elt_name eq 'line' &&
 	  $att~~['x1','x2','y1','y2'] &&
-	  $att_val=~/^[-+]?0(\.0+)?$unit?$/) {
+	  $att_val == 0) {
 
 	&del_att($elt,$att,"\"$att_val\" is the default value for this attribute",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS;
@@ -3253,7 +3287,8 @@ foreach my $elt ($root->descendants_or_self) {
 #     if ($att eq "d" &&
 # 	$args{'convert-abs-paths'} eq "yes" &&
 # 	$att_val=~ /[MZLHVCSQTA]/) {
-    if ($att eq "d" && $args{'convert-abs-paths'} eq "yes") {
+    if ($att eq "d" && $args{'convert-abs-paths'} eq "yes" &&
+	$att_val=~ /^[Mm]/) {
 
       # ПРАВИЛО РЕНДЕРИНГА: обработка команд и их параметров производится до выявления первой же ошибки (после нее путь дальше уже не отрисовывается)
 
@@ -3311,13 +3346,13 @@ foreach my $elt ($root->descendants_or_self) {
 
 	      # рассчитываем координаты
 	      if (!$d && $cmd~~['M', 'm']) {
-		($dx, $dy, $cpX, $cpY) = ($1, $2, $1, $2);
+		($dx, $dy, $cpX, $cpY) = ($1+0, $2+0, $1+0, $2+0);
 	      }
 	      elsif ($cmd~~['M', 'L', 'T']) {
-		($dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $1, $2);
+		($dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $1+0, $2+0);
 	      }
 	      else {
-		($dx, $dy, $cpX, $cpY) = ($1, $2, $cpX+$1, $cpY+$2);
+		($dx, $dy, $cpX, $cpY) = ($1+0, $2+0, $cpX+$1, $cpY+$2);
 	      }
 
 	      # округляем относительные координаты
@@ -3329,6 +3364,7 @@ foreach my $elt ($root->descendants_or_self) {
 	      # удаляем пустые сегменты 'm0,0'(кроме самой первой команды), 'l0,0' и 't0,0'
 	      if ($args{'remove-empty-segments'} eq "yes" &&
 		  $d && !$dx && !$dy) {
+		$lrcmd = "z" if ($cmd~~['M', 'm']);
 		next CYCLE_MLT;
 	      }
 
@@ -3397,10 +3433,10 @@ foreach my $elt ($root->descendants_or_self) {
 	    if ($arg=~ /^($num)$/) {
 
 	      # рассчитываем координаты
-	      ($dx, $dy, $cpX) = ($1-$cpX, 0, $1) if ($cmd eq "H");
-	      ($dx, $dy, $cpX) = ($1, 0, $cpX+$1) if ($cmd eq "h");
-	      ($dx, $dy, $cpY) = (0, $1-$cpY, $1) if ($cmd eq "V");
-	      ($dx, $dy, $cpY) = (0, $1, $cpY+$1) if ($cmd eq "v");
+	      ($dx, $dy, $cpX) = ($1-$cpX, 0, $1+0) if ($cmd eq "H");
+	      ($dx, $dy, $cpX) = ($1+0, 0, $cpX+$1) if ($cmd eq "h");
+	      ($dx, $dy, $cpY) = (0, $1-$cpY, $1+0) if ($cmd eq "V");
+	      ($dx, $dy, $cpY) = (0, $1+0, $cpY+$1) if ($cmd eq "v");
 
 	      # округляем относительные координаты
 	      if ($args{'round-numbers'} eq "yes") {
@@ -3443,10 +3479,10 @@ foreach my $elt ($root->descendants_or_self) {
 
 	      # рассчитываем координаты
 	      if ($cmd~~['S', 'Q']) {
-		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY, $3, $4);
+		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY, $3+0, $4+0);
 	      }
 	      else {
-		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1, $2, $3, $4, $cpX+$3, $cpY+$4);
+		($dx1, $dy1, $dx, $dy, $cpX, $cpY) = ($1+0, $2+0, $3+0, $4+0, $cpX+$3, $cpY+$4);
 	      }
 
 	      # округляем относительные координаты
@@ -3504,6 +3540,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 	      # вычисляем координаты контрольных точек
 	      ($tcpx, $tcpy) = ($dx-$dx1,$dy-$dy1) if ($args{'convert-curves-qt'} eq "yes" && $cmd~~['Q', 'q']);
+	      ($scpx, $scpy) = ($dx-$dx1,$dy-$dy1) if ($args{'convert-curves-cs'} eq "yes" && $cmd~~['S', 's']);
 
 	      # задаем последнюю команду новых данных
 	      $cmd~~['S', 's'] ? ($lrcmd = "s") : ($lrcmd = "q");
@@ -3532,11 +3569,11 @@ foreach my $elt ($root->descendants_or_self) {
 	      # рассчитываем координаты
 	      if ($cmd eq "C") {
 		($dx1, $dy1, $dx2, $dy2) = ($1-$cpX, $2-$cpY, $3-$cpX, $4-$cpY);
-		($dx, $dy, $cpX, $cpY) = ($5-$cpX, $6-$cpY, $5, $6);
+		($dx, $dy, $cpX, $cpY) = ($5-$cpX, $6-$cpY, $5+0, $6+0);
 	      }
 	      else {
-		($dx1, $dy1, $dx2, $dy2) = ($1, $2, $3, $4);
-		($dx, $dy, $cpX, $cpY) = ($5, $6, $cpX+$5, $cpY+$6);
+		($dx1, $dy1, $dx2, $dy2) = ($1+0, $2+0, $3+0, $4+0);
+		($dx, $dy, $cpX, $cpY) = ($5+0, $6+0, $cpX+$5, $cpY+$6);
 	      }
 
 	      # округляем относительные координаты
@@ -3555,12 +3592,14 @@ foreach my $elt ($root->descendants_or_self) {
 # 		print "dxy2-dx1 = ", ($dx2-$dx1), "   dx/3 = ", ($dx/3), "\n";
 # 		print "dy2-dy1 = ", ($dy2-$dy1), "   dy/3 = ", ($dy/3), "\n\n";
 # 	      }
+# 	      print "$dx1,$dy1 $dx2,$dy2 $dx,$dy\n";
 
 	      # удаляем пустые сегменты 'c0,0 0,0 0,0'
 	      if ($args{'remove-empty-segments'} eq "yes" &&
 		  !$dx1 && !$dy1 && !$dx2 && !$dy2 && !$dx && !$dy) {
 		next CYCLE_C;
 	      }
+
 
 	      # преобразовываем прямые кривые в линии
 	      if ($args{'convert-curves-lines'} eq "yes" &&
@@ -3657,17 +3696,17 @@ foreach my $elt ($root->descendants_or_self) {
 	    # если аргумент корректный
 	    if ($arg=~ /^($num)$cwsp?($num)$cwsp?($num)$cwsp(0|1)$cwsp?(0|1)$cwsp?($num)$cwsp?($num)$/) {
 
-	      ($rx, $ry, $xar, $laf, $sf) = ($1, $2, $3, $4, $5);
+	      ($rx, $ry, $xar, $laf, $sf) = ($1+0, $2+0, $3+0, $4+0, $5+0);
 
 	      # прекращаем обработку данных, если хотя бы один из радиусов дуги меньше нуля
 	      last CYCLE_D if ($rx < 0 || $ry < 0);
 
 	      # рассчитываем координаты
 	      if ($cmd eq "A") {
-		($dx, $dy, $cpX, $cpY) = ($6-$cpX, $7-$cpY, $6, $7);
+		($dx, $dy, $cpX, $cpY) = ($6-$cpX, $7-$cpY, $6+0, $7+0);
 	      }
 	      else {
-		($dx, $dy, $cpX, $cpY) = ($6, $7, $cpX+$6, $cpY+$7);
+		($dx, $dy, $cpX, $cpY) = ($6+0, $7+0, $cpX+$6, $cpY+$7);
 	      }
 
 	      # округляем относительные координаты
@@ -4114,7 +4153,7 @@ if ($args{'remove-singly-grads'} eq "yes" && $defs) {
 
     # если ссылка на другой градиент не содержится в массиве внешних ссылок и этот градиент не имеет трансформации (это исключение связано с тем, что результат рендеринга таких ссылок не однозначен у Инкскейпа и Файерфокса), то объединяем два градиента в один
     if ($xlinks{"#$link"} &&
-	!($link~~@out_link) &&
+	!($link~~@out_links) &&
 	$twig->elt_id($link) &&
 	!($twig->elt_id($link)->att('gradientTransform'))) {
 
@@ -4358,3 +4397,7 @@ __END__
 
 # максимальные параметры оптимизации у scour
 # time scour -i input.svg -o output.svg --enable-id-stripping --enable-comment-stripping --remove-metadata --strip-xml-prolog --enable-viewboxing --indent=none
+
+# File size (bytes):
+# Number of elements:
+# Number of attributes:

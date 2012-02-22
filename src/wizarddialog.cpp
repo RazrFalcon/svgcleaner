@@ -376,6 +376,7 @@ void WizardDialog::resetToDefault()
                 qobject_cast<QDoubleSpinBox *>(w)->setValue(w->accessibleDescription().toDouble());
         }
     }
+    textPresetInfo->clear();
 }
 
 void WizardDialog::resetFields()

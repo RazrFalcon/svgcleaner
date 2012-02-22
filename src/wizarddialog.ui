@@ -98,7 +98,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>6</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -945,7 +945,7 @@
                     </sizepolicy>
                    </property>
                    <property name="accessibleName">
-                    <string/>
+                    <string notr="true">std-deviation-limit</string>
                    </property>
                    <property name="text">
                     <string>if the standard deviation for the blur operation is less than:</string>
@@ -1556,8 +1556,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>496</width>
-               <height>359</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1805,7 +1805,7 @@
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_9">
                    <property name="accessibleName">
-                    <string notr="true"/>
+                    <string notr="true">dp-transfs</string>
                    </property>
                    <property name="text">
                     <string>transform attributes:</string>
@@ -1815,7 +1815,7 @@
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_10">
                    <property name="accessibleName">
-                    <string notr="true"/>
+                    <string notr="true">dp-coords</string>
                    </property>
                    <property name="text">
                     <string>coordinate attributes:</string>
@@ -1825,7 +1825,7 @@
                  <item row="2" column="0">
                   <widget class="QLabel" name="label_11">
                    <property name="accessibleName">
-                    <string notr="true"/>
+                    <string notr="true">dp-other-atts</string>
                    </property>
                    <property name="text">
                     <string>other attributes:</string>
@@ -1900,8 +1900,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>439</width>
-               <height>115</height>
+               <width>613</width>
+               <height>500</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">
@@ -1910,6 +1910,9 @@
               </property>
               <item row="0" column="0">
                <widget class="QLabel" name="label_12">
+                <property name="accessibleName">
+                 <string notr="true">pretty-print</string>
+                </property>
                 <property name="text">
                  <string>The pretty print style:</string>
                 </property>
@@ -2004,6 +2007,9 @@
               </item>
               <item row="1" column="0">
                <widget class="QLabel" name="label_13">
+                <property name="accessibleName">
+                 <string notr="true">indent</string>
+                </property>
                 <property name="text">
                  <string>The indentation for the pretty print style:</string>
                 </property>
@@ -2011,6 +2017,9 @@
               </item>
               <item row="2" column="0">
                <widget class="QLabel" name="label_14">
+                <property name="accessibleName">
+                 <string notr="true">empty-tags</string>
+                </property>
                 <property name="text">
                  <string>The empty tag display style:</string>
                 </property>
@@ -2071,6 +2080,9 @@
               </item>
               <item row="3" column="0">
                <widget class="QLabel" name="label_15">
+                <property name="accessibleName">
+                 <string notr="true">quote-char</string>
+                </property>
                 <property name="text">
                  <string>The quote character for attributes:</string>
                 </property>

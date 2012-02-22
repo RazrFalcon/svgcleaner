@@ -102,7 +102,7 @@ void WizardDialog::setupGUI()
     if (presetNum > cmbBoxPreset->count() || presetNum < 0)
         presetNum = 0;
     cmbBoxPreset->setCurrentIndex(presetNum);
-    setPreset(cmbBoxPreset->currentText());
+//    setPreset(cmbBoxPreset->currentText());
 
     loadFiles();
 
@@ -179,12 +179,10 @@ void WizardDialog::on_buttonBox_clicked(QAbstractButton *button)
             saveSettings();
             done(QDialog::Accepted);
         }
-    } else if (buttonBox->standardButton(button) == QDialogButtonBox::Cancel) {
+    } else if (buttonBox->standardButton(button) == QDialogButtonBox::Cancel)
         close();
-    } else if (buttonBox->standardButton(button) == QDialogButtonBox::Reset) {
+    else if (buttonBox->standardButton(button) == QDialogButtonBox::Reset)
         resetFields();
-        setPreset("Full");
-    }
 }
 
 ToThread WizardDialog::threadArguments()
@@ -316,10 +314,7 @@ QString WizardDialog::compressValue()
 
 void WizardDialog::setPreset(const QString &preset)
 {
-    if (preset == "Full") {
-        resetToDefault();
-        return;
-    }
+    resetToDefault();
 
     QFile inputFile;
     for (int i = 0; i < presets.count(); ++i) {
@@ -334,28 +329,62 @@ void WizardDialog::setPreset(const QString &preset)
     QStringList args = textStream.readAll().split("\n");
     inputFile.close();
 
+    textPresetInfo->clear();
     for (int i = 2; i < stackedWidget->count(); ++i) {
         foreach(QWidget *w, stackedWidget->widget(i)->findChildren<QWidget *>()) {
             foreach (QString name, args) {
-                if (w->accessibleName().contains(QString(name).remove(QRegExp("=.*")))) {
-                    args.removeOne(name); // small speedup
+                QString accName = w->accessibleName();
+                if (accName.contains(QString(name).remove(QRegExp("=.*")))
+                        && !w->inherits("QLabel")) {
                     double pos = QString(QString(name).remove(QRegExp(".*="))).toDouble();
+                    QString value;
                     if (w->inherits("QCheckBox"))
+                    {
                         qobject_cast<QCheckBox *>(w)->setChecked(false);
-                    else if (w->inherits("QComboBox"))
-                        qobject_cast<QComboBox *>(w)->setCurrentIndex(pos);
+                        value = qobject_cast<QCheckBox *>(w)->text()+": false";
+                    }
                     else if (w->inherits("QRadioButton"))
+                    {
                         qobject_cast<QRadioButton *>(w)->setChecked(true);
+                        value = qobject_cast<QRadioButton *>(w)->text()+": true";
+                    }
+                    else if (w->inherits("QComboBox"))
+                    {
+                        qobject_cast<QComboBox *>(w)->setCurrentIndex(pos);
+                        value = " "+qobject_cast<QComboBox *>(w)->currentText();
+                    }
                     else if (w->inherits("QLineEdit"))
+                    {
                         qobject_cast<QLineEdit *>(w)->setText(QString(name).remove(QRegExp(".*=")));
+                        value = " "+qobject_cast<QLineEdit *>(w)->text();
+                    }
                     else if (w->inherits("QSpinBox"))
+                    {
                         qobject_cast<QSpinBox *>(w)->setValue(pos);
+                        value = " "+QString::number(qobject_cast<QSpinBox *>(w)->value());
+                    }
                     else if (w->inherits("QDoubleSpinBox"))
+                    {
                         qobject_cast<QDoubleSpinBox *>(w)->setValue(pos);
-                }
+                        value = " "+QString::number(qobject_cast<QDoubleSpinBox *>(w)->value());
+                    }
+                    textPresetInfo->append(findLabel(accName)+value);
+                    args.removeOne(name); // small speedup
+                 }
             }
         }
     }
+}
+
+QString WizardDialog::findLabel(const QString &accessibleName)
+{
+    for (int i = 2; i < stackedWidget->count(); ++i) {
+        foreach(QLabel *lbl, stackedWidget->widget(i)->findChildren<QLabel *>()) {
+            if (lbl->accessibleName() == accessibleName)
+                return  lbl->text();
+        }
+    }
+    return QString();
 }
 
 void WizardDialog::resetToDefault()
@@ -514,7 +543,7 @@ void WizardDialog::on_btnSavePreset_clicked()
     for (int i = 2; i < stackedWidget->count(); ++i) {
     foreach(QWidget *w, stackedWidget->widget(i)->findChildren<QWidget *>()) {
         QString name = w->accessibleName();
-        if (!name.isEmpty() || w->isVisible()) {
+        if (!name.isEmpty() && w->isEnabled()) {
             if (w->inherits("QCheckBox") && !qobject_cast<QCheckBox *>(w)->isChecked())
                 textStream << name+"=no"+"\n";
             else if (w->inherits("QRadioButton") && !isDefault(w))
@@ -541,14 +570,14 @@ void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &text)
 {
     setPreset(text);
 
-    QString path = QFileInfo(settings->fileName()).absolutePath()+"/preset/";
+    QString path = QFileInfo(settings->fileName()).absolutePath()+"/presets/";
     QFile file(path+cmbBoxPreset->currentText()+".preset");
     btnRemovePreset->setVisible(file.exists());
 }
 
 void WizardDialog::on_btnRemovePreset_clicked()
 {
-    QString path = QFileInfo(settings->fileName()).absolutePath()+"/preset/";
+    QString path = QFileInfo(settings->fileName()).absolutePath()+"/presets/";
     QFile file(path+cmbBoxPreset->currentText()+".preset");
     file.remove();
     cmbBoxPreset->removeItem(cmbBoxPreset->currentIndex());

@@ -26,6 +26,7 @@ private:
     bool checkForWarnings();
     bool isDefault(QWidget *w);
     QString compressValue();
+    QString findLabel(const QString &accessibleName);
     QStringList argsLine();
     QStringList getInFiles();
     QStringList genOutFiles();

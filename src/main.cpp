@@ -1,7 +1,7 @@
 #include <QtGui/QApplication>
+#include <QLibraryInfo>
 #include <QTextCodec>
 #include <QTranslator>
-#include <QLibraryInfo>
 #include <QtDebug>
 
 #include "someutils.h"

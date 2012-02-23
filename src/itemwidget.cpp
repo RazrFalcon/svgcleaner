@@ -1,4 +1,5 @@
 #include <QIcon>
+
 #include "itemwidget.h"
 
 ItemWidget::ItemWidget(const QString &icon, QWidget *parent) :

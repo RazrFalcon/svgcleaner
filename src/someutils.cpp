@@ -1,5 +1,5 @@
-#include <QTime>
 #include <QFileInfo>
+#include <QTime>
 #include <QtDebug>
 
 #include "someutils.h"

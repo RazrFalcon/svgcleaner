@@ -3154,7 +3154,7 @@ foreach my $elt ($root->descendants_or_self) {
     if ($args{'remove-default-atts'} eq "yes") {
 
       if ($elt_name eq 'linearGradient') {
-	if (($att~~['x1','y1','y2'] && $att_val == 0) ||
+	if (($att~~['x1','y1','y2'] && $att_val eq "0") ||
 	    ($att eq "gradientUnits" && $att_val eq 'objectBoundingBox') ||
 	    ($att eq "spreadMethod" && $att_val eq 'pad')) {
 
@@ -3175,7 +3175,7 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       if ($elt_name eq 'pattern') {
-	if (($att~~['x','y'] && $att_val == 0) ||
+	if (($att~~['x','y'] && $att_val eq "0") ||
 	    ($att eq "patternUnits" && $att_val eq 'objectBoundingBox') ||
 	    ($att eq "patternContentUnits" && $att_val eq 'userSpaceOnUse')) {
 
@@ -3185,14 +3185,14 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       if ($elt_name~~['rect','use'] &&
-	  $att~~['x','y'] && $att_val == 0) {
+	  $att~~['x','y'] && $att_val eq "0") {
 
 	&del_att($elt,$att,"\"$att_val\" is the default value for this attribute",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS;
       }
 
       if ($elt_name~~['circle','ellipse'] &&
-	  $att~~['cx','cy'] && $att_val == 0) {
+	  $att~~['cx','cy'] && $att_val eq "0") {
 
 	&del_att($elt,$att,"\"$att_val\" is the default value for this attribute",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS;
@@ -3200,7 +3200,7 @@ foreach my $elt ($root->descendants_or_self) {
 
       if ($elt_name eq 'line' &&
 	  $att~~['x1','x2','y1','y2'] &&
-	  $att_val == 0) {
+	  $att_val eq "0") {
 
 	&del_att($elt,$att,"\"$att_val\" is the default value for this attribute",$i,$elt_name,$elt_id);
 	next CYCLE_ATTS;

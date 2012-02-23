@@ -35,9 +35,10 @@ void IconsWidget::setPaths(const QString &pathIn,const QString &pathOut,const bo
     repaint();
 }
 
-void IconsWidget::setCrashed(bool flag)
+void IconsWidget::setError(const QString &text)
 {
-    crashed = flag;
+    crashed = true;
+    errText = text;
     repaint();
 }
 
@@ -79,6 +80,7 @@ void IconsWidget::showToolTip()
     QPoint cursPos = mapFromGlobal(curs.pos());
     if (rect().contains(cursPos)) {
         toolTip->show();
+        this->setFocus();
     }
 }
 
@@ -117,7 +119,7 @@ void IconsWidget::paintEvent(QPaintEvent *)
     QPainter painter(this);
     if (crashed) {
         painter.setPen(QPen(Qt::red));
-        painter.drawText(rect(),Qt::AlignCenter,tr("Crashed"));
+        painter.drawText(rect(),Qt::AlignCenter,errText);
         return;
     }
 
@@ -147,4 +149,9 @@ void IconsWidget::mousePressEvent(QMouseEvent *event)
         QDesktopServices::openUrl(QUrl(inpath));
     else
         QDesktopServices::openUrl(QUrl(outpath));
+}
+
+void IconsWidget::focusOutEvent(QFocusEvent *)
+{
+    toolTip->hide();
 }

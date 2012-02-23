@@ -6,8 +6,8 @@
 #include <QTime>
 #include <QSettings>
 
-#include "cleanerthread.h"
 #include "arguments.h"
+#include "cleanerthread.h"
 #include "ui_mainwindow.h"
 
 class MainWindow : public QMainWindow, private Ui::MainWindow

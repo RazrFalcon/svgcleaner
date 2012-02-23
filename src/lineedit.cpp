@@ -21,6 +21,8 @@ void LineEdit::setValue(const int &value)
 {
     lbl->setText(QString(tr("%1 files")).arg(value));
     QFontMetrics fm(QFont().defaultFamily());
-    setStyleSheet(QString("padding-left: %1px;").arg(fm.width(lbl->text())+6));
-    lbl->setFixedWidth(fm.width(lbl->text())+8);
+//    setStyleSheet(QString("padding-left: %1px;").arg(fm.width(lbl->text())+6));
+//    lbl->setFixedWidth(fm.width(lbl->text())+8);
+    setStyleSheet(QString("padding-left: %1px;").arg(fm.boundingRect(lbl->text()).width()));
+    lbl->setFixedWidth(fm.boundingRect(lbl->text()).width()+8);
 }

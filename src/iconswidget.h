@@ -10,7 +10,7 @@ class IconsWidget : public QWidget
 
 public:
     explicit IconsWidget(QWidget *parent = 0);
-    void setCrashed(bool flag);
+    void setError(const QString &text);
     void setPaths(const QString &pathIn, const QString &pathOut, const bool compare);
 
 private:
@@ -21,6 +21,7 @@ private:
     QPixmap mainPix;
     QString inpath;
     QString outpath;
+    QString errText;
     void makeToolTip();
     void renderSvg(const QString path, QPainter *painter, QRect rect);
     
@@ -33,6 +34,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *);
     void mousePressEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *);
+    void focusOutEvent(QFocusEvent *);
 };
 
 #endif // ICONSWIDGET_H

@@ -1,10 +1,10 @@
-#include <QWheelEvent>
 #include <QKeyEvent>
-#include <QShortcut>
-#include <QThread>
 #include <QMenu>
 #include <QMessageBox>
+#include <QShortcut>
 #include <QtDebug>
+#include <QThread>
+#include <QWheelEvent>
 
 #include "aboutdialog.h"
 #include "cleanerthread.h"
@@ -170,11 +170,11 @@ void MainWindow::progress(SVGInfo info)
     startNext();
 
     itemList.append(info);
-    if (info.crashed)
+    if (!info.errString.isEmpty())
         lblICrashed->setText(QString::number(lblICrashed->text().toInt()+1));
     else {
-        inputSize += info.sizes[SVGInfo::INPUT];
-        outputSize += info.sizes[SVGInfo::OUTPUT];
+        inputSize += info.inSize;
+        outputSize += info.outSize;
         if (info.compress > compressMax && info.compress < 100) compressMax = info.compress;
         if (info.compress < compressMin && info.compress > 0)   compressMin = info.compress;
         if (info.time > timeMax) timeMax = info.time;
@@ -330,9 +330,9 @@ int sortValue;
 bool caseInsensitiveLessThan(SVGInfo &s1, SVGInfo &s2)
 {
     if (sortValue == 0)
-        return s1.paths.last().toLower() < s2.paths.last().toLower();
+        return s1.outPath.toLower() < s2.outPath.toLower();
     else if (sortValue == 1)
-        return s1.sizes.last() < s2.sizes.last();
+        return s1.outSize < s2.outSize;
     else if (sortValue == 2)
         return s1.compress > s2.compress;
     else if (sortValue == 3)
@@ -341,7 +341,7 @@ bool caseInsensitiveLessThan(SVGInfo &s1, SVGInfo &s2)
         return s1.elemFinal < s2.elemFinal;
     else if (sortValue == 5)
         return s1.time < s2.time;
-    return s1.paths.last().toLower() < s2.paths.last().toLower();
+    return s1.outPath.toLower() < s2.outPath.toLower();
 }
 
 void MainWindow::sortingChanged(int value)

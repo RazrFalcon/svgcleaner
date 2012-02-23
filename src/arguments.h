@@ -18,16 +18,17 @@ struct ToThread
 
 struct SVGInfo
 {
-    enum {INPUT,OUTPUT};
     float compress;
-    int time;
-    QStringList paths;
-    QList<int> sizes;
-    int elemInitial;
-    int elemFinal;
-    int attrInitial;
     int attrFinal;
-    bool crashed;
+    int attrInitial;
+    int elemFinal;
+    int elemInitial;
+    int inSize;
+    int outSize;
+    int time;
+    QString errString;
+    QString inPath;
+    QString outPath;
 };
 
 #endif // ARGUMENTS_H

@@ -25,6 +25,7 @@ private:
     QString currentOut;
     QString outSVG;
     QString scriptOutput;
+    QString scriptErrors;
     QTime cleaningTime;
     ToThread arguments;
     int findValue(const QString &text);

@@ -20,13 +20,17 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
     cleaningTime = QTime::currentTime();
 
     scriptOutput.clear();
+    scriptErrors.clear();
     outSVG = QString(outFile).replace("svgz","svg");
     currentIn = inFile;
     currentOut = outFile;
 
     QDir().mkpath(QFileInfo(outFile).absolutePath());
-    if (QFileInfo(inFile).suffix() == "svg")
+    if (QFileInfo(inFile).suffix() == "svg") {
+        if (inFile != outFile)
+            QFile(outSVG).remove();
         QFile().copy(inFile,outSVG);
+    }
     else
         unzip(inFile);
 
@@ -65,6 +69,7 @@ void CleanerThread::readyReadError()
         emit criticalError(tr("You have to install XML-Twig."));
     else
         qDebug()<<error<<"in file"<<currentIn;
+    scriptErrors += error;
 }
 
 void CleanerThread::finished(int)
@@ -88,7 +93,8 @@ void CleanerThread::finished(int)
 SVGInfo CleanerThread::info()
 {
     SVGInfo info;
-    info.paths<<currentIn<<currentOut;
+    info.inPath = currentIn;
+    info.outPath = currentOut;
     info.elemInitial = findValue("The initial number of elements is");
     info.elemFinal = findValue("The final number of elements is");
     info.attrInitial = findValue("The initial number of attributes is");
@@ -99,11 +105,11 @@ SVGInfo CleanerThread::info()
         && QFileInfo(currentIn).suffix() == "svgz")
         || (currentIn == currentOut)) {
 
-        info.sizes<<findValue("The initial file size is");
+        info.inSize = findValue("The initial file size is");
         info.compress = ((float)QFileInfo(currentOut).size()
                                /findValue("The initial file size is"))*100;
     } else {
-        info.sizes<<QFileInfo(currentIn).size();
+        info.inSize = QFileInfo(currentIn).size();
         info.compress = ((float)QFileInfo(currentOut).size()
                                /QFileInfo(currentIn).size())*100;
     }
@@ -112,10 +118,17 @@ SVGInfo CleanerThread::info()
     else if (info.compress < 0)
         info.compress = 0;
 
-    info.sizes<<QFileInfo(currentOut).size();
+    info.outSize = QFileInfo(currentOut).size();
 
     info.time = cleaningTime.elapsed();
-    info.crashed = scriptOutput.isEmpty(); // true - mean crash
+
+    info.errString = "";
+    if (scriptOutput.isEmpty())
+        info.errString = "Crashed";
+    if (scriptErrors.contains("It's a not well-formed SVG file!"))
+        info.errString = tr("It's a not well-formed\nSVG file!");
+    if (scriptErrors.contains("This file doesn't need cleaning!"))
+        info.errString = tr("This file doesn't\nneed cleaning!");
 
     if (arguments.args.contains("--quiet=no"))
         qDebug()<<scriptOutput;

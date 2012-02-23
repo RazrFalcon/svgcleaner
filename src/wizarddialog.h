@@ -2,8 +2,8 @@
 #define WIZARDDIALOG_H
 
 #include <QDialog>
-#include <QSettings>
 #include <QFileInfoList>
+#include <QSettings>
 
 #include "arguments.h"
 #include "ui_wizarddialog.h"

@@ -153,5 +153,5 @@ void IconsWidget::mousePressEvent(QMouseEvent *event)
 
 void IconsWidget::focusOutEvent(QFocusEvent *)
 {
-    toolTip->hide();
+//    toolTip->hide();
 }

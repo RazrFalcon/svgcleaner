@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>593</width>
-    <height>560</height>
+    <height>591</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -672,8 +672,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>546</width>
-               <height>453</height>
+               <width>563</width>
+               <height>464</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -751,7 +751,7 @@
                  <string notr="true">remove-ns-elts</string>
                 </property>
                 <property name="text">
-                 <string>Remove namespaced elements</string>
+                 <string>Remove elements from namespaces by the following graphics editors:</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -779,7 +779,7 @@
                     <string notr="true">remove-inkscape-elts</string>
                    </property>
                    <property name="text">
-                    <string>Remove Inkscape elements</string>
+                    <string>Inkscape</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -792,7 +792,7 @@
                     <string notr="true">remove-sodipodi-elts</string>
                    </property>
                    <property name="text">
-                    <string>Remove Sodipodi elements</string>
+                    <string>Sodipodi</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -805,7 +805,7 @@
                     <string notr="true">remove-ai-elts</string>
                    </property>
                    <property name="text">
-                    <string>Remove Adobe Illustrator elements</string>
+                    <string>Adobe Illustrator</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -818,7 +818,7 @@
                     <string notr="true">remove-cdr-elts</string>
                    </property>
                    <property name="text">
-                    <string>Remove Corel Draw elements</string>
+                    <string>Corel Draw</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -831,7 +831,7 @@
                     <string notr="true">remove-msvisio-elts</string>
                    </property>
                    <property name="text">
-                    <string>Remove Microsoft Visio elements</string>
+                    <string>Microsoft Visio</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -855,6 +855,19 @@
                </widget>
               </item>
               <item>
+               <widget class="QCheckBox" name="checkBox_12">
+                <property name="accessibleName">
+                 <string notr="true">remove-empty-conts</string>
+                </property>
+                <property name="text">
+                 <string>Remove empty container elements</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QCheckBox" name="checkBox_11">
                 <property name="accessibleName">
                  <string notr="true">collapse-groups</string>
@@ -868,25 +881,12 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_12">
-                <property name="accessibleName">
-                 <string notr="true">remove-empty-groups</string>
-                </property>
-                <property name="text">
-                 <string>Remove empty groups</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="checkBox_14">
                 <property name="accessibleName">
                  <string notr="true">remove-dupl-defs</string>
                 </property>
                 <property name="text">
-                 <string>Remove duplicated elements inside the defs section</string>
+                 <string>Remove duplicated definitions</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -952,7 +952,7 @@
                     <string notr="true">std-deviation-limit</string>
                    </property>
                    <property name="text">
-                    <string>if the standard deviation for the blur operation is less than:</string>
+                    <string>if their standard deviation is less than:</string>
                    </property>
                   </widget>
                  </item>
@@ -1025,7 +1025,7 @@
                <x>0</x>
                <y>0</y>
                <width>563</width>
-               <height>433</height>
+               <height>464</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1162,7 +1162,7 @@
                  <string notr="true">remove-ns-atts</string>
                 </property>
                 <property name="text">
-                 <string>Remove namespaced attributes</string>
+                 <string>Remove attributes from namespaces by the following graphics editors:</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1190,7 +1190,7 @@
                     <string notr="true">remove-inkscape-atts</string>
                    </property>
                    <property name="text">
-                    <string>Remove Inkscape attributes</string>
+                    <string>Inkscape</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1203,7 +1203,7 @@
                     <string notr="true">remove-sodipodi-atts</string>
                    </property>
                    <property name="text">
-                    <string>Remove Sodipodi attributes</string>
+                    <string>Sodipodi</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1216,7 +1216,7 @@
                     <string notr="true">remove-ai-atts</string>
                    </property>
                    <property name="text">
-                    <string>Remove Adobe Illustrator attributes</string>
+                    <string>Adobe Illustrator</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1229,7 +1229,7 @@
                     <string notr="true">remove-cdr-atts</string>
                    </property>
                    <property name="text">
-                    <string>Remove Corel Draw attributes</string>
+                    <string>Corel Draw</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1242,7 +1242,7 @@
                     <string notr="true">remove-msvisio-atts</string>
                    </property>
                    <property name="text">
-                    <string>Remove Microsoft Visio attributes</string>
+                    <string>Microsoft Visio</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1284,7 +1284,7 @@
                  <string notr="true">remove-clippath-atts</string>
                 </property>
                 <property name="text">
-                 <string>Remove all unused attributes from clipPath elements</string>
+                 <string>Remove all unused properties  from children of clipPath elements</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1345,7 +1345,7 @@
                <x>0</x>
                <y>0</y>
                <width>563</width>
-               <height>433</height>
+               <height>464</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -1414,7 +1414,7 @@
                  <string notr="true">convert-abs-paths=yes</string>
                 </property>
                 <property name="text">
-                 <string>Convert absolute paths to relative ones</string>
+                 <string>Convert absolute paths into relative ones</string>
                 </property>
                 <property name="checked">
                  <bool>false</bool>
@@ -1474,7 +1474,7 @@
                     <string notr="true">convert-lines-hv</string>
                    </property>
                    <property name="text">
-                    <string>Convert lines into horizontal/vertical line segments where possible</string>
+                    <string>Convert lines into horizontal/vertical equivalents when possible</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1561,7 +1561,7 @@
                <x>0</x>
                <y>0</y>
                <width>563</width>
-               <height>433</height>
+               <height>464</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1660,7 +1660,7 @@
                  <string notr="true">convert-bs-paths</string>
                 </property>
                 <property name="text">
-                 <string>Convert basic shapes to paths</string>
+                 <string>Convert basic shapes into paths</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1673,7 +1673,7 @@
                  <string notr="true">remove-unnec-wsp</string>
                 </property>
                 <property name="text">
-                 <string>Remove unnecessary whitespace from path data and lists of points</string>
+                 <string>Remove unnecessary whitespace from lists of points</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1686,7 +1686,7 @@
                  <string notr="true">convert-transfs-matrix</string>
                 </property>
                 <property name="text">
-                 <string>Convert some transformations to the matrix</string>
+                 <string>Convert some transformations into the matrix</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1905,7 +1905,7 @@
                <x>0</x>
                <y>0</y>
                <width>563</width>
-               <height>433</height>
+               <height>464</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">
@@ -1981,7 +1981,7 @@
                  <string notr="true">2</string>
                 </property>
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <item>
                  <property name="text">
@@ -2062,13 +2062,13 @@
                  <string notr="true">indent</string>
                 </property>
                 <property name="accessibleDescription">
-                 <string notr="true">2</string>
+                 <string notr="true">1</string>
                 </property>
                 <property name="maximum">
                  <number>5</number>
                 </property>
                 <property name="value">
-                 <number>2</number>
+                 <number>1</number>
                 </property>
                </widget>
               </item>

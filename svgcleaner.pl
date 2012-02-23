@@ -20,95 +20,75 @@ use warnings;
 
 use XML::Twig;
 use Term::ANSIColor;
+use File::Basename;
+# use File::Copy;
 
 
 ####################
 # СЛУЖЕБНЫЕ ДАННЫЕ #
 ####################
 
-# ширина и высота холста
+# СКАЛЯРЫ
+
+# параметры, опеределяющие ширину и высоту холста
 my ($actual_width, $aw_unit, $actual_height, $ah_unit, $vb_width, $vb_height);
+# корневой элемент; префикс корневого элемента и первый по счету элемент defs
+my ($root, $svg_prefix, $defs);
+# id последнего удаленного элемента; ссылка на другой элемент; индекс, искользующийся для вывода результатов обработки атрибутов
+my ($del_id, $link, $i);
 
-# корневой элемент
-my $root;
-
-# хэш описания элементов секции defs
-my %desc_elts;
-
-# хэш со ссылками идентичных элементов на первый по счету из них
-my %comp_elts;
+# МАССИВЫ
 
 # массив, содержащий id удаленных элементов
 my @del_elts;
-
-# количество удаленных неиспользуемых id
-my $id_removed;
-
-# префикс корневого элемента и первый по счету элемент defs
-my ($svg_prefix, $defs);
-
-# id последнего удаленного элемента
-my $del_id;
-
 # массив, содержащий список id на которые имеются ссылки
 my @ref_id;
-
 # массив внешних ссылок
 my @out_links;
 
-# ссылка на другой элемент
-my $link;
+# ХЭШИ
 
+# хэш описания элементов секции defs
+my %desc_elts;
+# хэш со ссылками идентичных элементов на первый по счету из них
+my %comp_elts;
 # хэш с id (ключ) и списками удаленных атрибутов градиентов (значение)
 my %rem_gratts;
-
 # хэш для определения количества ссылок одних градиентов на другие
 my %xlinks;
+# хэш с префиксами пространств имен
+my %ns_pfs;
 
-# индекс, искользующийся для вывода результатов обработки атрибутов
-my $i;
+# ШАБЛОНЫ
 
 # шаблон числа с плавающей запятой
 my $fpnum = qr/[-+]?\d*\.?\d+/;
-
 # шаблон числа в экспоненциальном формате 
 my $scinum = qr/[-+]?\d*\.?\d+[eE][-+]?\d+/;
-
 # шаблон всех чисел (обычных и в экспоненциальном формате)
-# my $num = qr/$scinum|$fpnum/;
 my $exp = qr/[eE][+-]?\d+/;
 my $fract_const = qr/\d*\.\d+|\d+\./;
 my $fp_const = qr/$fract_const$exp?|\d+$exp/;
 my $num = qr/[+-]?$fp_const|[+-]?\d+/;
 my $flag = qr/0|1/;
-
 # шаблон едениц измерения
 my $unit = qr/px|pt|pc|mm|cm|m|in|ft|em|ex|%/;
-
 # шаблон разделителя comma-wsp
 my $cwsp = qr/\s+,?\s*|,\s*/;
-
 # шаблон трансформации translate
 my $translate = qr/translate\s*\(\s*($num)$cwsp?($num)?\s*\)/;
-
 # шаблон трансформации scale
 my $scale = qr/scale\s*\(\s*($num)$cwsp?($num)?\s*\)/;
-
 # шаблон трансформации skewX
 my $skewX = qr/skewX\s*\(\s*($num)\s*\)/;
-
 # шаблон трансформации skewY
 my $skewY = qr/skewY\s*\(\s*($num)\s*\)/;
-
 # шаблон трансформации rotate_a
 my $rotate_a = qr/rotate\s*\(\s*($num)\s*\)/;
-
 # шаблон трансформации rotate_axy
 my $rotate_axy = qr/rotate\s*\(\s*($num)$cwsp($num)$cwsp($num)\s*\)/;
-
 # шаблон трансформации rotate
 my $rotate = qr/rotate\s*\(\s*($num)$cwsp?($num)?$cwsp?($num)?\s*\)/;
-
 # шаблон трансформации matrix
 my $matrix = qr/matrix\s*\(\s*($num)$cwsp($num)$cwsp($num)$cwsp($num)$cwsp($num)$cwsp($num)\s*\)/;
 
@@ -129,7 +109,7 @@ my %arg_limits =  (
   'remove-msvisio-elts' => ['yes', 'no'],
   'remove-invisible-elts' => ['yes', 'no'],
   'collapse-groups' => ['yes', 'no'],
-  'remove-empty-groups' => ['yes', 'no'],
+  'remove-empty-conts' => ['yes', 'no'],
   'remove-dupl-defs' => ['yes', 'no'],
   'remove-singly-grads' => ['yes', 'no'],
   'remove-gaussian-blur' => ['yes', 'no'],
@@ -177,9 +157,10 @@ my %arg_limits =  (
   'empty-tags' => ['normal', 'html', 'expand'],
   'quote-char' => ['double', 'single']);
 
+# массив аргуметов, имеющих числовые значения
 my @num_args = ('std-deviation-limit','dp-transfs','dp-coords','dp-other-atts','indent');
 
-# хэш параметров очистки (по началу - дефолтные значения)
+# хэш параметров очистки (изначально содержит дефолтные значения)
 my %args =  (
   'quiet' => 'yes',
   'remove-prolog' => 'yes',
@@ -195,7 +176,7 @@ my %args =  (
   'remove-msvisio-elts' => 'yes',
   'remove-invisible-elts' => 'yes',
   'collapse-groups' => 'yes',
-  'remove-empty-groups' => 'yes',
+  'remove-empty-conts' => 'yes',
   'remove-dupl-defs' => 'yes',
   'remove-singly-grads' => 'yes',
   'remove-gaussian-blur' => 'yes',
@@ -254,6 +235,7 @@ if (grep { $in_file = $1 if $_=~/^--in-file=(.+\.svg)$/ } @ARGV) {
     if ($_=~/^--(.+)=(.+)$/) {
 
       my ($arg, $arg_val) = ($1, $2);
+
       if ($arg eq "out-file" && $arg_val=~/^(.+\.svg)$/) {
 
 	$out_file = $arg_val;
@@ -266,7 +248,11 @@ if (grep { $in_file = $1 if $_=~/^--in-file=(.+\.svg)$/ } @ARGV) {
       }
     }
   }
-  $out_file = "cleaned-".$in_file unless ($out_file);
+
+  unless ($out_file) {
+    my($in_name, $in_dir) = fileparse($in_file);
+    $out_file = $in_dir."cleaned-".$in_name;
+  }
 }
 # в противном случае прекращаем обработку
 else {
@@ -337,26 +323,27 @@ my @regular_atts = (
   'exponent','externalResourcesRequired','fill','filterRes','filterUnits','font-family','font-size',
   'font-stretch','font-style','font-variant','font-weight','format','from','fx','fy','g1','g2',
   'glyph-name','glyphRef','gradientTransform','gradientUnits','hanging','height','horiz-adv-x',
-  'horiz-origin-x','horiz-origin-y','id','ideographic','in','in2','intercept','k','k1','k2','k3','k4',
-  'kernelMatrix','kernelUnitLength','keyPoints','keySplines','keyTimes','lang','lengthAdjust',
-  'limitingConeAngle','local', 'marker',  'markerHeight','markerUnits','markerWidth','maskContentUnits',
-  'maskUnits','mathematical','max','media','method','min','mode','name','numOctaves','offset',
-  'onabort','onactivate','onbegin','onclick','onend','onerror','onfocusin','onfocusout','onload',
-  'onmousedown','onmousemove','onmouseout','onmouseover','onmouseup','onrepeat','onresize','onscroll',
-  'onunload','onzoom','operator','order','orient','orientation','origin','overline-position',
-  'overline-thickness','panose-1','path','pathLength','patternContentUnits','patternTransform',
-  'patternUnits','points','pointsAtX','pointsAtY','pointsAtZ','preserveAlpha','preserveAspectRatio',
-  'primitiveUnits','r','radius','refX','refY','rendering-intent','repeatCount','repeatDur',
-  'requiredExtensions','requiredFeatures','restart','result','rotate','rx','ry','scale','seed','slope',
-  'spacing','specularConstant','specularExponent','spreadMethod','startOffset','stdDeviation','stemh',
-  'stemv','stitchTiles','strikethrough-position','strikethrough-thickness','string','style',
-  'surfaceScale','systemLanguage','tableValues','target','targetX','targetY','textLength','title','to',
-  'transform','type','u1','u2','underline-position','underline-thickness','unicode','unicode-range',
+  'horiz-origin-x','horiz-origin-y','id','ideographic','in','in2','intercept','k','k1','k2','k3',
+  'k4','kernelMatrix','kernelUnitLength','keyPoints','keySplines','keyTimes','lang','lengthAdjust',
+  'limitingConeAngle','local', 'marker', 'markerHeight','markerUnits','markerWidth',
+  'maskContentUnits','maskUnits','mathematical','max','media','method','min','mode','name',
+  'numOctaves','offset','onabort','onactivate','onbegin','onclick','onend','onerror','onfocusin',
+  'onfocusout','onload','onmousedown','onmousemove','onmouseout','onmouseover','onmouseup',
+  'onrepeat','onresize','onscroll','onunload','onzoom','operator','order','orient','orientation',
+  'origin','overline-position','overline-thickness','panose-1','path','pathLength',
+  'patternContentUnits','patternTransform','patternUnits','points','pointsAtX','pointsAtY',
+  'pointsAtZ','preserveAlpha','preserveAspectRatio','primitiveUnits','r','radius','refX','refY',
+  'rendering-intent','repeatCount','repeatDur','requiredExtensions','requiredFeatures',
+  'restart','result','rotate','rx','ry','scale','seed','slope','spacing','specularConstant',
+  'specularExponent','spreadMethod','startOffset','stdDeviation','stemh','stemv','stitchTiles',
+  'strikethrough-position','strikethrough-thickness','string','style','surfaceScale',
+  'systemLanguage','tableValues','target','targetX','targetY','textLength','title','to','transform',
+  'type','u1','u2','underline-position','underline-thickness','unicode','unicode-range',
   'units-per-em','v-alphabetic','v-hanging','v-ideographic','v-mathematical','values','version',
-  'vert-adv-y','vert-origin-x','vert-origin-y','viewBox','viewTarget','width','widths','x','x-height',
-  'x1','x2','xChannelSelector','xlink:actuate','xlink:arcrole','xlink:href','xlink:role','xlink:show',
-  'xlink:title','xlink:type','xml:base','xml:lang','xml:space', 'xmlns','y','y1','y2','yChannelSelector',
-  'z', 'zoomAndPan');
+  'vert-adv-y','vert-origin-x','vert-origin-y','viewBox','viewTarget','width','widths','x',
+  'x-height','x1','x2','xChannelSelector','xlink:actuate','xlink:arcrole','xlink:href',
+  'xlink:role','xlink:show','xlink:title','xlink:type','xml:base','xml:lang','xml:space','xmlns',
+  'y','y1','y2','yChannelSelector','z', 'zoomAndPan');
 
 # хэш соответствия атрибутов Presentation attributes конкретным типам элементов
 my %pres_atts = (
@@ -648,9 +635,13 @@ my @style_atts = (
   'text-rendering', 'unicode-bidi', 'visibility', 'word-spacing', 'writing-mode');
 
 # массив элементов, которые должны находиться внутри элемента defs
-my @defs_elts = (
+my @def_elts = (
   'altGlyphDef','clipPath','cursor','filter','linearGradient',
   'marker','mask','pattern','radialGradient','symbol');
+
+# массив элементов-контейнеров
+my @cont_elts = (
+ 'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch',  'symbol');
 
 # хэш дефолтных значений атрибутов
 my %default_atts = (
@@ -735,9 +726,6 @@ my %ns_links = (
   'http://purl.org/dc/elements/1.1/' => 'metadata',
   'http://creativecommons.org/ns#' => 'metadata',
   'http://www.w3.org/1999/02/22-rdf-syntax-ns#' => 'metadata');
-
-# хэш с префиксами пространств имен
-my %ns_pfs;
 
 # массив текстовых атрибутов
 my @text_atts = (
@@ -1586,7 +1574,7 @@ foreach my $elt ($root->descendants_or_self) {
   }
 
   # если элемент должен находиться внутри элемента defs, но находится вне его
-  if ($elt_name ~~ @defs_elts &&
+  if ($elt_name ~~ @def_elts &&
       !$elt->parent('defs')) {
 
     # создаем элемент defs, если его не существует
@@ -2039,17 +2027,17 @@ foreach my $elt ($root->descendants) {
   } # удаление невидимых элементов
 
 
-  # удаление пустых групп (элементов g, которые не имеют дочерних элементов)
-  if ($elt_name eq "g" &&
-      $args{'remove-empty-groups'} eq "yes") {
+  # удаление пустых элементов-контейнеров (в т.ч и групп)
+  if ($elt_name ~~ @cont_elts &&
+      $args{'remove-empty-conts'} eq "yes") {
 
-    # если группа не имеет дочерних элементов
+    # если контейнер не имеет дочерних элементов
     unless ($elt->children) {
 
-      &del_elt($elt,$elt_name,$elt_id,"it's an empty group");
+      &del_elt($elt,$elt_name,$elt_id,"it's an empty container element");
       next CYCLE_ELTS;
     }
-    # или если группа имеет дочерние элементы и все они также являются группами
+    # или если контейнер имеет дочерние элементы и все они являются группами
     elsif ($elt->children &&
 	   $elt->all_children_are('g')) {
 
@@ -2061,7 +2049,7 @@ foreach my $elt ($root->descendants) {
       # удаляем основную группу, если она стала пустой
       unless ($elt->children) {
 
-	&del_elt($elt,$elt_name,$elt_id,"it's an empty group");
+	&del_elt($elt,$elt_name,$elt_id,"it's an empty container element");
 	next CYCLE_ELTS;
       }
     }
@@ -2132,10 +2120,8 @@ foreach my $elt ($root->descendants) {
       }
 
       # если одно из значений атрибутов rx и ry равно нулю, то удаляем эти атрибуты
-#       if ((defined $rx && $rx=~ /^-|^\+?0(\.0+)?$/) ||
-# 	  (defined $ry && $ry=~ /^-|^\+?0(\.0+)?$/)) {
-      if ((defined $rx && $rx == 0) ||
-	  (defined $ry && $ry == 0)) {
+      if ((defined $rx && $rx eq "0") ||
+	  (defined $ry && $ry eq "0")) {
 	$elt->del_att('rx');
 	$elt->del_att('ry');
       }
@@ -2451,15 +2437,10 @@ if ($args{'remove-unused-defs'} eq "yes" && $defs && @ref_id) {
     }
   }
 }
-elsif ($args{'remove-unused-defs'} eq "yes" && $defs && !@ref_id) {
-
-  $root->first_child('defs')->delete;
-  undef $defs;
-}
 
 
 # удаляем пустую секцию defs
-if ($args{'remove-empty-groups'} eq "yes" &&
+if ($args{'remove-empty-conts'} eq "yes" &&
     $defs && !$defs->children) {
 
   my $elt_id = $defs->id; $elt_id = "none" unless ($elt_id);
@@ -3284,9 +3265,6 @@ foreach my $elt ($root->descendants_or_self) {
 
 
     # преобразование абсолютных координат в относительные в атрибуте d
-#     if ($att eq "d" &&
-# 	$args{'convert-abs-paths'} eq "yes" &&
-# 	$att_val=~ /[MZLHVCSQTA]/) {
     if ($att eq "d" && $args{'convert-abs-paths'} eq "yes" &&
 	$att_val=~ /^[Mm]/) {
 
@@ -3317,14 +3295,16 @@ foreach my $elt ($root->descendants_or_self) {
 	  ($cpX, $cpY) = ($lmX, $lmY);
 
 	  # ФОРМИРУЕМ НОВЫЕ ДАННЫЕ ПУТИ
+	  ($args{'remove-uwsp-path'} eq "yes") ?
+	  ($d = $d."z") : ($d = $d."z ");
 	  # с удалением лишних пробелов
-	  if ($args{'remove-uwsp-path'} eq "yes") {
-	    $d = $d."z";
-	  }
+# 	  if ($args{'remove-uwsp-path'} eq "yes") {
+# 	    $d = $d."z";
+# 	  }
 	  # без удаления лишних пробелов
-	  else {
-	    $d = $d."z ";
-	  }
+# 	  else {
+# 	    $d = $d."z ";
+# 	  }
 	  $lrcmd = "z";
 	}
 
@@ -4201,14 +4181,14 @@ if ($args{'remove-singly-grads'} eq "yes" && $defs) {
 
 # разгруппировываем группу, если элемент g не содержит атрибутов или содержит только атрибут id, который не входит в список использующихся id
 if ($args{'collapse-groups'} eq "yes" ||
-    $args{'remove-empty-groups'} eq "yes") {
+    $args{'remove-empty-conts'} eq "yes") {
 
   foreach my $elt ($root->get_xpath('//g')) {
 
     my $elt_id = $elt->id;
 
     # удаляем пустые группы
-    if ($args{'remove-empty-groups'} eq "yes") {
+    if ($args{'remove-empty-conts'} eq "yes") {
 
       # удаляем пустую группу, если она не содержит дочерних элементов
       $elt->delete unless ($elt->children);
@@ -4252,7 +4232,7 @@ if ($args{'collapse-groups'} eq "yes" ||
 if ($args{'sort-defs'} eq "yes" && 
     $root->children('defs')) {
 
-  foreach my $defs_elt (@defs_elts) {
+  foreach my $defs_elt (@def_elts) {
     if ($defs_elt eq "linearGradient") {
       foreach ($defs->get_xpath('//linearGradient[not @xlink:href]')) {
 	$_->move(last_child => $defs);

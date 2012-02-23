@@ -53,7 +53,6 @@ private slots:
     void prepareStart();
     void progress(SVGInfo);
     void sortingChanged(int value);
-    void threadsCountChanged();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

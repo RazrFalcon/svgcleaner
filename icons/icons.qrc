@@ -1,10 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>cpu.svgz</file>
         <file>svgcleaner.svgz</file>
         <file>attributes.svgz</file>
         <file>elements.svgz</file>
-        <file>files.svgz</file>
         <file>open.svgz</file>
         <file>optimization.svgz</file>
         <file>output.svgz</file>
@@ -17,5 +15,6 @@
         <file>thumbs-on.svgz</file>
         <file>pause.svgz</file>
         <file>paths.svgz</file>
+        <file>main.svgz</file>
     </qresource>
 </RCC>

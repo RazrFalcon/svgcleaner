@@ -24,7 +24,6 @@ MainWindow::MainWindow(QWidget *parent) :
     actionStart->setIcon(QIcon(":/start.svgz"));
     actionPause->setIcon(QIcon(":/pause.svgz"));
     actionStop->setIcon(QIcon(":/stop.svgz"));
-    actionThreads->setIcon(QIcon(":/cpu.svgz"));
     actionInfo->setIcon(QIcon(":/information.svgz"));
     scrollArea->installEventFilter(this);
     progressBar->hide();
@@ -50,21 +49,6 @@ MainWindow::MainWindow(QWidget *parent) :
     cmbSort->setEnabled(false);
     connect(cmbSort,SIGNAL(currentIndexChanged(int)),this,SLOT(sortingChanged(int)));
     toolBar->addWidget(cmbSort);
-
-    // setup threads menu
-    int threadCount = settings->value("threadCount",QThread::idealThreadCount()).toInt();
-    QMenu *menu = new QMenu(this);
-    QActionGroup *group = new QActionGroup(actionThreads);
-    for (int i = 1; i < QThread::idealThreadCount()+1; ++i) {
-        QAction *action = new QAction(QString::number(i),group);
-        action->setCheckable(true);
-        connect(action,SIGNAL(triggered()),this,SLOT(threadsCountChanged()));
-        if (i == threadCount)
-            action->setChecked(true);
-    }
-    menu->addActions(group->actions());
-    actionThreads->setMenu(menu);
-    actionThreads->setToolTip(tr("Threads selected: ")+QString::number(threadCount));
 
     actionCompareView->setChecked(settings->value("compareView",true).toBool());
     on_actionCompareView_triggered();
@@ -107,19 +91,13 @@ void MainWindow::on_actionStart_triggered()
         actionStart->setVisible(false);
     }
 
-    int threadCount = settings->value("threadCount",QThread::idealThreadCount()).toInt();
-    if (arguments.inputFiles.count() < threadCount)
-        threadCount = arguments.inputFiles.count();
-
-    if (position == arguments.inputFiles.count())
-        return;
-
     qDebug()<<"start cleaning using:"<<arguments.cleanerPath;
     if (!arguments.args.isEmpty()) {
         qDebug()<<"with keys:";
         foreach (QString key, arguments.args)
             qDebug()<<key;
     }
+    int threadCount = settings->value("Wizard/threadCount",QThread::idealThreadCount()).toInt();
     for (int i = 0; i < threadCount; ++i) {
         QThread *thread = new QThread(this);
         CleanerThread *cleaner = new CleanerThread(arguments);
@@ -276,7 +254,6 @@ void MainWindow::enableButtons(bool value)
     actionPause->setVisible(!value);
     actionStop->setEnabled(!value);
     actionWizard->setEnabled(value);
-    actionThreads->setEnabled(value);
     actionInfo->setEnabled(value);
     cmbSort->setEnabled(value);
     progressBar->setVisible(!value);
@@ -295,13 +272,6 @@ void MainWindow::on_itemScroll_valueChanged(int value)
 {
     foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
         item->refill(itemList.at(value++),actionCompareView->isChecked());
-}
-
-void MainWindow::threadsCountChanged()
-{
-    QAction *action = qobject_cast<QAction *>(sender());
-    settings->setValue("threadCount",action->text());
-    actionThreads->setToolTip(tr("Threads selected: ")+action->text());
 }
 
 void MainWindow::on_actionCompareView_triggered()

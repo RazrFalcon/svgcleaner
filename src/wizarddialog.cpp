@@ -3,8 +3,9 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QScrollBar>
-#include <QtDebug>
+#include <QThread>
 #include <QWheelEvent>
+#include <QtDebug>
 
 #include "itemwidget.h"
 #include "someutils.h"
@@ -35,13 +36,27 @@ void WizardDialog::loadSettings()
     lineEditPrefix->setText(settings->value("Wizard/prefix").toString());
     lineEditSuffix->setText(settings->value("Wizard/suffix","_cleaned").toString());
 
-    chBoxFullLog->setChecked(settings->value("Wizard/fullLog",false).toBool());
     gBoxCompress->setChecked(settings->value("Wizard/compress",true).toBool());
     cmbBoxCompress->setCurrentIndex(settings->value("Wizard/compressLevel",4).toInt());
     if (settings->value("Wizard/compressType",true).toBool())
         rBtnSaveSuffix->setChecked(true);
     else
         rBtnCompressAll->setChecked(true);
+
+    loadPresets();
+    int presetNum = settings->value("Wizard/preset",0).toInt();
+    if (presetNum > cmbBoxPreset->count() || presetNum < 0)
+        presetNum = 0;
+    cmbBoxPreset->setCurrentIndex(presetNum);
+
+    loadFiles();
+
+    // threading
+    int threadCount = settings->value("Wizard/threadCount",QThread::idealThreadCount()).toInt();
+    if (fileList.count() < threadCount)
+        threadCount = fileList.count();
+    spinBoxThreads->setValue(threadCount);
+    spinBoxThreads->setMaximum(QThread::idealThreadCount());
 }
 
 void WizardDialog::setupGUI()
@@ -74,7 +89,7 @@ void WizardDialog::setupGUI()
 
     // list of all pages in wizard
     QStringList pageList;
-    pageList<<tr("Files")
+    pageList<<tr("Main")
             <<tr("Presets")
             <<tr("Elements")
             <<tr("Attributes")
@@ -82,7 +97,7 @@ void WizardDialog::setupGUI()
             <<tr("Optimization")
             <<tr("Output");
     QStringList pageListNotTr;
-    pageListNotTr<<"files"<<"presets"<<"elements"<<"attributes"<<"paths"
+    pageListNotTr<<"main"<<"presets"<<"elements"<<"attributes"<<"paths"
                  <<"optimization"<<"output";
     // create icons for pages in "tabbar", which is QListWidget
     for (int i = 0; i < pageList.count(); ++i) {
@@ -98,29 +113,18 @@ void WizardDialog::setupGUI()
     listWidget->setCurrentRow(0);
     listWidget->installEventFilter(this);
 
-    loadPresets();
-    int presetNum = settings->value("Wizard/preset",0).toInt();
-    if (presetNum > cmbBoxPreset->count() || presetNum < 0)
-        presetNum = 0;
-    cmbBoxPreset->setCurrentIndex(presetNum);
-//    setPreset(cmbBoxPreset->currentText());
-
-    loadFiles();
-
-    //! replace this icons with smaller
     // setup icons
     btnOpenInDir->setIcon(QIcon(":/open.svgz"));
     btnOpenOutDir->setIcon(QIcon(":/open.svgz"));
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
-
-    // beta
-    chBoxLastSettings->hide();
+    listWidget->setFocus();
 }
 
 void WizardDialog::radioSelected()
 {
     frameOutDir->setVisible(radioBtn1->isChecked());
     frameRename->setVisible(radioBtn2->isChecked());
+    lblOverwrite->setVisible(radioBtn3->isChecked());
     QRadioButton *rBtn = static_cast<QRadioButton *>(sender());
     settings->setValue("Wizard/type",rBtn->accessibleName());
 }
@@ -138,8 +142,8 @@ void WizardDialog::loadPresets()
     presets.clear();
     presets += QDir("presets").entryInfoList(QStringList("*.preset"));
     presets += QDir("/usr/share/svgcleaner/presets/")
-               .entryInfoList(QStringList("*.preset"));
-    presets += QDir(QDir::homePath()+"/.config/svgcleaner/presets/")
+               .entryInfoList(QStringList("*.preset")); // Linux only. On Windows return nothing.
+    presets += QDir(QFileInfo(settings->fileName()).absolutePath()+"/presets/")
                .entryInfoList(QStringList("*.preset"));
     for (int i = 0; i < presets.count(); ++i)
         cmbBoxPreset->addItem(presets.at(i).baseName());
@@ -171,6 +175,14 @@ void WizardDialog::changePage(QListWidgetItem *current, QListWidgetItem *previou
          current = previous;
     stackedWidget->setCurrentIndex(listWidget->row(current));
     groupBoxMain->setTitle(current->toolTip());
+
+    if (stackedWidget->currentIndex() == 0) {
+        gBoxCompress->setVisible(true);
+        gBoxThreads->setVisible(true);
+    } else {
+        gBoxCompress->setVisible(false);
+        gBoxThreads->setVisible(false);
+    }
 }
 
 void WizardDialog::on_buttonBox_clicked(QAbstractButton *button)
@@ -201,11 +213,6 @@ ToThread WizardDialog::threadArguments()
     threadArgs.zipPath     = SomeUtils::findFile("7z","/usr/bin/");
     threadArgs.perlPath    = SomeUtils::findFile("perl","/usr/bin/");
 #endif
-
-    // save current settings to temp preset
-    // beta
-    //on_btnSavePreset_clicked();
-
     return threadArgs;
 }
 
@@ -231,9 +238,6 @@ QStringList WizardDialog::argsLine()
         }
     }
     }
-    if (chBoxFullLog->isChecked())
-        tmpList.append("--quiet=no");
-
     return tmpList;
 }
 
@@ -310,7 +314,6 @@ QString WizardDialog::compressValue()
 
 void WizardDialog::resetFields()
 {
-    chBoxFullLog->setChecked(false);
     chBoxRecursive->setChecked(false);
     cmbBoxCompress->setCurrentIndex(4);
     cmbBoxPreset->setCurrentIndex(0);
@@ -417,15 +420,10 @@ void WizardDialog::on_btnSavePreset_clicked()
         return;
     }
 
-    if (chBoxLastSettings->isChecked()) {
-
-    }
-
     // generate path
     QString path = QFileInfo(settings->fileName()).absolutePath()+"/presets/";
     // overwrite old preset?
-    if (QFile(path+linePresetName->text()+".preset").exists()
-            /*&& linePresetName->text() != "last"*/) {
+    if (QFile(path+linePresetName->text()+".preset").exists()) {
         int ansver = QMessageBox::warning(this,tr("Warning"),
                                           tr("This preset already exists.\nOverwrite?"),
                                           QMessageBox::Yes | QMessageBox::No);
@@ -481,70 +479,74 @@ void WizardDialog::setPreset(const QString &preset)
             inputFile.setFileName(presets.at(i).absoluteFilePath());
     }
 
-    QMap<QString,double> argMap;
+    QMap<QString,QString> argMap;
     QString args;
     if (inputFile.exists() && inputFile.open(QFile::ReadOnly)) {
         QTextStream textStream(&inputFile);
         foreach (QString name, textStream.readAll().split("\n")) {
             args += QString(name).remove(QRegExp("=.*"))+"|";
             argMap.insert(QString(name).remove(QRegExp("=.*")),
-                          QString(name).remove(QRegExp(".*=")).toDouble());
+                          QString(name).remove(QRegExp(".*=")));
         }
         inputFile.close();
     } else {
-        args = "___";
+        args = "convert-abs-paths=yes";
+        argMap.insert("convert-abs-paths","yes");
     }
     QRegExp rx(args.remove(QRegExp("\\|*$")));
 
     textPresetInfo->clear();
     for (int i = 2; i < stackedWidget->count(); ++i) {
         foreach(QWidget *w, stackedWidget->widget(i)->findChildren<QWidget *>()) {
-            QString name = w->accessibleName();
-                if (w->inherits("QCheckBox"))
-                {
-                    qobject_cast<QCheckBox *>(w)->setChecked(!name.contains(rx));
+            QString name = w->accessibleName().remove(QRegExp("=.*"));
+            if (w->inherits("QCheckBox"))
+            {
+                qobject_cast<QCheckBox *>(w)->setChecked(!name.contains(rx));
+                if (!name.contains(rx) && w->isEnabled())
                     textPresetInfo->append(qobject_cast<QCheckBox *>(w)->text());
-                }
-                else if (w->inherits("QRadioButton"))
-                {
-                    qobject_cast<QRadioButton *>(w)->setChecked(name.contains(rx));
+            }
+            else if (w->inherits("QRadioButton"))
+            {
+                if (w->accessibleName() == name+"="+argMap.value(name)) {
+                    qobject_cast<QRadioButton *>(w)->toggle();
                     textPresetInfo->append(qobject_cast<QRadioButton *>(w)->text());
                 }
-                else if (w->inherits("QComboBox"))
+            }
+            else if (w->inherits("QComboBox"))
+            {
+                if (name.contains(rx))
+                    qobject_cast<QComboBox *>(w)->setCurrentIndex(argMap.value(name).toInt());
+                else
                 {
-                    if (name.contains(rx))
-                        qobject_cast<QComboBox *>(w)->setCurrentIndex(argMap.value(name));
-                    else
-                    {
-                        qobject_cast<QComboBox *>(w)->setCurrentIndex(
-                                                  w->accessibleDescription().toInt());
-                        textPresetInfo->append(findLabel(name)+" "
-                                            +QString::number(w->accessibleDescription().toInt()));
-                    }
+                    qobject_cast<QComboBox *>(w)->setCurrentIndex(
+                                              w->accessibleDescription().toInt());
+                    textPresetInfo->append(findLabel(name)+" "
+                                          +qobject_cast<QComboBox *>(w)->currentText());
                 }
-                else if (w->inherits("QSpinBox"))
+            }
+            else if (w->inherits("QSpinBox"))
+            {
+                if (name.contains(rx))
+                    qobject_cast<QSpinBox *>(w)->setValue(argMap.value(name).toInt());
+                else
                 {
-                    if (name.contains(rx))
-                        qobject_cast<QSpinBox *>(w)->setValue(argMap.value(name));
-                    else
-                    {
-                        qobject_cast<QSpinBox *>(w)->setValue(
-                                                 w->accessibleDescription().toInt());
-                        textPresetInfo->append(findLabel(name)+" "
-                                            +QString::number(w->accessibleDescription().toInt()));
-                    }
+                    qobject_cast<QSpinBox *>(w)->setValue(
+                                             w->accessibleDescription().toInt());
+                    textPresetInfo->append(findLabel(name)+" "
+                                          +QString::number(w->accessibleDescription().toInt()));
                 }
-                else if (w->inherits("QDoubleSpinBox"))
+            }
+            else if (w->inherits("QDoubleSpinBox"))
+            {
+                if (name.contains(rx))
+                    qobject_cast<QDoubleSpinBox *>(w)->setValue(argMap.value(name).toDouble());
+                else
                 {
-                    if (name.contains(rx))
-                        qobject_cast<QDoubleSpinBox *>(w)->setValue(argMap.value(name));
-                    else
-                    {
-                        qobject_cast<QDoubleSpinBox *>(w)->setValue(
-                                                       w->accessibleDescription().toDouble());
-                        textPresetInfo->append(findLabel(name)+" "
-                                        +QString::number(w->accessibleDescription().toDouble()));
-                    }
+                    qobject_cast<QDoubleSpinBox *>(w)->setValue(
+                                                   w->accessibleDescription().toDouble());
+                    textPresetInfo->append(findLabel(name)+" "
+                                          +QString::number(w->accessibleDescription().toDouble()));
+                }
             }
         }
     }
@@ -581,7 +583,10 @@ void WizardDialog::saveSettings()
     settings->setValue("Wizard/compressLevel",cmbBoxCompress->currentIndex());
     settings->setValue("Wizard/compressType",rBtnSaveSuffix->isChecked());
     settings->setValue("Wizard/preset",cmbBoxPreset->currentIndex());
-    settings->setValue("Wizard/fullLog",chBoxFullLog->isChecked());
+    if (gBoxThreads->isChecked())
+        settings->setValue("Wizard/threadCount",spinBoxThreads->value());
+    else
+        settings->setValue("Wizard/threadCount","1");
 }
 
 bool WizardDialog::eventFilter(QObject *obj, QEvent *event)

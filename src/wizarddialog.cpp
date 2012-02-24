@@ -499,17 +499,20 @@ void WizardDialog::setPreset(const QString &preset)
     for (int i = 2; i < stackedWidget->count(); ++i) {
         foreach(QWidget *w, stackedWidget->widget(i)->findChildren<QWidget *>()) {
             QString name = w->accessibleName().remove(QRegExp("=.*"));
+            QString line;
+            if (w->parentWidget()->accessibleName() == "parent") // need for spacing
+                line += "    ";
             if (w->inherits("QCheckBox"))
             {
                 qobject_cast<QCheckBox *>(w)->setChecked(!name.contains(rx));
                 if (!name.contains(rx) && w->isEnabled())
-                    textPresetInfo->append(qobject_cast<QCheckBox *>(w)->text());
+                    line += qobject_cast<QCheckBox *>(w)->text();
             }
             else if (w->inherits("QRadioButton"))
             {
                 if (w->accessibleName() == name+"="+argMap.value(name)) {
                     qobject_cast<QRadioButton *>(w)->toggle();
-                    textPresetInfo->append(qobject_cast<QRadioButton *>(w)->text());
+                    line += qobject_cast<QRadioButton *>(w)->text();
                 }
             }
             else if (w->inherits("QComboBox"))
@@ -520,8 +523,7 @@ void WizardDialog::setPreset(const QString &preset)
                 {
                     qobject_cast<QComboBox *>(w)->setCurrentIndex(
                                               w->accessibleDescription().toInt());
-                    textPresetInfo->append(findLabel(name)+" "
-                                          +qobject_cast<QComboBox *>(w)->currentText());
+                    line += findLabel(name)+" "+qobject_cast<QComboBox *>(w)->currentText();
                 }
             }
             else if (w->inherits("QSpinBox"))
@@ -532,8 +534,8 @@ void WizardDialog::setPreset(const QString &preset)
                 {
                     qobject_cast<QSpinBox *>(w)->setValue(
                                              w->accessibleDescription().toInt());
-                    textPresetInfo->append(findLabel(name)+" "
-                                          +QString::number(w->accessibleDescription().toInt()));
+                    line += findLabel(name)+" "
+                            +QString::number(w->accessibleDescription().toInt());
                 }
             }
             else if (w->inherits("QDoubleSpinBox"))
@@ -544,10 +546,13 @@ void WizardDialog::setPreset(const QString &preset)
                 {
                     qobject_cast<QDoubleSpinBox *>(w)->setValue(
                                                    w->accessibleDescription().toDouble());
-                    textPresetInfo->append(findLabel(name)+" "
-                                          +QString::number(w->accessibleDescription().toDouble()));
+                    line += findLabel(name)+" "
+                            +QString::number(w->accessibleDescription().toDouble());
                 }
             }
+//            qDebug()<<line;
+            if (!QString(line).remove(" ").isEmpty())
+                textPresetInfo->append(line);
         }
     }
     textPresetInfo->verticalScrollBar()->setValue(0);

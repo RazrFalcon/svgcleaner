@@ -131,7 +131,7 @@ void WizardDialog::radioSelected()
 
 void WizardDialog::createExample()
 {
-    lblExample->setText(tr("Example: ")+lineEditPrefix->text()
+    lblExample->setText(tr("For example: ")+lineEditPrefix->text()
                        +tr("filename" )+lineEditSuffix->text()+".svg");
 }
 
@@ -495,6 +495,9 @@ void WizardDialog::setPreset(const QString &preset)
     }
     QRegExp rx(args.remove(QRegExp("\\|*$")));
 
+    if (args.contains("convert-abs-paths=yes"))
+        radioBtnConvertPaths->toggle();
+
     textPresetInfo->clear();
     for (int i = 2; i < stackedWidget->count(); ++i) {
         foreach(QWidget *w, stackedWidget->widget(i)->findChildren<QWidget *>()) {
@@ -505,7 +508,7 @@ void WizardDialog::setPreset(const QString &preset)
             if (w->inherits("QCheckBox"))
             {
                 qobject_cast<QCheckBox *>(w)->setChecked(!name.contains(rx));
-                if (!name.contains(rx) && w->isEnabled())
+                if (!name.contains(rx))
                     line += qobject_cast<QCheckBox *>(w)->text();
             }
             else if (w->inherits("QRadioButton"))
@@ -550,8 +553,7 @@ void WizardDialog::setPreset(const QString &preset)
                             +QString::number(w->accessibleDescription().toDouble());
                 }
             }
-//            qDebug()<<line;
-            if (!QString(line).remove(" ").isEmpty())
+            if (!QString(line).remove(" ").isEmpty() && w->isEnabled())
                 textPresetInfo->append(line);
         }
     }

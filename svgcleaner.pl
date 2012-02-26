@@ -643,6 +643,11 @@ my @def_elts = (
 my @cont_elts = (
  'a', 'defs', 'glyph', 'g', 'marker', 'mask', 'missing-glyph', 'pattern', 'svg', 'switch',  'symbol');
 
+# массив элементов, для которых значения атрибутов x и y по умолчанию равны нулю
+my @zero_xy = (
+  'cursor','fePointLight','feSpotLight','foreignObject','image',
+  'pattern','rect','svg','text','use');
+
 # хэш дефолтных значений атрибутов
 my %default_atts = (
   'baseline-shift' => 'baseline',
@@ -3156,8 +3161,7 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       if ($elt_name eq 'pattern') {
-	if (($att~~['x','y'] && $att_val eq "0") ||
-	    ($att eq "patternUnits" && $att_val eq 'objectBoundingBox') ||
+	if (($att eq "patternUnits" && $att_val eq 'objectBoundingBox') ||
 	    ($att eq "patternContentUnits" && $att_val eq 'userSpaceOnUse')) {
 
 	  &del_att($elt,$att,"\"$att_val\" is the default value for this attribute",$i,$elt_name,$elt_id);
@@ -3165,7 +3169,7 @@ foreach my $elt ($root->descendants_or_self) {
 	}
       }
 
-      if ($elt_name~~['rect','use'] &&
+      if ($elt_name~~@zero_xy &&
 	  $att~~['x','y'] && $att_val eq "0") {
 
 	&del_att($elt,$att,"\"$att_val\" is the default value for this attribute",$i,$elt_name,$elt_id);

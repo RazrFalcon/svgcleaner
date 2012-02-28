@@ -56,7 +56,7 @@ void IconsWidget::makeToolTip()
     painter.drawRoundedRect(2,2,image.width()-4,image.height()-4,5,5);
 
     renderSvg(inpath,&painter,QRect(5,5,300,300));
-    renderSvg(inpath,&painter,QRect(315,5,300,300));
+    renderSvg(outpath,&painter,QRect(310,5,300,300));
 
     toolTip->setPixmap(mainPix);
     toolTip->setMask(mainPix.mask());
@@ -124,8 +124,8 @@ void IconsWidget::paintEvent(QPaintEvent *)
     }
 
     if (compareView) {
-        renderSvg(inpath, &painter,QRect(0,0,100,height()));
-        renderSvg(outpath,&painter,QRect(105,0,100,height()));
+        renderSvg(inpath, &painter,QRect(0,0,height(),height()));
+        renderSvg(outpath,&painter,QRect(105,0,height(),height()));
     } else {
         renderSvg(outpath,&painter,QRect(0,0,width(),height()));
     }
@@ -136,8 +136,9 @@ void IconsWidget::renderSvg(const QString path, QPainter *painter, QRect rect)
     QSvgRenderer renderer(path);
     QSize size = renderer.viewBox().size();
     size.scale(rect.width(),rect.height(),Qt::KeepAspectRatio);
-    renderer.render(painter,QRect(rect.x(),(rect.height()-size.height())/2+rect.y(),
-                                  size.width(),size.height()));
+    int border = 3;
+    renderer.render(painter,QRect(rect.x()+border,(rect.height()-size.height())/2+rect.y()+border,
+                                  size.width()-border,size.height()-border));
 }
 
 void IconsWidget::mousePressEvent(QMouseEvent *event)

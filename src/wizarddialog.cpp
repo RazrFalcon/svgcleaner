@@ -52,11 +52,10 @@ void WizardDialog::loadSettings()
     loadFiles();
 
     // threading
-    int threadCount = settings->value("Wizard/threadCount",QThread::idealThreadCount()).toInt();
-    if (fileList.count() < threadCount)
-        threadCount = fileList.count();
-    spinBoxThreads->setValue(threadCount);
+    spinBoxThreads->setValue(settings->value("Wizard/threadCount",
+                                             QThread::idealThreadCount()).toInt());
     spinBoxThreads->setMaximum(QThread::idealThreadCount());
+    gBoxThreads->setChecked(settings->value("Wizard/threadingEnabled",true).toBool());
 }
 
 void WizardDialog::setupGUI()
@@ -201,10 +200,10 @@ void WizardDialog::on_buttonBox_clicked(QAbstractButton *button)
 ToThread WizardDialog::threadArguments()
 {
     ToThread threadArgs;
-    threadArgs.args = argsLine();
-    threadArgs.inputFiles = getInFiles();
+    threadArgs.args        = argsLine();
+    threadArgs.inputFiles  = getInFiles();
     threadArgs.outputFiles = genOutFiles();
-    threadArgs.level = compressValue();
+    threadArgs.level       = compressValue();
     threadArgs.cleanerPath = SomeUtils::findFile("svgcleaner.pl","/usr/bin/");
 #ifdef Q_OS_WIN
     threadArgs.zipPath     = SomeUtils::findFile("7za.exe","");
@@ -590,10 +589,8 @@ void WizardDialog::saveSettings()
     settings->setValue("Wizard/compressLevel",cmbBoxCompress->currentIndex());
     settings->setValue("Wizard/compressType",rBtnSaveSuffix->isChecked());
     settings->setValue("Wizard/preset",cmbBoxPreset->currentIndex());
-    if (gBoxThreads->isChecked())
-        settings->setValue("Wizard/threadCount",spinBoxThreads->value());
-    else
-        settings->setValue("Wizard/threadCount","1");
+    settings->setValue("Wizard/threadCount",spinBoxThreads->value());
+    settings->setValue("Wizard/threadingEnabled",gBoxThreads->isChecked());
 }
 
 bool WizardDialog::eventFilter(QObject *obj, QEvent *event)

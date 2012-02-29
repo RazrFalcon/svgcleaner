@@ -97,7 +97,14 @@ void MainWindow::on_actionStart_triggered()
         foreach (QString key, arguments.args)
             qDebug()<<key;
     }
-    int threadCount = settings->value("Wizard/threadCount",QThread::idealThreadCount()).toInt();
+
+    int threadCount = 1;
+    if (settings->value("Wizard/threadingEnabled",true).toBool()) {
+        threadCount = settings->value("Wizard/threadCount",QThread::idealThreadCount()).toInt();
+        if (threadCount > arguments.inputFiles.count())
+            threadCount = arguments.inputFiles.count();
+    }
+
     for (int i = 0; i < threadCount; ++i) {
         QThread *thread = new QThread(this);
         CleanerThread *cleaner = new CleanerThread(arguments);

@@ -2,12 +2,12 @@ SVG Cleaner depends on:
 - Qt >=4.6
 - Perl
 - XML-Twig
-- p7zip
+- 7zip
 
 For Ubuntu you can use this ppa:
 ppa:svg-cleaner-team/svgcleaner
 
-For windows you can use our installer hosted on github:
+For Windows(XP,Vista,7) you can use our installer hosted on github:
 https://github.com/RazrFalcon/SVGCleaner/downloads
 
 To compile from source:

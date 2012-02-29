@@ -304,7 +304,7 @@ void MainWindow::on_actionInfo_triggered()
 }
 
 int sortValue;
-bool caseInsensitiveLessThan(SVGInfo &s1, SVGInfo &s2)
+bool customSort(SVGInfo &s1, SVGInfo &s2)
 {
     if (sortValue == 0)
         return s1.outPath.toLower() < s2.outPath.toLower();
@@ -326,7 +326,7 @@ void MainWindow::sortingChanged(int value)
     if (itemList.isEmpty())
         return;
     sortValue = value;
-    qSort(itemList.begin(),itemList.end(),caseInsensitiveLessThan);
+    qSort(itemList.begin(),itemList.end(),customSort);
     int i = itemScroll->value();
     foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
         item->refill(itemList.at(i++),actionCompareView->isChecked());

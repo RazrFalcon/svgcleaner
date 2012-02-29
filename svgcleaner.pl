@@ -711,6 +711,7 @@ my %default_atts = (
 my %ns_links = (
   'http://www.inkscape.org/namespaces/inkscape' => 'inkscape',
   'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd' => 'sodipodi',
+  'http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd' => 'sodipodi',
   'http://ns.adobe.com/AdobeIllustrator/10.0/' => 'ai',
   'http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/' => 'ai',
   'http://ns.adobe.com/Extensibility/1.0/' => 'ai',
@@ -729,6 +730,7 @@ my %ns_links = (
   'http://product.corel.com/CGS/11/cddns/' => 'cdr',
   'http://schemas.microsoft.com/visio/2003/SVGExtensions/' => 'msvisio',
   'http://purl.org/dc/elements/1.1/' => 'metadata',
+  'http://web.resource.org/cc/' => 'metadata',
   'http://creativecommons.org/ns#' => 'metadata',
   'http://www.w3.org/1999/02/22-rdf-syntax-ns#' => 'metadata');
 
@@ -1391,15 +1393,15 @@ print colored ("\nPREPROCESSING\n\n", 'bold blue underline') if ($args{'quiet'} 
 
 # определяем ширину и высоту холста
 if ($root->att('width') && ($root->att('width'))=~/^($num)(.*)$/) {
-  ($actual_width, $aw_unit) = ($1, $2);
+  ($actual_width, $aw_unit) = ($1+0, $2);
 }
 
 if ($root->att('height') && ($root->att('height'))=~/^($num)(.*)$/) {
-  ($actual_height, $ah_unit) = ($1, $2);
+  ($actual_height, $ah_unit) = ($1+0, $2);
 }
 
 if ($root->att('viewBox')&& ($root->att('viewBox'))=~/($num)$cwsp($num)$/) {
-  ($vb_width, $vb_height) = ($1, $2);
+  ($vb_width, $vb_height) = ($1+0, $2+0);
 }
 
 if (($aw_unit && $aw_unit!~/^$unit$/) ||

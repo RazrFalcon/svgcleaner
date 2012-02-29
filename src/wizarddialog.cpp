@@ -137,13 +137,15 @@ void WizardDialog::createExample()
 void WizardDialog::loadPresets()
 {
     cmbBoxPreset->clear();
-    cmbBoxPreset->addItem("Full");
+    cmbBoxPreset->addItem("Complete");
     presets.clear();
     presets += QDir("presets").entryInfoList(QStringList("*.preset"));
     presets += QDir("/usr/share/svgcleaner/presets/")
                .entryInfoList(QStringList("*.preset")); // Linux only. On Windows return nothing.
     presets += QDir(QFileInfo(settings->fileName()).absolutePath()+"/presets/")
                .entryInfoList(QStringList("*.preset"));
+    presets += QDir("../SVGCleaner/presets/")
+               .entryInfoList(QStringList("*.preset")); // Qt Creator shadow build
     for (int i = 0; i < presets.count(); ++i)
         cmbBoxPreset->addItem(presets.at(i).baseName());
 }
@@ -504,7 +506,7 @@ void WizardDialog::setPreset(const QString &preset)
             QString line;
             if (w->parentWidget()->accessibleName() == "parent") // need for spacing
                 line += "    ";
-            if (w->inherits("QCheckBox"))
+            if (w->inherits("QCheckBox") && w->isEnabled())
             {
                 qobject_cast<QCheckBox *>(w)->setChecked(!name.contains(rx));
                 if (!name.contains(rx))

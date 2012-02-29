@@ -49,8 +49,7 @@ unix {
     interface.path      = $$PREFIX/share/svgcleaner
     interface.files    += interface.xml
     presets.path        = $$PREFIX/share/svgcleaner/presets
-    presets.files      += presets/soft.preset presets/normal.preset \
-                          presets/optimal.preset presets/vacuum-defs.preset
+    presets.files      += presets/Soft.preset presets/Normal.preset presets/Optimal.preset
     translations.path   = $$PREFIX/share/svgcleaner/translations
     translations.files += svgcleaner_cs.qm svgcleaner_ru.qm
     script.path         = $$PREFIX/bin

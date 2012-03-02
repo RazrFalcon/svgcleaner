@@ -1365,9 +1365,7 @@ my $twig = XML::Twig->new(
   discard_spaces => 1);
 
 # парсим файл
-unless ($twig->safe_parsefile($out_file)) {
-  die "It's a not well-formed SVG file!\n";
-}
+$twig->safe_parsefile($out_file) || die "It's a not well-formed SVG file!\n";
 
 # берем корневой элемент
 $root = $twig->root;
@@ -1898,8 +1896,8 @@ foreach my $elt ($root->descendants) {
   }
 
   # удаление элементов Adobe Illustrator (продолжение)
-  if ($args{'remove-ns-elts'} eq "yes" && $args{'remove-ai-elts'} eq "yes" &&
-      $elt_name eq "foreignObject" && $elt->att('requiredExtensions') &&
+  if ($elt_name eq "foreignObject" && $elt->att('requiredExtensions') &&
+      $args{'remove-ns-elts'} eq "yes" && $args{'remove-ai-elts'} eq "yes" &&
       $ns_links{($elt->att('requiredExtensions'))} eq "ai") {
 
     &del_elt($elt,$elt_name,$elt_id,"it's an Adobe Illustrator element");
@@ -2096,17 +2094,17 @@ foreach my $elt ($root->descendants) {
       ($elt->att('rx') || $elt->att('ry'))) {
 
       my $rx = $elt->att('rx');
-      $rx = &units_px($elt,'rx',$1,$2) if ($rx && $rx=~ /^\s*($num)($unit)\s*$/);
+      $rx = &units_px($elt,'rx',$1,$2) if ($rx && $rx=~ /^($num)($unit)$/);
       my $ry = $elt->att('ry');
-      $ry = &units_px($elt,'ry',$1,$2) if ($ry && $ry=~ /^\s*($num)($unit)\s*$/);
+      $ry = &units_px($elt,'ry',$1,$2) if ($ry && $ry=~ /^($num)($unit)$/);
 
       $rx = $ry if (!(defined $rx) && $ry);
       $ry = $rx if (!(defined $ry) && $rx);
 
       my $w = $elt->att('width');
-      $w = &units_px($elt,'width',$1,$2) if ($w=~ /^\s*($num)($unit)\s*$/);
+      $w = &units_px($elt,'width',$1,$2) if ($w=~ /^($num)($unit)$/);
       my $h = $elt->att('height');
-      $h = &units_px($elt,'height',$1,$2) if ($h=~ /^\s*($num)($unit)\s*$/);
+      $h = &units_px($elt,'height',$1,$2) if ($h=~ /^($num)($unit)$/);
 
       # если значение атрибута rx больше чем половина width, то устанавливаем значение rx равным половине width
       if ($rx > $w/2) {
@@ -2496,12 +2494,16 @@ if ($args{'remove-dupl-defs'} eq "yes" && $defs) {
 }
 
 
-# пересчитываем координаты и удаляем атрибут gradientTransform
+# пересчитываем координаты и удаляем атрибут gradientTransform, если это возможно
 # во избежание искажений обрабатываем только следующие виды трансформаций:
-# matrix(a,0,0,d,0,0) - масштабирование
+# matrix(a,0,0,d,0,0) - пропорциональное масштабирование (a=d)
 # matrix(1,0,0,1,e,f) - перемещение
-# matrix(a,0,0,d,e,f) - масштабирование и перемещение
-# (x,y) = (ax+e, dy+f) - формула расчета новых координат
+# matrix(a,b,c,d,0,0) - вращение a=d=cos(a),b=sin(a),c=-sin(a)
+# matrix(a,0,0,d,e,f) - пропорциональное масштабирование и перемещение
+# matrix(a,b,c,d,e,f) - вращение и перемещение (a=d=cos(a),b=sin(a),c=-sin(a))
+
+# matrix(a,b,c,d,e,f) - матрица трансформации
+# новые значения (x,y) вычисляются по формуле (ax+cy+e, bx+dy+f)
 if ($args{'recalc-coords'} eq "yes" && $defs) {
 
   foreach my $elt ($defs->get_xpath('./*[@gradientTransform]')) {
@@ -2512,117 +2514,121 @@ if ($args{'recalc-coords'} eq "yes" && $defs) {
     my $grad_trans = $trans;
 
     # преобразовываем трансформацию в матрицу трансформации
-    unless ($trans=~/^$matrix$/) {
-
-      $trans = &trans_matrix($trans);
-    }
+    $trans = &trans_matrix($trans) unless ($trans=~/^$matrix$/);
+    my ($a,$b,$c,$d,$e,$f) = ($1+0,$2+0,$3+0,$4+0,$5+0,$6+0) if ($trans=~/^$matrix$/);
 
     # обрабатываем линейные градиенты
     if ($elt_name eq "linearGradient" &&
-	$trans!~/$scinum/ &&
-	$trans=~/^$matrix$/ &&
-	$2 == 0 && $3 == 0) {
+	(($a && $d && &equal($a, $d, 1) && !$b && !$c) ||
+	 ($c && $b/$c==-1 && $a==$d && $a<1 && $a>-1 &&
+	  &equal((&acos($a)), (&asin($b)), 2)))) {
 
-      (my $a,my $d,my $e,my $f) = ($1,$4,$5,$6);
+      my ($x1, $y1) = ($elt->att('x1'), $elt->att('y1'));
+      my ($x2, $y2) = ($elt->att('x2'), $elt->att('y2'));
 
-      my $x1 = $elt->att('x1');
-      my $x2 = $elt->att('x2');
-      my $y1 = $elt->att('y1');
-      my $y2 = $elt->att('y2');
+      $x1 = &units_px($elt,'x1',$1,$2) if ($x1 && $x1=~ /^($num)($unit)$/ && $2 ne "%");
+      $y1 = &units_px($elt,'y1',$1,$2) if ($y1 && $y1=~ /^($num)($unit)$/ && $2 ne "%");
+      $x2 = &units_px($elt,'x2',$1,$2) if ($x2 && $x2=~ /^($num)($unit)$/ && $2 ne "%");
+      $y2 = &units_px($elt,'y2',$1,$2) if ($y2 && $y2=~ /^($num)($unit)$/ && $2 ne "%");
 
-      $x1 = 0 unless ($x1);
-      $x2 = "100%" unless ($x2);
-      $y1 = 0 unless ($y1);
-      $y2 = 0 unless ($y2);
+      $x1 = 0 unless (defined $x1);
+      $y1 = 0 unless (defined $y1);
+      $x2 = "100%" unless (defined $x2);
+      $y2 = 0 unless (defined $y2);
 
-      $x1 = &units_px($elt,'x1',$1,$2) if ($x1=~ /^($num)($unit)$/);
-      $x2 = &units_px($elt,'x2',$1,$2) if ($x2=~ /^($num)($unit)$/);
-      $y1 = &units_px($elt,'y1',$1,$2) if ($y1=~ /^($num)($unit)$/);
-      $y2 = &units_px($elt,'y2',$1,$2) if ($y2=~ /^($num)($unit)$/);
+      if ($x1=~ /^$num$/ && $y1=~ /^$num$/ &&
+	  $x2=~ /^$num$/ && $y2=~ /^$num$/) {
 
-      (my $x11,my $x22,my $y11,my $y22) = ($a*$x1+$e,$a*$x2+$e,$d*$y1+$f,$d*$y2+$f);
+	my ($nx1, $ny1) = ($a*$x1+$c*$y1+$e, $b*$x1+$d*$y1+$f);
+	my ($nx2, $ny2) = ($a*$x2+$c*$y2+$e, $b*$x2+$d*$y2+$f);
 
-      if ($args{'quiet'} eq "no") {
+	if ($args{'quiet'} eq "no") {
 
-	print colored (" <$elt_name", 'bold');
-	print " id=$elt_id:\n";
-	print colored ("  •gradientTransform=$grad_trans\n", 'red');
-	print colored ("  •x1=$x1\n", 'red');
-	print colored ("  •x2=$x2\n", 'red');
-	print colored ("  •y1=$y1\n", 'red');
-	print colored ("  •y2=$y2\n", 'red');
+	  print colored (" <$elt_name", 'bold');
+	  print " id=$elt_id:\n";
+	  print colored ("  •gradientTransform=$grad_trans\n", 'red');
+	  print colored ("  •x1=$x1\n", 'red');
+	  print colored ("  •y1=$y1\n", 'red');
+	  print colored ("  •x2=$x2\n", 'red');
+	  print colored ("  •y2=$y2\n", 'red');
 
-	print colored ("  •x1=$x11\n", 'green');
-	print colored ("  •x2=$x22\n", 'green');
-	print colored ("  •y1=$y11\n", 'green');
-	print colored ("  •y2=$y22\n", 'green');
-	print "\n";
+	  print colored ("  •x1=$nx1\n", 'green');
+	  print colored ("  •y1=$ny1\n", 'green');
+	  print colored ("  •x2=$nx2\n", 'green');
+	  print colored ("  •y2=$ny2\n", 'green');
+	  print "\n";
+	}
+
+	$elt->set_att('x1' => $nx1);
+	$elt->set_att('x2' => $nx2);
+	$elt->set_att('y1' => $ny1);
+	$elt->set_att('y2' => $ny2);
+	$elt->del_att('gradientTransform');
+	push @{ $rem_gratts{$elt_id} }, "gradientTransform";
       }
-
-      $elt->set_att('x1' => $x11);
-      $elt->set_att('x2' => $x22);
-      $elt->set_att('y1' => $y11);
-      $elt->set_att('y2' => $y22);
-      $elt->del_att('gradientTransform');
-      push @{ $rem_gratts{$elt_id} }, "gradientTransform";
     } # linearGradient
 
     # обрабатываем радиальные градиенты
     if ($elt_name eq "radialGradient" &&
-	$trans!~/$scinum/ &&
-	$trans=~/^$matrix$/ &&
-	$2 == 0 && $3 == 0 && $1 == $4) {
+	(($a && $d && &equal($a, $d, 1) && !$b && !$c) ||
+	 ($c && $b/$c==-1 && $a==$d && $a<1 && $a>-1 &&
+	  &equal((&acos($a)), (&asin($b)), 2)))) {
 
-      (my $a,my $d,my $e,my $f) = ($1,$4,$5,$6);
-
-      my $cx = $elt->att('cx');
-      my $cy = $elt->att('cy');
-      my $fx = $elt->att('fx');
-      my $fy = $elt->att('fy');
+      my ($cx, $cy) = ($elt->att('cx'), $elt->att('cy'));
+      my ($fx, $fy) = ($elt->att('fx'), $elt->att('fy'));
       my $r = $elt->att('r');
 
-      $cx = "50%" unless ($cx);
-      $cy = "50%" unless ($cy);
-      $r = "50%" unless ($r);
+      $cx = &units_px($elt,'cx',$1,$2) if ($cx && $cx=~ /^($num)($unit)$/ && $2 ne "%");
+      $cy = &units_px($elt,'cy',$1,$2) if ($cy && $cy=~ /^($num)($unit)$/ && $2 ne "%");
+      $fx = &units_px($elt,'fx',$1,$2) if ($fx && $fx=~ /^($num)($unit)$/ && $2 ne "%");
+      $fy = &units_px($elt,'fy',$1,$2) if ($fy && $fy=~ /^($num)($unit)$/ && $2 ne "%");
+      $r = &units_px($elt,'r',$1,$2) if ($r && $r=~ /^($num)($unit)$/ && $2 ne "%");
 
-      $cx = &units_px($elt,'cx',$1,$2) if ($cx && $cx=~ /^($num)($unit)$/);
-      $cy = &units_px($elt,'cy',$1,$2) if ($cy && $cy=~ /^($num)($unit)$/);
-      $fx = &units_px($elt,'fx',$1,$2) if ($fx && $fx=~ /^($num)($unit)$/);
-      $fy = &units_px($elt,'fy',$1,$2) if ($fy && $fy=~ /^($num)($unit)$/);
-      $r = &units_px($elt,'r',$1,$2) if ($r && $r=~ /^($num)($unit)$/);
+      $cx = "50%" unless (defined $cx);
+      $cy = "50%" unless (defined $cy);
+      $r = "50%" unless (defined $r);
 
-      my $r1 = $r*$a;
-      my $cx1 = $a*$cx+$e;
-      my $fx1 = $a*$fx+$e if ($fx);
-      my $cy1 = $d*$cy+$f;
-      my $fy1 = $d*$fy+$f if ($fy);
+      if ($cx=~ /^$num$/ && $cy=~ /^$num$/ && $r=~ /^$num$/ &&
+	  (!$fx || $fx=~ /^$num$/) && (!$fy || $fy=~ /^$num$/)) {
 
-      if ($args{'quiet'} eq "no") {
+	my ($nr, $nfx, $nfy);
+	($a && !$b && !$c) ? ($nr = $r*$a) : ($nr = $r);
+	my ($ncx, $ncy) = ($a*$cx+$c*$cy+$e, $b*$cx+$d*$cy+$f);
 
-	print colored (" <$elt_name", 'bold');
-	print " id=$elt_id:\n";
-	print colored ("  •gradientTransform=$grad_trans\n", 'red');
-	print colored ("  •cx=$cx\n", 'red');
-	print colored ("  •cy=$cy\n", 'red');
-	print colored ("  •fx=$fx\n", 'red') if ($fx);
-	print colored ("  •fy=$fy\n", 'red') if ($fy);
-	print colored ("  •r=$r\n", 'red');
+	if (defined $fx || defined $fy) {
+	  $fx = $cx unless (defined $fx);
+	  $fy = $cy unless (defined $fy);
+	  ($nfx, $nfy) = ($a*$fx+$c*$fy+$e, $b*$fx+$d*$fy+$f);
+	  print "BINGO!\nnfx = $nfx, nfy = $nfy\n";
+	}
 
-	print colored ("  •cx=$cx1\n", 'green');
-	print colored ("  •cy=$cy1\n", 'green');
-	print colored ("  •fx=$fx1\n", 'green') if ($fx);
-	print colored ("  •fy=$fy1\n", 'green') if ($fy);
-	print colored ("  •r=$r1\n", 'green');
-	print "\n";
+	if ($args{'quiet'} eq "no") {
+
+	  print colored (" <$elt_name", 'bold');
+	  print " id=$elt_id:\n";
+	  print colored ("  •gradientTransform=$grad_trans\n", 'red');
+	  print colored ("  •cx=$cx\n", 'red');
+	  print colored ("  •cy=$cy\n", 'red');
+	  print colored ("  •fx=$fx\n", 'red') if (defined $fx);
+	  print colored ("  •fy=$fy\n", 'red') if (defined $fy);
+	  print colored ("  •r=$r\n", 'red');
+
+	  print colored ("  •cx=$ncx\n", 'green');
+	  print colored ("  •cy=$ncy\n", 'green');
+	  print colored ("  •fx=$nfx\n", 'green') if (defined $nfx);
+	  print colored ("  •fy=$nfy\n", 'green') if (defined $nfy);
+	  print colored ("  •r=$nr\n", 'green');
+	  print "\n";
+	}
+
+	$elt->set_att('cx' => $ncx);
+	$elt->set_att('cy' => $ncy);
+	$elt->set_att('fx' => $nfx) if (defined $nfx);
+	$elt->set_att('fy' => $nfy) if (defined $nfy);
+	$elt->set_att('r' => $nr);
+	$elt->del_att('gradientTransform');
+	push @{ $rem_gratts{$elt_id} }, "gradientTransform";
       }
-
-      $elt->set_att('cx' => $cx1);
-      $elt->set_att('cy' => $cy1);
-      $elt->set_att('fx' => $fx1) if ($fx);
-      $elt->set_att('fy' => $fy1) if ($fy);
-      $elt->set_att('r' => $r1);
-      $elt->del_att('gradientTransform');
-      push @{ $rem_gratts{$elt_id} }, "gradientTransform";
     } # radialGradient
   } #цикл
 }
@@ -2701,7 +2707,7 @@ foreach my $elt ($root->descendants_or_self) {
   CYCLE_ATTS:
   foreach my $att ($elt->att_names) {
 
-    next CYCLE_ATTS unless ($att);
+#     next CYCLE_ATTS unless ($att);
 
 
     # удаление не SVG атрибутов

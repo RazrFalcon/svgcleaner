@@ -13,8 +13,6 @@
 # IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
 
-# Опция "Recalculate coordinates and remove transform attributes when possible" иногда может приводить к искажению градиентов, причем непонятно почему (закономерности пока не выявлены).
-
 use strict;
 use warnings;
 
@@ -2518,8 +2516,12 @@ if ($args{'recalc-coords'} eq "yes" && $defs) {
     my ($a,$b,$c,$d,$e,$f) = ($1+0,$2+0,$3+0,$4+0,$5+0,$6+0) if ($trans=~/^$matrix$/);
 
     # обрабатываем линейные градиенты
+#     if ($elt_name eq "linearGradient" &&
+# 	(($a && $d && &equal($a, $d, 1) && !$b && !$c) ||
+# 	 ($c && $b/$c==-1 && $a==$d && $a<1 && $a>-1 &&
+# 	  &equal((&acos($a)), (&asin($b)), 2)))) {
     if ($elt_name eq "linearGradient" &&
-	(($a && $d && &equal($a, $d, 1) && !$b && !$c) ||
+	(($a && $d && !$b && !$c) ||
 	 ($c && $b/$c==-1 && $a==$d && $a<1 && $a>-1 &&
 	  &equal((&acos($a)), (&asin($b)), 2)))) {
 
@@ -2536,8 +2538,9 @@ if ($args{'recalc-coords'} eq "yes" && $defs) {
       $x2 = "100%" unless (defined $x2);
       $y2 = 0 unless (defined $y2);
 
-      if ($x1=~ /^$num$/ && $y1=~ /^$num$/ &&
-	  $x2=~ /^$num$/ && $y2=~ /^$num$/) {
+      if ($x1=~ /^$num$/ && $y1=~ /^$num$/ && $x2=~ /^$num$/ && $y2=~ /^$num$/ &&
+	  ((!$c && (&equal($a, $d, 1) || &equal($x1, $x2, 1) || &equal($y1, $y2, 1))) ||
+	  ($c && $a == $d) )) {
 
 	my ($nx1, $ny1) = ($a*$x1+$c*$y1+$e, $b*$x1+$d*$y1+$f);
 	my ($nx2, $ny2) = ($a*$x2+$c*$y2+$e, $b*$x2+$d*$y2+$f);
@@ -2599,7 +2602,6 @@ if ($args{'recalc-coords'} eq "yes" && $defs) {
 	  $fx = $cx unless (defined $fx);
 	  $fy = $cy unless (defined $fy);
 	  ($nfx, $nfy) = ($a*$fx+$c*$fy+$e, $b*$fx+$d*$fy+$f);
-	  print "BINGO!\nnfx = $nfx, nfy = $nfy\n";
 	}
 
 	if ($args{'quiet'} eq "no") {
@@ -3113,21 +3115,28 @@ foreach my $elt ($root->descendants_or_self) {
 
 	$att_val = "#ffffff";
       }
-      elsif ($att=~ /^color$|^fill$|^flood-color$|^stop-color$|^solid-color$/ &&
+      elsif ($att ~~ ['color', 'fill', 'flood-color', 'stop-color', 'solid-color'] &&
 	     $att_val=~ /^black$|^rgb\s*\(\s*0%?\s*,\s*0%?\s*,\s*0%?\s*\)$|^#000$/i) {
 
 	$att_val = "#000000";
       }
 
       # не удаляем дефолтное значение атрибута fill, если содержащий его элемент находится в секции defs или этим элементом является 'svg'
-      if ($att_val eq $default_atts{$att} && $att eq "fill" &&
+      if ($att eq "fill" && $att_val eq "#000000" &&
 	  (($elt->parent('defs') && $elt_name~~@keep_fill) ||
 	  $elt_name eq "svg")) {
 
 	next CYCLE_ATTS;
       }
 
-      # не удаляем дефолтное значение атрибута, если родительский элемент его элемента аналогичный атрибут
+      # не удаляем дефолтное значение атрибута stroke, если его содержит элемент-контейнер (это временное решение, в дальнейшем надо будет продумать иные варианты решения этой проблемы)
+      if ($att eq "stroke" && $att_val eq "none" &&
+	  $elt_name ~~ @cont_elts) {
+
+	next CYCLE_ATTS;
+      }
+
+      # не удаляем дефолтное значение атрибута, если предок его элемента содержит аналогичный атрибут
       if ($att!~ /opacity$/ &&
 	  $att_val eq $default_atts{$att} &&
 	  $elt->parent("[\@$att]")) {
@@ -4303,6 +4312,14 @@ if ($args{'convert-style-atts'} ne "yes") {
     $elt->set_att('style' => $style_att) if ($style_att);
   }
 }
+
+# удаление пространства имен xlink (повторная проверка)
+if ($root->att("xmlns:xlink") &&
+    !$twig->get_xpath('//*[@xlink:href or @xlink:type or @xlink:role or @xlink:arcrole or @xlink:title or @xlink:show or @xlink:actuate]')) {
+
+  $root->del_att("xmlns:xlink");
+}
+
 
 # определяем конечный размер файла
 my $size_final = length($twig->sprint);

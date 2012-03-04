@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
     QString path = SomeUtils::findFile(QString("svgcleaner_%1.qm").arg(locale),
                                        "/usr/share/svgcleaner/translations/");
 #endif
-    QTranslator *translator = new QTranslator;
-    if (translator->load(path)) {
-        app.installTranslator(translator);
+    QTranslator translator;
+    if (translator.load(path)) {
+        app.installTranslator(&translator);
         qDebug()<<"translator path:"<<path;
     }
 

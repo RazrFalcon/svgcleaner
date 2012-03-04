@@ -2379,7 +2379,6 @@ if (($args{'remove-unused-defs'} eq "yes" ||
   # цикл: обрабатываем все id из массива @ref_id
   foreach (@ref_id) {
     # цикл: обрабатываем элемент с текущим id и всех его потомков (поскольку они также могут содержать ссылки на другие элементы, как, например, дочерние элементы path у элементов clipPath или mask)
-#     print "\"$_\"\n";
     foreach my $elt ($twig->elt_id($_)->descendants_or_self) {
 
       # цикл: обрабатываем атрибуты текущего элемента
@@ -2422,7 +2421,6 @@ if ($args{'remove-unused-defs'} eq "yes" && $defs && @ref_id) {
 
     # получаем имя id обрабатываемого элемента
     my $elt_id = $elt->id;
-#     $elt_id = "none" unless ($elt_id);
 
     # удаляем элемент, если его id не содержится в массиве @ref_id (списке id на которые имеются ссылки)
     if ($elt_id && !($elt_id~~@ref_id)) {
@@ -3121,22 +3119,27 @@ foreach my $elt ($root->descendants_or_self) {
 	$att_val = "#000000";
       }
 
-      # не удаляем дефолтное значение атрибута fill, если содержащий его элемент находится в секции defs или этим элементом является 'svg'
-      if ($att eq "fill" && $att_val eq "#000000" &&
-	  (($elt->parent('defs') && $elt_name~~@keep_fill) ||
-	  $elt_name eq "svg")) {
+      # не удаляем дефолтные значения атрибутов fill и stroke, если они находятся в элементе 'svg'
+      if ((($att eq "fill" && $att_val eq "#000000") ||
+	  ($att eq "stroke" && $att_val eq "none")) &&
+	  $elt_name eq "svg") {
 
 	next CYCLE_ATTS;
       }
+      # не удаляем дефолтные значения атрибутов fill и stroke, если на элемент в котором содержатся эти атрибуты или его предков имеется ссылка из другого элемента и этот элемент или его предки содержат соответствующие атрибуты (fill или stroke)
+      elsif ((($att eq "fill" && $att_val eq "#000000") ||
+	      ($att eq "stroke" && $att_val eq "none"))) {
 
-      # не удаляем дефолтное значение атрибута stroke, если его содержит элемент-контейнер (это временное решение, в дальнейшем надо будет продумать иные варианты решения этой проблемы)
-      if ($att eq "stroke" && $att_val eq "none" &&
-	  $elt_name ~~ @cont_elts) {
-
-	next CYCLE_ATTS;
+	foreach ($elt->ancestors_or_self) {
+	  my $crt_id = $_->id;
+	  if ($crt_id && $crt_id~~@ref_id) {
+	    foreach ($root->get_xpath("//*[\@xlink:href=\"#$crt_id\"]")) {
+	      next CYCLE_ATTS if ($_->ancestors_or_self("[\@$att]")) }
+	  }
+	}
       }
 
-      # не удаляем дефолтное значение атрибута, если предок его элемента содержит аналогичный атрибут
+      # не удаляем дефолтное значение атрибута, если предок его элемента содержит аналогичный атрибут (за исключением атрибутов прозрачности)
       if ($att!~ /opacity$/ &&
 	  $att_val eq $default_atts{$att} &&
 	  $elt->parent("[\@$att]")) {
@@ -4377,7 +4380,7 @@ if ($args{'quiet'} eq "no") {
   print " The number of removed attributes is $atts_diff\n\n";
 }
 
-
+# foreach (@ref_id) {print "$_\n"}
 ####################
 # СОХРАНЕНИЕ ФАЙЛА #
 ####################

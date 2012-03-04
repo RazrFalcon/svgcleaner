@@ -44,7 +44,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -56,7 +56,7 @@
             <item>
              <widget class="QGroupBox" name="gBoxCompress">
               <property name="title">
-               <string>Enable compression</string>
+               <string>Compressing</string>
               </property>
               <property name="checkable">
                <bool>true</bool>
@@ -125,7 +125,7 @@
                   <enum>Qt::LeftToRight</enum>
                  </property>
                  <property name="text">
-                  <string>Compress all to svgz</string>
+                  <string>Compress all processed files</string>
                  </property>
                  <property name="checked">
                   <bool>false</bool>
@@ -144,7 +144,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>According to file extensions</string>
+                  <string>compress processed .svgz files only</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -160,7 +160,7 @@
             <item>
              <widget class="QGroupBox" name="gBoxThreads">
               <property name="title">
-               <string>Enable multithreading</string>
+               <string>Multithreading</string>
               </property>
               <property name="checkable">
                <bool>true</bool>
@@ -1585,8 +1585,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>496</width>
-               <height>359</height>
+               <width>563</width>
+               <height>464</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1750,7 +1750,7 @@
                  <string notr="true">round-numbers</string>
                 </property>
                 <property name="text">
-                 <string>Round numbers (number of digits after the decimal point)</string>
+                 <string>Round numbers to a given precision</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1837,7 +1837,7 @@
                     <string notr="true">dp-transfs</string>
                    </property>
                    <property name="text">
-                    <string>transform attributes:</string>
+                    <string>inside transform attributes:</string>
                    </property>
                   </widget>
                  </item>
@@ -1847,7 +1847,7 @@
                     <string notr="true">dp-coords</string>
                    </property>
                    <property name="text">
-                    <string>coordinate attributes:</string>
+                    <string>inside coordinate attributes:</string>
                    </property>
                   </widget>
                  </item>
@@ -1857,7 +1857,7 @@
                     <string notr="true">dp-other-atts</string>
                    </property>
                    <property name="text">
-                    <string>other attributes:</string>
+                    <string>inside other attributes:</string>
                    </property>
                   </widget>
                  </item>
@@ -1929,8 +1929,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>439</width>
-               <height>115</height>
+               <width>563</width>
+               <height>464</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">

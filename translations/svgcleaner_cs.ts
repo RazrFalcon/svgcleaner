@@ -7,7 +7,7 @@
     <message>
         <location filename="../src/aboutdialog.ui" line="14"/>
         <source>Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informace</translation>
     </message>
     <message>
         <source>SVG Cleaner 0.4</source>
@@ -27,12 +27,18 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size, but not add quality.&lt;br /&gt;&lt;br /&gt;SVG Cleaner could help you to clean up your SVG files from unnecessary data. It works in batch mode and basically does two things:&lt;br /&gt;- removing elements and attributes that don&apos;t contribute to the final rendering; &lt;br /&gt;- making those elements and attributes that are actually used more compact.&lt;br /&gt;The app has a lot of options for cleanup and optimization and provides multithreaded file processing on the multicore processors.&lt;br /&gt;Usually, images cleaned by SVG Cleaner may be as small as 10-60% of the original sizes.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Important! Internal image viewer in SVG Cleaner uses QtSvg for rendering SVG images. Since Qt supports only the static features of SVG 1.2 Tiny that imposes a number of restrictions on rendering of advanced features. For instance, elements such as clipPath, mask, filters etc. will not be rendered at all.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;We apologize in advance for any bugs. Please send bug reports to &lt;/span&gt;&lt;a href=&quot;svgcleanerteam@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;svgcleanerteam@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Obecně obsahují soubory SVG vytvářené vektorovými editory mnoho nepoužívaných prvků a vlastností, které jen nafukují jejich velikost, ale nezvětšují kvalitu.&lt;br /&gt;SVG Cleaner vám může pomoci soubory SVG očistit od nepotřebných dat. Pracuje v dávkovém režimu a v základě dělá dvě věci:&lt;br /&gt;- odstranění prvků a vlastností, které nepřispívají ke konečnému provedení; &lt;br /&gt;- udělání těchto prvků a vlastností, které jsou doopravdy použity kompaktněji.&lt;br /&gt;Program má hodně možností pro úklid a vyladění a poskytuje vícevláknové zpracování souboru na procesorech s více jádry.&lt;br /&gt;Obvykle jsou obrázky uklizené programem SVG Cleaner menší než 10-60% původní velikosti.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Důležité! Vnitřní prohlížeč obrázků v SVG Cleaner používá pro zpracování obrázků SVG QtSvg, protože Qt podporuje jen statické vlastnosti SVG 1.2 Tiny, které zavádí na zpracování pokročilých vlastností mnohá omezení. Například prvky jako clipPath, maska, filtry atd. nebudou zpracovány vůbec.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Předem se omlouváme za jakékoli chyby. Hlášení chyb posílejte, prosím, svgcleanerteam@gmail.com.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/aboutdialog.ui" line="114"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Dary</translation>
     </message>
     <message>
         <location filename="../src/aboutdialog.ui" line="120"/>
@@ -43,7 +49,13 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you like SVG Cleaner and it helps you in your work consider donating any amount of money to show the authors your appreciation. Moreover your donation lets us work on future versions of this program and stay it free.&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;WebMoney wallets:&lt;br /&gt;Z199089038015&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;E300018186079&lt;br /&gt;R622529560927&lt;br /&gt;U135420653690&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Pokud se vám SVG Cleaner líbí a pomáhá vám při práci, zvažte darování jakéhokoli množství peněz, abyste autorům ukázali vaše ocenění. Navíc nám vaše peníze umožní práci na budoucích verzích programu a ten zůstane zdarma.&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;WebMoney peněženka:&lt;br /&gt;Z199089038015&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;E300018186079&lt;br /&gt;R622529560927&lt;br /&gt;U135420653690&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>SVG Cleaner 0.3</source>
@@ -179,13 +191,15 @@ Licence: GNU GPL v3</translation>
         <location filename="../src/cleanerthread.cpp" line="129"/>
         <source>It&apos;s a not well-formed
 SVG file!</source>
-        <translation type="unfinished"></translation>
+        <translation>Toto není dobře udělaný
+soubor SVG!</translation>
     </message>
     <message>
         <location filename="../src/cleanerthread.cpp" line="131"/>
         <source>This file doesn&apos;t
 need cleaning!</source>
-        <translation type="unfinished"></translation>
+        <translation>Tento soubor
+nepotřebuje úklid!</translation>
     </message>
 </context>
 <context>
@@ -319,7 +333,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/mainwindow.ui" line="553"/>
         <source>Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informace</translation>
     </message>
     <message>
         <source>About</source>
@@ -369,12 +383,16 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Pause cleaning &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+R&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Pozastavit úklid &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+R&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="591"/>
         <source>Ctrl+R</source>
-        <translation type="unfinished">Ctrl+R</translation>
+        <translation>Ctrl+R</translation>
     </message>
     <message>
         <source>stop</source>
@@ -472,12 +490,12 @@ Zpracování se nyní zastaví.</translation>
     <message>
         <location filename="../src/mainwindow.cpp" line="288"/>
         <source>Compare view: on</source>
-        <translation type="unfinished"></translation>
+        <translation>Srovnávací pohled: zapnuto</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="291"/>
         <source>Compare view: off</source>
-        <translation type="unfinished"></translation>
+        <translation>Srovnávací pohled: vypnuto</translation>
     </message>
 </context>
 <context>
@@ -532,27 +550,27 @@ Zpracování se nyní zastaví.</translation>
     <message>
         <location filename="../src/thumbwidget.ui" line="125"/>
         <source>Elements:</source>
-        <translation type="unfinished">Prvky:</translation>
+        <translation>Prvky:</translation>
     </message>
     <message>
         <location filename="../src/thumbwidget.ui" line="109"/>
         <source>Attributes:</source>
-        <translation type="unfinished">Vlastnosti:</translation>
+        <translation>Vlastnosti:</translation>
     </message>
     <message>
         <location filename="../src/thumbwidget.ui" line="55"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Name:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Název:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/thumbwidget.ui" line="93"/>
         <source>Sizes:</source>
-        <translation type="unfinished"></translation>
+        <translation>Velikosti:</translation>
     </message>
     <message>
         <location filename="../src/thumbwidget.ui" line="141"/>
         <source>Processing time:</source>
-        <translation type="unfinished">Čas zpracování:</translation>
+        <translation>Čas zpracování:</translation>
     </message>
     <message>
         <source>Cleaning time:</source>
@@ -606,47 +624,47 @@ Zpracování se nyní zastaví.</translation>
     <message>
         <location filename="../src/wizarddialog.ui" line="91"/>
         <source>fastest</source>
-        <translation type="unfinished"></translation>
+        <translation>Nejrychlejší</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="96"/>
         <source>fast</source>
-        <translation type="unfinished"></translation>
+        <translation>Rychle</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="101"/>
         <source>normal</source>
-        <translation type="unfinished"></translation>
+        <translation>Obvyklý</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="106"/>
         <source>maximum</source>
-        <translation type="unfinished"></translation>
+        <translation>Nejvyšší</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="111"/>
         <source>ultra</source>
-        <translation type="unfinished"></translation>
+        <translation>Extrémní</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="128"/>
         <source>Compress all processed files</source>
-        <translation type="unfinished"></translation>
+        <translation>Zabalit všechny zpracované soubory</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="147"/>
         <source>compress processed .svgz files only</source>
-        <translation type="unfinished"></translation>
+        <translation>Zabalit pouze soubory .svgz</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="163"/>
         <source>Multithreading</source>
-        <translation type="unfinished"></translation>
+        <translation>Více vláken</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="187"/>
         <source>The number of threads:</source>
-        <translation type="unfinished"></translation>
+        <translation>Počet vláken:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="237"/>
@@ -657,7 +675,7 @@ Zpracování se nyní zastaví.</translation>
         <location filename="../src/wizarddialog.ui" line="320"/>
         <location filename="../src/wizarddialog.cpp" line="133"/>
         <source>For example: </source>
-        <translation type="unfinished"></translation>
+        <translation>Například: </translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="431"/>
@@ -667,7 +685,7 @@ Zpracování se nyní zastaví.</translation>
     <message>
         <location filename="../src/wizarddialog.ui" line="560"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#ff0000;&quot;&gt;Warning! The original files will be destroyed!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#ff0000;&quot;&gt;Varování! Původní soubory budou zničeny!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="577"/>
@@ -677,303 +695,303 @@ Zpracování se nyní zastaví.</translation>
     <message>
         <location filename="../src/wizarddialog.ui" line="602"/>
         <source>Enter preset name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zadat název přednastavení:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="696"/>
         <source>Remove prolog</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prolog</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="709"/>
         <source>Remove comments</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit poznámky</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="722"/>
         <source>Remove unused definitions</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit nepoužitá vymezení</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="735"/>
         <source>Remove non-SVG elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky ne-SVG</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="748"/>
         <source>Remove metadata elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky metadat</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="860"/>
         <source>Remove invisible elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit neviditelné prvky</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="886"/>
         <source>Collapse groups when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Složit skupiny, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="912"/>
         <source>Remove gradients that are only referenced by one other gradient</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit přechody odkazované jen jedním dalším přechodem</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="925"/>
         <source>Remove Gaussian blur filters</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit Gaussovy filtry pro rozmazání</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1054"/>
         <source>Remove the SVG language version</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit verzi jazyka SVG</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1067"/>
         <source>Remove unused namespaces</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit nepoužívané jmenné prostory</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1080"/>
         <source>Remove unreferenced IDs</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit neodkazované ID</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1123"/>
         <source>Always keep IDs that contain only letters</source>
-        <translation type="unfinished"></translation>
+        <translation>Vždy zachovat ID obsahující pouze písmena</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1139"/>
         <source>Remove non-SVG attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti ne-SVG</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1152"/>
         <source>Remove attributes that are not applicable to elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti, které se nedají použít na prvky</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1165"/>
         <source>Remove attributes with default SVG values</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti s výchozími hodnotami SVG</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1277"/>
         <source>Remove all stroke properties when there&apos;s no stroking</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit všechny vlastnosti tahů, když nejsou žádné tahy</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1290"/>
         <source>Remove all fill properties when there&apos;s no filling</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit všechny vlastnosti výplně, když nejsou žádné výplně</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1316"/>
         <source>Remove gradient coordinates when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit souřadnice přechodů, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1380"/>
         <source>Keep existing paths data</source>
-        <translation type="unfinished"></translation>
+        <translation>Zachovat data existujících cest</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1420"/>
         <location filename="../src/wizarddialog.ui" line="1476"/>
         <source>Remove unnecessary whitespace between commands and coordinates</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit nepotřebná prázdná místa mezi příkazy a souřadnicemi</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1489"/>
         <source>Remove empty line and curve segments</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prázdné čáry a části křivek</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1528"/>
         <source>Convert cubic curve segments into shorthand equivalents when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést části kubických křivek do obdoby zkratky, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1541"/>
         <source>Convert quadratic curve segments into shorthand equivalents when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést části kvadratických křivek do obdoby zkratky, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1602"/>
         <source>Convert width/height into a viewBox when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést šířku/výšku do viewBox, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1615"/>
         <source>Convert style properties into SVG attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést vlastnosti stylů do vlastností SVG</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1628"/>
         <source>Convert units to pixels</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést jednotky na pixely</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1641"/>
         <source>Convert colors to #RRGGBB format</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést barvy do formátu #RRGGBB</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1672"/>
         <source>Convert colors to #RGB format when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést barvy do formátu #RGB, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="537"/>
         <source>Search for SVG files in subfolders</source>
-        <translation type="unfinished"></translation>
+        <translation>Hledat soubory SVG v podsložkách</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1727"/>
         <source>Recalculate coordinates and remove transform attributes when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Přepočítat souřadnice a odstranit vlastnosti proměny, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1740"/>
         <source>Sort elements by name inside the defs section</source>
-        <translation type="unfinished"></translation>
+        <translation>Třídit prvky podle názvu v sekci vymezení</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="2132"/>
         <source>The pretty print style:</source>
-        <translation type="unfinished"></translation>
+        <translation>Hezký tiskový styl:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="2142"/>
         <source>The indentation for the pretty print style:</source>
-        <translation type="unfinished"></translation>
+        <translation>Odsazení pro hezký tiskový styl:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1990"/>
         <source>The empty tag display style:</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl zobrazení pro prázdnou značku:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="658"/>
         <source>Preset description:</source>
-        <translation type="unfinished"></translation>
+        <translation>Popis přednastavení:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="761"/>
         <source>Remove elements from namespaces by the following graphics editors:</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky ze jmenných prostorů pomocí následujících grafických editorů:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="792"/>
         <location filename="../src/wizarddialog.ui" line="1209"/>
         <source>Inkscape</source>
-        <translation type="unfinished"></translation>
+        <translation>Inkscape</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="805"/>
         <location filename="../src/wizarddialog.ui" line="1222"/>
         <source>Sodipodi</source>
-        <translation type="unfinished"></translation>
+        <translation>Sodipodi</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="818"/>
         <location filename="../src/wizarddialog.ui" line="1235"/>
         <source>Adobe Illustrator</source>
-        <translation type="unfinished"></translation>
+        <translation>Adobe Illustrator</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="831"/>
         <location filename="../src/wizarddialog.ui" line="1248"/>
         <source>Corel Draw</source>
-        <translation type="unfinished"></translation>
+        <translation>Corel Draw</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="844"/>
         <location filename="../src/wizarddialog.ui" line="1261"/>
         <source>Microsoft Visio</source>
-        <translation type="unfinished"></translation>
+        <translation>Microsoft Visio</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="873"/>
         <source>Remove empty container elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky prázdných kontejnerů</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="899"/>
         <source>Remove duplicated definitions</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit zdvojená vymezení</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="968"/>
         <source>if their standard deviation is less than:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokud jejich obvyklá odchylka je méně než:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1178"/>
         <source>Remove attributes from namespaces by the following graphics editors:</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti ze jmenných prostorů pomocí následujících grafických editorů:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1303"/>
         <source>Remove all unused properties  from children of clipPath elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit všechny nepoužívané vlastnosti z potomků prvků clipPath</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1439"/>
         <source>Convert absolute paths into relative ones</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést absolutní cesty na relativní</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1502"/>
         <source>Convert lines into horizontal/vertical equivalents when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést čáry na vodorovné/svislé obdoby, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1688"/>
         <source>Convert basic shapes into paths</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést základní tvary na cesty</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1701"/>
         <source>Remove unnecessary whitespace from lists of points</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit nepotřebná prázdná místa ze seznamů bodů</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1714"/>
         <source>Convert some transformations into the matrix</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést některé proměny do matice</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1753"/>
         <source>Round numbers to a given precision</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaokrouhlit čísla na zadanou přesnost</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1840"/>
         <source>inside transform attributes:</source>
-        <translation type="unfinished"></translation>
+        <translation>Uvnitř vlastností proměny:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1850"/>
         <source>inside coordinate attributes:</source>
-        <translation type="unfinished"></translation>
+        <translation>Uvnitř vlastností souřadnic:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1860"/>
         <source>inside other attributes:</source>
-        <translation type="unfinished"></translation>
+        <translation>Uvnitř jiných vlastností:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="2074"/>
         <source>The quote character for attributes:</source>
-        <translation type="unfinished"></translation>
+        <translation>Znak uvozovek pro vlastnosti:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1515"/>
         <source>Convert straight curves into lines when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést rovné křivky do čar, když je to možné</translation>
     </message>
     <message>
         <source>Save current settings as a preset:</source>
@@ -1030,7 +1048,7 @@ Zpracování se nyní zastaví.</translation>
     <message>
         <location filename="../src/wizarddialog.ui" line="59"/>
         <source>Compressing</source>
-        <translation type="unfinished"></translation>
+        <translation>Zabalení</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="365"/>
@@ -1102,37 +1120,37 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/wizarddialog.cpp" line="93"/>
         <source>Elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Prvky</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="94"/>
         <source>Attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Vlastnosti</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="96"/>
         <source>Optimization</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyladění</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="97"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Výstup</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="366"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pro tento způsob ukládání musíte nastavit předponu nebo příponu.</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="95"/>
         <source>Paths</source>
-        <translation type="unfinished"></translation>
+        <translation>Cesty</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="91"/>
         <source>Main</source>
-        <translation type="unfinished"></translation>
+        <translation>Hlavní</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="336"/>
@@ -1181,7 +1199,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/wizarddialog.cpp" line="382"/>
         <source>Selected output folder is not writable.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybraná výstupní složka není zapisovatelná.</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="420"/>

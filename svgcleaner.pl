@@ -2520,7 +2520,7 @@ if ($args{'recalc-coords'} eq "yes" && $defs) {
 # 	  &equal((&acos($a)), (&asin($b)), 2)))) {
     if ($elt_name eq "linearGradient" &&
 	(($a && $d && !$b && !$c) ||
-	 ($c && $b/$c==-1 && $a==$d && $a<1 && $a>-1 &&
+	 ($c && $b/$c==-1 && $a==$d && $a<1 && $a>-1 && $b<1 && $b>-1 &&
 	  &equal((&acos($a)), (&asin($b)), 2)))) {
 
       my ($x1, $y1) = ($elt->att('x1'), $elt->att('y1'));
@@ -2572,7 +2572,7 @@ if ($args{'recalc-coords'} eq "yes" && $defs) {
     # обрабатываем радиальные градиенты
     if ($elt_name eq "radialGradient" &&
 	(($a && $d && &equal($a, $d, 1) && !$b && !$c) ||
-	 ($c && $b/$c==-1 && $a==$d && $a<1 && $a>-1 &&
+	 ($c && $b/$c==-1 && $a==$d && $a<1 && $a>-1 && $b<1 && $b>-1 &&
 	  &equal((&acos($a)), (&asin($b)), 2)))) {
 
       my ($cx, $cy) = ($elt->att('cx'), $elt->att('cy'));
@@ -3915,7 +3915,7 @@ foreach my $elt ($root->descendants_or_self) {
 
 	# rotate - matrix(cos(a),sin(a),-sin(a),cos(a),0,0)
 	if ($e==0 && $f==0 && $c && $b/$c==-1 &&
-	    $a==$d && $a<1 && $a>-1 &&
+	    $a==$d && $a<1 && $a>-1 && $b<1 && $b>-1 &&
 	    &equal((&acos($a)), (&asin($b)), 2)) {
 
 	  my $angle = &asin($b);
@@ -4180,7 +4180,7 @@ if ($args{'remove-singly-grads'} eq "yes" && $defs) {
       while((my $att, my $att_val) = each %{$twig->elt_id($link)->atts}) {
 
 	if ($elt_name eq "linearGradient" &&
-	    $att~~@lingrad_atts &&
+	    $elt_id && $att~~@lingrad_atts &&
 	    !($att~~$rem_gratts{$elt_id}) &&
 	    !(defined $elt->att($att))) {
 
@@ -4188,7 +4188,7 @@ if ($args{'remove-singly-grads'} eq "yes" && $defs) {
 	}
 
 	if ($elt_name eq "radialGradient" &&
-	    $att~~@radgrad_atts &&
+	    $elt_id && $att~~@radgrad_atts &&
 	    !($att~~$rem_gratts{$elt_id}) &&
 	    !(defined $elt->att($att))) {
 

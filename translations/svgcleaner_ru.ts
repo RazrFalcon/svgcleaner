@@ -7,12 +7,12 @@
     <message>
         <location filename="../src/aboutdialog.ui" line="14"/>
         <source>Information</source>
-        <translation>Информация</translation>
+        <translation type="unfinished">Информация</translation>
     </message>
     <message>
         <location filename="../src/aboutdialog.ui" line="45"/>
         <source>About</source>
-        <translation>О программе</translation>
+        <translation type="unfinished">О программе</translation>
     </message>
     <message>
         <location filename="../src/aboutdialog.ui" line="51"/>
@@ -28,17 +28,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/aboutdialog.ui" line="65"/>
         <source>Authors</source>
-        <translation>Авторы</translation>
+        <translation type="unfinished">Авторы</translation>
     </message>
     <message>
         <location filename="../src/aboutdialog.ui" line="88"/>
         <source>License</source>
-        <translation>Лицензия</translation>
+        <translation type="unfinished">Лицензия</translation>
     </message>
     <message>
         <location filename="../src/aboutdialog.ui" line="114"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Поддержите проект</translation>
     </message>
     <message>
         <location filename="../src/aboutdialog.ui" line="120"/>
@@ -51,152 +51,109 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;E300018186079&lt;br /&gt;R622529560927&lt;br /&gt;U135420653690&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Batch, tunable, crossplatform SVG cleaning program.
-
-Autors:
-GUI by	   Raizner Evgeniy &lt;razrfalcon@gmail.com&gt;
-Perl script by Andrey Bayrak &lt;andrey.bayrak@gmail.com&gt;
-
-Licenses: GNU GPL v3</source>
-        <translation type="obsolete">Программа для очистки SVG файлов.
-
-Авторы:
-Интерфейс 	   Raizner Evgeniy &lt;razrfalcon@gmail.com&gt;
-Perl-скрипт   Andrey Bayrak &lt;andrey.bayrak@gmail.com&gt;
-
-Лицензия: GNU GPL v3</translation>
-    </message>
 </context>
 <context>
     <name>CleanerThread</name>
     <message>
-        <source>You must install XML/Twig.</source>
-        <translation type="obsolete">Вы должны установить XML-Twig.</translation>
-    </message>
-    <message>
-        <source>You must install XML-Twig.</source>
-        <translation type="obsolete">Вы должны установить XML-Twig.</translation>
-    </message>
-    <message>
         <location filename="../src/cleanerthread.cpp" line="69"/>
         <source>You have to install XML-Twig.</source>
-        <translation>Вы должны установить XML-Twig.</translation>
+        <translation type="unfinished">Необходимо установить модуль XML-Twig.</translation>
     </message>
     <message>
         <location filename="../src/cleanerthread.cpp" line="129"/>
         <source>It&apos;s a not well-formed
 SVG file!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Некорректный формат файла!</translation>
     </message>
     <message>
         <location filename="../src/cleanerthread.cpp" line="131"/>
         <source>This file doesn&apos;t
 need cleaning!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>in file</source>
-        <translation type="obsolete">в файле</translation>
-    </message>
-</context>
-<context>
-    <name>IconsWidget</name>
-    <message>
-        <source>Crashed</source>
-        <translation type="obsolete">Не обработано</translation>
+        <translation type="unfinished">Файл не требует чистки!</translation>
     </message>
 </context>
 <context>
     <name>LineEdit</name>
     <message>
-        <source>%1 files in</source>
-        <translation type="obsolete">%1 файлов в</translation>
-    </message>
-    <message>
         <location filename="../src/lineedit.cpp" line="22"/>
         <source>%1 files</source>
-        <translation>%1 файлов</translation>
+        <translation type="unfinished">%1 файлов</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <source>Tool Bar</source>
-        <translation type="obsolete">Панель инструментов</translation>
+        <location filename="../src/mainwindow.ui" line="94"/>
+        <source>ToolBar</source>
+        <translation type="unfinished">Панель инструментов</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="124"/>
         <source>Statistics</source>
-        <translation>Статистика</translation>
+        <translation type="unfinished">Статистика</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="354"/>
-        <source>Processing time</source>
-        <translation>Время обработки</translation>
+        <location filename="../src/mainwindow.ui" line="140"/>
+        <source>Files</source>
+        <translation type="unfinished">Файлы</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="322"/>
-        <location filename="../src/mainwindow.ui" line="360"/>
-        <source>Total:</source>
-        <translation>Полное:</translation>
+        <location filename="../src/mainwindow.ui" line="146"/>
+        <source>Total count:</source>
+        <translation type="unfinished">Общее количество:</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.ui" line="169"/>
+        <source>Cleaned:</source>
+        <translation type="unfinished">Обработано:</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.ui" line="192"/>
+        <source>Crashed:</source>
+        <translation type="unfinished">Не обработано:</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.ui" line="215"/>
+        <source>Size before:</source>
+        <translation type="unfinished">Начальный размер:</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.ui" line="225"/>
+        <source>Size after:</source>
+        <translation type="unfinished">Конечный размер:</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.ui" line="270"/>
+        <source>New file sizes</source>
+        <translation type="unfinished">Новые размеры файлов</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="276"/>
         <location filename="../src/mainwindow.ui" line="370"/>
         <source>Maximum:</source>
-        <translation>Максимальное:</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.ui" line="380"/>
-        <source>Average:</source>
-        <translation>Среднее:</translation>
+        <translation type="unfinished">Максимальный:</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="299"/>
         <location filename="../src/mainwindow.ui" line="390"/>
         <source>Minimum:</source>
-        <translation>Минимальное:</translation>
+        <translation type="unfinished">Минимальный:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="270"/>
-        <source>New file sizes</source>
-        <translation>Размеры новых файлов</translation>
+        <location filename="../src/mainwindow.ui" line="322"/>
+        <location filename="../src/mainwindow.ui" line="360"/>
+        <source>Total:</source>
+        <translation type="unfinished">Итоговый:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="140"/>
-        <source>Files</source>
-        <translation>Файлы</translation>
+        <location filename="../src/mainwindow.ui" line="354"/>
+        <source>Processing time</source>
+        <translation type="unfinished">Время обработки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="94"/>
-        <source>ToolBar</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.ui" line="146"/>
-        <source>Total count:</source>
-        <translation>Общее количество:</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.ui" line="169"/>
-        <source>Cleaned:</source>
-        <translation>Очищено:</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.ui" line="192"/>
-        <source>Crashed:</source>
-        <translation>Ошибок:</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.ui" line="215"/>
-        <source>Size before:</source>
-        <translation>Размер до:</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.ui" line="225"/>
-        <source>Size after:</source>
-        <translation>Размер после:</translation>
+        <location filename="../src/mainwindow.ui" line="380"/>
+        <source>Average:</source>
+        <translation type="unfinished">Среднее:</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="400"/>
@@ -204,7 +161,7 @@ need cleaning!</source>
         <location filename="../src/mainwindow.ui" line="426"/>
         <location filename="../src/mainwindow.ui" line="445"/>
         <source>000ms</source>
-        <translation>000мс</translation>
+        <translation type="unfinished">000мс</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="482"/>
@@ -213,16 +170,40 @@ need cleaning!</source>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Show the wizard &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.ui" line="503"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Показать мастер &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Start cleaning &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+R&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.ui" line="524"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Stop cleaning &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+S&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.ui" line="542"/>
+        <source>Threads count</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="553"/>
         <source>Information</source>
-        <translation>Информация</translation>
+        <translation type="unfinished">Информация</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.ui" line="573"/>
+        <source>Compare view</source>
+        <translation type="unfinished">Сравнение изображений</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="584"/>
@@ -239,130 +220,55 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Show wizard &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Запустить мастер &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Show wizard &lt;span style=&quot; color:#808080;&quot;&gt;Crtl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Запустить мастер &lt;span style=&quot; color:#808080;&quot;&gt;Crtl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.ui" line="503"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Start cleaning &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+R&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Запустить обработку &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+R&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.ui" line="524"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Stop cleaning &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+S&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Остановить обработку &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+S&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.ui" line="542"/>
-        <source>Threads count</source>
-        <translation>Количество потоков</translation>
-    </message>
-    <message>
-        <source>About</source>
-        <translation type="obsolete">О программе</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.ui" line="573"/>
-        <source>Compare view</source>
-        <translation>Включить сравнение</translation>
-    </message>
-    <message>
         <location filename="../src/mainwindow.cpp" line="42"/>
         <source>Sort by name</source>
-        <translation>Сортировать по имени</translation>
+        <translation type="unfinished">Сортировать по имени</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="43"/>
         <source>Sort by size</source>
-        <translation>Сортировать по размеру</translation>
+        <translation type="unfinished">Сортировать по размеру</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="44"/>
         <source>Sort by compression</source>
-        <translation>Сортировать по очистке</translation>
+        <translation type="unfinished">Сортировать по степени очистки</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="45"/>
         <source>Sort by attributes</source>
-        <translation>Сортировать по атрибутам</translation>
+        <translation type="unfinished">Сортировать по числу атрибутов</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="46"/>
         <source>Sort by elements</source>
-        <translation>Сортировать по элементам</translation>
+        <translation type="unfinished">Сортировать по числу элементов</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="47"/>
         <source>Sort by time</source>
-        <translation>Сортировать по времени</translation>
-    </message>
-    <message>
-        <source>Threads selected: </source>
-        <translation type="obsolete">Потоков выбрано:</translation>
+        <translation type="unfinished">Сортировать по времени</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="232"/>
         <source>Error</source>
-        <translation>Ошибка</translation>
+        <translation type="unfinished">Ошибка</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="233"/>
         <source>
 Processing will stop now.</source>
-        <translation>
-Обработка будет завершена.</translation>
+        <translation type="unfinished">прекращение обработки.</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="288"/>
         <source>Compare view: on</source>
-        <translation>Режим сравнения: включен</translation>
+        <translation type="unfinished">Сравнение изображений: вкл.</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="291"/>
         <source>Compare view: off</source>
-        <translation>Режим сравнения: выключен</translation>
-    </message>
-    <message>
-        <source>
-Processing will be stopped now.</source>
-        <translation type="obsolete">
-Обработка будет завершена.</translation>
+        <translation type="unfinished">сравнение изображений: выкл.</translation>
     </message>
 </context>
 <context>
@@ -370,78 +276,50 @@ Processing will be stopped now.</source>
     <message>
         <location filename="../src/someutils.cpp" line="21"/>
         <source>B</source>
-        <translation>б</translation>
+        <translation type="unfinished">Б</translation>
     </message>
     <message>
         <location filename="../src/someutils.cpp" line="21"/>
         <source>KiB</source>
-        <translation>Кб</translation>
+        <translation type="unfinished">КиБ</translation>
     </message>
     <message>
         <location filename="../src/someutils.cpp" line="21"/>
         <source>MiB</source>
-        <translation>Мб</translation>
-    </message>
-    <message>
-        <source>GiB</source>
-        <translation type="obsolete">Гб</translation>
+        <translation type="unfinished">МиБ</translation>
     </message>
     <message>
         <location filename="../src/someutils.cpp" line="31"/>
         <source>%1h %2m %3s %4ms</source>
-        <translation>%1ч %2м %3с %4мс</translation>
+        <translation type="unfinished">%1ч %2м %3с %4мс</translation>
     </message>
 </context>
 <context>
     <name>ThumbWidget</name>
     <message>
-        <source>File name:</source>
-        <translation type="obsolete">Имя файла:</translation>
-    </message>
-    <message>
-        <source>Size:</source>
-        <translation type="obsolete">Размер:</translation>
-    </message>
-    <message>
         <location filename="../src/thumbwidget.ui" line="55"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Name:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Имя:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/thumbwidget.ui" line="93"/>
         <source>Sizes:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/thumbwidget.ui" line="125"/>
-        <source>Elements:</source>
-        <translation type="unfinished">Элементов:</translation>
-    </message>
-    <message>
-        <location filename="../src/thumbwidget.ui" line="141"/>
-        <source>Processing time:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Размеры:</translation>
     </message>
     <message>
         <location filename="../src/thumbwidget.ui" line="109"/>
         <source>Attributes:</source>
-        <translation type="unfinished">Атрибутов:</translation>
+        <translation type="unfinished">Атрибуты:</translation>
     </message>
     <message>
-        <source>Cleaning time:</source>
-        <translation type="obsolete">Время очистки:</translation>
+        <location filename="../src/thumbwidget.ui" line="125"/>
+        <source>Elements:</source>
+        <translation type="unfinished">Элементы:</translation>
     </message>
     <message>
-        <source>Input file: </source>
-        <translation type="obsolete">Исходный файл:</translation>
-    </message>
-    <message>
-        <source>crashed</source>
-        <translation type="obsolete">ошибка</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style=&quot;line-height:125%&quot;&gt;Name:&lt;br/&gt;Sizes:&lt;br/&gt;Elements:&lt;br/&gt;Attributes:&lt;br/&gt;Processing time:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style=&quot;line-height:125%&quot;&gt;Имя:&lt;br/&gt;Размеры:&lt;br/&gt;Элементы:&lt;br/&gt;Атрибуты:&lt;br/&gt;Время обработки:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <location filename="../src/thumbwidget.ui" line="141"/>
+        <source>Processing time:</source>
+        <translation type="unfinished">Время обработки:</translation>
     </message>
 </context>
 <context>
@@ -449,151 +327,129 @@ Processing will be stopped now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="20"/>
         <source>Wizard - SVG Cleaner</source>
-        <translation>Мастер - SVG Cleaner</translation>
+        <translation type="unfinished">Мастер - SVG Cleaner</translation>
     </message>
     <message>
-        <source>Compress</source>
-        <translation type="obsolete">Сжатие</translation>
-    </message>
-    <message>
-        <source>Use compressor:</source>
-        <translation type="obsolete">Используемый архиватор:</translation>
+        <location filename="../src/wizarddialog.ui" line="59"/>
+        <source>Compressing</source>
+        <translation type="unfinished">Сжатие</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="74"/>
         <source>Compress level:</source>
-        <translation>Уровень сжатия:</translation>
-    </message>
-    <message>
-        <source>Compress all to svgz</source>
-        <translation type="obsolete">Сжать все в svgz</translation>
-    </message>
-    <message>
-        <source>Use input file suffix</source>
-        <translation type="obsolete">Использовать исходный суффикс</translation>
+        <translation type="unfinished">Уровень сжатия:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="91"/>
         <source>fastest</source>
-        <translation>быстрее</translation>
+        <translation type="unfinished">наибыстрейший</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="96"/>
         <source>fast</source>
-        <translation>быстро</translation>
+        <translation type="unfinished">быстрый</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="101"/>
         <source>normal</source>
-        <translation>нормально</translation>
+        <translation type="unfinished">нормальный</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="106"/>
         <source>maximum</source>
-        <translation>максимум</translation>
+        <translation type="unfinished">максимальный</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="111"/>
         <source>ultra</source>
-        <translation>ультра</translation>
+        <translation type="unfinished">ультра</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="128"/>
         <source>Compress all processed files</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Сжимать все обработанные файлы</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="147"/>
         <source>compress processed .svgz files only</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Сжимать только обработанные svgz-файлы</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="163"/>
         <source>Multithreading</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Многопоточность</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="187"/>
         <source>The number of threads:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Количество потоков:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="237"/>
         <source>Open files from the input folder and:</source>
-        <translation>Открыть файлы из исходной папки и:</translation>
-    </message>
-    <message>
-        <source>Open input folder</source>
-        <translation type="obsolete">Открыть исходную папку</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="456"/>
-        <source>Input folder:</source>
-        <translation>Исходная папка:</translation>
-    </message>
-    <message>
-        <source>Open output folder</source>
-        <translation type="obsolete">Открыть итоговую папку</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="431"/>
-        <source>Open an input folder</source>
-        <translation>Открыть исходную папку</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="499"/>
-        <source>Open an output folder</source>
-        <translation>Открыть итоговую папку</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="518"/>
-        <source>Output folder:</source>
-        <translation>Итоговая папка:</translation>
+        <translation type="unfinished">Открыть файлы из исходной папки и:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="313"/>
         <location filename="../src/wizarddialog.cpp" line="134"/>
         <source>filename</source>
-        <translation>имя</translation>
-    </message>
-    <message>
-        <source>Example: </source>
-        <translation type="obsolete">Пример:</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="327"/>
-        <source>Set prefix and suffix:</source>
-        <translation>Задайте префикс и суффикс:</translation>
-    </message>
-    <message>
-        <source>Search for SVG files in subfolders.</source>
-        <translation type="obsolete">Поиск SVG файлов в субдиректориях.</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="540"/>
-        <source>Recursive folder scanning</source>
-        <translation>Рекурсивный поиск файлов</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="352"/>
-        <source>save cleaned files into the output folder</source>
-        <translation>сохранить очищенные файлы в итоговую папку</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="59"/>
-        <source>Compressing</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">имя файла</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="320"/>
         <location filename="../src/wizarddialog.cpp" line="133"/>
         <source>For example: </source>
+        <translation type="unfinished">Например:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="327"/>
+        <source>Set prefix and suffix:</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="352"/>
+        <source>save cleaned files into the output folder</source>
+        <translation type="unfinished">сохранить очищенные файлы в итоговую папку</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="365"/>
         <source>save cleaned files into the current folder</source>
-        <translation>сохранить очищенные файлы в текущую папку</translation>
+        <translation type="unfinished">сохранить очищенные файлы в текущую папку</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="378"/>
+        <source>overwrite original files</source>
+        <translation type="unfinished">перезаписать исходные файлы</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="431"/>
+        <source>Open an input folder</source>
+        <translation type="unfinished">Открыть исходную папку</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="456"/>
+        <source>Input folder:</source>
+        <translation type="unfinished">Исходная папка:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="499"/>
+        <source>Open an output folder</source>
+        <translation type="unfinished">Открыть итоговую папку</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="518"/>
+        <source>Output folder:</source>
+        <translation type="unfinished">Итоговая папка:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="537"/>
+        <source>Search for SVG files in subfolders</source>
+        <translation type="unfinished">Поиск SVG-файлов в поддиректориях</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="540"/>
+        <source>Recursive folder scanning</source>
+        <translation type="unfinished">Поиск файлов во вложенных папках</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="560"/>
@@ -603,449 +459,403 @@ Processing will be stopped now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="577"/>
         <source>Select a preset:</source>
-        <translation>Выберите пресет:</translation>
+        <translation type="unfinished">Выберите пресет:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="602"/>
         <source>Enter preset name:</source>
-        <translation>Введите имя пресета:</translation>
+        <translation type="unfinished">Введите имя пресета:</translation>
     </message>
     <message>
-        <source>Save last settings</source>
-        <translation type="obsolete">Сохранить последние настройки</translation>
+        <location filename="../src/wizarddialog.ui" line="612"/>
+        <source>Save</source>
+        <translation type="unfinished">Сохранить</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="696"/>
-        <source>Remove prolog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="709"/>
-        <source>Remove comments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="722"/>
-        <source>Remove unused definitions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="735"/>
-        <source>Remove non-SVG elements</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="748"/>
-        <source>Remove metadata elements</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="860"/>
-        <source>Remove invisible elements</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="886"/>
-        <source>Collapse groups when possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="912"/>
-        <source>Remove gradients that are only referenced by one other gradient</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="925"/>
-        <source>Remove Gaussian blur filters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1054"/>
-        <source>Remove the SVG language version</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1067"/>
-        <source>Remove unused namespaces</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1080"/>
-        <source>Remove unreferenced IDs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1123"/>
-        <source>Always keep IDs that contain only letters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1139"/>
-        <source>Remove non-SVG attributes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1152"/>
-        <source>Remove attributes that are not applicable to elements</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1165"/>
-        <source>Remove attributes with default SVG values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1277"/>
-        <source>Remove all stroke properties when there&apos;s no stroking</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1290"/>
-        <source>Remove all fill properties when there&apos;s no filling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1316"/>
-        <source>Remove gradient coordinates when possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1380"/>
-        <source>Keep existing paths data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1420"/>
-        <location filename="../src/wizarddialog.ui" line="1476"/>
-        <source>Remove unnecessary whitespace between commands and coordinates</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1489"/>
-        <source>Remove empty line and curve segments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1528"/>
-        <source>Convert cubic curve segments into shorthand equivalents when possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1541"/>
-        <source>Convert quadratic curve segments into shorthand equivalents when possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1602"/>
-        <source>Convert width/height into a viewBox when possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1615"/>
-        <source>Convert style properties into SVG attributes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1628"/>
-        <source>Convert units to pixels</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1641"/>
-        <source>Convert colors to #RRGGBB format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1672"/>
-        <source>Convert colors to #RGB format when possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>According to file extensions</source>
-        <translation type="obsolete">В соответствии с расширениями файлов</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="537"/>
-        <source>Search for SVG files in subfolders</source>
-        <translation>Поиск SVG файлов в субдиректориях</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1727"/>
-        <source>Recalculate coordinates and remove transform attributes when possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1740"/>
-        <source>Sort elements by name inside the defs section</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="2132"/>
-        <source>The pretty print style:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="2142"/>
-        <source>The indentation for the pretty print style:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1990"/>
-        <source>The empty tag display style:</source>
-        <translation type="unfinished"></translation>
+        <location filename="../src/wizarddialog.ui" line="638"/>
+        <source>Remove</source>
+        <translation type="unfinished">Удалить</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="658"/>
         <source>Preset description:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Описание пресета:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="696"/>
+        <source>Remove prolog</source>
+        <translation type="unfinished">Удалять пролог</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="709"/>
+        <source>Remove comments</source>
+        <translation type="unfinished">Удалять комментарии</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="722"/>
+        <source>Remove unused definitions</source>
+        <translation type="unfinished">Удалять неиспользуемые определения</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="735"/>
+        <source>Remove non-SVG elements</source>
+        <translation type="unfinished">Удалять элементы не относящиеся к SVG</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="748"/>
+        <source>Remove metadata elements</source>
+        <translation type="unfinished">Удалять элементы метаданных</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="761"/>
         <source>Remove elements from namespaces by the following graphics editors:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Удалять элементы из пространств имен следующих графических редакторов:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="792"/>
         <location filename="../src/wizarddialog.ui" line="1209"/>
         <source>Inkscape</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Inkscape</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="805"/>
         <location filename="../src/wizarddialog.ui" line="1222"/>
         <source>Sodipodi</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sodipodi</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="818"/>
         <location filename="../src/wizarddialog.ui" line="1235"/>
         <source>Adobe Illustrator</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Adobe Illustrator</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="831"/>
         <location filename="../src/wizarddialog.ui" line="1248"/>
         <source>Corel Draw</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Corel Draw</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="844"/>
         <location filename="../src/wizarddialog.ui" line="1261"/>
         <source>Microsoft Visio</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Microsoft Visio</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="860"/>
+        <source>Remove invisible elements</source>
+        <translation type="unfinished">Удалять неотображаемые элементы</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="873"/>
         <source>Remove empty container elements</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Удалять пустые элементы-контейнеры</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="886"/>
+        <source>Collapse groups when possible</source>
+        <translation type="unfinished">Разгруппировывать группы, когда это возможно</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="899"/>
         <source>Remove duplicated definitions</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Удалять дублирующиеся определения</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="912"/>
+        <source>Remove gradients that are only referenced by one other gradient</source>
+        <translation type="unfinished">Удалять градиенты, которые содержат не повторяющуюся ссылку на другой градиент</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="925"/>
+        <source>Remove Gaussian blur filters</source>
+        <translation type="unfinished">Удалять фильтры размытия по Гауссу</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="968"/>
         <source>if their standard deviation is less than:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">если их стандартное отклонение меньше чем:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1054"/>
+        <source>Remove the SVG language version</source>
+        <translation type="unfinished">Удалять версию языка SVG</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1067"/>
+        <source>Remove unused namespaces</source>
+        <translation type="unfinished">Удалять неиспользуемые пространства имен</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1080"/>
+        <source>Remove unreferenced IDs</source>
+        <translation type="unfinished">Удалять неиспользуемые идентификаторы</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1123"/>
+        <source>Always keep IDs that contain only letters</source>
+        <translation type="unfinished">Всегда оставлять идентификаторы, содержащие только буквы</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1139"/>
+        <source>Remove non-SVG attributes</source>
+        <translation type="unfinished">Удалять атрибуты не относящиеся к SVG</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1152"/>
+        <source>Remove attributes that are not applicable to elements</source>
+        <translation type="unfinished">Удалять атрибуты, которые не используются элементами</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1165"/>
+        <source>Remove attributes with default SVG values</source>
+        <translation type="unfinished">Удалять атрибуты со значениями по умолчанию</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1178"/>
         <source>Remove attributes from namespaces by the following graphics editors:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Удалять атрибуты из пространств имен следующих графических редакторов:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1277"/>
+        <source>Remove all stroke properties when there&apos;s no stroking</source>
+        <translation type="unfinished">Удалять все свойства обводки, когда она отсутствует</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1290"/>
+        <source>Remove all fill properties when there&apos;s no filling</source>
+        <translation type="unfinished">Удалять все свойства заливки, когда она отсутствует</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1303"/>
         <source>Remove all unused properties  from children of clipPath elements</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Удалять все неиспользуемые свойства у потомков элементов clipPath</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1316"/>
+        <source>Remove gradient coordinates when possible</source>
+        <translation type="unfinished">Удалять координаты градиентов, когда это возможно</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1380"/>
+        <source>Keep existing paths data</source>
+        <translation type="unfinished">Оставлять существующие данные путей</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1420"/>
+        <location filename="../src/wizarddialog.ui" line="1476"/>
+        <source>Remove unnecessary whitespace between commands and coordinates</source>
+        <translation type="unfinished">Удалять ненужные пробелы между командами и координатами</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1439"/>
         <source>Convert absolute paths into relative ones</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Преобразовывать абсолютные пути в относительные</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1489"/>
+        <source>Remove empty line and curve segments</source>
+        <translation type="unfinished">Удалять пустые сегменты линий и кривых</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1502"/>
         <source>Convert lines into horizontal/vertical equivalents when possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1688"/>
-        <source>Convert basic shapes into paths</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1701"/>
-        <source>Remove unnecessary whitespace from lists of points</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1714"/>
-        <source>Convert some transformations into the matrix</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1753"/>
-        <source>Round numbers to a given precision</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1840"/>
-        <source>inside transform attributes:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1850"/>
-        <source>inside coordinate attributes:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="1860"/>
-        <source>inside other attributes:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.ui" line="2074"/>
-        <source>The quote character for attributes:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Преобразовывать линии в короткие гор./верт. эквиваленты, когда это возможно</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1515"/>
         <source>Convert straight curves into lines when possible</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Преобразовывать прямые кривые в линии, когда это возможно</translation>
     </message>
     <message>
-        <source>save cleaned files into output folder</source>
-        <translation type="obsolete">сохранить очищенные файлы в итоговую папку</translation>
+        <location filename="../src/wizarddialog.ui" line="1528"/>
+        <source>Convert cubic curve segments into shorthand equivalents when possible</source>
+        <translation type="unfinished">Преобразовывать сегменты кубических кривых в короткие эквиваленты, когда это возможно</translation>
     </message>
     <message>
-        <source>save cleaned files into current folder</source>
-        <translation type="obsolete">сохранить очищенные файлы в текущую папку</translation>
+        <location filename="../src/wizarddialog.ui" line="1541"/>
+        <source>Convert quadratic curve segments into shorthand equivalents when possible</source>
+        <translation type="unfinished">Преобразовывать сегменты квадратичных кривых в короткие эквиваленты, когда это возможно</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="378"/>
-        <source>overwrite original files</source>
-        <translation>перезаписать исходные файлы</translation>
+        <location filename="../src/wizarddialog.ui" line="1602"/>
+        <source>Convert width/height into a viewBox when possible</source>
+        <translation type="unfinished">Преобразовывать ширину и высоту изображения в атрибут  viewBox, когда это возможно</translation>
     </message>
     <message>
-        <source>Select preset:</source>
-        <translation type="obsolete">Выберите пресет:</translation>
+        <location filename="../src/wizarddialog.ui" line="1615"/>
+        <source>Convert style properties into SVG attributes</source>
+        <translation type="unfinished">Преобразовывать свойства стилей в атрибуты SVG</translation>
     </message>
     <message>
-        <source>Save current settings as preset:</source>
-        <translation type="obsolete">Сохранить текущие настройки как пресет:</translation>
+        <location filename="../src/wizarddialog.ui" line="1628"/>
+        <source>Convert units to pixels</source>
+        <translation type="unfinished">Преобразовывать еденицы измерения в пиксели</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="638"/>
-        <source>Remove</source>
-        <translation>Удалить</translation>
+        <location filename="../src/wizarddialog.ui" line="1641"/>
+        <source>Convert colors to #RRGGBB format</source>
+        <translation type="unfinished">Преобразовывать цвета в формат #RRGGBB</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="612"/>
-        <source>Save</source>
-        <translation>Сохранить</translation>
+        <location filename="../src/wizarddialog.ui" line="1672"/>
+        <source>Convert colors to #RGB format when possible</source>
+        <translation type="unfinished">Преобразовывать цвета в формат #RGB, когда это возможно</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1688"/>
+        <source>Convert basic shapes into paths</source>
+        <translation type="unfinished">Преобразовывать основные геометрические фигуры в пути</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1701"/>
+        <source>Remove unnecessary whitespace from lists of points</source>
+        <translation type="unfinished">Удалять ненужные пробелы из списков координатных точек</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1714"/>
+        <source>Convert some transformations into the matrix</source>
+        <translation type="unfinished">Преобразовывать несколько трансформаций в одну матрицу</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1727"/>
+        <source>Recalculate coordinates and remove transform attributes when possible</source>
+        <translation type="unfinished">Перерасчитывать координаты и удалять атрибуты трансформации, когда это возможно</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1740"/>
+        <source>Sort elements by name inside the defs section</source>
+        <translation type="unfinished">Сортировать по имени элементы из секции defs</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1753"/>
+        <source>Round numbers to a given precision</source>
+        <translation type="unfinished">Округлять числа до заданной точности</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1840"/>
+        <source>inside transform attributes:</source>
+        <translation type="unfinished">внутри атрибутов трансформации:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1850"/>
+        <source>inside coordinate attributes:</source>
+        <translation type="unfinished">внутри атрибутов координат:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1860"/>
+        <source>inside other attributes:</source>
+        <translation type="unfinished">внутри остальных атрибутов:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1990"/>
+        <source>The empty tag display style:</source>
+        <translation type="unfinished">Стиль отображения пустых тэгов:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="2074"/>
+        <source>The quote character for attributes:</source>
+        <translation type="unfinished">Кавычки для атрибутов:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="2132"/>
+        <source>The pretty print style:</source>
+        <translation type="unfinished">Стиль представления структуры данных:</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="2142"/>
+        <source>The indentation for the pretty print style:</source>
+        <translation type="unfinished">Размер отступа в структуре данных:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="82"/>
         <source>prefix</source>
-        <translation>префикс</translation>
+        <translation type="unfinished">префикс</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="83"/>
         <source>suffix</source>
-        <translation>суффикс</translation>
-    </message>
-    <message>
-        <source>name</source>
-        <translation type="obsolete">имя</translation>
-    </message>
-    <message>
-        <source>Files</source>
-        <translation type="obsolete">Файлы</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="92"/>
-        <source>Presets</source>
-        <translation>Пресеты</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="93"/>
-        <source>Elements</source>
-        <translation>Элементы</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="94"/>
-        <source>Attributes</source>
-        <translation>Атрибуты</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="96"/>
-        <source>Optimization</source>
-        <translation>Оптимизации</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="97"/>
-        <source>Output</source>
-        <translation>Вывод</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="366"/>
-        <source>You have to set a prefix or a suffix for this save method.</source>
-        <translation>Вы должны задать префикс или суффикс для этого метода.</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="95"/>
-        <source>Paths</source>
-        <translation>Пути</translation>
+        <translation type="unfinished">суффикс</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="91"/>
         <source>Main</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Главная</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="92"/>
+        <source>Presets</source>
+        <translation type="unfinished">Пресеты</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="93"/>
+        <source>Elements</source>
+        <translation type="unfinished">Элементы</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="94"/>
+        <source>Attributes</source>
+        <translation type="unfinished">Атрибуты</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="95"/>
+        <source>Paths</source>
+        <translation type="unfinished">Пути</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="96"/>
+        <source>Optimization</source>
+        <translation type="unfinished">Оптимизация</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.cpp" line="97"/>
+        <source>Output</source>
+        <translation type="unfinished">Вывод</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="336"/>
         <source>Select an input folder</source>
-        <translation>Выберите исходную папку</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="349"/>
         <source>Select an output folder</source>
-        <translation>Выберите итоговую папку</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="360"/>
         <source>An input folder is not selected.</source>
-        <translation>Исходная папка не задана.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="363"/>
         <source>An output folder is not selected.</source>
-        <translation>Итоговая папка не задана.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You have to set a prefix and a suffix for this save method.</source>
-        <translation type="obsolete">Вы должны задать префикс или суффикс для этого метода.</translation>
+        <location filename="../src/wizarddialog.cpp" line="366"/>
+        <source>You have to set a prefix or a suffix for this save method.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="369"/>
         <source>An input folder is not exist.</source>
-        <translation>Исходная папка не существует.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="372"/>
         <source>An input folder did not contain any svg, svgz files.</source>
-        <translation>Исходная папка не содержит svg, svgz файлов.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="375"/>
         <source>You have to install 7-Zip to use SVG Cleaner.</source>
-        <translation>Вы должны установить 7-Zip для использования SVG Cleaner.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="378"/>
         <source>You have to install Perl to use SVG Cleaner.</source>
-        <translation>Вы должны установить Perl для использования SVG Cleaner.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="382"/>
@@ -1053,112 +863,21 @@ Processing will be stopped now.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/wizarddialog.cpp" line="390"/>
+        <location filename="../src/wizarddialog.cpp" line="428"/>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/wizarddialog.cpp" line="420"/>
         <source>You have to set preset name.</source>
-        <translation>Вы должны задать имя пресета.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="429"/>
         <source>This preset already exists.
 Overwrite?</source>
-        <translation>Пресет уже существует.
-Перезаписать?</translation>
-    </message>
-    <message>
-        <source>_cleaned</source>
-        <translation type="obsolete">_очищенный</translation>
-    </message>
-    <message>
-        <source>Select input folder</source>
-        <translation type="obsolete">Выберите исходную папку</translation>
-    </message>
-    <message>
-        <source>Select output folder</source>
-        <translation type="obsolete">Выберите итоговую папку</translation>
-    </message>
-    <message>
-        <source>Input folder is not selected.</source>
-        <translation type="obsolete">Исходная папка не задана.</translation>
-    </message>
-    <message>
-        <source>Output folder is not selected.</source>
-        <translation type="obsolete">Итоговая папка не задана.</translation>
-    </message>
-    <message>
-        <source>Input folder is not exist.</source>
-        <translation type="obsolete">Исходная папка не существует.</translation>
-    </message>
-    <message>
-        <source>Input folder did not contain any svg, svgz files.</source>
-        <translation type="obsolete">Исходная папка не содержит svg, svgz файлов.</translation>
-    </message>
-    <message>
-        <source>You must install 7-Zip to use SVG Cleaner.</source>
-        <translation type="obsolete">Вы должны установить 7-Zip для использования SVG Cleaner.</translation>
-    </message>
-    <message>
-        <source>You must install Perl to use SVG Cleaner.</source>
-        <translation type="obsolete">Вы должны установить Perl для использования SVG Cleaner.</translation>
-    </message>
-    <message>
-        <source>You cannot remove default preset.</source>
-        <translation type="obsolete">Вы не можете удалить стандартный пресет.</translation>
-    </message>
-    <message>
-        <source>Program can&apos;t work in this method.
-7z can&apos;t overwrite original files.</source>
-        <translation type="obsolete">Программа не может работать в этом режиме.
-7z не может перезаписывать исходные файлы.</translation>
-    </message>
-    <message>
-        <source>Input folder didn&apos;t contain any svg, svgz files.</source>
-        <translation type="obsolete">Исходная папка не содержит svg, svgz файлов.</translation>
-    </message>
-    <message>
-        <source>Input dir is not selected.</source>
-        <translation type="obsolete">Исходная папка не задана.</translation>
-    </message>
-    <message>
-        <source>Output dir is not selected.</source>
-        <translation type="obsolete">Итоговая папка не задана.</translation>
-    </message>
-    <message>
-        <source>You must set prefix and suffix for this save method.</source>
-        <translation type="obsolete">Вы должны задать префикс или суффикс для этого метода.</translation>
-    </message>
-    <message>
-        <source>Input dir is not exist.</source>
-        <translation type="obsolete">Исходная папка не существует.</translation>
-    </message>
-    <message>
-        <source>Program can&apos;t work in this method.
-7z can&apos;t overwrite original files</source>
-        <translation type="obsolete">Программа не может работать в этом режиме.
-7z не может перезаписывать исходные файлы.</translation>
-    </message>
-    <message>
-        <source>Input dir didn&apos;t contain any svg, svgz files.</source>
-        <translation type="obsolete">Исходная папка не содержит svg, svgz файлов.</translation>
-    </message>
-    <message>
-        <location filename="../src/wizarddialog.cpp" line="390"/>
-        <location filename="../src/wizarddialog.cpp" line="428"/>
-        <source>Warning</source>
-        <translation>Ошибка</translation>
-    </message>
-    <message>
-        <source>You must set preset name.</source>
-        <translation type="obsolete">Вы должны задать имя пресета.</translation>
-    </message>
-    <message>
-        <source>Preset already exist.
-Overwrite?</source>
-        <translation type="obsolete">Пресет уже существует.
-Перезаписать?</translation>
-    </message>
-    <message>
-        <source>You can&apos;t remove default preset.</source>
-        <translation type="obsolete">Вы не можете удалить системный пресет.</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

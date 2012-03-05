@@ -531,17 +531,6 @@ p, li { white-space: pre-wrap; }
     <string notr="true">Ctrl+S</string>
    </property>
   </action>
-  <action name="actionThreads">
-   <property name="text">
-    <string notr="true">threads</string>
-   </property>
-   <property name="iconText">
-    <string notr="true">threads</string>
-   </property>
-   <property name="toolTip">
-    <string>Threads count</string>
-   </property>
-  </action>
   <action name="actionInfo">
    <property name="text">
     <string notr="true">info</string>

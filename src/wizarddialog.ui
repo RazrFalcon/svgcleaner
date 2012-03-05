@@ -44,7 +44,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -144,7 +144,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>compress processed .svgz files only</string>
+                  <string>Compress processed .svgz files only</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -679,8 +679,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>464</height>
+               <width>485</width>
+               <height>453</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1037,8 +1037,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>464</height>
+               <width>489</width>
+               <height>425</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1360,8 +1360,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>464</height>
+               <width>557</width>
+               <height>225</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">

@@ -126,9 +126,9 @@ SVGInfo CleanerThread::info()
     if (scriptOutput.isEmpty())
         info.errString = "Crashed";
     if (scriptErrors.contains("It's a not well-formed SVG file!"))
-        info.errString = tr("It's a not well-formed\nSVG file!");
+        info.errString = tr("It's a not well-formed SVG file!");
     if (scriptErrors.contains("This file doesn't need cleaning!"))
-        info.errString = tr("This file doesn't\nneed cleaning!");
+        info.errString = tr("This file doesn't need cleaning!");
 
     if (arguments.args.contains("--quiet=no"))
         qDebug()<<scriptOutput;

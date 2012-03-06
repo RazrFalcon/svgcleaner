@@ -61,10 +61,6 @@ MainWindow::MainWindow(QWidget *parent) :
     resize(900,650);
 }
 
-MainWindow::~MainWindow()
-{
-}
-
 void MainWindow::on_actionWizard_triggered()
 {
     WizardDialog wizard;

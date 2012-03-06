@@ -31,6 +31,7 @@ void IconsWidget::setPaths(const QString &pathIn,const QString &pathOut,const bo
         setFixedWidth(205);
     else
         setFixedWidth(100);
+
     crashed = false;
     repaint();
 }
@@ -119,7 +120,7 @@ void IconsWidget::paintEvent(QPaintEvent *)
     QPainter painter(this);
     if (crashed) {
         painter.setPen(QPen(Qt::red));
-        painter.drawText(rect(),Qt::AlignCenter,errText);
+        painter.drawText(rect(),Qt::AlignCenter|Qt::TextWordWrap,errText);
         return;
     }
 

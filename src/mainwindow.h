@@ -16,7 +16,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
 
 private:
     float compressMax;

@@ -1,5 +1,6 @@
-TRANSLATIONS += translations/svgcleaner_cs.ts \
-                translations/svgcleaner_ru.ts
+TRANSLATIONS += translations/svgcleaner_cs_CS.ts \
+                translations/svgcleaner_ru_RU.ts \
+                translations/svgcleaner_zh_TW.ts
 
 CODECFORTR = UTF-8
 

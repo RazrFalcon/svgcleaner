@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 
     // load translation for SVG Cleaner
-    QString locale = QLocale::system().name().remove(QRegExp("_.*"));
+    QString locale = QLocale::system().name();
     qDebug()<<"locale:"<<locale;
 #ifdef Q_OS_WIN
     QString path = SomeUtils::findFile(QString("svgcleaner_%1.qm").arg(locale),

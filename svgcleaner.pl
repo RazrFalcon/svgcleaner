@@ -463,7 +463,7 @@ my %reg_atts = (
   'horiz-origin-y' => ['font'],
   'id' => ['a', 'altGlyph', 'altGlyphDef', 'altGlyphItem', 'animate', 'animateColor', 'animateMotion', 'animateTransform', 'circle', 'clipPath', 'color-profile', 'cursor', 'defs', 'desc', 'ellipse', 'feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feDistantLight', 'feFlood', 'feFuncA', 'feFuncB', 'feFuncG', 'feFuncR', 'feGaussianBlur', 'feImage', 'feMerge', 'feMergeNode', 'feMorphology', 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotLight', 'feTile', 'feTurbulence', 'filter', 'font', 'font-face', 'font-face-format', 'font-face-name', 'font-face-src', 'font-face-uri', 'foreignObject', 'g', 'glyph', 'glyphRef', 'hkern', 'image', 'line', 'linearGradient', 'marker', 'mask', 'metadata', 'missing-glyph', 'mpath', 'path', 'pattern', 'polygon', 'polyline', 'radialGradient', 'rect', 'script', 'set', 'stop', 'style', 'svg', 'switch', 'symbol', 'text', 'textPath', 'title', 'tref', 'tspan', 'use', 'view', 'vkern'],
   'ideographic' => ['font-face'],
-  'in' => ['feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feGaussianBlur', 'feMorphology', 'feOffset', 'feSpecularLighting', 'feTile'],
+  'in' => ['feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feGaussianBlur', 'feMergeNode', 'feMorphology', 'feOffset', 'feSpecularLighting', 'feTile'],
   'in2' => ['feBlend', 'feComposite', 'feDisplacementMap'],
   'intercept' => ['feFuncA', 'feFuncB', 'feFuncG', 'feFuncR'],
   'k' => ['hkern', 'vkern'],
@@ -2733,12 +2733,12 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       # удаление атрибутов Presentation attributes, если они находятся в элементе, который их не использует (быстрая проверка)
-      if ($att~~@present_atts &&
-	  !($elt_name~~@present_elts)) {
-
-	&del_att($elt,$att,"this attribute is not applied to the element",$i,$elt_name,$elt_id);
-	next CYCLE_ATTS;
-      }
+#       if ($att~~@present_atts &&
+# 	  !($elt_name~~@present_elts)) {
+# 
+# 	&del_att($elt,$att,"this attribute is not applied to the element",$i,$elt_name,$elt_id);
+# 	next CYCLE_ATTS;
+#       }
 
       # удаление атрибутов Presentation attributes, если они находятся в элементе, который их не использует (более тщательная проверка)
       if (exists($pres_atts{$att}) &&
@@ -2758,7 +2758,8 @@ foreach my $elt ($root->descendants_or_self) {
       }
 
       # удаление текстовых атрибутов у всех элементов, кроме text, а также его предков и потомков
-      if ($att~~@text_atts &&
+      if ($att~~@text_atts && !(exists($reg_atts{$att}) && $elt_name~~$reg_atts{$att}) &&
+	  !(exists($pres_atts{$att}) && $elt_name~~$pres_atts{$att}) &&
 	  !($elt_name eq "text" || $elt->parent('text') || $elt->descendants('text'))) {
 
 	  &del_att($elt,$att,"this attribute is not applied to the element",$i,$elt_name,$elt_id);

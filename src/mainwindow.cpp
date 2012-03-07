@@ -87,7 +87,7 @@ void MainWindow::on_actionStart_triggered()
         actionStart->setVisible(false);
     }
 
-    qDebug()<<"start cleaning using:"<<arguments.cleanerPath;
+    qDebug()<<"start processing using:"<<arguments.cleanerPath;
     if (!arguments.args.isEmpty()) {
         qDebug()<<"with keys:";
         foreach (QString key, arguments.args)

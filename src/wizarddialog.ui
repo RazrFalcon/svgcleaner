@@ -324,7 +324,7 @@
              <item row="2" column="0" colspan="4">
               <widget class="QLabel" name="label_5">
                <property name="text">
-                <string>Set prefix and suffix:</string>
+                <string>Set prefix and/or suffix:</string>
                </property>
               </widget>
              </item>
@@ -679,8 +679,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>485</width>
-               <height>453</height>
+               <width>563</width>
+               <height>464</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1037,8 +1037,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>489</width>
-               <height>425</height>
+               <width>563</width>
+               <height>464</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1300,7 +1300,7 @@
                  <string notr="true">remove-clippath-atts</string>
                 </property>
                 <property name="text">
-                 <string>Remove all unused properties  from children of clipPath elements</string>
+                 <string>Remove all unused properties from children of clipPath elements</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1585,8 +1585,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>464</height>
+               <width>496</width>
+               <height>359</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1929,8 +1929,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>464</height>
+               <width>439</width>
+               <height>115</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">

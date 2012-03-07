@@ -711,6 +711,11 @@ Zpracování se nyní zastaví.</translation>
         <translation>Například: </translation>
     </message>
     <message>
+        <location filename="../src/wizarddialog.ui" line="327"/>
+        <source>Set prefix and/or suffix:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/wizarddialog.ui" line="431"/>
         <source>Open an input folder</source>
         <translation>Otevřít vstupní složku</translation>
@@ -819,6 +824,11 @@ Zpracování se nyní zastaví.</translation>
         <location filename="../src/wizarddialog.ui" line="1290"/>
         <source>Remove all fill properties when there&apos;s no filling</source>
         <translation>Odstranit všechny vlastnosti výplně, když nejsou žádné výplně</translation>
+    </message>
+    <message>
+        <location filename="../src/wizarddialog.ui" line="1303"/>
+        <source>Remove all unused properties from children of clipPath elements</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1316"/>
@@ -972,9 +982,8 @@ Zpracování se nyní zastaví.</translation>
         <translation>Odstranit vlastnosti ze jmenných prostorů pomocí následujících grafických editorů:</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="1303"/>
         <source>Remove all unused properties  from children of clipPath elements</source>
-        <translation>Odstranit všechny nepoužívané vlastnosti z potomků prvků clipPath</translation>
+        <translation type="obsolete">Odstranit všechny nepoužívané vlastnosti z potomků prvků clipPath</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1439"/>
@@ -1069,9 +1078,8 @@ Zpracování se nyní zastaví.</translation>
         <translation type="obsolete">Příklad:</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.ui" line="327"/>
         <source>Set prefix and suffix:</source>
-        <translation>Nastavit předponu a příponu:</translation>
+        <translation type="obsolete">Nastavit předponu a příponu:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="540"/>

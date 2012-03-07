@@ -391,7 +391,7 @@ Processing will stop now.</source>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="327"/>
-        <source>Set prefix and suffix:</source>
+        <source>Set prefix and/or suffix:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -616,7 +616,7 @@ Processing will stop now.</source>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1303"/>
-        <source>Remove all unused properties  from children of clipPath elements</source>
+        <source>Remove all unused properties from children of clipPath elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

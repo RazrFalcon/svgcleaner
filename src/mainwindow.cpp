@@ -58,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(quitShortcut,SIGNAL(activated()),qApp,SLOT(quit()));
 
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
-    resize(900,650);
+    resize(1000,650);
 }
 
 void MainWindow::on_actionWizard_triggered()

@@ -424,7 +424,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="327"/>
         <source>Set prefix and/or suffix:</source>
-        <translation type="unfinished"></translation>
+        <translation>Додавати префікс та/або суфікс:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="352"/>
@@ -529,7 +529,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="761"/>
         <source>Remove elements from namespaces by the following graphics editors:</source>
-        <translation>Видаляти елементи з просторів імен графічних редакторів:</translation>
+        <translation>Видаляти елементи із просторів імен графічних редакторів:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="792"/>
@@ -634,7 +634,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="1178"/>
         <source>Remove attributes from namespaces by the following graphics editors:</source>
-        <translation>Видаляти атрибути з просторів імен графічних редакторів:</translation>
+        <translation>Видаляти атрибути із просторів імен графічних редакторів:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1277"/>
@@ -649,7 +649,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="1303"/>
         <source>Remove all unused properties from children of clipPath elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Видаляти усі зайві властивості у нащадків елементів clipPath</translation>
     </message>
     <message>
         <source>Remove all unused properties  from children of clipPath elements</source>
@@ -884,7 +884,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.cpp" line="382"/>
         <source>Selected output folder is not writable.</source>
-        <translation>Обрана вихідна папка не доступна для запису.</translation>
+        <translation>Обрана вихідна папка недоступна для запису.</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="390"/>

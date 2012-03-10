@@ -93,7 +93,7 @@ need cleaning!</source>
     <message>
         <location filename="../src/cleanerthread.cpp" line="131"/>
         <source>This file doesn&apos;t need cleaning!</source>
-        <translation>Файл не нуждается в чистку!</translation>
+        <translation>Файл не нуждается в чистке!</translation>
     </message>
 </context>
 <context>
@@ -538,7 +538,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="735"/>
         <source>Remove non-SVG elements</source>
-        <translation>Удалять элементы не относящиеся к SVG</translation>
+        <translation>Удалять не-SVG элементы</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="748"/>
@@ -548,7 +548,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="761"/>
         <source>Remove elements from namespaces by the following graphics editors:</source>
-        <translation>Удалять элементы из пространств имен следующих графических редакторов:</translation>
+        <translation>Удалять элементы из пространств имен графических редакторов:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="792"/>
@@ -593,7 +593,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="886"/>
         <source>Collapse groups when possible</source>
-        <translation>Разгруппировывать группы, когда это возможно</translation>
+        <translation>Разгруппировывать группы, когда возможно</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="899"/>
@@ -603,7 +603,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="912"/>
         <source>Remove gradients that are only referenced by one other gradient</source>
-        <translation>Удалять градиенты, которые содержат не повторяющуюся ссылку на другой градиент</translation>
+        <translation>Объединять градиенты, когда возможно</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="925"/>
@@ -633,12 +633,12 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="1123"/>
         <source>Always keep IDs that contain only letters</source>
-        <translation>Всегда оставлять идентификаторы, содержащие только буквы</translation>
+        <translation>Оставлять идентификаторы, содержащие только буквы</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1139"/>
         <source>Remove non-SVG attributes</source>
-        <translation>Удалять атрибуты не относящиеся к SVG</translation>
+        <translation>Удалять не-SVG атрибуты</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1152"/>
@@ -653,7 +653,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="1178"/>
         <source>Remove attributes from namespaces by the following graphics editors:</source>
-        <translation>Удалять атрибуты из пространств имен следующих графических редакторов:</translation>
+        <translation>Удалять атрибуты из пространств имен графических редакторов:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1277"/>
@@ -668,7 +668,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="1303"/>
         <source>Remove all unused properties from children of clipPath elements</source>
-        <translation>Удалять все неиспользуемые свойства у потомков элементов clipPath</translation>
+        <translation>Удалять все лишние свойства у потомков элементов clipPath</translation>
     </message>
     <message>
         <source>Remove all unused properties  from children of clipPath elements</source>
@@ -677,7 +677,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="1316"/>
         <source>Remove gradient coordinates when possible</source>
-        <translation>Удалять координаты градиентов, когда это возможно</translation>
+        <translation>Удалять координаты градиентов, когда возможно</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1380"/>
@@ -688,7 +688,7 @@ Processing will stop now.</source>
         <location filename="../src/wizarddialog.ui" line="1420"/>
         <location filename="../src/wizarddialog.ui" line="1476"/>
         <source>Remove unnecessary whitespace between commands and coordinates</source>
-        <translation>Удалять ненужные пробелы между командами и координатами</translation>
+        <translation>Удалять лишние пробелы между командами и координатами</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1439"/>
@@ -703,27 +703,27 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="1502"/>
         <source>Convert lines into horizontal/vertical equivalents when possible</source>
-        <translation>Преобразовывать линии в короткие гор./верт. эквиваленты, когда это возможно</translation>
+        <translation>Преобразовывать линии в короткие гор./верт. эквиваленты</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1515"/>
         <source>Convert straight curves into lines when possible</source>
-        <translation>Преобразовывать прямые кривые в линии, когда это возможно</translation>
+        <translation>Преобразовывать прямые кривые в линии</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1528"/>
         <source>Convert cubic curve segments into shorthand equivalents when possible</source>
-        <translation>Преобразовывать сегменты кубических кривых в короткие эквиваленты, когда это возможно</translation>
+        <translation>Преобразовывать сегменты кубических кривых в короткие эквиваленты</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1541"/>
         <source>Convert quadratic curve segments into shorthand equivalents when possible</source>
-        <translation>Преобразовывать сегменты квадратичных кривых в короткие эквиваленты, когда это возможно</translation>
+        <translation>Преобразовывать сегменты квадратичных кривых в короткие эквиваленты</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1602"/>
         <source>Convert width/height into a viewBox when possible</source>
-        <translation>Преобразовывать ширину и высоту изображения в атрибут viewBox, когда это возможно</translation>
+        <translation>Преобразовывать атрибуты width и height во viewBox</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1615"/>
@@ -743,27 +743,27 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="1672"/>
         <source>Convert colors to #RGB format when possible</source>
-        <translation>Преобразовывать цвета в формат #RGB, когда это возможно</translation>
+        <translation>Преобразовывать цвета в формат #RGB, когда возможно</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1688"/>
         <source>Convert basic shapes into paths</source>
-        <translation>Преобразовывать основные геометрические фигуры в пути</translation>
+        <translation>Преобразовывать основные фигуры в пути</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1701"/>
         <source>Remove unnecessary whitespace from lists of points</source>
-        <translation>Удалять ненужные пробелы из списков координатных точек</translation>
+        <translation>Удалять лишние пробелы из списков координатных точек</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1714"/>
         <source>Convert some transformations into the matrix</source>
-        <translation>Преобразовывать несколько трансформаций в одну матрицу</translation>
+        <translation>Преобразовывать несколько трансформаций в матрицу</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1727"/>
         <source>Recalculate coordinates and remove transform attributes when possible</source>
-        <translation>Перерасчитывать координаты и удалять атрибуты трансформации, когда это возможно</translation>
+        <translation>Перерасчитывать координаты и удалять атрибуты трансформации</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="1740"/>
@@ -808,7 +808,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.ui" line="2142"/>
         <source>The indentation for the pretty print style:</source>
-        <translation>Размер отступа для вышеуказанного стиля:</translation>
+        <translation>Размер отступа в структуре данных:</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="82"/>
@@ -903,7 +903,7 @@ Processing will stop now.</source>
     <message>
         <location filename="../src/wizarddialog.cpp" line="382"/>
         <source>Selected output folder is not writable.</source>
-        <translation>Невозможно осуществлять запись в выбранную итоговую папку.</translation>
+        <translation>Выбранная итоговая папка недоступна для записи.</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.cpp" line="390"/>

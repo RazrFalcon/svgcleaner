@@ -36,12 +36,12 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Předem se omlouváme za jakékoli chyby. Hlášení chyb posílejte, prosím, svgcleanerteam@gmail.com.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/aboutdialog.ui" line="117"/>
+        <location filename="../src/aboutdialog.ui" line="113"/>
         <source>Donate</source>
         <translation>Dary</translation>
     </message>
     <message>
-        <location filename="../src/aboutdialog.ui" line="123"/>
+        <location filename="../src/aboutdialog.ui" line="119"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -97,7 +97,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Andrey Bayrak &amp;lt;andrey.bayrak@gmail.com&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/aboutdialog.ui" line="91"/>
+        <location filename="../src/aboutdialog.ui" line="87"/>
         <source>License</source>
         <translation>Povolení</translation>
     </message>

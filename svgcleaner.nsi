@@ -71,6 +71,8 @@ InstallDir "$PROGRAMFILES\${APP_NAME}"
 
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_LANGUAGE "Russian"
+!insertmacro MUI_LANGUAGE "Ukrainian"
+!insertmacro MUI_LANGUAGE "Czech"
 
 !insertmacro MUI_RESERVEFILE_LANGDLL
 
@@ -99,6 +101,7 @@ MessageBox MB_YESNO "Install Strawberry Perl?" /SD IDYES IDNO endStrawberryPerl
 	mydownload:
 		DetailPrint "Downloading Strawberry Perl..."
 		NSISdl::download http://strawberry-perl.googlecode.com/files/strawberry-perl-5.12.3.0.msi "$EXEDIR\strawberry-perl-5.12.3.0.msi"
+		DetailPrint "Installing Strawberry Perl..."
 		Pop $R0
 		StrCmp $R0 "success" +3
 		MessageBox MB_OK "Download failed: $R0"
@@ -120,16 +123,17 @@ MessageBox MB_YESNO "Install Strawberry Perl?" /SD IDYES IDNO endStrawberryPerl
 		File "QtXml4.dll"
 		File "libgcc_s_dw2-1.dll"
 		File "mingwm10.dll"
-		File "interface.xml"
 		File "7za.exe"
 		SetOutPath "$INSTDIR\imageformats"
-		File "imageformats\qico4.dll"
 		File "imageformats\qsvg4.dll"
 		SetOutPath "$INSTDIR\presets"
-		File "presets\normal.preset"
-		File "presets\optimal.preset"
-		File "presets\soft.preset"
-		File "presets\vacuum-defs.preset"
+		File "presets\Normal.preset"
+		File "presets\Optimal.preset"
+		File "presets\Soft.preset"
+		SetOutPath "$INSTDIR\translations"
+		File "translations\svgcleaner_cs_CS.qm"
+		File "translations\svgcleaner_ru_RU.qm"
+		File "translations\svgcleaner_uk_UA.qm"
 		SetOutPath "C:\strawberry\perl\site\lib\XML"
 		File "XML-Twig\site\lib\XML\Twig.pm"
 		SetOutPath "C:\strawberry\perl\site\lib\XML\Twig"
@@ -220,11 +224,10 @@ RmDir /r "$INSTDIR"
 RmDir "$INSTDIR"
 MessageBox MB_YESNO "Delete Strawberry Perl?" /SD IDYES IDNO endStrawberryPerl
 RmDir /r "C:\strawberry"
-endStrawberryPerl:
-
 ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "C:\strawberry\c\bin"
 ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "C:\strawberry\perl\site\bin"
 ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "C:\strawberry\perl\bin"
+endStrawberryPerl:
 
 !ifdef REG_START_MENU
 !insertmacro MUI_STARTMENU_GETFOLDER "Application" $SM_Folder

@@ -16,6 +16,7 @@ IconsWidget::IconsWidget(QWidget *parent) :
     toolTip = new QLabel();
     toolTip->setWindowFlags(Qt::SplashScreen);
     setMouseTracking(true);
+    setFixedHeight(100);
 }
 
 void IconsWidget::setPaths(const QString &pathIn,const QString &pathOut,const bool compare)
@@ -125,8 +126,8 @@ void IconsWidget::paintEvent(QPaintEvent *)
     }
 
     if (compareView) {
-        renderSvg(inpath, &painter,QRect(0,0,height(),height()));
-        renderSvg(outpath,&painter,QRect(105,0,height(),height()));
+        renderSvg(inpath, &painter,QRect(0,0,100,100));
+        renderSvg(outpath,&painter,QRect(105,0,100,100));
     } else {
         renderSvg(outpath,&painter,QRect(0,0,width(),height()));
     }
@@ -139,7 +140,7 @@ void IconsWidget::renderSvg(const QString path, QPainter *painter, QRect rect)
     size.scale(rect.width(),rect.height(),Qt::KeepAspectRatio);
     int border = 3;
     renderer.render(painter,QRect(rect.x()+border,(rect.height()-size.height())/2+rect.y()+border,
-                                  size.width()-border,size.height()-border));
+                                  size.width()-border*2,size.height()-border*2));
 }
 
 void IconsWidget::mousePressEvent(QMouseEvent *event)

@@ -51,7 +51,7 @@ unix {
     presets.path        = $$PREFIX/share/svgcleaner/presets
     presets.files      += presets/Soft.preset presets/Normal.preset presets/Optimal.preset
     translations.path   = $$PREFIX/share/svgcleaner/translations
-    translations.files += svgcleaner_cs.qm svgcleaner_ru.qm
+    translations.files += svgcleaner_cs_CS.qm svgcleaner_ru_RU.qm svgcleaner_uk_UA.qm
     script.path         = $$PREFIX/bin
     script.files       += svgcleaner.pl
     target.path         = $$PREFIX/bin

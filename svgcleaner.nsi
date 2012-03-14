@@ -6,7 +6,7 @@
 
 !define APP_NAME "SVG Cleaner"
 !define COMP_NAME "SVG Cleaner Team"
-!define VERSION "00.00.00.04"
+!define VERSION "00.00.00.05"
 !define COPYRIGHT "SVG Cleaner Team © 2012"
 !define DESCRIPTION "Application"
 !define INSTALLER_NAME "setup.exe"

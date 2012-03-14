@@ -1,6 +1,6 @@
 QT       += core gui svg
 TEMPLATE  = app
-VERSION   = 0.4
+VERSION   = 0.5
 unix:TARGET    = svgcleaner-gui
 windows:TARGET = SVGCleaner
 

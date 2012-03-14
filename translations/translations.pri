@@ -1,4 +1,4 @@
-TRANSLATIONS += translations/svgcleaner_cs_CS.ts \
+TRANSLATIONS += translations/svgcleaner_cs_CZ.ts \
                 translations/svgcleaner_ru_RU.ts \
                 translations/svgcleaner_uk_UA.ts
 

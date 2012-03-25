@@ -12,6 +12,7 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
 #ifdef Q_OS_WIN
     frame->setFrameShadow(QFrame::Plain);
 #endif
+    lbl1->setText("<b>"+tr("Name:")+"</b>");
     refill(info,compare);
 }
 

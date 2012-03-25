@@ -4,8 +4,10 @@
 #include <QDialog>
 #include <QFileInfoList>
 #include <QSettings>
+#include <QThread>
 
 #include "arguments.h"
+#include "filefinder.h"
 #include "ui_wizarddialog.h"
 
 class WizardDialog : public QDialog, private Ui::WizardDialog
@@ -17,10 +19,15 @@ public:
     ~WizardDialog();
     ToThread threadArguments();
 
+signals:
+    void start(QString, bool);
+
 private:
     QFileInfoList fileList;
     QFileInfoList presets;
     QSettings *settings;
+    FileFinder *search;
+    QThread *searchThread;
 
     bool checkFor(const QString &name);
     bool checkForWarnings();
@@ -37,11 +44,13 @@ private:
     void resetToDefault();
     void saveSettings();
     void setupGUI();
+    void deleteThreads();
 
 private slots:
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);
     void createExample();
     void loadFiles();
+    void loadFinished(QFileInfoList list);
     void on_btnOpenInDir_clicked();
     void on_btnOpenOutDir_clicked();
     void on_btnRemovePreset_clicked();

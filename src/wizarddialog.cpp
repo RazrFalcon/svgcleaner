@@ -1,10 +1,11 @@
 #include <QDirIterator>
 #include <QFileDialog>
+#include <QFutureWatcher>
 #include <QMessageBox>
 #include <QProcess>
 #include <QScrollBar>
-#include <QThread>
 #include <QWheelEvent>
+#include <QCloseEvent>
 #include <QtDebug>
 
 #include "itemwidget.h"
@@ -23,6 +24,8 @@ WizardDialog::WizardDialog(QWidget *parent) :
 WizardDialog::~WizardDialog()
 {
     delete settings;
+    deleteThreads();
+    delete search;
 }
 
 void WizardDialog::loadSettings()
@@ -48,8 +51,6 @@ void WizardDialog::loadSettings()
     if (presetNum > cmbBoxPreset->count() || presetNum < 0)
         presetNum = 0;
     cmbBoxPreset->setCurrentIndex(presetNum);
-
-    loadFiles();
 
     // threading
     spinBoxThreads->setValue(settings->value("Wizard/threadCount",
@@ -112,11 +113,23 @@ void WizardDialog::setupGUI()
     listWidget->setCurrentRow(0);
     listWidget->installEventFilter(this);
 
+    lblOverwrite->setText("<span style=\"color:#ff0000;\">"+
+                          tr("Warning! The original files will be destroyed!")+"</span>");
+
     // setup icons
     btnOpenInDir->setIcon(QIcon(":/open.svgz"));
     btnOpenOutDir->setIcon(QIcon(":/open.svgz"));
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
     listWidget->setFocus();
+
+    searchThread = new QThread(this);
+    search = new FileFinder();
+    qRegisterMetaType<QFileInfoList>("QFileInfoList");
+    connect(search, SIGNAL(finished(QFileInfoList)), this, SLOT(loadFinished(QFileInfoList)));
+    connect(this, SIGNAL(start(QString,bool)), search, SLOT(startSearch(QString,bool)));
+    search->moveToThread(searchThread);
+    searchThread->start();
+    loadFiles();
 }
 
 void WizardDialog::radioSelected()
@@ -156,18 +169,15 @@ void WizardDialog::loadFiles()
         lineEditInDir->setValue(0);
         return;
     }
-    fileList.clear();
-    QDirIterator dirIt(lineEditInDir->text(),
-                       chBoxRecursive->isChecked()?(QDirIterator::Subdirectories
-                                                   |QDirIterator::FollowSymlinks)
-                                                  :QDirIterator::NoIteratorFlags);
-    while (dirIt.hasNext()) {
-        dirIt.next();
-        if (QFileInfo(dirIt.filePath()).isFile() && !QFileInfo(dirIt.filePath()).isSymLink())
-            if (QFileInfo(dirIt.filePath()).suffix().contains(QRegExp("svg$|svgz$")))
-                fileList.append(dirIt.filePath());
-    }
+    lineEditInDir->showLoading(true);
+    emit start(lineEditInDir->text(), chBoxRecursive->isChecked());
+}
+
+void WizardDialog::loadFinished(QFileInfoList list)
+{
+    fileList = list;
     lineEditInDir->setValue(fileList.count());
+    lineEditInDir->showLoading(false);
 }
 
 void WizardDialog::changePage(QListWidgetItem *current, QListWidgetItem *previous)
@@ -176,14 +186,6 @@ void WizardDialog::changePage(QListWidgetItem *current, QListWidgetItem *previou
          current = previous;
     stackedWidget->setCurrentIndex(listWidget->row(current));
     groupBoxMain->setTitle(current->toolTip());
-
-    if (stackedWidget->currentIndex() == 0) {
-        gBoxCompress->setVisible(true);
-        gBoxThreads->setVisible(true);
-    } else {
-        gBoxCompress->setVisible(false);
-        gBoxThreads->setVisible(false);
-    }
 }
 
 void WizardDialog::on_buttonBox_clicked(QAbstractButton *button)
@@ -193,10 +195,11 @@ void WizardDialog::on_buttonBox_clicked(QAbstractButton *button)
             saveSettings();
             done(QDialog::Accepted);
         }
-    } else if (buttonBox->standardButton(button) == QDialogButtonBox::Cancel)
+    } else if (buttonBox->standardButton(button) == QDialogButtonBox::Cancel) {
         close();
-    else if (buttonBox->standardButton(button) == QDialogButtonBox::Reset)
+    } else if (buttonBox->standardButton(button) == QDialogButtonBox::Reset) {
         resetFields();
+    }
 }
 
 ToThread WizardDialog::threadArguments()
@@ -221,23 +224,23 @@ QStringList WizardDialog::argsLine()
 {
     QStringList tmpList;
     for (int i = 2; i < stackedWidget->count(); ++i) {
-    foreach(QWidget *w, stackedWidget->widget(i)->findChildren<QWidget *>()) {
-        QString name = w->accessibleName();
-        if (!name.isEmpty()) {
-            if (w->inherits("QCheckBox") && !qobject_cast<QCheckBox *>(w)->isChecked())
-                tmpList.append("--"+name+"=no");
-            else if (w->inherits("QRadioButton") && !isDefault(w))
-                tmpList.append("--"+name);
-            else if (w->inherits("QComboBox") && !isDefault(w))
-                tmpList.append("--"+name+"="+qobject_cast<QComboBox *>(w)->currentText());
-            else if (w->inherits("QSpinBox") && !isDefault(w))
-                tmpList.append("--"+name+"="
-                                +QString::number(qobject_cast<QSpinBox *>(w)->value()));
-            else if (w->inherits("QDoubleSpinBox") && !isDefault(w))
-                tmpList.append("--"+name+"="
-                                +QString::number(qobject_cast<QDoubleSpinBox *>(w)->value()));
+        foreach(QWidget *w, stackedWidget->widget(i)->findChildren<QWidget *>()) {
+            QString name = w->accessibleName();
+            if (!name.isEmpty()) {
+                if (w->inherits("QCheckBox") && !qobject_cast<QCheckBox *>(w)->isChecked())
+                    tmpList.append("--"+name+"=no");
+                else if (w->inherits("QRadioButton") && !isDefault(w))
+                    tmpList.append("--"+name);
+                else if (w->inherits("QComboBox") && !isDefault(w))
+                    tmpList.append("--"+name+"="+qobject_cast<QComboBox *>(w)->currentText());
+                else if (w->inherits("QSpinBox") && !isDefault(w))
+                    tmpList.append("--"+name+"="
+                                   +QString::number(qobject_cast<QSpinBox *>(w)->value()));
+                else if (w->inherits("QDoubleSpinBox") && !isDefault(w))
+                    tmpList.append("--"+name+"="
+                                   +QString::number(qobject_cast<QDoubleSpinBox *>(w)->value()));
+            }
         }
-    }
     }
     return tmpList;
 }
@@ -610,4 +613,12 @@ bool WizardDialog::eventFilter(QObject *obj, QEvent *event)
         }
     }
     return false;
+}
+
+void WizardDialog::deleteThreads()
+{
+    search->stopSearch(); // NOTE: stops search loop
+    searchThread->quit();
+    searchThread->wait(); // NOTE: program crash without it
+    searchThread->deleteLater();
 }

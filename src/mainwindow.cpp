@@ -20,11 +20,6 @@ MainWindow::MainWindow(QWidget *parent) :
     qRegisterMetaType<SVGInfo>("SVGInfo");
 
     // setup GUI
-    actionWizard->setIcon(QIcon(":/wizard.svgz"));
-    actionStart->setIcon(QIcon(":/start.svgz"));
-    actionPause->setIcon(QIcon(":/pause.svgz"));
-    actionStop->setIcon(QIcon(":/stop.svgz"));
-    actionInfo->setIcon(QIcon(":/information.svgz"));
     scrollArea->installEventFilter(this);
     progressBar->hide();
     itemScroll->hide();
@@ -32,10 +27,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // load settings
     settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
-                             "svgcleaner", "config");
+                             "svgcleaner", "config"); // FIXME: rewrite to static
 
     // create sorting combobox
-    QWidget *w = new QWidget();
+    QWidget *w = new QWidget(toolBar);
     w->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     toolBar->addWidget(w);
     cmbSort = new QComboBox();
@@ -50,6 +45,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(cmbSort,SIGNAL(currentIndexChanged(int)),this,SLOT(sortingChanged(int)));
     toolBar->addWidget(cmbSort);
 
+    QString suffix = "<br><span style=\"color:#808080;\">%1</span>";
+    actionWizard->setToolTip(tr("Open the wizard")+suffix.arg("Ctrl+W"));
+    actionStart->setToolTip(tr("Start processing")+suffix.arg("Ctrl+R"));
+    actionPause->setToolTip(tr("Pause processing")+suffix.arg("Ctrl+R"));
+    actionStop->setToolTip(tr("Stop cleaning")+suffix.arg("Ctrl+S"));
+
     actionCompareView->setChecked(settings->value("compareView",true).toBool());
     on_actionCompareView_triggered();
 
@@ -57,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QShortcut *quitShortcut = new QShortcut(QKeySequence::Quit,this);
     connect(quitShortcut,SIGNAL(activated()),qApp,SLOT(quit()));
 
+    setContextMenuPolicy(Qt::NoContextMenu);
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
     resize(1000,650);
 }

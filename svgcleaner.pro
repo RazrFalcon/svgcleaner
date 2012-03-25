@@ -13,7 +13,8 @@ SOURCES  += src/main.cpp \
             src/aboutdialog.cpp \
             src/lineedit.cpp \
             src/wizarddialog.cpp \
-            src/iconswidget.cpp
+            src/iconswidget.cpp \
+            src/filefinder.cpp
 		
 HEADERS  += src/thumbwidget.h \
             src/mainwindow.h \
@@ -24,7 +25,8 @@ HEADERS  += src/thumbwidget.h \
             src/aboutdialog.h \
             src/lineedit.h \
             src/wizarddialog.h \
-            src/iconswidget.h
+            src/iconswidget.h \
+            src/filefinder.h
 
 FORMS    += src/thumbwidget.ui \
             src/mainwindow.ui \
@@ -51,7 +53,8 @@ unix {
     presets.path        = $$PREFIX/share/svgcleaner/presets
     presets.files      += presets/Soft.preset presets/Normal.preset presets/Optimal.preset
     translations.path   = $$PREFIX/share/svgcleaner/translations
-    translations.files += svgcleaner_cs_CS.qm svgcleaner_ru_RU.qm svgcleaner_uk_UA.qm
+    translations.files += svgcleaner_cs_CS.qm svgcleaner_ru_RU.qm svgcleaner_uk_UA.qm \
+                          svgcleaner_de_DE.qm
     script.path         = $$PREFIX/bin
     script.files       += svgcleaner.pl
     target.path         = $$PREFIX/bin

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>593</width>
-    <height>591</height>
+    <height>581</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -55,6 +55,12 @@
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
              <widget class="QGroupBox" name="gBoxCompress">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="title">
                <string>Compressing</string>
               </property>
@@ -159,6 +165,12 @@
             </item>
             <item>
              <widget class="QGroupBox" name="gBoxThreads">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="title">
                <string>Multithreading</string>
               </property>
@@ -554,10 +566,10 @@
             </property>
            </spacer>
           </item>
-          <item row="2" column="0">
+          <item row="6" column="0">
            <widget class="QLabel" name="lblOverwrite">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#ff0000;&quot;&gt;Warning! The original files will be destroyed!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string notr="true">Warning! The original files will be destroyed!</string>
             </property>
            </widget>
           </item>
@@ -680,7 +692,7 @@
                <x>0</x>
                <y>0</y>
                <width>563</width>
-               <height>464</height>
+               <height>454</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1038,7 +1050,7 @@
                <x>0</x>
                <y>0</y>
                <width>563</width>
-               <height>464</height>
+               <height>454</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1360,8 +1372,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>557</width>
-               <height>225</height>
+               <width>563</width>
+               <height>454</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -1585,8 +1597,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>496</width>
-               <height>359</height>
+               <width>563</width>
+               <height>454</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1929,8 +1941,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>439</width>
-               <height>115</height>
+               <width>563</width>
+               <height>454</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">
@@ -2243,19 +2255,96 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>listWidget</tabstop>
-  <tabstop>buttonBox</tabstop>
-  <tabstop>rBtnSaveSuffix</tabstop>
+  <tabstop>cmbBoxQuote</tabstop>
+  <tabstop>radioBtn1</tabstop>
+  <tabstop>radioBtn2</tabstop>
+  <tabstop>radioBtn3</tabstop>
   <tabstop>lineEditInDir</tabstop>
   <tabstop>btnOpenInDir</tabstop>
   <tabstop>lineEditOutDir</tabstop>
   <tabstop>btnOpenOutDir</tabstop>
   <tabstop>lineEditPrefix</tabstop>
   <tabstop>lineEditSuffix</tabstop>
-  <tabstop>radioBtn1</tabstop>
-  <tabstop>radioBtn2</tabstop>
-  <tabstop>radioBtn3</tabstop>
+  <tabstop>chBoxRecursive</tabstop>
+  <tabstop>gBoxCompress</tabstop>
+  <tabstop>rBtnSaveSuffix</tabstop>
+  <tabstop>rBtnCompressAll</tabstop>
+  <tabstop>cmbBoxCompress</tabstop>
+  <tabstop>gBoxThreads</tabstop>
+  <tabstop>spinBoxThreads</tabstop>
+  <tabstop>buttonBox</tabstop>
   <tabstop>cmbBoxPreset</tabstop>
+  <tabstop>btnRemovePreset</tabstop>
+  <tabstop>textPresetInfo</tabstop>
+  <tabstop>linePresetName</tabstop>
+  <tabstop>btnSavePreset</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>checkBox</tabstop>
+  <tabstop>checkBox_2</tabstop>
+  <tabstop>checkBox_3</tabstop>
+  <tabstop>checkBox_4</tabstop>
+  <tabstop>checkBox_5</tabstop>
+  <tabstop>chBoxNSElem</tabstop>
+  <tabstop>checkBox_6</tabstop>
+  <tabstop>checkBox_7</tabstop>
+  <tabstop>checkBox_8</tabstop>
+  <tabstop>checkBox_41</tabstop>
+  <tabstop>checkBox_9</tabstop>
+  <tabstop>checkBox_10</tabstop>
+  <tabstop>checkBox_12</tabstop>
+  <tabstop>checkBox_11</tabstop>
+  <tabstop>checkBox_14</tabstop>
+  <tabstop>checkBox_15</tabstop>
+  <tabstop>chBoxGaussianBlur</tabstop>
+  <tabstop>doubleSpinBox</tabstop>
+  <tabstop>scrollArea_2</tabstop>
+  <tabstop>checkBox_36</tabstop>
+  <tabstop>checkBox_16</tabstop>
+  <tabstop>chBoxUnrefID</tabstop>
+  <tabstop>checkBox_18</tabstop>
+  <tabstop>checkBox_19</tabstop>
+  <tabstop>checkBox_20</tabstop>
+  <tabstop>checkBox_21</tabstop>
+  <tabstop>chBoxNSAttr</tabstop>
+  <tabstop>checkBox_22</tabstop>
+  <tabstop>checkBox_23</tabstop>
+  <tabstop>checkBox_24</tabstop>
+  <tabstop>checkBox_46</tabstop>
+  <tabstop>checkBox_25</tabstop>
+  <tabstop>checkBox_26</tabstop>
+  <tabstop>checkBox_27</tabstop>
+  <tabstop>checkBox_28</tabstop>
+  <tabstop>checkBox_29</tabstop>
+  <tabstop>scrollArea_5</tabstop>
+  <tabstop>radioBtnKeepPaths</tabstop>
+  <tabstop>checkBox_13</tabstop>
+  <tabstop>radioBtnConvertPaths</tabstop>
+  <tabstop>checkBox_45</tabstop>
+  <tabstop>checkBox_17</tabstop>
+  <tabstop>checkBox_44</tabstop>
+  <tabstop>checkBox_43</tabstop>
+  <tabstop>checkBox_42</tabstop>
+  <tabstop>checkBox_33</tabstop>
+  <tabstop>scrollArea_3</tabstop>
+  <tabstop>checkBox_30</tabstop>
+  <tabstop>checkBox_31</tabstop>
+  <tabstop>checkBox_32</tabstop>
+  <tabstop>chBoxColorRRGGBB</tabstop>
+  <tabstop>checkBox_34</tabstop>
+  <tabstop>checkBox_35</tabstop>
+  <tabstop>checkBox_37</tabstop>
+  <tabstop>checkBox_38</tabstop>
+  <tabstop>checkBox_39</tabstop>
+  <tabstop>checkBox_40</tabstop>
+  <tabstop>chBoxRoundNumbers</tabstop>
+  <tabstop>spinBox</tabstop>
+  <tabstop>spinBox_2</tabstop>
+  <tabstop>spinBox_3</tabstop>
+  <tabstop>listWidget</tabstop>
+  <tabstop>scrollArea_4</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>spinBoxIndent</tabstop>
+  <tabstop>cmbBoxEmptyTags</tabstop>
  </tabstops>
  <resources/>
  <connections>

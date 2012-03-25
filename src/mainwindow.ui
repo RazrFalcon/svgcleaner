@@ -69,7 +69,7 @@
          <x>0</x>
          <y>0</y>
          <width>576</width>
-         <height>508</height>
+         <height>502</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="itemLayout">
@@ -91,7 +91,7 @@
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
-    <string>ToolBar</string>
+    <string notr="true">ToolBar</string>
    </property>
    <property name="movable">
     <bool>false</bool>
@@ -472,18 +472,15 @@
    </widget>
   </widget>
   <action name="actionWizard">
+   <property name="icon">
+    <iconset resource="../icons/icons.qrc">
+     <normaloff>:/wizard.svgz</normaloff>:/wizard.svgz</iconset>
+   </property>
    <property name="text">
     <string notr="true">wizard</string>
    </property>
    <property name="iconText">
     <string notr="true">wizard</string>
-   </property>
-   <property name="toolTip">
-    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Open the wizard &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+W&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+W</string>
@@ -493,18 +490,15 @@ p, li { white-space: pre-wrap; }
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../icons/icons.qrc">
+     <normaloff>:/start.svgz</normaloff>:/start.svgz</iconset>
+   </property>
    <property name="text">
     <string notr="true">start</string>
    </property>
    <property name="iconText">
     <string notr="true">start</string>
-   </property>
-   <property name="toolTip">
-    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Start processing &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+R&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+R</string>
@@ -514,24 +508,25 @@ p, li { white-space: pre-wrap; }
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../icons/icons.qrc">
+     <normaloff>:/stop.svgz</normaloff>:/stop.svgz</iconset>
+   </property>
    <property name="text">
     <string notr="true">stop</string>
    </property>
    <property name="iconText">
     <string notr="true">stop</string>
    </property>
-   <property name="toolTip">
-    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Stop cleaning &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+S&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
    <property name="shortcut">
     <string notr="true">Ctrl+S</string>
    </property>
   </action>
   <action name="actionInfo">
+   <property name="icon">
+    <iconset resource="../icons/icons.qrc">
+     <normaloff>:/information.svgz</normaloff>:/information.svgz</iconset>
+   </property>
    <property name="text">
     <string notr="true">info</string>
    </property>
@@ -552,6 +547,10 @@ p, li { white-space: pre-wrap; }
    <property name="enabled">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../icons/icons.qrc">
+     <normaloff>:/thumbs-on.svgz</normaloff>:/thumbs-on.svgz</iconset>
+   </property>
    <property name="text">
     <string notr="true">compareView</string>
    </property>
@@ -563,24 +562,23 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionPause">
+   <property name="icon">
+    <iconset resource="../icons/icons.qrc">
+     <normaloff>:/pause.svgz</normaloff>:/pause.svgz</iconset>
+   </property>
    <property name="text">
     <string notr="true">pause</string>
    </property>
    <property name="iconText">
     <string notr="true">pause</string>
    </property>
-   <property name="toolTip">
-    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Verdana'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Pause processing &lt;span style=&quot; color:#808080;&quot;&gt;Ctrl+R&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
    <property name="shortcut">
     <string notr="true">Ctrl+R</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../icons/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

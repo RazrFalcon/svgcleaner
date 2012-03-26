@@ -26,7 +26,7 @@ private:
     QFileInfoList fileList;
     QFileInfoList presets;
     QSettings *settings;
-    FileFinder *search;
+    FileFinder *fileSearch;
     QThread *searchThread;
 
     bool checkFor(const QString &name);

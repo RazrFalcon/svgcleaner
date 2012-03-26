@@ -1,5 +1,4 @@
 #include <QDir>
-#include <QTime>
 #include <QtDebug>
 
 #include "filefinder.h"
@@ -11,8 +10,7 @@ FileFinder::FileFinder(QObject *parent) :
 
 void FileFinder::startSearch(const QString &startDir, bool recursive)
 {
-    QTime time = QTime::currentTime();
-    time.start();
+    stop = false;
     QFileInfoList list = searchForFiles(startDir, recursive);
     emit finished(list);
 }

@@ -21,12 +21,13 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
 
     scriptOutput.clear();
     scriptErrors.clear();
-    outSVG = QString(outFile).replace("svgz","svg");
+    outSVG = QString(outFile).replace("svgz","svg").replace("SVGZ","SVG");
     currentIn = inFile;
     currentOut = outFile;
+    qDebug()<<outSVG<<currentIn<<currentOut;
 
     QDir().mkpath(QFileInfo(outFile).absolutePath());
-    if (QFileInfo(inFile).suffix() == "svg") {
+    if (QFileInfo(inFile).suffix().toLower() == "svg") {
         if (inFile != outFile)
             QFile(outSVG).remove();
         QFile().copy(inFile,outSVG);

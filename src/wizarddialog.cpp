@@ -25,7 +25,7 @@ WizardDialog::~WizardDialog()
 {
     delete settings;
     deleteThreads();
-    delete search;
+    delete fileSearch;
 }
 
 void WizardDialog::loadSettings()
@@ -123,11 +123,11 @@ void WizardDialog::setupGUI()
     listWidget->setFocus();
 
     searchThread = new QThread(this);
-    search = new FileFinder();
+    fileSearch = new FileFinder();
     qRegisterMetaType<QFileInfoList>("QFileInfoList");
-    connect(search, SIGNAL(finished(QFileInfoList)), this, SLOT(loadFinished(QFileInfoList)));
-    connect(this, SIGNAL(start(QString,bool)), search, SLOT(startSearch(QString,bool)));
-    search->moveToThread(searchThread);
+    connect(fileSearch, SIGNAL(finished(QFileInfoList)), this, SLOT(loadFinished(QFileInfoList)));
+    connect(this, SIGNAL(start(QString,bool)), fileSearch, SLOT(startSearch(QString,bool)));
+    fileSearch->moveToThread(searchThread);
     searchThread->start();
     loadFiles();
 }
@@ -170,6 +170,7 @@ void WizardDialog::loadFiles()
         return;
     }
     lineEditInDir->showLoading(true);
+    fileSearch->stopSearch();
     emit start(lineEditInDir->text(), chBoxRecursive->isChecked());
 }
 
@@ -294,6 +295,7 @@ QStringList WizardDialog::genOutFiles()
         list = getInFiles();
     }
 
+    qDebug()<<list;
     if (!gBoxCompress->isChecked())
         list.replaceInStrings(QRegExp("svgz$"),"svg");
     else if (rBtnCompressAll->isChecked())
@@ -617,7 +619,7 @@ bool WizardDialog::eventFilter(QObject *obj, QEvent *event)
 
 void WizardDialog::deleteThreads()
 {
-    search->stopSearch(); // NOTE: stops search loop
+    fileSearch->stopSearch(); // NOTE: stops fileSearch loop
     searchThread->quit();
     searchThread->wait(); // NOTE: program crash without it
     searchThread->deleteLater();

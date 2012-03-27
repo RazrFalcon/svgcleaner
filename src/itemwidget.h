@@ -1,9 +1,9 @@
 #ifndef ITEMWIDGET_H
 #define ITEMWIDGET_H
 
-#include <QWidget>
-#include <QLabel>
-#include <QVBoxLayout>
+#include <QtGui/QWidget>
+#include <QtGui/QLabel>
+#include <QtGui/QVBoxLayout>
 
 class ItemWidget : public QWidget
 {

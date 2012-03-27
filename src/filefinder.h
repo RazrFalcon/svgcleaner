@@ -1,8 +1,8 @@
 #ifndef FILEFINDER_H
 #define FILEFINDER_H
 
-#include <QObject>
-#include <QFileInfoList>
+#include <QtCore/QObject>
+#include <QtCore/QFileInfoList>
 
 class FileFinder : public QObject
 {

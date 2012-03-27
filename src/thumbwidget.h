@@ -1,7 +1,7 @@
 #ifndef THUMBWIDGET_H
 #define THUMBWIDGET_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
 #include "arguments.h"
 #include "ui_thumbwidget.h"

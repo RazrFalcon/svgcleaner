@@ -1,4 +1,4 @@
-#include <QIcon>
+#include <QtGui/QIcon>
 
 #include "itemwidget.h"
 

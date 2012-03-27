@@ -1,12 +1,14 @@
-#include <QBitmap>
-#include <QCursor>
-#include <QDesktopServices>
-#include <QMouseEvent>
-#include <QPainter>
-#include <QSvgRenderer>
-#include <QtDebug>
-#include <QTimer>
-#include <QUrl>
+#include <QtCore/QtDebug>
+#include <QtCore/QTimer>
+#include <QtCore/QUrl>
+
+#include <QtGui/QBitmap>
+#include <QtGui/QCursor>
+#include <QtGui/QDesktopServices>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QPainter>
+
+#include <QtSvg/QSvgRenderer>
 
 #include "iconswidget.h"
 

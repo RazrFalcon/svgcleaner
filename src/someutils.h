@@ -1,8 +1,8 @@
 #ifndef SOMEUTILS_H
 #define SOMEUTILS_H
 
-#include <QObject>
-#include <QStringList>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 
 class SomeUtils : public QObject
 {

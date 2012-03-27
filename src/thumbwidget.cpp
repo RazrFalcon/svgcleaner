@@ -1,5 +1,4 @@
-#include <QFileInfo>
-#include <QtDebug>
+#include <QtCore/QFileInfo>
 
 #include "someutils.h"
 #include "thumbwidget.h"

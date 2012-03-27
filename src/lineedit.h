@@ -1,9 +1,9 @@
 #ifndef LINEEDIT_H
 #define LINEEDIT_H
 
-#include <QLineEdit>
-#include <QLabel>
-#include <QStyleOptionFrameV2>
+#include <QtGui/QLineEdit>
+#include <QtGui/QLabel>
+#include <QtGui/QStyleOptionFrameV2>
 
 class LineEdit : public QLineEdit
 {

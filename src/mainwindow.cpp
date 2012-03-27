@@ -1,10 +1,11 @@
-#include <QKeyEvent>
-#include <QMenu>
-#include <QMessageBox>
-#include <QShortcut>
-#include <QtDebug>
-#include <QThread>
-#include <QWheelEvent>
+#include <QtCore/QThread>
+#include <QtCore/QtDebug>
+
+#include <QtGui/QKeyEvent>
+#include <QtGui/QMenu>
+#include <QtGui/QMessageBox>
+#include <QtGui/QShortcut>
+#include <QtGui/QWheelEvent>
 
 #include "aboutdialog.h"
 #include "cleanerthread.h"

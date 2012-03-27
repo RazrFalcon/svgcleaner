@@ -1,6 +1,5 @@
-#include <QFileInfo>
-#include <QTime>
-#include <QtDebug>
+#include <QtCore/QFileInfo>
+#include <QtCore/QTime>
 
 #include "someutils.h"
 

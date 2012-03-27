@@ -1,9 +1,9 @@
 #ifndef ARGUMENTS_H
 #define ARGUMENTS_H
 
-#include <QStringList>
-#include <QString>
-#include <QList>
+#include <QtCore/QList>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 struct ToThread
 {

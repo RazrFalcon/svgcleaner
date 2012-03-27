@@ -1,12 +1,11 @@
-#include <QDirIterator>
-#include <QFileDialog>
-#include <QFutureWatcher>
-#include <QMessageBox>
-#include <QProcess>
-#include <QScrollBar>
-#include <QWheelEvent>
-#include <QCloseEvent>
-#include <QtDebug>
+#include <QtCore/QProcess>
+#include <QtCore/QTextStream>
+
+#include <QtGui/QCloseEvent>
+#include <QtGui/QFileDialog>
+#include <QtGui/QMessageBox>
+#include <QtGui/QScrollBar>
+#include <QtGui/QWheelEvent>
 
 #include "itemwidget.h"
 #include "someutils.h"
@@ -295,7 +294,6 @@ QStringList WizardDialog::genOutFiles()
         list = getInFiles();
     }
 
-    qDebug()<<list;
     if (!gBoxCompress->isChecked())
         list.replaceInStrings(QRegExp("svgz$"),"svg");
     else if (rBtnCompressAll->isChecked())

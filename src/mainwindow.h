@@ -1,10 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QComboBox>
-#include <QTime>
-#include <QSettings>
+#include <QtCore/QSettings>
+#include <QtCore/QTime>
+
+#include <QtGui/QComboBox>
+#include <QtGui/QMainWindow>
 
 #include "arguments.h"
 #include "cleanerthread.h"

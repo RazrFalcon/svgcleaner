@@ -1,10 +1,11 @@
 #ifndef WIZARDDIALOG_H
 #define WIZARDDIALOG_H
 
-#include <QDialog>
-#include <QFileInfoList>
-#include <QSettings>
-#include <QThread>
+#include <QtGui/QDialog>
+
+#include <QtCore/QFileInfoList>
+#include <QtCore/QSettings>
+#include <QtCore/QThread>
 
 #include "arguments.h"
 #include "filefinder.h"

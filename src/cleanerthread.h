@@ -1,9 +1,9 @@
 #ifndef CLEANERTHREAD_H
 #define CLEANERTHREAD_H
 
-#include <QObject>
-#include <QProcess>
-#include <QTime>
+#include <QtCore/QObject>
+#include <QtCore/QProcess>
+#include <QtCore/QTime>
 
 #include "arguments.h"
 

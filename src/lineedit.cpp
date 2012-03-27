@@ -1,5 +1,4 @@
-#include <QPainter>
-#include <QtDebug>
+#include <QtGui/QPainter>
 
 #include "lineedit.h"
 

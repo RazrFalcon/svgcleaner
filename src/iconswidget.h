@@ -1,8 +1,8 @@
 #ifndef ICONSWIDGET_H
 #define ICONSWIDGET_H
 
-#include <QWidget>
-#include <QLabel>
+#include <QtGui/QWidget>
+#include <QtGui/QLabel>
 
 class IconsWidget : public QWidget
 {

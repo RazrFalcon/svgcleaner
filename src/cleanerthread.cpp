@@ -1,7 +1,7 @@
-#include <QDir>
-#include <QFileInfo>
-#include <QTime>
-#include <QtDebug>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+#include <QtCore/QtDebug>
+#include <QtCore/QTime>
 
 #include "cleanerthread.h"
 

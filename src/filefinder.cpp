@@ -1,5 +1,4 @@
-#include <QDir>
-#include <QtDebug>
+#include <QtCore/QDir>
 
 #include "filefinder.h"
 

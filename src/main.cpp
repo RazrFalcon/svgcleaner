@@ -1,7 +1,9 @@
+#include <QtCore/QLibraryInfo>
+#include <QtCore/QTextCodec>
+#include <QtCore/QTranslator>
+
 #include <QtGui/QApplication>
-#include <QLibraryInfo>
-#include <QTextCodec>
-#include <QTranslator>
+
 #include <QtDebug>
 
 #include "someutils.h"
@@ -18,7 +20,7 @@ int main(int argc, char *argv[])
     // load translation for SVG Cleaner
     QString locale = QLocale::system().name();
 #ifdef Q_OS_WIN
-    app.addLibraryPath("./translations/");
+    app.addLibraryPath("./translations");
 #else
     app.addLibraryPath("/usr/share/svgcleaner/translations");
 #endif

@@ -15,25 +15,22 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 
-    // FIXME: rewrite to libraryPath()
     // load translation for SVG Cleaner
     QString locale = QLocale::system().name();
 #ifdef Q_OS_WIN
-    QString path = SomeUtils::findFile(QString("svgcleaner_%1.qm").arg(locale),
-                                       "./translations/");
+    app.addLibraryPath("./translations/");
 #else
-    QString path = SomeUtils::findFile(QString("svgcleaner_%1.qm").arg(locale),
-                                       "/usr/share/svgcleaner/translations/");
+    app.addLibraryPath("/usr/share/svgcleaner/translations");
 #endif
+    qDebug()<<QApplication::libraryPaths();
+
     QTranslator translator;
-    if (translator.load(path)) {
+    if (translator.load("svgcleaner_"+locale))
         app.installTranslator(&translator);
-        qDebug()<<"translator path:"<<path;
-    }
 
     // load translation for Qt
     QTranslator qtTranslator;
-    qtTranslator.load("qt_"+locale,QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    qtTranslator.load("qt_"+locale, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qtTranslator);
 
     MainWindow w;

@@ -31,12 +31,12 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Předem se omlouváme za jakékoli chyby. Hlášení chyb posílejte, prosím, svgcleanerteam@gmail.com.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/aboutdialog.ui" line="121"/>
+        <location filename="../src/aboutdialog.ui" line="123"/>
         <source>Donate</source>
         <translation>Dary</translation>
     </message>
     <message>
-        <location filename="../src/aboutdialog.ui" line="127"/>
+        <location filename="../src/aboutdialog.ui" line="129"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -77,7 +77,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/aboutdialog.ui" line="95"/>
+        <location filename="../src/aboutdialog.ui" line="97"/>
         <source>License</source>
         <translation>Povolení</translation>
     </message>
@@ -85,17 +85,17 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>CleanerThread</name>
     <message>
-        <location filename="../src/cleanerthread.cpp" line="69"/>
+        <location filename="../src/cleanerthread.cpp" line="70"/>
         <source>You have to install XML::Twig module.</source>
         <translation>Musíte nainstalovat XML::modul Twig.</translation>
     </message>
     <message>
-        <location filename="../src/cleanerthread.cpp" line="129"/>
+        <location filename="../src/cleanerthread.cpp" line="130"/>
         <source>It&apos;s a not well-formed SVG file!</source>
         <translation>Toto není dobře udělaný soubor SVG!</translation>
     </message>
     <message>
-        <location filename="../src/cleanerthread.cpp" line="131"/>
+        <location filename="../src/cleanerthread.cpp" line="132"/>
         <source>This file doesn&apos;t need cleaning!</source>
         <translation>Tento soubor nepotřebuje úklid!</translation>
     </message>
@@ -103,7 +103,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>LineEdit</name>
     <message>
-        <location filename="../src/lineedit.cpp" line="47"/>
+        <location filename="../src/lineedit.cpp" line="44"/>
         <source>%1 files</source>
         <translation>%1 souborů</translation>
     </message>
@@ -801,7 +801,7 @@ Zpracování se nyní zastaví.</translation>
         <translation>Varování! Původní soubory budou zničeny!</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="369"/>
+        <location filename="../src/wizarddialog.cpp" line="371"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Pro tento způsob ukládání musíte nastavit předponu nebo příponu.</translation>
     </message>
@@ -816,65 +816,65 @@ Zpracování se nyní zastaví.</translation>
         <translation>Hlavní</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="339"/>
+        <location filename="../src/wizarddialog.cpp" line="341"/>
         <source>Select an input folder</source>
         <translation>Vybrat vstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="352"/>
+        <location filename="../src/wizarddialog.cpp" line="354"/>
         <source>Select an output folder</source>
         <translation>Vybrat výstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="363"/>
+        <location filename="../src/wizarddialog.cpp" line="365"/>
         <source>An input folder is not selected.</source>
         <translation>Vstupní složka není vybrána.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="366"/>
+        <location filename="../src/wizarddialog.cpp" line="368"/>
         <source>An output folder is not selected.</source>
         <translation>Výstupní složka není vybrána.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="372"/>
+        <location filename="../src/wizarddialog.cpp" line="374"/>
         <source>An input folder is not exist.</source>
         <translation>Vstupní složka neexistuje.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="375"/>
+        <location filename="../src/wizarddialog.cpp" line="377"/>
         <source>An input folder did not contain any svg, svgz files.</source>
         <translation>Vstupní složka neobsahoval žádné soubory svg, svgz.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="378"/>
+        <location filename="../src/wizarddialog.cpp" line="380"/>
         <source>You have to install 7-Zip to use SVG Cleaner.</source>
         <translation>Musíte nainstalovat 7-Zip pro použití SVG Cleaner.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="381"/>
+        <location filename="../src/wizarddialog.cpp" line="383"/>
         <source>You have to install Perl to use SVG Cleaner.</source>
         <translation>Musíte nainstalovat Perl pro použití SVG Cleaner.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="385"/>
+        <location filename="../src/wizarddialog.cpp" line="387"/>
         <source>Selected output folder is not writable.</source>
         <translation>Vybraná výstupní složka není zapisovatelná.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="423"/>
+        <location filename="../src/wizarddialog.cpp" line="425"/>
         <source>You have to set preset name.</source>
         <translation>Musíte nastavit název přednastavení.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="432"/>
+        <location filename="../src/wizarddialog.cpp" line="434"/>
         <source>This preset already exists.
 Overwrite?</source>
         <translation>Toto přednastavení již existuje.
 Přepsat?</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="393"/>
-        <location filename="../src/wizarddialog.cpp" line="431"/>
+        <location filename="../src/wizarddialog.cpp" line="395"/>
+        <location filename="../src/wizarddialog.cpp" line="433"/>
         <source>Warning</source>
         <translation>Varování</translation>
     </message>

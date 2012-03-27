@@ -12,20 +12,20 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
     frame->setFrameShadow(QFrame::Plain);
 #endif
     lbl1->setText("<b>"+tr("Name:")+"</b>");
-    refill(info,compare);
+    refill(info, compare);
 }
 
 void ThumbWidget::refill(const SVGInfo &info, bool compare)
 {
     iconsWidget->setMinimumHeight(height()-20);
-    iconsWidget->setPaths(info.inPath,info.outPath,compare);
+    iconsWidget->setPaths(info.inPath, info.outPath,compare);
 
     lblName->setMinimumWidth(300);
     QFont font = QFont().defaultFamily();
     font.setBold(true);
     QFontMetrics fm(font);
     QString name = fm.elidedText(QFileInfo(info.outPath).fileName(),
-                                 Qt::ElideLeft,lblName->width());
+                                 Qt::ElideLeft, lblName->width());
     lblName->setText("<b>"+name+"</b>");
 
     if (!info.errString.isEmpty()) {
@@ -38,17 +38,17 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
         lblSizes->setText(QString("%1 -> %2 (%3%)")
                           .arg(SomeUtils::prepareSize(info.inSize))
                           .arg(SomeUtils::prepareSize(info.outSize))
-                          .arg(QString::number(info.compress,'f',2)));
+                          .arg(QString::number(info.compress, 'f', 2)));
         float elemPerc = ((float)info.elemFinal/info.elemInitial)*100;
         lblElem->setText(QString("%1 -> %2 (%3%)")
                          .arg(info.elemInitial)
                          .arg(info.elemFinal)
-                         .arg(QString::number(elemPerc,'f',2)));
+                         .arg(QString::number(elemPerc, 'f', 2)));
         float attrPerc = ((float)info.attrFinal/info.attrInitial)*100;
         lblAttr->setText(QString("%1 -> %2 (%3%)")
                          .arg(info.attrInitial)
                          .arg(info.attrFinal)
-                         .arg(QString::number(attrPerc,'f',2)));
+                         .arg(QString::number(attrPerc, 'f', 2)));
         lblTime->setText(SomeUtils::prepareTime(info.time));
     }
 }

@@ -103,7 +103,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>LineEdit</name>
     <message>
-        <location filename="../src/lineedit.cpp" line="44"/>
+        <location filename="../src/lineedit.cpp" line="43"/>
         <source>%1 files</source>
         <translation>%1 souborů</translation>
     </message>
@@ -197,74 +197,74 @@ p, li { white-space: pre-wrap; }
         <translation>Srovnávací pohled</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="37"/>
+        <location filename="../src/mainwindow.cpp" line="38"/>
         <source>Sort by name</source>
         <translation>Třídit podle názvu</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="38"/>
+        <location filename="../src/mainwindow.cpp" line="39"/>
         <source>Sort by size</source>
         <translation>Třídit podle velikosti</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="39"/>
+        <location filename="../src/mainwindow.cpp" line="40"/>
         <source>Sort by compression</source>
         <translation>Třídit podle komprese</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="40"/>
+        <location filename="../src/mainwindow.cpp" line="41"/>
         <source>Sort by attributes</source>
         <translation>Třídit podle vlastností</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="41"/>
+        <location filename="../src/mainwindow.cpp" line="42"/>
         <source>Sort by elements</source>
         <translation>Třídit podle prvků</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="42"/>
+        <location filename="../src/mainwindow.cpp" line="43"/>
         <source>Sort by time</source>
         <translation>Třídit podle času</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="49"/>
+        <location filename="../src/mainwindow.cpp" line="50"/>
         <source>Open the wizard</source>
         <translation>Otevřít průvodce</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="50"/>
+        <location filename="../src/mainwindow.cpp" line="51"/>
         <source>Start processing</source>
         <translation>Spustit zpracování</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="51"/>
+        <location filename="../src/mainwindow.cpp" line="52"/>
         <source>Pause processing</source>
         <translation>Pozastavit zpracování</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="52"/>
+        <location filename="../src/mainwindow.cpp" line="53"/>
         <source>Stop cleaning</source>
         <translation>Zastavit úklid</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="230"/>
+        <location filename="../src/mainwindow.cpp" line="231"/>
         <source>Error</source>
         <translation>Chyba</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="231"/>
+        <location filename="../src/mainwindow.cpp" line="232"/>
         <source>
 Processing will stop now.</source>
         <translation>
 Zpracování se nyní zastaví.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="286"/>
+        <location filename="../src/mainwindow.cpp" line="287"/>
         <source>Compare view: on</source>
         <translation>Srovnávací pohled: zapnuto</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="289"/>
+        <location filename="../src/mainwindow.cpp" line="290"/>
         <source>Compare view: off</source>
         <translation>Srovnávací pohled: vypnuto</translation>
     </message>
@@ -272,22 +272,22 @@ Zpracování se nyní zastaví.</translation>
 <context>
     <name>SomeUtils</name>
     <message>
-        <location filename="../src/someutils.cpp" line="21"/>
+        <location filename="../src/someutils.cpp" line="20"/>
         <source>B</source>
         <translation>B</translation>
     </message>
     <message>
-        <location filename="../src/someutils.cpp" line="21"/>
+        <location filename="../src/someutils.cpp" line="20"/>
         <source>KiB</source>
         <translation>KiB</translation>
     </message>
     <message>
-        <location filename="../src/someutils.cpp" line="21"/>
+        <location filename="../src/someutils.cpp" line="20"/>
         <source>MiB</source>
         <translation>MiB</translation>
     </message>
     <message>
-        <location filename="../src/someutils.cpp" line="31"/>
+        <location filename="../src/someutils.cpp" line="30"/>
         <source>%1h %2m %3s %4ms</source>
         <translation>%1h %2m %3s %4ms</translation>
     </message>
@@ -315,7 +315,7 @@ Zpracování se nyní zastaví.</translation>
         <translation>Čas zpracování:</translation>
     </message>
     <message>
-        <location filename="../src/thumbwidget.cpp" line="15"/>
+        <location filename="../src/thumbwidget.cpp" line="14"/>
         <source>Name:</source>
         <translation>Název:</translation>
     </message>
@@ -379,7 +379,7 @@ Zpracování se nyní zastaví.</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="332"/>
-        <location filename="../src/wizarddialog.cpp" line="146"/>
+        <location filename="../src/wizarddialog.cpp" line="145"/>
         <source>For example: </source>
         <translation>Například: </translation>
     </message>
@@ -721,7 +721,7 @@ Zpracování se nyní zastaví.</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="325"/>
-        <location filename="../src/wizarddialog.cpp" line="147"/>
+        <location filename="../src/wizarddialog.cpp" line="146"/>
         <source>filename</source>
         <translation>Název souboru</translation>
     </message>
@@ -761,120 +761,120 @@ Zpracování se nyní zastaví.</translation>
         <translation>Uložit</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="83"/>
+        <location filename="../src/wizarddialog.cpp" line="82"/>
         <source>prefix</source>
         <translation>Předpona</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="84"/>
+        <location filename="../src/wizarddialog.cpp" line="83"/>
         <source>suffix</source>
         <translation>Přípona</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="93"/>
+        <location filename="../src/wizarddialog.cpp" line="92"/>
         <source>Presets</source>
         <translation>Přednastavení</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="94"/>
+        <location filename="../src/wizarddialog.cpp" line="93"/>
         <source>Elements</source>
         <translation>Prvky</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="95"/>
+        <location filename="../src/wizarddialog.cpp" line="94"/>
         <source>Attributes</source>
         <translation>Vlastnosti</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="97"/>
+        <location filename="../src/wizarddialog.cpp" line="96"/>
         <source>Optimization</source>
         <translation>Vyladění</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="98"/>
+        <location filename="../src/wizarddialog.cpp" line="97"/>
         <source>Output</source>
         <translation>Výstup</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="117"/>
+        <location filename="../src/wizarddialog.cpp" line="116"/>
         <source>Warning! The original files will be destroyed!</source>
         <translation>Varování! Původní soubory budou zničeny!</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="371"/>
+        <location filename="../src/wizarddialog.cpp" line="369"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Pro tento způsob ukládání musíte nastavit předponu nebo příponu.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="96"/>
+        <location filename="../src/wizarddialog.cpp" line="95"/>
         <source>Paths</source>
         <translation>Cesty</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="92"/>
+        <location filename="../src/wizarddialog.cpp" line="91"/>
         <source>Main</source>
         <translation>Hlavní</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="341"/>
+        <location filename="../src/wizarddialog.cpp" line="339"/>
         <source>Select an input folder</source>
         <translation>Vybrat vstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="354"/>
+        <location filename="../src/wizarddialog.cpp" line="352"/>
         <source>Select an output folder</source>
         <translation>Vybrat výstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="365"/>
+        <location filename="../src/wizarddialog.cpp" line="363"/>
         <source>An input folder is not selected.</source>
         <translation>Vstupní složka není vybrána.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="368"/>
+        <location filename="../src/wizarddialog.cpp" line="366"/>
         <source>An output folder is not selected.</source>
         <translation>Výstupní složka není vybrána.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="374"/>
+        <location filename="../src/wizarddialog.cpp" line="372"/>
         <source>An input folder is not exist.</source>
         <translation>Vstupní složka neexistuje.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="377"/>
+        <location filename="../src/wizarddialog.cpp" line="375"/>
         <source>An input folder did not contain any svg, svgz files.</source>
         <translation>Vstupní složka neobsahoval žádné soubory svg, svgz.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="380"/>
+        <location filename="../src/wizarddialog.cpp" line="378"/>
         <source>You have to install 7-Zip to use SVG Cleaner.</source>
         <translation>Musíte nainstalovat 7-Zip pro použití SVG Cleaner.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="383"/>
+        <location filename="../src/wizarddialog.cpp" line="381"/>
         <source>You have to install Perl to use SVG Cleaner.</source>
         <translation>Musíte nainstalovat Perl pro použití SVG Cleaner.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="387"/>
+        <location filename="../src/wizarddialog.cpp" line="385"/>
         <source>Selected output folder is not writable.</source>
         <translation>Vybraná výstupní složka není zapisovatelná.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="425"/>
+        <location filename="../src/wizarddialog.cpp" line="423"/>
         <source>You have to set preset name.</source>
         <translation>Musíte nastavit název přednastavení.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="434"/>
+        <location filename="../src/wizarddialog.cpp" line="432"/>
         <source>This preset already exists.
 Overwrite?</source>
         <translation>Toto přednastavení již existuje.
 Přepsat?</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="395"/>
-        <location filename="../src/wizarddialog.cpp" line="433"/>
+        <location filename="../src/wizarddialog.cpp" line="393"/>
+        <location filename="../src/wizarddialog.cpp" line="431"/>
         <source>Warning</source>
         <translation>Varování</translation>
     </message>

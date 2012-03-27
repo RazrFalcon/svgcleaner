@@ -5,5 +5,4 @@ AboutDialog::AboutDialog(QWidget *parent) :
 {
     setupUi(this);
     tabWidget->setCurrentIndex(0); // show always first tab
-    // FIXME: move all text from .ui to .cpp for easier translation
 }

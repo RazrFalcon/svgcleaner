@@ -18,7 +18,7 @@ QFileInfoList FileFinder::searchForFiles(const QString &startDir, bool recursive
 {
     QDir dir(startDir);
     QFileInfoList list;
-    foreach (QString file, dir.entryList(QStringList()<<"*.svg"<<"*.svgz", QDir::Files))
+    foreach (QString file, dir.entryList(QStringList()<<"*.svg"<<"*.svgz",  QDir::Files))
         list += QFileInfo(startDir+"/"+file);
     if (recursive && !stop) {
         foreach (QString subdir, dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot))

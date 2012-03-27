@@ -12,7 +12,7 @@ LineEdit::LineEdit(QWidget *parent) :
 
     lbl = new QLabel(this);
     lbl->setObjectName("files");
-    lbl->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    lbl->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     lbl->setStyleSheet("QLabel#files {border: none; padding: 4px; padding-left: 1px;"
                        "background-color: rgba(255, 255, 255, 0); color: #808080;}");
 }
@@ -108,7 +108,7 @@ void LineEdit::paintEvent(QPaintEvent *e)
         p.save();
         p.translate(rect().left()+width/2+3,rect().center().y());
         p.rotate(angle - i*30.0f);
-        p.drawRoundedRect(-capsuleWidth*0.5, -(innerRadius+capsuleHeight), capsuleWidth,
+        p.drawRoundedRect(-capsuleWidth*0.5, -(innerRadius+capsuleHeight),  capsuleWidth,
                           capsuleHeight, capsuleRadius, capsuleRadius);
         p.restore();
     }

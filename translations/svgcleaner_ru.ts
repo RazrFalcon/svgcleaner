@@ -104,7 +104,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>LineEdit</name>
     <message>
-        <location filename="../src/lineedit.cpp" line="44"/>
+        <location filename="../src/lineedit.cpp" line="43"/>
         <source>%1 files</source>
         <translation>%1 файлов</translation>
     </message>
@@ -198,74 +198,74 @@ p, li { white-space: pre-wrap; }
         <translation>Сравнение изображений</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="37"/>
+        <location filename="../src/mainwindow.cpp" line="38"/>
         <source>Sort by name</source>
         <translation>Сортировать по имени</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="38"/>
+        <location filename="../src/mainwindow.cpp" line="39"/>
         <source>Sort by size</source>
         <translation>Сортировать по размеру</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="39"/>
+        <location filename="../src/mainwindow.cpp" line="40"/>
         <source>Sort by compression</source>
         <translation>Сортировать по очистке</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="40"/>
+        <location filename="../src/mainwindow.cpp" line="41"/>
         <source>Sort by attributes</source>
         <translation>Сортировать по атрибутам</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="41"/>
+        <location filename="../src/mainwindow.cpp" line="42"/>
         <source>Sort by elements</source>
         <translation>Сортировать по элементам</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="42"/>
+        <location filename="../src/mainwindow.cpp" line="43"/>
         <source>Sort by time</source>
         <translation>Сортировать по времени</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="49"/>
+        <location filename="../src/mainwindow.cpp" line="50"/>
         <source>Open the wizard</source>
         <translation>Открыть Мастер</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="50"/>
+        <location filename="../src/mainwindow.cpp" line="51"/>
         <source>Start processing</source>
         <translation>Начать обработку</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="51"/>
+        <location filename="../src/mainwindow.cpp" line="52"/>
         <source>Pause processing</source>
         <translation>Pause processing</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="52"/>
+        <location filename="../src/mainwindow.cpp" line="53"/>
         <source>Stop cleaning</source>
         <translation>Stop cleaning</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="230"/>
+        <location filename="../src/mainwindow.cpp" line="231"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="231"/>
+        <location filename="../src/mainwindow.cpp" line="232"/>
         <source>
 Processing will stop now.</source>
         <translation>
 Прекращение обработки.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="286"/>
+        <location filename="../src/mainwindow.cpp" line="287"/>
         <source>Compare view: on</source>
         <translation>Сравнение изображений: включено</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="289"/>
+        <location filename="../src/mainwindow.cpp" line="290"/>
         <source>Compare view: off</source>
         <translation>Сравнение изображений: выключено</translation>
     </message>
@@ -273,22 +273,22 @@ Processing will stop now.</source>
 <context>
     <name>SomeUtils</name>
     <message>
-        <location filename="../src/someutils.cpp" line="21"/>
+        <location filename="../src/someutils.cpp" line="20"/>
         <source>B</source>
         <translation>Б</translation>
     </message>
     <message>
-        <location filename="../src/someutils.cpp" line="21"/>
+        <location filename="../src/someutils.cpp" line="20"/>
         <source>KiB</source>
         <translation>КиБ</translation>
     </message>
     <message>
-        <location filename="../src/someutils.cpp" line="21"/>
+        <location filename="../src/someutils.cpp" line="20"/>
         <source>MiB</source>
         <translation>МиБ</translation>
     </message>
     <message>
-        <location filename="../src/someutils.cpp" line="31"/>
+        <location filename="../src/someutils.cpp" line="30"/>
         <source>%1h %2m %3s %4ms</source>
         <translation>%1ч %2м %3с %4мс</translation>
     </message>
@@ -316,7 +316,7 @@ Processing will stop now.</source>
         <translation>Время обработки:</translation>
     </message>
     <message>
-        <location filename="../src/thumbwidget.cpp" line="15"/>
+        <location filename="../src/thumbwidget.cpp" line="14"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
@@ -390,13 +390,13 @@ Processing will stop now.</source>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="325"/>
-        <location filename="../src/wizarddialog.cpp" line="147"/>
+        <location filename="../src/wizarddialog.cpp" line="146"/>
         <source>filename</source>
         <translation>filename</translation>
     </message>
     <message>
         <location filename="../src/wizarddialog.ui" line="332"/>
-        <location filename="../src/wizarddialog.cpp" line="146"/>
+        <location filename="../src/wizarddialog.cpp" line="145"/>
         <source>For example: </source>
         <translation>Например:</translation>
     </message>
@@ -762,118 +762,118 @@ Processing will stop now.</source>
         <translation>Размер отступа в структуре данных:</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="83"/>
+        <location filename="../src/wizarddialog.cpp" line="82"/>
         <source>prefix</source>
         <translation>префикс</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="84"/>
+        <location filename="../src/wizarddialog.cpp" line="83"/>
         <source>suffix</source>
         <translation>суффикс</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="92"/>
+        <location filename="../src/wizarddialog.cpp" line="91"/>
         <source>Main</source>
         <translation>Главная</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="93"/>
+        <location filename="../src/wizarddialog.cpp" line="92"/>
         <source>Presets</source>
         <translation>Пресеты</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="94"/>
+        <location filename="../src/wizarddialog.cpp" line="93"/>
         <source>Elements</source>
         <translation>Элементы</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="95"/>
+        <location filename="../src/wizarddialog.cpp" line="94"/>
         <source>Attributes</source>
         <translation>Атрибуты</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="96"/>
+        <location filename="../src/wizarddialog.cpp" line="95"/>
         <source>Paths</source>
         <translation>Пути</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="97"/>
+        <location filename="../src/wizarddialog.cpp" line="96"/>
         <source>Optimization</source>
         <translation>Оптимизация</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="98"/>
+        <location filename="../src/wizarddialog.cpp" line="97"/>
         <source>Output</source>
         <translation>Вывод</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="117"/>
+        <location filename="../src/wizarddialog.cpp" line="116"/>
         <source>Warning! The original files will be destroyed!</source>
         <translation>Внимание! Исходные файлы будут уничтожены!</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="341"/>
+        <location filename="../src/wizarddialog.cpp" line="339"/>
         <source>Select an input folder</source>
         <translation>Выберите исходную папку</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="354"/>
+        <location filename="../src/wizarddialog.cpp" line="352"/>
         <source>Select an output folder</source>
         <translation>Выберите итоговую папку</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="365"/>
+        <location filename="../src/wizarddialog.cpp" line="363"/>
         <source>An input folder is not selected.</source>
         <translation>Не выбрана исходная папка.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="368"/>
+        <location filename="../src/wizarddialog.cpp" line="366"/>
         <source>An output folder is not selected.</source>
         <translation>Не выбрана итоговая папка.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="371"/>
+        <location filename="../src/wizarddialog.cpp" line="369"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Необходимо установить префикс или суффикс.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="374"/>
+        <location filename="../src/wizarddialog.cpp" line="372"/>
         <source>An input folder is not exist.</source>
         <translation>Исходная папка не существует.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="377"/>
+        <location filename="../src/wizarddialog.cpp" line="375"/>
         <source>An input folder did not contain any svg, svgz files.</source>
         <translation>Исходная папка не содержит файлов svg и svgz.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="380"/>
+        <location filename="../src/wizarddialog.cpp" line="378"/>
         <source>You have to install 7-Zip to use SVG Cleaner.</source>
         <translation>Для работы SVG Cleaner необходимо установить 7-Zip.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="383"/>
+        <location filename="../src/wizarddialog.cpp" line="381"/>
         <source>You have to install Perl to use SVG Cleaner.</source>
         <translation>Для работы SVG Cleaner необходимо установить Perl.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="387"/>
+        <location filename="../src/wizarddialog.cpp" line="385"/>
         <source>Selected output folder is not writable.</source>
         <translation>Выбранная итоговая папка недоступна для записи.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="395"/>
-        <location filename="../src/wizarddialog.cpp" line="433"/>
+        <location filename="../src/wizarddialog.cpp" line="393"/>
+        <location filename="../src/wizarddialog.cpp" line="431"/>
         <source>Warning</source>
         <translation>Предупреждение</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="425"/>
+        <location filename="../src/wizarddialog.cpp" line="423"/>
         <source>You have to set preset name.</source>
         <translation>Необходимо задать имя пресета.</translation>
     </message>
     <message>
-        <location filename="../src/wizarddialog.cpp" line="434"/>
+        <location filename="../src/wizarddialog.cpp" line="432"/>
         <source>This preset already exists.
 Overwrite?</source>
         <translation>Данный пресет уже существует. Перезаписать?</translation>

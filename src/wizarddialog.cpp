@@ -34,11 +34,11 @@ void WizardDialog::loadSettings()
 
     chBoxRecursive->setChecked(settings->value("Wizard/recursive").toBool());
     lineEditInDir->setText(settings->value("Wizard/lastInDir").toString());
-    lineEditOutDir->setText(settings->value("Wizard/lastOutDir",QDir::homePath()).toString());
+    lineEditOutDir->setText(settings->value("Wizard/lastOutDir", QDir::homePath()).toString());
     lineEditPrefix->setText(settings->value("Wizard/prefix").toString());
-    lineEditSuffix->setText(settings->value("Wizard/suffix","_cleaned").toString());
+    lineEditSuffix->setText(settings->value("Wizard/suffix", "_cleaned").toString());
 
-    gBoxCompress->setChecked(settings->value("Wizard/compress",true).toBool());
+    gBoxCompress->setChecked(settings->value("Wizard/compress", true).toBool());
     cmbBoxCompress->setCurrentIndex(settings->value("Wizard/compressLevel",4).toInt());
     if (settings->value("Wizard/compressType",true).toBool())
         rBtnSaveSuffix->setChecked(true);
@@ -46,7 +46,7 @@ void WizardDialog::loadSettings()
         rBtnCompressAll->setChecked(true);
 
     loadPresets();
-    int presetNum = settings->value("Wizard/preset",0).toInt();
+    int presetNum = settings->value("Wizard/preset", 0).toInt();
     if (presetNum > cmbBoxPreset->count() || presetNum < 0)
         presetNum = 0;
     cmbBoxPreset->setCurrentIndex(presetNum);
@@ -55,60 +55,60 @@ void WizardDialog::loadSettings()
     spinBoxThreads->setValue(settings->value("Wizard/threadCount",
                                              QThread::idealThreadCount()).toInt());
     spinBoxThreads->setMaximum(QThread::idealThreadCount());
-    gBoxThreads->setChecked(settings->value("Wizard/threadingEnabled",true).toBool());
+    gBoxThreads->setChecked(settings->value("Wizard/threadingEnabled", true).toBool());
 }
 
 void WizardDialog::setupGUI()
 {
     // setup type radioButtons
-    connect(radioBtn1,SIGNAL(clicked()),this,SLOT(radioSelected()));
-    connect(radioBtn2,SIGNAL(clicked()),this,SLOT(radioSelected()));
-    connect(radioBtn3,SIGNAL(clicked()),this,SLOT(radioSelected()));
+    connect(radioBtn1, SIGNAL(clicked()), this, SLOT(radioSelected()));
+    connect(radioBtn2, SIGNAL(clicked()), this, SLOT(radioSelected()));
+    connect(radioBtn3, SIGNAL(clicked()), this, SLOT(radioSelected()));
     QString str("radioBtn");
-    str.append(settings->value("Wizard/type","1").toString());
+    str.append(settings->value("Wizard/type", "1").toString());
     QRadioButton *rbtn = findChild<QRadioButton *>(str);
     rbtn->click();
 
-    connect(lineEditInDir,SIGNAL(textChanged(QString)),this,SLOT(loadFiles()));
-    connect(chBoxRecursive,SIGNAL(clicked()),this,SLOT(loadFiles()));
+    connect(lineEditInDir,  SIGNAL(textChanged(QString)), this, SLOT(loadFiles()));
+    connect(chBoxRecursive, SIGNAL(clicked()),            this, SLOT(loadFiles()));
 
     // alignment fixes
-    gridLayoutOutput->setAlignment(spinBoxIndent,Qt::AlignRight);
-    gridLayoutOutput->setAlignment(cmbBoxEmptyTags,Qt::AlignRight);
-    gridLayoutOutput->setAlignment(cmbBoxQuote,Qt::AlignRight);
+    gridLayoutOutput->setAlignment(spinBoxIndent,   Qt::AlignRight);
+    gridLayoutOutput->setAlignment(cmbBoxEmptyTags, Qt::AlignRight);
+    gridLayoutOutput->setAlignment(cmbBoxQuote,     Qt::AlignRight);
 
     // Placeholder text work only on qt>4.7
 #if QT_VERSION >= 0x040700
     lineEditPrefix->setPlaceholderText(tr("prefix"));
     lineEditSuffix->setPlaceholderText(tr("suffix"));
 #endif
-    connect(lineEditPrefix,SIGNAL(textChanged(QString)),this,SLOT(createExample()));
-    connect(lineEditSuffix,SIGNAL(textChanged(QString)),this,SLOT(createExample()));
+    connect(lineEditPrefix, SIGNAL(textChanged(QString)), this, SLOT(createExample()));
+    connect(lineEditSuffix, SIGNAL(textChanged(QString)), this, SLOT(createExample()));
     createExample();
 
     // list of all pages in wizard
     QStringList pageList;
-    pageList<<tr("Main")
-            <<tr("Presets")
-            <<tr("Elements")
-            <<tr("Attributes")
-            <<tr("Paths")
-            <<tr("Optimization")
-            <<tr("Output");
+    pageList << tr("Main")
+             << tr("Presets")
+             << tr("Elements")
+             << tr("Attributes")
+             << tr("Paths")
+             << tr("Optimization")
+             << tr("Output");
     QStringList pageListNotTr;
-    pageListNotTr<<"main"<<"presets"<<"elements"<<"attributes"<<"paths"
-                 <<"optimization"<<"output";
+    pageListNotTr << "main" << "presets" << "elements" << "attributes" << "paths"
+                  << "optimization" << "output";
     // create icons for pages in "tabbar", which is QListWidget
     for (int i = 0; i < pageList.count(); ++i) {
         QListWidgetItem *item = new QListWidgetItem(listWidget);
         ItemWidget *w = new ItemWidget(pageListNotTr.at(i));
         item->setToolTip(pageList.at(i));
-        item->setSizeHint(QSize(64,64));
-        listWidget->setItemWidget(item,w);
+        item->setSizeHint(QSize(64, 64));
+        listWidget->setItemWidget(item, w);
     }
     listWidget->setFixedWidth(64*listWidget->count()+5);
-    connect(listWidget,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
-                            this,SLOT(changePage(QListWidgetItem*,QListWidgetItem*)));
+    connect(listWidget, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+                            this, SLOT(changePage(QListWidgetItem*, QListWidgetItem*)));
     listWidget->setCurrentRow(0);
     listWidget->installEventFilter(this);
 
@@ -116,7 +116,7 @@ void WizardDialog::setupGUI()
                           tr("Warning! The original files will be destroyed!")+"</span>");
 
     // setup icons
-    btnOpenInDir->setIcon(QIcon(":/open.svgz"));
+    btnOpenInDir->setIcon( QIcon(":/open.svgz"));
     btnOpenOutDir->setIcon(QIcon(":/open.svgz"));
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
     listWidget->setFocus();
@@ -125,7 +125,7 @@ void WizardDialog::setupGUI()
     fileSearch = new FileFinder();
     qRegisterMetaType<QFileInfoList>("QFileInfoList");
     connect(fileSearch, SIGNAL(finished(QFileInfoList)), this, SLOT(loadFinished(QFileInfoList)));
-    connect(this, SIGNAL(start(QString,bool)), fileSearch, SLOT(startSearch(QString,bool)));
+    connect(this, SIGNAL(start(QString, bool)), fileSearch, SLOT(startSearch(QString, bool)));
     fileSearch->moveToThread(searchThread);
     searchThread->start();
     loadFiles();
@@ -209,13 +209,13 @@ ToThread WizardDialog::threadArguments()
     threadArgs.inputFiles  = getInFiles();
     threadArgs.outputFiles = genOutFiles();
     threadArgs.level       = compressValue();
-    threadArgs.cleanerPath = SomeUtils::findFile("svgcleaner.pl","/usr/bin/");
+    threadArgs.cleanerPath = SomeUtils::findFile("svgcleaner.pl", "/usr/bin/");
 #ifdef Q_OS_WIN
-    threadArgs.zipPath     = SomeUtils::findFile("7za.exe","");
-    threadArgs.perlPath    = SomeUtils::findFile("perl.exe","C:/strawberry/perl/bin/");
+    threadArgs.zipPath     = SomeUtils::findFile("7za.exe", "");
+    threadArgs.perlPath    = SomeUtils::findFile("perl.exe", "C:/strawberry/perl/bin/");
 #else
-    threadArgs.zipPath     = SomeUtils::findFile("7z","/usr/bin/");
-    threadArgs.perlPath    = SomeUtils::findFile("perl","/usr/bin/");
+    threadArgs.zipPath     = SomeUtils::findFile("7z", "/usr/bin/");
+    threadArgs.perlPath    = SomeUtils::findFile("perl", "/usr/bin/");
 #endif
     return threadArgs;
 }
@@ -295,9 +295,9 @@ QStringList WizardDialog::genOutFiles()
     }
 
     if (!gBoxCompress->isChecked())
-        list.replaceInStrings(QRegExp("svgz$"),"svg");
+        list.replaceInStrings(QRegExp("svgz$"), "svg");
     else if (rBtnCompressAll->isChecked())
-        list.replaceInStrings(QRegExp("svg$"),"svgz");
+        list.replaceInStrings(QRegExp("svg$"), "svgz");
     list.sort();
 
     return list;
@@ -349,7 +349,7 @@ void WizardDialog::on_btnOpenOutDir_clicked()
     if (currPath.isEmpty())
         currPath = QDir::homePath();
 
-    QString path = QFileDialog::getExistingDirectory(this,tr("Select an output folder"),
+    QString path = QFileDialog::getExistingDirectory(this, tr("Select an output folder"),
                                                      currPath,
                                                      QFileDialog::ShowDirsOnly);
     if (!path.isEmpty())
@@ -390,7 +390,7 @@ bool WizardDialog::checkForWarnings()
 
 void WizardDialog::createWarning(const QString &text)
 {
-    QMessageBox::warning(this,tr("Warning"),text,QMessageBox::Ok);
+    QMessageBox::warning(this, tr("Warning"), text,QMessageBox::Ok);
 }
 
 /*
@@ -406,9 +406,9 @@ void WizardDialog::createWarning(const QString &text)
 bool WizardDialog::checkFor(const QString &name)
 {
 #ifdef Q_OS_WIN //! delete it
-    return QFile(SomeUtils::findFile(name+".exe","C:/strawberry/perl/bin/")).exists();
+    return QFile(SomeUtils::findFile(name+".exe", "C:/strawberry/perl/bin/")).exists();
 #else
-    return QFile(SomeUtils::findFile(name,"/usr/bin/")).exists();
+    return QFile(SomeUtils::findFile(name, "/usr/bin/")).exists();
 #endif
 }
 
@@ -428,7 +428,7 @@ void WizardDialog::on_btnSavePreset_clicked()
     QString path = QFileInfo(settings->fileName()).absolutePath()+"/presets/";
     // overwrite old preset?
     if (QFile(path+linePresetName->text()+".preset").exists()) {
-        int ansver = QMessageBox::warning(this,tr("Warning"),
+        int ansver = QMessageBox::warning(this, tr("Warning"),
                                           tr("This preset already exists.\nOverwrite?"),
                                           QMessageBox::Yes | QMessageBox::No);
         if (ansver == QMessageBox::No)
@@ -483,7 +483,7 @@ void WizardDialog::setPreset(const QString &preset)
             inputFile.setFileName(presets.at(i).absoluteFilePath());
     }
 
-    QMap<QString,QString> argMap;
+    QMap<QString, QString> argMap;
     QString args;
     if (inputFile.exists() && inputFile.open(QFile::ReadOnly)) {
         QTextStream textStream(&inputFile);
@@ -495,7 +495,7 @@ void WizardDialog::setPreset(const QString &preset)
         inputFile.close();
     } else {
         args = "convert-abs-paths=yes";
-        argMap.insert("convert-abs-paths","yes");
+        argMap.insert("convert-abs-paths", "yes");
     }
     QRegExp rx(args.remove(QRegExp("\\|*$")));
 
@@ -585,17 +585,17 @@ void WizardDialog::on_btnRemovePreset_clicked()
 
 void WizardDialog::saveSettings()
 {
-    settings->setValue("Wizard/recursive",chBoxRecursive->isChecked());
-    settings->setValue("Wizard/lastInDir",lineEditInDir->text());
-    settings->setValue("Wizard/lastOutDir",lineEditOutDir->text());
-    settings->setValue("Wizard/prefix",lineEditPrefix->text());
-    settings->setValue("Wizard/suffix",lineEditSuffix->text());
-    settings->setValue("Wizard/compress",gBoxCompress->isChecked());
-    settings->setValue("Wizard/compressLevel",cmbBoxCompress->currentIndex());
-    settings->setValue("Wizard/compressType",rBtnSaveSuffix->isChecked());
-    settings->setValue("Wizard/preset",cmbBoxPreset->currentIndex());
-    settings->setValue("Wizard/threadCount",spinBoxThreads->value());
-    settings->setValue("Wizard/threadingEnabled",gBoxThreads->isChecked());
+    settings->setValue("Wizard/lastInDir",        lineEditInDir->text());
+    settings->setValue("Wizard/lastOutDir",       lineEditOutDir->text());
+    settings->setValue("Wizard/prefix",           lineEditPrefix->text());
+    settings->setValue("Wizard/suffix",           lineEditSuffix->text());
+    settings->setValue("Wizard/recursive",        chBoxRecursive->isChecked());
+    settings->setValue("Wizard/compress",         gBoxCompress->isChecked());
+    settings->setValue("Wizard/threadingEnabled", gBoxThreads->isChecked());
+    settings->setValue("Wizard/compressType",     rBtnSaveSuffix->isChecked());
+    settings->setValue("Wizard/preset",           cmbBoxPreset->currentIndex());
+    settings->setValue("Wizard/compressLevel",    cmbBoxCompress->currentIndex());
+    settings->setValue("Wizard/threadCount",      spinBoxThreads->value());
 }
 
 bool WizardDialog::eventFilter(QObject *obj, QEvent *event)

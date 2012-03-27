@@ -17,9 +17,9 @@ QString SomeUtils::prepareSize(const float bytes)
         i++;
     }
     QStringList list;
-    list<<tr("B")<<tr("KiB")<<tr("MiB");
+    list << tr("B") << tr("KiB") << tr("MiB");
 
-    return QString::number(size,'f',1)+list.at(i);
+    return QString::number(size, 'f', 1)+list.at(i);
 }
 
 QString SomeUtils::prepareTime(const float ms)

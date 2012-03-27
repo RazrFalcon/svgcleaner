@@ -10,9 +10,9 @@ CleanerThread::CleanerThread(ToThread args, QObject *parent) :
 {
     arguments = args;
     proc = new QProcess;
-    connect(proc,SIGNAL(readyReadStandardOutput()),this,SLOT(readyRead()));
-    connect(proc,SIGNAL(readyReadStandardError()),this,SLOT(readyReadError()));
-    connect(proc,SIGNAL(finished(int)),this,SLOT(finished(int)));
+    connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readyRead()));
+    connect(proc, SIGNAL(readyReadStandardError()),  this, SLOT(readyReadError()));
+    connect(proc, SIGNAL(finished(int)), this, SLOT(finished(int)));
 }
 
 void CleanerThread::startNext(const QString &inFile, const QString &outFile)
@@ -21,34 +21,33 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
 
     scriptOutput.clear();
     scriptErrors.clear();
-    outSVG = QString(outFile).replace("svgz","svg").replace("SVGZ","SVG");
+    outSVG = QString(outFile).replace("svgz", "svg").replace("SVGZ", "SVG");
     currentIn = inFile;
     currentOut = outFile;
-    qDebug()<<outSVG<<currentIn<<currentOut;
 
     QDir().mkpath(QFileInfo(outFile).absolutePath());
     if (QFileInfo(inFile).suffix().toLower() == "svg") {
         if (inFile != outFile)
             QFile(outSVG).remove();
-        QFile().copy(inFile,outSVG);
-    }
-    else
+        QFile().copy(inFile, outSVG);
+    } else {
         unzip(inFile);
+    }
 
     QStringList args;
     args.append(arguments.cleanerPath);
     args.append("--in-file="+outSVG);
     args.append("--out-file="+outSVG);
     args.append(arguments.args);
-    proc->start(arguments.perlPath,args);
+    proc->start(arguments.perlPath, args);
 }
 
 void CleanerThread::unzip(const QString &inPath)
 {
     QProcess proc;
     QStringList args;
-    args<<"e"<<"-so"<<inPath;
-    proc.start(arguments.zipPath,args);
+    args << "e" << "-so" << inPath;
+    proc.start(arguments.zipPath, args);
     proc.waitForFinished();
     QFile file(outSVG);
     if (file.open(QFile::WriteOnly)) {
@@ -69,7 +68,7 @@ void CleanerThread::readyReadError()
     if (error.contains("Can't locate XML/Twig.pm in"))
         emit criticalError(tr("You have to install XML::Twig module."));
     else
-        qDebug()<<error<<"in file"<<currentIn;
+        qDebug() << error << "in file" << currentIn;
     scriptErrors += error;
 }
 
@@ -82,8 +81,8 @@ void CleanerThread::finished(int)
 
         QProcess procZip;
         QStringList args;
-        args<<"a"<<"-tgzip"<<"-mx"+arguments.level<<currentOut<<outSVG;
-        procZip.start(arguments.zipPath,args);
+        args << "a" << "-tgzip" << "-mx"+arguments.level << currentOut << outSVG;
+        procZip.start(arguments.zipPath, args);
         procZip.waitForFinished();
         QFile(outSVG).remove();
     }
@@ -130,9 +129,6 @@ SVGInfo CleanerThread::info()
         info.errString = tr("It's a not well-formed SVG file!");
     if (scriptErrors.contains("This file doesn't need cleaning!"))
         info.errString = tr("This file doesn't need cleaning!");
-
-    if (arguments.args.contains("--quiet=no"))
-        qDebug()<<scriptOutput;
 
     return info;
 }

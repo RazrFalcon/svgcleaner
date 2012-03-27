@@ -28,11 +28,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // load settings
     settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
-                             "svgcleaner", "config"); // FIXME: rewrite to static
+                             "svgcleaner", "config");
 
     // create sorting combobox
     QWidget *w = new QWidget(toolBar);
-    w->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     toolBar->addWidget(w);
     cmbSort = new QComboBox();
     cmbSort->addItem(tr("Sort by name"));
@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
     cmbSort->addItem(tr("Sort by time"));
     cmbSort->setMinimumHeight(toolBar->height());
     cmbSort->setEnabled(false);
-    connect(cmbSort,SIGNAL(currentIndexChanged(int)),this,SLOT(sortingChanged(int)));
+    connect(cmbSort, SIGNAL(currentIndexChanged(int)), this, SLOT(sortingChanged(int)));
     toolBar->addWidget(cmbSort);
 
     QString suffix = "<br><span style=\"color:#808080;\">%1</span>";
@@ -52,16 +52,16 @@ MainWindow::MainWindow(QWidget *parent) :
     actionPause->setToolTip(tr("Pause processing")+suffix.arg("Ctrl+R"));
     actionStop->setToolTip(tr("Stop cleaning")+suffix.arg("Ctrl+S"));
 
-    actionCompareView->setChecked(settings->value("compareView",true).toBool());
+    actionCompareView->setChecked(settings->value("compareView", true).toBool());
     on_actionCompareView_triggered();
 
     // setup shortcuts
     QShortcut *quitShortcut = new QShortcut(QKeySequence::Quit,this);
-    connect(quitShortcut,SIGNAL(activated()),qApp,SLOT(quit()));
+    connect(quitShortcut, SIGNAL(activated()), qApp, SLOT(quit()));
 
     setContextMenuPolicy(Qt::NoContextMenu);
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
-    resize(1000,650);
+    resize(1000, 650);
 }
 
 void MainWindow::on_actionWizard_triggered()
@@ -90,16 +90,16 @@ void MainWindow::on_actionStart_triggered()
         actionStart->setVisible(false);
     }
 
-    qDebug()<<"start processing using:"<<arguments.cleanerPath;
+    qDebug() << "start processing using:" << arguments.cleanerPath;
     if (!arguments.args.isEmpty()) {
-        qDebug()<<"with keys:";
+        qDebug() << "with keys:";
         foreach (QString key, arguments.args)
-            qDebug()<<key;
+            qDebug() << key;
     }
 
     int threadCount = 1;
     if (settings->value("Wizard/threadingEnabled",true).toBool()) {
-        threadCount = settings->value("Wizard/threadCount",QThread::idealThreadCount()).toInt();
+        threadCount = settings->value("Wizard/threadCount", QThread::idealThreadCount()).toInt();
         if (threadCount > arguments.inputFiles.count())
             threadCount = arguments.inputFiles.count();
     }
@@ -108,11 +108,11 @@ void MainWindow::on_actionStart_triggered()
         QThread *thread = new QThread(this);
         CleanerThread *cleaner = new CleanerThread(arguments);
         cleanerList.append(cleaner);
-        connect(cleaner,SIGNAL(cleaned(SVGInfo)),
-                this,SLOT(progress(SVGInfo)),Qt::QueuedConnection);
-        connect(cleaner,SIGNAL(criticalError(QString)),this,SLOT(errorHandler(QString)));
+        connect(cleaner, SIGNAL(cleaned(SVGInfo)),
+                this, SLOT(progress(SVGInfo)),Qt::QueuedConnection);
+        connect(cleaner, SIGNAL(criticalError(QString)), this, SLOT(errorHandler(QString)));
         cleaner->moveToThread(thread);
-        cleaner->startNext(arguments.inputFiles.at(position),arguments.outputFiles.at(position));
+        cleaner->startNext(arguments.inputFiles.at(position), arguments.outputFiles.at(position));
         thread->start();
         position++;
     }
@@ -157,7 +157,7 @@ void MainWindow::progress(SVGInfo info)
     if (!info.errString.isEmpty())
         lblICrashed->setText(QString::number(lblICrashed->text().toInt()+1));
     else {
-        inputSize += info.inSize;
+        inputSize  += info.inSize;
         outputSize += info.outSize;
         if (info.compress > compressMax && info.compress < 100) compressMax = info.compress;
         if (info.compress < compressMin && info.compress > 0)   compressMin = info.compress;
@@ -168,8 +168,8 @@ void MainWindow::progress(SVGInfo info)
 
     int available = scrollArea->height()/itemLayout->itemAt(0)->geometry().height();
     if (available >= itemLayout->count() || itemLayout->isEmpty()) {
-        itemLayout->insertWidget(itemLayout->count()-1,
-                                 new ThumbWidget(info,actionCompareView->isChecked()));
+        itemLayout->insertWidget(itemLayout->count()-1, new ThumbWidget(info,
+                                                                actionCompareView->isChecked()));
     } else {
         itemScroll->show();
         itemScroll->setMaximum(itemScroll->maximum()+1);
@@ -211,9 +211,9 @@ void MainWindow::createStatistics()
 
     // cleaned
     if (outputSize != 0 && inputSize != 0)
-        lblIAverComp->setText(QString::number((outputSize/inputSize)*100,'f',2)+"%");
-    lblIMaxCompress->setText(QString::number(100-compressMin,'f',2)+"%");
-    lblIMinCompress->setText(QString::number(100-compressMax,'f',2)+"%");
+        lblIAverComp->setText(QString::number((outputSize/inputSize)*100, 'f', 2)+"%");
+    lblIMaxCompress->setText(QString::number(100-compressMin, 'f', 2)+"%");
+    lblIMinCompress->setText(QString::number(100-compressMax, 'f', 2)+"%");
 
     // time
     int fullTime = time.elapsed();
@@ -277,7 +277,7 @@ void MainWindow::deleteThreads()
 void MainWindow::on_itemScroll_valueChanged(int value)
 {
     foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
-        item->refill(itemList.at(value++),actionCompareView->isChecked());
+        item->refill(itemList.at(value++), actionCompareView->isChecked());
 }
 
 void MainWindow::on_actionCompareView_triggered()
@@ -292,8 +292,8 @@ void MainWindow::on_actionCompareView_triggered()
 
     int i = itemScroll->value();
     foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
-        item->refill(itemList.at(i++),actionCompareView->isChecked());
-    settings->setValue("compareView",actionCompareView->isChecked());
+        item->refill(itemList.at(i++), actionCompareView->isChecked());
+    settings->setValue("compareView",  actionCompareView->isChecked());
 }
 
 void MainWindow::on_actionInfo_triggered()
@@ -328,7 +328,7 @@ void MainWindow::sortingChanged(int value)
     qSort(itemList.begin(),itemList.end(),customSort);
     int i = itemScroll->value();
     foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
-        item->refill(itemList.at(i++),actionCompareView->isChecked());
+        item->refill(itemList.at(i++), actionCompareView->isChecked());
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

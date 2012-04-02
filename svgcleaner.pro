@@ -1,6 +1,5 @@
 QT       += core gui svg
 TEMPLATE  = app
-VERSION   = 0.5
 unix:TARGET    = svgcleaner-gui
 windows:TARGET = SVGCleaner
 
@@ -39,7 +38,7 @@ windows:RC_FILE = icons/icon.rc
 
 include(translations/translations.pri)
 
-unix {
+unix { # // FIXME move to .pri
     isEmpty (PREFIX):PREFIX = /usr
 
     INSTALLS           += target desktop logo script presets interface translations

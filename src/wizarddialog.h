@@ -35,6 +35,7 @@ private:
     bool isDefault(QWidget *w);
     QString compressValue();
     QString findLabel(const QString &accessibleName);
+    QString settingPath();
     QStringList argsLine();
     QStringList getInFiles();
     QStringList genOutFiles();

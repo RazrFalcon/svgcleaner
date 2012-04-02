@@ -32,30 +32,30 @@ void WizardDialog::loadSettings()
     settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
                              "svgcleaner", "config");
 
-    chBoxRecursive->setChecked(settings->value("Wizard/recursive").toBool());
-    lineEditInDir->setText(settings->value("Wizard/lastInDir").toString());
-    lineEditOutDir->setText(settings->value("Wizard/lastOutDir", QDir::homePath()).toString());
-    lineEditPrefix->setText(settings->value("Wizard/prefix").toString());
-    lineEditSuffix->setText(settings->value("Wizard/suffix", "_cleaned").toString());
+    chBoxRecursive->setChecked(settings->value("Wizard/Recursive").toBool());
+    lineEditInDir->setText(settings->value("Wizard/LastInDir").toString());
+    lineEditOutDir->setText(settings->value("Wizard/LastOutDir", QDir::homePath()).toString());
+    lineEditPrefix->setText(settings->value("Wizard/Prefix").toString());
+    lineEditSuffix->setText(settings->value("Wizard/Suffix", "_cleaned").toString());
 
-    gBoxCompress->setChecked(settings->value("Wizard/compress", true).toBool());
-    cmbBoxCompress->setCurrentIndex(settings->value("Wizard/compressLevel",4).toInt());
-    if (settings->value("Wizard/compressType",true).toBool())
+    gBoxCompress->setChecked(settings->value("Wizard/Compress", true).toBool());
+    cmbBoxCompress->setCurrentIndex(settings->value("Wizard/CompressLevel",4).toInt());
+    if (settings->value("Wizard/CompressType",true).toBool())
         rBtnSaveSuffix->setChecked(true);
     else
         rBtnCompressAll->setChecked(true);
 
     loadPresets();
-    int presetNum = settings->value("Wizard/preset", 0).toInt();
+    int presetNum = settings->value("Wizard/Preset", 0).toInt();
     if (presetNum > cmbBoxPreset->count() || presetNum < 0)
         presetNum = 0;
     cmbBoxPreset->setCurrentIndex(presetNum);
 
     // threading
-    spinBoxThreads->setValue(settings->value("Wizard/threadCount",
+    spinBoxThreads->setValue(settings->value("Wizard/ThreadCount",
                                              QThread::idealThreadCount()).toInt());
     spinBoxThreads->setMaximum(QThread::idealThreadCount());
-    gBoxThreads->setChecked(settings->value("Wizard/threadingEnabled", true).toBool());
+    gBoxThreads->setChecked(settings->value("Wizard/ThreadingEnabled", true).toBool());
 }
 
 void WizardDialog::setupGUI()
@@ -65,7 +65,7 @@ void WizardDialog::setupGUI()
     connect(radioBtn2, SIGNAL(clicked()), this, SLOT(radioSelected()));
     connect(radioBtn3, SIGNAL(clicked()), this, SLOT(radioSelected()));
     QString str("radioBtn");
-    str.append(settings->value("Wizard/type", "1").toString());
+    str.append(settings->value("Wizard/Type", "1").toString()); // FIXME: change name
     QRadioButton *rbtn = findChild<QRadioButton *>(str);
     rbtn->click();
 
@@ -137,7 +137,7 @@ void WizardDialog::radioSelected()
     frameRename->setVisible(radioBtn2->isChecked());
     lblOverwrite->setVisible(radioBtn3->isChecked());
     QRadioButton *rBtn = static_cast<QRadioButton *>(sender());
-    settings->setValue("Wizard/type",rBtn->accessibleName());
+    settings->setValue("Wizard/Type",rBtn->accessibleName());
 }
 
 void WizardDialog::createExample()
@@ -154,7 +154,7 @@ void WizardDialog::loadPresets()
     presets += QDir("presets").entryInfoList(QStringList("*.preset"));
     presets += QDir("/usr/share/svgcleaner/presets/")
                .entryInfoList(QStringList("*.preset")); // Linux only. On Windows return nothing.
-    presets += QDir(QFileInfo(settings->fileName()).absolutePath()+"/presets/")
+    presets += QDir(settingPath() + "/presets/")
                .entryInfoList(QStringList("*.preset"));
     presets += QDir("../SVGCleaner/presets/")
                .entryInfoList(QStringList("*.preset")); // Qt Creator shadow build
@@ -425,7 +425,7 @@ void WizardDialog::on_btnSavePreset_clicked()
     }
 
     // generate path
-    QString path = QFileInfo(settings->fileName()).absolutePath()+"/presets/";
+    QString path = settingPath() + "/presets/";
     // overwrite old preset?
     if (QFile(path+linePresetName->text()+".preset").exists()) {
         int ansver = QMessageBox::warning(this, tr("Warning"),
@@ -470,8 +470,8 @@ void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &text)
 {
     setPreset(text);
 
-    QString path = QFileInfo(settings->fileName()).absolutePath()+"/presets/";
-    QFile file(path+cmbBoxPreset->currentText()+".preset");
+    QString path = settingPath() + "/presets/";
+    QFile file(path+cmbBoxPreset->currentText() + ".preset");
     btnRemovePreset->setVisible(file.exists());
 }
 
@@ -488,7 +488,7 @@ void WizardDialog::setPreset(const QString &preset)
     if (inputFile.exists() && inputFile.open(QFile::ReadOnly)) {
         QTextStream textStream(&inputFile);
         foreach (QString name, textStream.readAll().split("\n")) {
-            args += QString(name).remove(QRegExp("=.*"))+"|";
+            args += QString(name).remove(QRegExp("=.*")) +"|";
             argMap.insert(QString(name).remove(QRegExp("=.*")),
                           QString(name).remove(QRegExp(".*=")));
         }
@@ -577,7 +577,7 @@ QString WizardDialog::findLabel(const QString &accessibleName)
 
 void WizardDialog::on_btnRemovePreset_clicked()
 {
-    QString path = QFileInfo(settings->fileName()).absolutePath()+"/presets/";
+    QString path = settingPath() + "/presets/";
     QFile file(path+cmbBoxPreset->currentText()+".preset");
     file.remove();
     cmbBoxPreset->removeItem(cmbBoxPreset->currentIndex());
@@ -585,17 +585,17 @@ void WizardDialog::on_btnRemovePreset_clicked()
 
 void WizardDialog::saveSettings()
 {
-    settings->setValue("Wizard/lastInDir",        lineEditInDir->text());
-    settings->setValue("Wizard/lastOutDir",       lineEditOutDir->text());
-    settings->setValue("Wizard/prefix",           lineEditPrefix->text());
-    settings->setValue("Wizard/suffix",           lineEditSuffix->text());
-    settings->setValue("Wizard/recursive",        chBoxRecursive->isChecked());
-    settings->setValue("Wizard/compress",         gBoxCompress->isChecked());
-    settings->setValue("Wizard/threadingEnabled", gBoxThreads->isChecked());
-    settings->setValue("Wizard/compressType",     rBtnSaveSuffix->isChecked());
-    settings->setValue("Wizard/preset",           cmbBoxPreset->currentIndex());
-    settings->setValue("Wizard/compressLevel",    cmbBoxCompress->currentIndex());
-    settings->setValue("Wizard/threadCount",      spinBoxThreads->value());
+    settings->setValue("Wizard/LastInDir",        lineEditInDir->text());
+    settings->setValue("Wizard/LastOutDir",       lineEditOutDir->text());
+    settings->setValue("Wizard/Prefix",           lineEditPrefix->text());
+    settings->setValue("Wizard/Suffix",           lineEditSuffix->text());
+    settings->setValue("Wizard/Recursive",        chBoxRecursive->isChecked());
+    settings->setValue("Wizard/Compress",         gBoxCompress->isChecked());
+    settings->setValue("Wizard/ThreadingEnabled", gBoxThreads->isChecked());
+    settings->setValue("Wizard/CompressType",     rBtnSaveSuffix->isChecked());
+    settings->setValue("Wizard/Preset",           cmbBoxPreset->currentIndex());
+    settings->setValue("Wizard/CompressLevel",    cmbBoxCompress->currentIndex());
+    settings->setValue("Wizard/ThreadCount",      spinBoxThreads->value());
 }
 
 bool WizardDialog::eventFilter(QObject *obj, QEvent *event)
@@ -621,4 +621,9 @@ void WizardDialog::deleteThreads()
     searchThread->quit();
     searchThread->wait(); // NOTE: program crash without it
     searchThread->deleteLater();
+}
+
+QString WizardDialog::settingPath()
+{
+    return QFileInfo(settings->fileName()).absolutePath();
 }

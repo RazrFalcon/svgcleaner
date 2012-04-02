@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actionPause->setToolTip(tr("Pause processing")+suffix.arg("Ctrl+R"));
     actionStop->setToolTip(tr("Stop cleaning")+suffix.arg("Ctrl+S"));
 
-    actionCompareView->setChecked(settings->value("compareView", true).toBool());
+    actionCompareView->setChecked(settings->value("CompareView", true).toBool());
     on_actionCompareView_triggered();
 
     // setup shortcuts
@@ -98,8 +98,8 @@ void MainWindow::on_actionStart_triggered()
     }
 
     int threadCount = 1;
-    if (settings->value("Wizard/threadingEnabled",true).toBool()) {
-        threadCount = settings->value("Wizard/threadCount", QThread::idealThreadCount()).toInt();
+    if (settings->value("Wizard/ThreadingEnabled",true).toBool()) {
+        threadCount = settings->value("Wizard/ThreadCount", QThread::idealThreadCount()).toInt();
         if (threadCount > arguments.inputFiles.count())
             threadCount = arguments.inputFiles.count();
     }
@@ -293,7 +293,7 @@ void MainWindow::on_actionCompareView_triggered()
     int i = itemScroll->value();
     foreach (ThumbWidget *item, findChildren<ThumbWidget *>())
         item->refill(itemList.at(i++), actionCompareView->isChecked());
-    settings->setValue("compareView",  actionCompareView->isChecked());
+    settings->setValue("CompareView",  actionCompareView->isChecked());
 }
 
 void MainWindow::on_actionInfo_triggered()

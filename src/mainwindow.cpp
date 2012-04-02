@@ -210,10 +210,10 @@ void MainWindow::createStatistics()
     lblITotalSizeAfter->setText(SomeUtils::prepareSize(outputSize));
 
     // cleaned
-    if (outputSize != 0 && inputSize != 0)
-        lblIAverComp->setText(QString::number((outputSize/inputSize)*100, 'f', 2)+"%");
-    lblIMaxCompress->setText(QString::number(100-compressMin, 'f', 2)+"%");
-    lblIMinCompress->setText(QString::number(100-compressMax, 'f', 2)+"%");
+    if (outputSize != 0 && inputSize != 0) // FIXME: change to .args
+        lblIAverComp->setText(QString::number((outputSize/inputSize)*100, 'f', 2) + "%");
+    lblIMaxCompress->setText(QString::number(100-compressMin, 'f', 2) + "%");
+    lblIMinCompress->setText(QString::number(100-compressMax, 'f', 2) + "%");
 
     // time
     int fullTime = time.elapsed();
@@ -365,7 +365,7 @@ void MainWindow::resizeEvent(QResizeEvent *)
     } else {
         int available = scrollArea->height()/itemLayout->itemAt(0)->geometry().height();
         if (available >= itemLayout->count() && itemList.count() > available) {
-            // this is a slow method, but it works
+            // NOTE: this is a slow method, but it works
             QList<ThumbWidget *> list = findChildren<ThumbWidget *>();
             itemLayout->insertWidget(itemLayout->count()-1,
                                      new ThumbWidget(itemList.at(list.count()),

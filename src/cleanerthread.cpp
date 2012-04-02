@@ -36,8 +36,8 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
 
     QStringList args;
     args.append(arguments.cleanerPath);
-    args.append("--in-file="+outSVG);
-    args.append("--out-file="+outSVG);
+    args.append("--in-file="  + outSVG);
+    args.append("--out-file=" + outSVG);
     args.append(arguments.args);
     proc->start(arguments.perlPath, args);
 }
@@ -93,25 +93,27 @@ void CleanerThread::finished(int)
 SVGInfo CleanerThread::info()
 {
     SVGInfo info;
-    info.inPath = currentIn;
+    info.inPath  = currentIn;
     info.outPath = currentOut;
+
     info.elemInitial = findValue("The initial number of elements is");
-    info.elemFinal = findValue("The final number of elements is");
+    info.elemFinal   = findValue("The final number of elements is");
+
     info.attrInitial = findValue("The initial number of attributes is");
-    info.attrFinal = findValue("The final number of attributes is");
+    info.attrFinal   = findValue("The final number of attributes is");
 
     // if svgz saved to svg with cleaning, we need to save size of uncompressed/uncleaned svg
-    if ((QFileInfo(currentOut).suffix() == "svg"
+    if ((QFileInfo(currentOut).suffix()  == "svg"
         && QFileInfo(currentIn).suffix() == "svgz")
         || (currentIn == currentOut)) {
 
         info.inSize = findValue("The initial file size is");
         info.compress = ((float)QFileInfo(currentOut).size()
-                               /findValue("The initial file size is"))*100;
+                               / findValue("The initial file size is")) * 100;
     } else {
         info.inSize = QFileInfo(currentIn).size();
         info.compress = ((float)QFileInfo(currentOut).size()
-                               /QFileInfo(currentIn).size())*100;
+                               / QFileInfo(currentIn).size()) * 100;
     }
     if (info.compress > 100)
         info.compress = 100;
@@ -126,9 +128,9 @@ SVGInfo CleanerThread::info()
     if (scriptOutput.isEmpty())
         info.errString = "Crashed";
     if (scriptErrors.contains("It's a not well-formed SVG file!"))
-        info.errString = tr("It's a not well-formed SVG file!");
+          info.errString = tr("It's a not well-formed SVG file!");
     if (scriptErrors.contains("This file doesn't need cleaning!"))
-        info.errString = tr("This file doesn't need cleaning!");
+          info.errString = tr("This file doesn't need cleaning!");
 
     return info;
 }

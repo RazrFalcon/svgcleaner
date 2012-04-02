@@ -7,7 +7,7 @@ ItemWidget::ItemWidget(const QString &icon, QWidget *parent) :
 {
     lblIcon = new QLabel(this);
     layout = new QVBoxLayout(this);
-    lblIcon->setPixmap(QIcon(":/"+icon+".svgz").pixmap(46, 46));
+    lblIcon->setPixmap(QIcon(":/" + icon + ".svgz").pixmap(46, 46));
     lblIcon->setAlignment(Qt::AlignCenter);
     layout->addWidget(lblIcon);
     setLayout(layout);

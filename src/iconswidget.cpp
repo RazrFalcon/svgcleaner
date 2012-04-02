@@ -48,9 +48,9 @@ void IconsWidget::setError(const QString &text)
 
 void IconsWidget::makeToolTip()
 {
-    QImage image(620,310,QImage::Format_ARGB32);
+    QImage image(620, 310, QImage::Format_ARGB32);
     image.fill(0);
-    mainPix = QPixmap::fromImage(image, Qt::NoOpaqueDetection|Qt::AutoColor);
+    mainPix = QPixmap::fromImage(image, Qt::NoOpaqueDetection | Qt::AutoColor);
     QPainter painter(&mainPix);
     QPalette pal;
     painter.setRenderHint(QPainter::Antialiasing);
@@ -59,7 +59,7 @@ void IconsWidget::makeToolTip()
     painter.setPen(QPen(QColor("#636363"), 2));
     painter.drawRoundedRect(2, 2, image.width()-4, image.height()-4, 5, 5);
 
-    renderSvg(inpath, &painter, QRect(5, 5, 300, 300));
+    renderSvg(inpath,  &painter, QRect(5,   5, 300, 300));
     renderSvg(outpath, &painter, QRect(310, 5, 300, 300));
 
     toolTip->setPixmap(mainPix);
@@ -91,19 +91,19 @@ void IconsWidget::mouseMoveEvent(QMouseEvent *event)
     if (crashed)
         return;
 
-    QCursor curs;
-    QPoint cursPos = mapFromGlobal(curs.pos());
+    QCursor cursor;
+    QPoint  cursorPos = mapFromGlobal(cursor.pos());
 
-    if (rect().contains(cursPos)) {
+    if (rect().contains(cursorPos)) {
         int border = 5;
-        QPoint p = mapToGlobal(event->pos());
-        QPoint p2 = mapToGlobal(QPoint(0, 0)); // FIXME: fix names
-        if (p2.y()-mainPix.height()-6 > 0) {
-            toolTip->setGeometry(p.x()-mainPix.width()/2, p2.y()-mainPix.height()-6,
+        QPoint point  = mapToGlobal(event->pos());
+        QPoint point2 = mapToGlobal(QPoint(0, 0));
+        if (point2.y() - mainPix.height() - 6 > 0) {
+            toolTip->setGeometry(point.x() - mainPix.width()/2, point2.y() - mainPix.height()-6,
                                  mainPix.width(), mainPix.height());
         } else {
-            toolTip->setGeometry(p.x()-mainPix.width()/2, p2.y()+height()+border,
-                                  mainPix.width(), mainPix.height());
+            toolTip->setGeometry(point.x() - mainPix.width()/2, point2.y() + height() + border,
+                                 mainPix.width(), mainPix.height());
         }
     }
 }

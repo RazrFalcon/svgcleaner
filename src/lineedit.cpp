@@ -24,12 +24,6 @@ void LineEdit::initStyleOption(QStyleOptionFrameV2 *option) const
     option->lineWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth, option, this);
     option->midLineWidth = 0;
     option->state |= QStyle::State_Sunken;
-    if (this->isReadOnly())
-        option->state |= QStyle::State_ReadOnly;
-#ifdef QT_KEYPAD_NAVIGATION
-    if (hasEditFocus())
-        option->state |= QStyle::State_HasEditFocus;
-#endif
     option->features = QStyleOptionFrameV2::None;
 }
 
@@ -76,7 +70,7 @@ void LineEdit::resizeEvent(QResizeEvent *)
 
 void LineEdit::timerEvent(QTimerEvent *)
 {
-    angle = (angle+30)%360;
+    angle = (angle + 30)%360;
     update();
 }
 

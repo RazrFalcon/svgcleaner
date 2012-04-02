@@ -36,11 +36,11 @@ QString SomeUtils::prepareTime(const float ms)
 
 QString SomeUtils::findFile(const QString &name, const QString &defaultFolder)
 {
-    if (QFile( "../SVGCleaner/"+name).exists()) // Qt Creator shadow build
-        return "../SVGCleaner/"+name;
+    if (QFile( "../SVGCleaner/" + name).exists()) // Qt Creator shadow build
+        return "../SVGCleaner/" + name;
     else if (QFile(name).exists()) // next to exe. Usual build/Windows.
         return name;
-    else if (QFile(defaultFolder+name).exists()) // custom path
-        return defaultFolder+name;
+    else if (QFile(defaultFolder + name).exists()) // custom path
+        return defaultFolder + name;
     return name;
 }

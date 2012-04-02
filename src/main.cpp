@@ -14,13 +14,14 @@ int main(int argc, char *argv[])
     app.setApplicationVersion("0.5");
 
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+    QTextCodec::setCodecForLocale(  QTextCodec::codecForName("UTF-8"));
+    QTextCodec::setCodecForTr(      QTextCodec::codecForName("UTF-8"));
 
     // load translation for SVG Cleaner
     QString locale = QLocale::system().name();
 #ifdef Q_OS_WIN
-    app.addLibraryPath(QDir::toNativeSeparators(QApplication::applicationDirPath() + "/translations"))
+    app.addLibraryPath(QDir::toNativeSeparators(QApplication::applicationDirPath() +
+                                                "/translations"))
 //    app.addLibraryPath("./translations");
 #else
     app.addLibraryPath("/usr/share/svgcleaner/translations");

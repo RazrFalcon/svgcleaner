@@ -121,7 +121,7 @@ void IconsWidget::paintEvent(QPaintEvent *)
     QPainter painter(this);
     if (crashed) {
         painter.setPen(QPen(Qt::red));
-        painter.drawText(rect(), Qt::AlignCenter|Qt::TextWordWrap,errText);
+        painter.drawText(rect(), Qt::AlignCenter|Qt::TextWordWrap, errText);
         return;
     }
 

@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 #else
     app.addLibraryPath("/usr/share/svgcleaner/translations");
 #endif
-    qDebug()<<QApplication::libraryPaths();
+//    qDebug()<<QApplication::libraryPaths();
 
     QTranslator translator;
     if (translator.load("svgcleaner_"+locale))

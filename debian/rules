@@ -38,7 +38,6 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/<packagename>
-	make INSTALL_ROOT=`pwd`/debian/itmages-dolphin-extension install
 
 # Build architecture-independent files here.
 binary-indep: build install

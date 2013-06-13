@@ -728,7 +728,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_16">
                 <property name="accessibleName">
-                 <string>keep-proc-instr</string>
+                 <string notr="true">keep-proc-instr</string>
                 </property>
                 <property name="text">
                  <string>Remove processing instruction</string>
@@ -808,7 +808,7 @@
                     <string notr="true">keep-inkscape-elts</string>
                    </property>
                    <property name="text">
-                    <string>Inkscape</string>
+                    <string notr="true">Inkscape</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -821,7 +821,7 @@
                     <string notr="true">keep-sodipodi-elts</string>
                    </property>
                    <property name="text">
-                    <string>Sodipodi</string>
+                    <string notr="true">Sodipodi</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -834,7 +834,7 @@
                     <string notr="true">keep-ai-elts</string>
                    </property>
                    <property name="text">
-                    <string>Adobe Illustrator</string>
+                    <string notr="true">Adobe Illustrator</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -847,7 +847,7 @@
                     <string notr="true">keep-cdr-elts</string>
                    </property>
                    <property name="text">
-                    <string>CorelDRAW</string>
+                    <string notr="true">CorelDRAW</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -860,7 +860,7 @@
                     <string notr="true">keep-msvisio-elts</string>
                    </property>
                    <property name="text">
-                    <string>Microsoft Visio</string>
+                    <string notr="true">Microsoft Visio</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1209,7 +1209,7 @@
                     <string notr="true">keep-inkscape-atts</string>
                    </property>
                    <property name="text">
-                    <string>Inkscape</string>
+                    <string notr="true">Inkscape</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1222,7 +1222,7 @@
                     <string notr="true">keep-sodipodi-atts</string>
                    </property>
                    <property name="text">
-                    <string>Sodipodi</string>
+                    <string notr="true">Sodipodi</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1235,7 +1235,7 @@
                     <string notr="true">keep-ai-atts</string>
                    </property>
                    <property name="text">
-                    <string>Adobe Illustrator</string>
+                    <string notr="true">Adobe Illustrator</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1248,7 +1248,7 @@
                     <string notr="true">keep-cdr-atts</string>
                    </property>
                    <property name="text">
-                    <string>CorelDRAW</string>
+                    <string notr="true">CorelDRAW</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1261,7 +1261,7 @@
                     <string notr="true">keep-msvisio-atts</string>
                    </property>
                    <property name="text">
-                    <string>Microsoft Visio</string>
+                    <string notr="true">Microsoft Visio</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1329,7 +1329,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_19">
                 <property name="accessibleName">
-                 <string>keep-unused-xlinks</string>
+                 <string notr="true">keep-unused-xlinks</string>
                 </property>
                 <property name="text">
                  <string>Remove XLinks which pointed to nonexistent element</string>
@@ -1613,8 +1613,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>453</height>
+               <width>534</width>
+               <height>312</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1934,8 +1934,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>453</height>
+               <width>360</width>
+               <height>29</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">

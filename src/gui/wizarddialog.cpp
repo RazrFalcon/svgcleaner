@@ -13,6 +13,7 @@
 
 // TODO: rewrite presets
 // TODO: save last options automaticly
+// TODO: hide multithreading option if detected only one core
 
 WizardDialog::WizardDialog(QWidget *parent) :
     QDialog(parent)
@@ -219,8 +220,11 @@ ToThread WizardDialog::threadArguments()
     threadArgs.outputFiles   = genOutFiles();
     threadArgs.compressLevel = compressValue();
 #ifdef Q_OS_WIN
-    threadArgs.zipPath       = "7za.exe";
     threadArgs.cliPath       = "svgcleaner-cli.exe";
+    threadArgs.zipPath       = "7za.exe";
+#elif defined (Q_OS_MAC)
+    threadArgs.cliPath       = QApplication::applicationDirPath() + "/svgcleaner-cli";
+    threadArgs.zipPath       = QApplication::applicationDirPath() + "/7za";
 #else
     threadArgs.cliPath       = SomeUtils::findFile("svgcleaner-cli", "/usr/bin/");
     threadArgs.zipPath       = SomeUtils::findFile("7z", "/usr/bin/");

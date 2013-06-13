@@ -488,7 +488,7 @@ QString Path::segmentsToPath()
 {
     QString outPath;
     QString prevCom;
-    bool isPrevComAbs;
+    bool isPrevComAbs = false;
     m_segmentList.restart();
     while (m_segmentList.next()) {
         Segment segment = m_segmentList.segment();

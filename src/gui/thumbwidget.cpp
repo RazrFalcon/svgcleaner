@@ -17,7 +17,6 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
 
 void ThumbWidget::refill(const SVGInfo &info, bool compare)
 {
-    iconsWidget->setMinimumHeight(height()-20);
     iconsWidget->setPaths(info.inPath, info.outPath,compare);
 
     lblName->setMinimumWidth(300);

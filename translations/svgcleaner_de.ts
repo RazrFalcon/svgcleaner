@@ -40,7 +40,7 @@ ihrer Ausgangsgröße.&lt;/span&gt;&lt;/p&gt;(new line)
     </message>
     <message>
         <source>Donate</source>
-        <translation>Spenden</translation>
+        <translation type="obsolete">Spenden</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -50,7 +50,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you like SVG Cleaner and it helps you in your work consider donating any amount of money to show the authors your appreciation. Moreover your donation lets us work on future versions of this program and stay it free.&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;WebMoney wallets:&lt;br /&gt;Z199089038015&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;E300018186079&lt;br /&gt;R622529560927&lt;br /&gt;U135420653690&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;(new line)
+        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;(new line)
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;(new line)
 p, li { white-space: pre-wrap; }(new line)
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;(new line)
@@ -64,7 +64,7 @@ Zudem ermöglicht Ihre Spende die Arbeit an weiteren Versionen des Programmes un
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size without providing better visible quality.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SVG Cleaner could help you to clean up your SVG files from unnecessary data. It has a lot of options for cleanup and optimization, works in batch mode, provides threaded processing on the multicore processors and basically does two things:&lt;/p&gt;
@@ -83,15 +83,31 @@ p, li { white-space: pre-wrap; }
     <name>CleanerThread</name>
     <message>
         <source>You have to install XML::Twig module.</source>
-        <translation>Bitte installieren Sie das Modul XML::Twig.</translation>
+        <translation type="obsolete">Bitte installieren Sie das Modul XML::Twig.</translation>
     </message>
     <message>
         <source>It&apos;s a not well-formed SVG file!</source>
-        <translation>Die SVG-Datei ist nicht wohlgeformt!</translation>
+        <translation type="obsolete">Die SVG-Datei ist nicht wohlgeformt!</translation>
     </message>
     <message>
         <source>This file doesn&apos;t need cleaning!</source>
-        <translation>Diese Datei muss nicht bereinigt werden!</translation>
+        <translation type="obsolete">Diese Datei muss nicht bereinigt werden!</translation>
+    </message>
+    <message>
+        <source>Crashed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input file does not exist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output folder does not exist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>It&apos;s a not well-formed SVG file.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -193,12 +209,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Error</source>
-        <translation>Fehler</translation>
+        <translation type="obsolete">Fehler</translation>
     </message>
     <message>
         <source>
 Processing will stop now.</source>
-        <translation>Verarbeitung wird beendet.</translation>
+        <translation type="obsolete">Verarbeitung wird beendet.</translation>
     </message>
     <message>
         <source>Compare view: on</source>
@@ -415,23 +431,23 @@ Processing will stop now.</source>
     </message>
     <message>
         <source>Inkscape</source>
-        <translation>Inkscape</translation>
+        <translation type="obsolete">Inkscape</translation>
     </message>
     <message>
         <source>Sodipodi</source>
-        <translation>Sodipodi</translation>
+        <translation type="obsolete">Sodipodi</translation>
     </message>
     <message>
         <source>Adobe Illustrator</source>
-        <translation>Adobe Illustrator</translation>
+        <translation type="obsolete">Adobe Illustrator</translation>
     </message>
     <message>
         <source>Corel Draw</source>
-        <translation>Corel Draw</translation>
+        <translation type="obsolete">Corel Draw</translation>
     </message>
     <message>
         <source>Microsoft Visio</source>
-        <translation>Microsoft Visio</translation>
+        <translation type="obsolete">Microsoft Visio</translation>
     </message>
     <message>
         <source>Remove invisible elements</source>
@@ -467,7 +483,7 @@ Processing will stop now.</source>
     </message>
     <message>
         <source>Remove unused namespaces</source>
-        <translation>entferne ungenutze Namensräume</translation>
+        <translation type="obsolete">entferne ungenutze Namensräume</translation>
     </message>
     <message>
         <source>Remove unreferenced IDs</source>
@@ -523,7 +539,7 @@ Processing will stop now.</source>
     </message>
     <message>
         <source>Remove empty line and curve segments</source>
-        <translation>entferne leere Linien- und Kurven-Segmente</translation>
+        <translation type="obsolete">entferne leere Linien- und Kurven-Segmente</translation>
     </message>
     <message>
         <source>Convert lines into horizontal/vertical equivalents when possible</source>
@@ -551,7 +567,7 @@ Processing will stop now.</source>
     </message>
     <message>
         <source>Convert units to pixels</source>
-        <translation>wandle Maßangaben in Pixel</translation>
+        <translation type="obsolete">wandle Maßangaben in Pixel</translation>
     </message>
     <message>
         <source>Convert colors to #RRGGBB format</source>
@@ -567,11 +583,11 @@ Processing will stop now.</source>
     </message>
     <message>
         <source>Remove unnecessary whitespace from lists of points</source>
-        <translation>entferne überflüssige Leerzeichen aus Punkt-Listen</translation>
+        <translation type="obsolete">entferne überflüssige Leerzeichen aus Punkt-Listen</translation>
     </message>
     <message>
         <source>Convert some transformations into the matrix</source>
-        <translation>wandle Transformationen in Martizen</translation>
+        <translation type="obsolete">wandle Transformationen in Martizen</translation>
     </message>
     <message>
         <source>Recalculate coordinates and remove transform attributes when possible</source>
@@ -599,15 +615,15 @@ Processing will stop now.</source>
     </message>
     <message>
         <source>The empty tag display style:</source>
-        <translation>Darstellung leerer Tags:</translation>
+        <translation type="obsolete">Darstellung leerer Tags:</translation>
     </message>
     <message>
         <source>The quote character for attributes:</source>
-        <translation>Anführungszeichen für Attribute:</translation>
+        <translation type="obsolete">Anführungszeichen für Attribute:</translation>
     </message>
     <message>
         <source>The pretty print style:</source>
-        <translation>Für schönen Quelltext:</translation>
+        <translation type="obsolete">Für schönen Quelltext:</translation>
     </message>
     <message>
         <source>The indentation for the pretty print style:</source>
@@ -679,11 +695,11 @@ Processing will stop now.</source>
     </message>
     <message>
         <source>You have to install 7-Zip to use SVG Cleaner.</source>
-        <translation>Sie müssen 7-Zip installieren, um SVG Cleaner nutzen zu können.</translation>
+        <translation type="obsolete">Sie müssen 7-Zip installieren, um SVG Cleaner nutzen zu können.</translation>
     </message>
     <message>
         <source>You have to install Perl to use SVG Cleaner.</source>
-        <translation>Sie müssen Perl installieren, um SVG CLeaner nutzen zu können.</translation>
+        <translation type="obsolete">Sie müssen Perl installieren, um SVG CLeaner nutzen zu können.</translation>
     </message>
     <message>
         <source>Selected output folder is not writable.</source>
@@ -706,6 +722,22 @@ Overwrite?</source>
     <message>
         <source>Warning! The original files will be destroyed!</source>
         <translation>Achtung! Die Ausgangsdateien gehen hierbei verloren!</translation>
+    </message>
+    <message>
+        <source>Remove processing instruction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove XLinks which pointed to nonexistent element</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove empty segments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Merge multiply matrices into one and simplify it.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

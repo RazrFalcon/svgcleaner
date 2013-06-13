@@ -8,19 +8,15 @@
 #export DH_VERBOSE=1
 
 include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/qmake.mk
 
 build: build-stamp
 build-stamp:
 	dh_testdir
 
 	# Add here commands to compile the package.
-	cd src/cli
-	qmake-qt4 -config release
+	qmake-qt4 src/cli/svgcleaner-cli.pro CONFIG+="release"
 	make
-	cd ..
-	cd gui
-	qmake-qt4 -config release
+	qmake-qt4 src/gui/svgcleaner-gui.pro CONFIG+="release"
 	make
 
 	touch build-stamp

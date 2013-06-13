@@ -30,7 +30,6 @@ private:
     FileFinder *fileSearch;
     QThread *searchThread;
 
-    bool checkFor(const QString &name);
     bool checkForWarnings();
     bool isDefault(QWidget *w);
     QString compressValue();

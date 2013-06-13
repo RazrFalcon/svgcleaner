@@ -7,7 +7,7 @@ Build-Depends: debhelper (>= 7), cdbs, qt4-qmake, build-essential, libqt4-dev
 Homepage: https://launchpad.net/svg-cleaner
 
 Package: svgcleaner
-Depends: libqt4-core, libqt4-gui, libqt4-svg, perl, libxml-twig-perl, p7zip-full, xdg-utils, ${shlibs:Depends}
+Depends: libqt4-core, libqt4-gui, libqt4-svg, libqt4-xml, p7zip-full, xdg-utils, ${shlibs:Depends}
 Architecture: any
 Description: Batch, tunable, crossplatform SVG cleaning program
  

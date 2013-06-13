@@ -9,18 +9,16 @@ CleanerThread::CleanerThread(ToThread args, QObject *parent) :
     QObject(parent)
 {
     arguments = args;
-    proc = new QProcess;
-    connect(proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readyRead()));
-    connect(proc, SIGNAL(readyReadStandardError()),  this, SLOT(readyReadError()));
+    proc = new QProcess(this);
+    proc->setProcessChannelMode(QProcess::MergedChannels);
+    connect(proc, SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(proc, SIGNAL(finished(int)), this, SLOT(finished(int)));
 }
 
 void CleanerThread::startNext(const QString &inFile, const QString &outFile)
 {
-    cleaningTime = QTime::currentTime();
-
+    cleaningTime.start();
     scriptOutput.clear();
-    scriptErrors.clear();
     outSVG = QString(outFile).replace("svgz", "svg").replace("SVGZ", "SVG");
     currentIn = inFile;
     currentOut = outFile;
@@ -35,11 +33,11 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
     }
 
     QStringList args;
-    args.append(arguments.cleanerPath);
-    args.append("--in-file="  + outSVG);
-    args.append("--out-file=" + outSVG);
+    args.append(outSVG);
+    args.append(outSVG);
     args.append(arguments.args);
-    proc->start(arguments.perlPath, args);
+    proc->start(arguments.cliPath, args);
+    proc->waitForFinished();
 }
 
 void CleanerThread::unzip(const QString &inPath)
@@ -52,24 +50,14 @@ void CleanerThread::unzip(const QString &inPath)
     QFile file(outSVG);
     if (file.open(QFile::WriteOnly)) {
         QTextStream out(&file);
-        out<<proc.readAll();
+        out << proc.readAll();
         file.close();
     }
 }
 
 void CleanerThread::readyRead()
 {
-    scriptOutput += proc->readAllStandardOutput();
-}
-
-void CleanerThread::readyReadError()
-{
-    QString error = proc->readAllStandardError();
-    if (error.contains("Can't locate XML/Twig.pm in"))
-        emit criticalError(tr("You have to install XML::Twig module."));
-    else
-        qDebug() << error << "in file" << currentIn;
-    scriptErrors += error;
+    scriptOutput += proc->readAll();
 }
 
 void CleanerThread::finished(int)
@@ -81,7 +69,7 @@ void CleanerThread::finished(int)
 
         QProcess procZip;
         QStringList args;
-        args << "a" << "-tgzip" << "-mx"+arguments.level << currentOut << outSVG;
+        args << "a" << "-tgzip" << "-mx" + arguments.compressLevel << currentOut << outSVG;
         procZip.start(arguments.zipPath, args);
         procZip.waitForFinished();
         QFile(outSVG).remove();
@@ -96,24 +84,31 @@ SVGInfo CleanerThread::info()
     info.inPath  = currentIn;
     info.outPath = currentOut;
 
-    info.elemInitial = findValue("The initial number of elements is");
-    info.elemFinal   = findValue("The final number of elements is");
-
-    info.attrInitial = findValue("The initial number of attributes is");
-    info.attrFinal   = findValue("The final number of attributes is");
+    int initialFileSize;
+    foreach (const QString &text, scriptOutput.split("\n")) {
+        if      (text.contains("The initial number of elements is:"))
+            info.elemInitial = QString(text).remove(QRegExp(".*: |\"")).toInt();
+        else if (text.contains("The final number of elements is:"))
+            info.elemFinal   = QString(text).remove(QRegExp(".*: |\"")).toInt();
+        else if (text.contains("The initial number of attributes is:"))
+            info.attrInitial = QString(text).remove(QRegExp(".*: |\"")).toInt();
+        else if (text.contains("The final number of attributes is:"))
+            info.attrFinal   = QString(text).remove(QRegExp(".*: |\"")).toInt();
+        else if (text.contains("The initial file size is:"))
+            initialFileSize  = QString(text).remove(QRegExp(".*: |\"")).toInt();
+    }
 
     // if svgz saved to svg with cleaning, we need to save size of uncompressed/uncleaned svg
     if ((QFileInfo(currentOut).suffix()  == "svg"
         && QFileInfo(currentIn).suffix() == "svgz")
         || (currentIn == currentOut)) {
 
-        info.inSize = findValue("The initial file size is");
-        info.compress = ((float)QFileInfo(currentOut).size()
-                               / findValue("The initial file size is")) * 100;
+        info.inSize = initialFileSize;
+        info.compress = ((float)QFile(currentOut).size() / initialFileSize) * 100;
     } else {
-        info.inSize = QFileInfo(currentIn).size();
-        info.compress = ((float)QFileInfo(currentOut).size()
-                               / QFileInfo(currentIn).size()) * 100;
+        info.inSize = QFile(currentIn).size();
+        info.compress = ((float)QFile(currentOut).size()
+                               / QFile(currentIn).size()) * 100;
     }
     if (info.compress > 100)
         info.compress = 100;
@@ -123,14 +118,16 @@ SVGInfo CleanerThread::info()
     info.outSize = QFileInfo(currentOut).size();
 
     info.time = cleaningTime.elapsed();
-
-    info.errString = "";
-    if (scriptOutput.isEmpty())
-        info.errString = "Crashed";
-    if (scriptErrors.contains("It's a not well-formed SVG file!"))
-          info.errString = tr("It's a not well-formed SVG file!");
-    if (scriptErrors.contains("This file doesn't need cleaning!"))
-          info.errString = tr("This file doesn't need cleaning!");
+    if (scriptOutput.contains("ASSERT:"))
+        info.errString = tr("Crashed");
+    else if (scriptOutput.contains("Error")) {
+        if (scriptOutput.contains("Error: input file does not exist."))
+            info.errString = tr("Input file does not exist.");
+        else if (scriptOutput.contains("Error: output folder does not exist."))
+            info.errString = tr("Output folder does not exist.");
+        else if (scriptOutput.contains("Error: it's a not well-formed SVG file."))
+            info.errString = tr("It's a not well-formed SVG file.");
+    }
 
     return info;
 }
@@ -141,5 +138,5 @@ int CleanerThread::findValue(const QString &text)
     if (!scriptOutput.contains(text))
         return 0;
     QString tmpStr = scriptOutput.split("\n").filter(text).first();
-    return tmpStr.remove(QRegExp("[A-Za-z]|%| ")).toInt();
+    return tmpStr.remove(QRegExp(".*: |\"")).toInt();
 }

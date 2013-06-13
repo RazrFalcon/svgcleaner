@@ -1,9 +1,13 @@
 svgcleaner (0.5) natty; urgency=low
 
-  * new release
+  * Engine rewrited from Perl to C++(Qt).
+  * New engine 5-7 times faster than old one.
+  * Same cleaning compression value.
+  * Added base cli support (no svgz and folder processing support).
 
- -- Raizner Evgeniy <razrfalcon@gmail.com>  Wed, 14 Mar 2012 02:00:00 +0200
+ -- Raizner Evgeniy <razrfalcon@gmail.com>  Thu, 13 Jun 2013 02:00:00 +0200
 
+ 
 svgcleaner (0.4) natty; urgency=low
 
   * А full internationalization (i18n) support.

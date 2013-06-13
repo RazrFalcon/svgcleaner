@@ -42,7 +42,6 @@ private:
 
 private slots:
     void cleaningFinished();
-    void errorHandler(const QString &text);
     void on_actionCompareView_triggered();
     void on_actionInfo_triggered();
     void on_actionPause_triggered();

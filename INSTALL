@@ -1,7 +1,5 @@
 SVG Cleaner depends on:
 - Qt >=4.6
-- Perl
-- XML-Twig
 - 7zip
 
 For Ubuntu you can use this ppa:

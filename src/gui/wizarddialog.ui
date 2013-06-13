@@ -44,7 +44,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -690,9 +690,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
-               <width>563</width>
-               <height>454</height>
+               <y>-22</y>
+               <width>549</width>
+               <height>475</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -702,7 +702,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox">
                 <property name="accessibleName">
-                 <string notr="true">remove-prolog</string>
+                 <string notr="true">keep-prolog</string>
                 </property>
                 <property name="text">
                  <string>Remove prolog</string>
@@ -715,7 +715,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_2">
                 <property name="accessibleName">
-                 <string notr="true">remove-comments</string>
+                 <string notr="true">keep-comments</string>
                 </property>
                 <property name="text">
                  <string>Remove comments</string>
@@ -726,9 +726,22 @@
                </widget>
               </item>
               <item>
+               <widget class="QCheckBox" name="checkBox_16">
+                <property name="accessibleName">
+                 <string>keep-proc-instr</string>
+                </property>
+                <property name="text">
+                 <string>Remove processing instruction</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QCheckBox" name="checkBox_3">
                 <property name="accessibleName">
-                 <string notr="true">remove-unused-defs</string>
+                 <string notr="true">keep-unused-defs</string>
                 </property>
                 <property name="text">
                  <string>Remove unused definitions</string>
@@ -741,7 +754,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_4">
                 <property name="accessibleName">
-                 <string notr="true">remove-nonsvg-elts</string>
+                 <string notr="true">keep-nonsvg-elts</string>
                 </property>
                 <property name="text">
                  <string>Remove non-SVG elements</string>
@@ -754,7 +767,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_5">
                 <property name="accessibleName">
-                 <string notr="true">remove-metadata</string>
+                 <string notr="true">keep-metadata-elts</string>
                 </property>
                 <property name="text">
                  <string>Remove metadata elements</string>
@@ -765,15 +778,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="chBoxNSElem">
-                <property name="accessibleName">
-                 <string notr="true">remove-ns-elts</string>
-                </property>
+               <widget class="QLabel" name="label_12">
                 <property name="text">
                  <string>Remove elements from namespaces by the following graphics editors:</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -798,7 +805,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_6">
                    <property name="accessibleName">
-                    <string notr="true">remove-inkscape-elts</string>
+                    <string notr="true">keep-inkscape-elts</string>
                    </property>
                    <property name="text">
                     <string>Inkscape</string>
@@ -811,7 +818,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_7">
                    <property name="accessibleName">
-                    <string notr="true">remove-sodipodi-elts</string>
+                    <string notr="true">keep-sodipodi-elts</string>
                    </property>
                    <property name="text">
                     <string>Sodipodi</string>
@@ -824,7 +831,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_8">
                    <property name="accessibleName">
-                    <string notr="true">remove-ai-elts</string>
+                    <string notr="true">keep-ai-elts</string>
                    </property>
                    <property name="text">
                     <string>Adobe Illustrator</string>
@@ -837,10 +844,10 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_41">
                    <property name="accessibleName">
-                    <string notr="true">remove-cdr-elts</string>
+                    <string notr="true">keep-cdr-elts</string>
                    </property>
                    <property name="text">
-                    <string>Corel Draw</string>
+                    <string>CorelDRAW</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -850,7 +857,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_9">
                    <property name="accessibleName">
-                    <string notr="true">remove-msvisio-elts</string>
+                    <string notr="true">keep-msvisio-elts</string>
                    </property>
                    <property name="text">
                     <string>Microsoft Visio</string>
@@ -866,7 +873,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_10">
                 <property name="accessibleName">
-                 <string notr="true">remove-invisible-elts</string>
+                 <string notr="true">keep-invisible-elts</string>
                 </property>
                 <property name="text">
                  <string>Remove invisible elements</string>
@@ -879,7 +886,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_12">
                 <property name="accessibleName">
-                 <string notr="true">remove-empty-conts</string>
+                 <string notr="true">keep-empty-conts</string>
                 </property>
                 <property name="text">
                  <string>Remove empty container elements</string>
@@ -892,7 +899,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_11">
                 <property name="accessibleName">
-                 <string notr="true">collapse-groups</string>
+                 <string notr="true">keep-groups</string>
                 </property>
                 <property name="text">
                  <string>Collapse groups when possible</string>
@@ -905,7 +912,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_14">
                 <property name="accessibleName">
-                 <string notr="true">remove-dupl-defs</string>
+                 <string notr="true">keep-dupl-defs</string>
                 </property>
                 <property name="text">
                  <string>Remove duplicated definitions</string>
@@ -918,7 +925,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_15">
                 <property name="accessibleName">
-                 <string notr="true">remove-singly-grads</string>
+                 <string notr="true">keep-singly-grads</string>
                 </property>
                 <property name="text">
                  <string>Remove gradients that are only referenced by one other gradient</string>
@@ -931,7 +938,7 @@
               <item>
                <widget class="QCheckBox" name="chBoxGaussianBlur">
                 <property name="accessibleName">
-                 <string notr="true">remove-gaussian-blur</string>
+                 <string notr="true">keep-gaussian-blur</string>
                 </property>
                 <property name="text">
                  <string>Remove Gaussian blur filters</string>
@@ -974,7 +981,7 @@
                     </sizepolicy>
                    </property>
                    <property name="accessibleName">
-                    <string notr="true">std-deviation-limit</string>
+                    <string notr="true">std-dev</string>
                    </property>
                    <property name="text">
                     <string>if their standard deviation is less than:</string>
@@ -990,7 +997,7 @@
                     </sizepolicy>
                    </property>
                    <property name="accessibleName">
-                    <string notr="true">std-deviation-limit</string>
+                    <string notr="true">std-dev</string>
                    </property>
                    <property name="accessibleDescription">
                     <string notr="true">0.20</string>
@@ -1050,7 +1057,7 @@
                <x>0</x>
                <y>0</y>
                <width>563</width>
-               <height>454</height>
+               <height>453</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1060,7 +1067,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_36">
                 <property name="accessibleName">
-                 <string notr="true">remove-version</string>
+                 <string notr="true">keep-version</string>
                 </property>
                 <property name="text">
                  <string>Remove the SVG language version</string>
@@ -1071,22 +1078,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_16">
-                <property name="accessibleName">
-                 <string notr="true">remove-unused-ns</string>
-                </property>
-                <property name="text">
-                 <string>Remove unused namespaces</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="chBoxUnrefID">
                 <property name="accessibleName">
-                 <string notr="true">remove-unref-ids</string>
+                 <string notr="true">keep-unref-ids</string>
                 </property>
                 <property name="text">
                  <string>Remove unreferenced IDs</string>
@@ -1129,7 +1123,7 @@
                     </sizepolicy>
                    </property>
                    <property name="accessibleName">
-                    <string notr="true">keep-letter-ids</string>
+                    <string notr="true">keep-named-ids</string>
                    </property>
                    <property name="text">
                     <string>Always keep IDs that contain only letters</string>
@@ -1143,7 +1137,10 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_19">
+               <widget class="QCheckBox" name="chBoxRmNonSvgAttr">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="accessibleName">
                  <string notr="true">remove-nonsvg-atts</string>
                 </property>
@@ -1158,7 +1155,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_20">
                 <property name="accessibleName">
-                 <string notr="true">remove-notappl-atts</string>
+                 <string notr="true">keep-notappl-atts</string>
                 </property>
                 <property name="text">
                  <string>Remove attributes that are not applicable to elements</string>
@@ -1171,7 +1168,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_21">
                 <property name="accessibleName">
-                 <string notr="true">remove-default-atts</string>
+                 <string notr="true">keep-default-atts</string>
                 </property>
                 <property name="text">
                  <string>Remove attributes with default SVG values</string>
@@ -1182,15 +1179,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="chBoxNSAttr">
-                <property name="accessibleName">
-                 <string notr="true">remove-ns-atts</string>
-                </property>
+               <widget class="QLabel" name="label_14">
                 <property name="text">
                  <string>Remove attributes from namespaces by the following graphics editors:</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -1215,7 +1206,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_22">
                    <property name="accessibleName">
-                    <string notr="true">remove-inkscape-atts</string>
+                    <string notr="true">keep-inkscape-atts</string>
                    </property>
                    <property name="text">
                     <string>Inkscape</string>
@@ -1228,7 +1219,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_23">
                    <property name="accessibleName">
-                    <string notr="true">remove-sodipodi-atts</string>
+                    <string notr="true">keep-sodipodi-atts</string>
                    </property>
                    <property name="text">
                     <string>Sodipodi</string>
@@ -1241,7 +1232,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_24">
                    <property name="accessibleName">
-                    <string notr="true">remove-ai-atts</string>
+                    <string notr="true">keep-ai-atts</string>
                    </property>
                    <property name="text">
                     <string>Adobe Illustrator</string>
@@ -1254,10 +1245,10 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_46">
                    <property name="accessibleName">
-                    <string notr="true">remove-cdr-atts</string>
+                    <string notr="true">keep-cdr-atts</string>
                    </property>
                    <property name="text">
-                    <string>Corel Draw</string>
+                    <string>CorelDRAW</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1267,7 +1258,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_25">
                    <property name="accessibleName">
-                    <string notr="true">remove-msvisio-atts</string>
+                    <string notr="true">keep-msvisio-atts</string>
                    </property>
                    <property name="text">
                     <string>Microsoft Visio</string>
@@ -1283,7 +1274,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_26">
                 <property name="accessibleName">
-                 <string notr="true">remove-stroke-props</string>
+                 <string notr="true">keep-stroke-props</string>
                 </property>
                 <property name="text">
                  <string>Remove all stroke properties when there's no stroking</string>
@@ -1296,7 +1287,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_27">
                 <property name="accessibleName">
-                 <string notr="true">remove-fill-props</string>
+                 <string notr="true">keep-fill-props</string>
                 </property>
                 <property name="text">
                  <string>Remove all fill properties when there's no filling</string>
@@ -1307,7 +1298,10 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_28">
+               <widget class="QCheckBox" name="chBoxRmClipAttr">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="accessibleName">
                  <string notr="true">remove-clippath-atts</string>
                 </property>
@@ -1322,10 +1316,23 @@
               <item>
                <widget class="QCheckBox" name="checkBox_29">
                 <property name="accessibleName">
-                 <string notr="true">remove-grad-coords</string>
+                 <string notr="true">keep-grad-coords</string>
                 </property>
                 <property name="text">
                  <string>Remove gradient coordinates when possible</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_19">
+                <property name="accessibleName">
+                 <string>keep-unused-xlinks</string>
+                </property>
+                <property name="text">
+                 <string>Remove XLinks which pointed to nonexistent element</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1372,8 +1379,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>454</height>
+               <width>598</width>
+               <height>439</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -1383,7 +1390,7 @@
               <item>
                <widget class="QRadioButton" name="radioBtnKeepPaths">
                 <property name="accessibleName">
-                 <string notr="true">convert-abs-paths=no</string>
+                 <string notr="true">keep-abs-paths</string>
                 </property>
                 <property name="accessibleDescription">
                  <string notr="true">convert-abs-paths=yes</string>
@@ -1426,7 +1433,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_13">
                    <property name="accessibleName">
-                    <string notr="true">remove-uwsp-path</string>
+                    <string notr="true">keep-unused-symbols</string>
                    </property>
                    <property name="text">
                     <string>Remove unnecessary whitespace between commands and coordinates</string>
@@ -1442,10 +1449,10 @@
               <item>
                <widget class="QRadioButton" name="radioBtnConvertPaths">
                 <property name="accessibleName">
-                 <string notr="true">convert-abs-paths=yes</string>
+                 <string notr="true"/>
                 </property>
                 <property name="accessibleDescription">
-                 <string notr="true">convert-abs-paths=yes</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Convert absolute paths into relative ones</string>
@@ -1482,7 +1489,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_45">
                    <property name="accessibleName">
-                    <string notr="true">remove-uwsp-path</string>
+                    <string notr="true">keep-unused-symbols</string>
                    </property>
                    <property name="text">
                     <string>Remove unnecessary whitespace between commands and coordinates</string>
@@ -1495,10 +1502,10 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_17">
                    <property name="accessibleName">
-                    <string notr="true">remove-empty-segments</string>
+                    <string notr="true">keep-empty-segments</string>
                    </property>
                    <property name="text">
-                    <string>Remove empty line and curve segments</string>
+                    <string>Remove empty segments</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1508,7 +1515,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_44">
                    <property name="accessibleName">
-                    <string notr="true">convert-lines-hv</string>
+                    <string notr="true">keep-lineto</string>
                    </property>
                    <property name="text">
                     <string>Convert lines into horizontal/vertical equivalents when possible</string>
@@ -1519,7 +1526,10 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_43">
+                  <widget class="QCheckBox" name="chBoxConvCToL">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="accessibleName">
                     <string notr="true">convert-curves-lines</string>
                    </property>
@@ -1532,7 +1542,10 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_42">
+                  <widget class="QCheckBox" name="chBoxConvCToS">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="accessibleName">
                     <string notr="true">convert-curves-cs</string>
                    </property>
@@ -1545,7 +1558,10 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_33">
+                  <widget class="QCheckBox" name="chBoxConvQToT">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="accessibleName">
                     <string notr="true">convert-curves-qt</string>
                    </property>
@@ -1598,7 +1614,7 @@
                <x>0</x>
                <y>0</y>
                <width>563</width>
-               <height>454</height>
+               <height>453</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1608,7 +1624,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_30">
                 <property name="accessibleName">
-                 <string notr="true">enable-viewbox</string>
+                 <string notr="true">no-viewbox</string>
                 </property>
                 <property name="text">
                  <string>Convert width/height into a viewBox when possible</string>
@@ -1621,7 +1637,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_31">
                 <property name="accessibleName">
-                 <string notr="true">convert-style-atts</string>
+                 <string notr="true">join-style-atts</string>
                 </property>
                 <property name="text">
                  <string>Convert style properties into SVG attributes</string>
@@ -1632,22 +1648,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_32">
-                <property name="accessibleName">
-                 <string notr="true">convert-units-px</string>
-                </property>
-                <property name="text">
-                 <string>Convert units to pixels</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="chBoxColorRRGGBB">
                 <property name="accessibleName">
-                 <string notr="true">convert-colors-rrggbb</string>
+                 <string notr="true">skip-color-to-rrggbb</string>
                 </property>
                 <property name="text">
                  <string>Convert colors to #RRGGBB format</string>
@@ -1678,7 +1681,7 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_34">
                    <property name="accessibleName">
-                    <string notr="true">convert-colors-rgb</string>
+                    <string notr="true">skip-rrggbb-to-rgb</string>
                    </property>
                    <property name="text">
                     <string>Convert colors to #RGB format when possible</string>
@@ -1694,7 +1697,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_35">
                 <property name="accessibleName">
-                 <string notr="true">convert-bs-paths</string>
+                 <string notr="true">keep-basic-shapes</string>
                 </property>
                 <property name="text">
                  <string>Convert basic shapes into paths</string>
@@ -1705,25 +1708,12 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_37">
-                <property name="accessibleName">
-                 <string notr="true">remove-unnec-wsp</string>
-                </property>
-                <property name="text">
-                 <string>Remove unnecessary whitespace from lists of points</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="checkBox_38">
                 <property name="accessibleName">
-                 <string notr="true">convert-transfs-matrix</string>
+                 <string notr="true">keep-transform</string>
                 </property>
                 <property name="text">
-                 <string>Convert some transformations into the matrix</string>
+                 <string>Merge multiply matrices into one and simplify it.</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1731,7 +1721,10 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_39">
+               <widget class="QCheckBox" name="chBoxRecalcCoord">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="accessibleName">
                  <string notr="true">recalc-coords</string>
                 </property>
@@ -1746,7 +1739,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_40">
                 <property name="accessibleName">
-                 <string notr="true">sort-defs</string>
+                 <string notr="true">keep-unsorted-defs</string>
                 </property>
                 <property name="text">
                  <string>Sort elements by name inside the defs section</string>
@@ -1759,7 +1752,7 @@
               <item>
                <widget class="QCheckBox" name="chBoxRoundNumbers">
                 <property name="accessibleName">
-                 <string notr="true">round-numbers</string>
+                 <string notr="true">skip-rounding-numbers</string>
                 </property>
                 <property name="text">
                  <string>Round numbers to a given precision</string>
@@ -1802,7 +1795,7 @@
                     </sizepolicy>
                    </property>
                    <property name="accessibleName">
-                    <string notr="true">dp-coords</string>
+                    <string notr="true">coords-prec</string>
                    </property>
                    <property name="accessibleDescription">
                     <string notr="true">4</string>
@@ -1827,7 +1820,7 @@
                     </sizepolicy>
                    </property>
                    <property name="accessibleName">
-                    <string notr="true">dp-other-atts</string>
+                    <string notr="true">attrs-prec</string>
                    </property>
                    <property name="accessibleDescription">
                     <string notr="true">3</string>
@@ -1846,7 +1839,7 @@
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_9">
                    <property name="accessibleName">
-                    <string notr="true">dp-transfs</string>
+                    <string notr="true">transfs-prec</string>
                    </property>
                    <property name="text">
                     <string>inside transform attributes:</string>
@@ -1856,7 +1849,7 @@
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_10">
                    <property name="accessibleName">
-                    <string notr="true">dp-coords</string>
+                    <string notr="true">coords-prec</string>
                    </property>
                    <property name="text">
                     <string>inside coordinate attributes:</string>
@@ -1866,7 +1859,7 @@
                  <item row="2" column="0">
                   <widget class="QLabel" name="label_11">
                    <property name="accessibleName">
-                    <string notr="true">dp-other-atts</string>
+                    <string notr="true">attrs-prec</string>
                    </property>
                    <property name="text">
                     <string>inside other attributes:</string>
@@ -1882,7 +1875,7 @@
                     </sizepolicy>
                    </property>
                    <property name="accessibleName">
-                    <string notr="true">dp-transfs</string>
+                    <string notr="true">transfs-prec</string>
                    </property>
                    <property name="accessibleDescription">
                     <string notr="true">5</string>
@@ -1942,14 +1935,14 @@
                <x>0</x>
                <y>0</y>
                <width>563</width>
-               <height>454</height>
+               <height>453</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">
               <property name="margin">
                <number>0</number>
               </property>
-              <item row="4" column="0" rowspan="2" colspan="2">
+              <item row="1" column="0" rowspan="2" colspan="2">
                <spacer name="verticalSpacer_5">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
@@ -1962,132 +1955,7 @@
                 </property>
                </spacer>
               </item>
-              <item row="2" column="1">
-               <widget class="QComboBox" name="cmbBoxEmptyTags">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="accessibleName">
-                 <string notr="true">empty-tags</string>
-                </property>
-                <property name="accessibleDescription">
-                 <string notr="true">0</string>
-                </property>
-                <item>
-                 <property name="text">
-                  <string notr="true">normal</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">html</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">expand</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_14">
-                <property name="accessibleName">
-                 <string notr="true">empty-tags</string>
-                </property>
-                <property name="text">
-                 <string>The empty tag display style:</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="1">
-               <widget class="QComboBox" name="comboBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="accessibleName">
-                 <string notr="true">pretty-print</string>
-                </property>
-                <property name="accessibleDescription">
-                 <string notr="true">2</string>
-                </property>
-                <property name="currentIndex">
-                 <number>2</number>
-                </property>
-                <item>
-                 <property name="text">
-                  <string notr="true">none</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">nsgmls</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">nice</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">indented</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">indented_c</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">indented_a</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">indented_close_tag</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">cvs</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">wrapped</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">record</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">record_c</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_15">
-                <property name="accessibleName">
-                 <string notr="true">quote-char</string>
-                </property>
-                <property name="text">
-                 <string>The quote character for attributes:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
                <widget class="QSpinBox" name="spinBoxIndent">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2099,53 +1967,20 @@
                  <string notr="true">indent</string>
                 </property>
                 <property name="accessibleDescription">
-                 <string notr="true">1</string>
-                </property>
-                <property name="maximum">
-                 <number>5</number>
-                </property>
-                <property name="value">
-                 <number>1</number>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QComboBox" name="cmbBoxQuote">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="accessibleName">
-                 <string notr="true">quote-char</string>
-                </property>
-                <property name="accessibleDescription">
                  <string notr="true">0</string>
                 </property>
-                <item>
-                 <property name="text">
-                  <string notr="true">double</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">single</string>
-                 </property>
-                </item>
+                <property name="minimum">
+                 <number>-1</number>
+                </property>
+                <property name="maximum">
+                 <number>4</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
                </widget>
               </item>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_12">
-                <property name="accessibleName">
-                 <string notr="true">pretty-print</string>
-                </property>
-                <property name="text">
-                 <string>The pretty print style:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
                <widget class="QLabel" name="label_13">
                 <property name="accessibleName">
                  <string notr="true">indent</string>
@@ -2251,11 +2086,10 @@
   <customwidget>
    <class>LineEdit</class>
    <extends>QLineEdit</extends>
-   <header>src/lineedit.h</header>
+   <header>lineedit.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>cmbBoxQuote</tabstop>
   <tabstop>radioBtn1</tabstop>
   <tabstop>radioBtn2</tabstop>
   <tabstop>radioBtn3</tabstop>
@@ -2284,7 +2118,6 @@
   <tabstop>checkBox_3</tabstop>
   <tabstop>checkBox_4</tabstop>
   <tabstop>checkBox_5</tabstop>
-  <tabstop>chBoxNSElem</tabstop>
   <tabstop>checkBox_6</tabstop>
   <tabstop>checkBox_7</tabstop>
   <tabstop>checkBox_8</tabstop>
@@ -2299,13 +2132,11 @@
   <tabstop>doubleSpinBox</tabstop>
   <tabstop>scrollArea_2</tabstop>
   <tabstop>checkBox_36</tabstop>
-  <tabstop>checkBox_16</tabstop>
   <tabstop>chBoxUnrefID</tabstop>
   <tabstop>checkBox_18</tabstop>
-  <tabstop>checkBox_19</tabstop>
+  <tabstop>chBoxRmNonSvgAttr</tabstop>
   <tabstop>checkBox_20</tabstop>
   <tabstop>checkBox_21</tabstop>
-  <tabstop>chBoxNSAttr</tabstop>
   <tabstop>checkBox_22</tabstop>
   <tabstop>checkBox_23</tabstop>
   <tabstop>checkBox_24</tabstop>
@@ -2313,7 +2144,7 @@
   <tabstop>checkBox_25</tabstop>
   <tabstop>checkBox_26</tabstop>
   <tabstop>checkBox_27</tabstop>
-  <tabstop>checkBox_28</tabstop>
+  <tabstop>chBoxRmClipAttr</tabstop>
   <tabstop>checkBox_29</tabstop>
   <tabstop>scrollArea_5</tabstop>
   <tabstop>radioBtnKeepPaths</tabstop>
@@ -2322,19 +2153,17 @@
   <tabstop>checkBox_45</tabstop>
   <tabstop>checkBox_17</tabstop>
   <tabstop>checkBox_44</tabstop>
-  <tabstop>checkBox_43</tabstop>
-  <tabstop>checkBox_42</tabstop>
-  <tabstop>checkBox_33</tabstop>
+  <tabstop>chBoxConvCToL</tabstop>
+  <tabstop>chBoxConvCToS</tabstop>
+  <tabstop>chBoxConvQToT</tabstop>
   <tabstop>scrollArea_3</tabstop>
   <tabstop>checkBox_30</tabstop>
   <tabstop>checkBox_31</tabstop>
-  <tabstop>checkBox_32</tabstop>
   <tabstop>chBoxColorRRGGBB</tabstop>
   <tabstop>checkBox_34</tabstop>
   <tabstop>checkBox_35</tabstop>
-  <tabstop>checkBox_37</tabstop>
   <tabstop>checkBox_38</tabstop>
-  <tabstop>checkBox_39</tabstop>
+  <tabstop>chBoxRecalcCoord</tabstop>
   <tabstop>checkBox_40</tabstop>
   <tabstop>chBoxRoundNumbers</tabstop>
   <tabstop>spinBox</tabstop>
@@ -2342,9 +2171,7 @@
   <tabstop>spinBox_3</tabstop>
   <tabstop>listWidget</tabstop>
   <tabstop>scrollArea_4</tabstop>
-  <tabstop>comboBox</tabstop>
   <tabstop>spinBoxIndent</tabstop>
-  <tabstop>cmbBoxEmptyTags</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -2445,38 +2272,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>chBoxNSElem</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetNSElem</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>333</x>
-     <y>228</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>321</x>
-     <y>243</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chBoxNSAttr</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetNSAttr</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>333</x>
-     <y>258</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>333</x>
-     <y>323</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>chBoxRoundNumbers</sender>
    <signal>toggled(bool)</signal>
    <receiver>widgetRoundNumbers</receiver>
@@ -2537,38 +2332,6 @@
     <hint type="destinationlabel">
      <x>262</x>
      <y>193</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chBoxNSAttr</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetNSAttr</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>296</x>
-     <y>268</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>296</x>
-     <y>343</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chBoxNSElem</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetNSElem</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>296</x>
-     <y>218</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>296</x>
-     <y>293</y>
     </hint>
    </hints>
   </connection>

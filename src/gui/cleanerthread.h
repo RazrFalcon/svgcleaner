@@ -13,11 +13,13 @@ class CleanerThread : public QObject
 
 public:
     explicit CleanerThread(ToThread args, QObject *parent = 0);
-    void startNext(const QString &inFile,const QString &outFile);
+
+public slots:
+    void startNext(const QString &inPath, const QString &outPath);
 
 signals:
     void cleaned(const SVGInfo);
-    void criticalError(QString);
+//    void criticalError(QString);
 
 private:
     QProcess *proc;
@@ -25,7 +27,7 @@ private:
     QString currentOut;
     QString outSVG;
     QString scriptOutput;
-    QString scriptErrors;
+//    QString scriptErrors;
     QTime cleaningTime;
     ToThread arguments;
     int findValue(const QString &text);
@@ -35,7 +37,7 @@ private:
 private slots:
     void finished(int);
     void readyRead();
-    void readyReadError();
+//    void readyReadError();
 };
 
 #endif // CLEANERTHREAD_H

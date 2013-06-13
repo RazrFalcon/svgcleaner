@@ -233,7 +233,7 @@
   <customwidget>
    <class>IconsWidget</class>
    <extends>QWidget</extends>
-   <header>src/iconswidget.h</header>
+   <header>iconswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -1,9 +1,6 @@
-remove-singly-grads=no
-remove-gaussian-blur=no
-remove-version=no
-remove-grad-coords=no
-convert-curves-cs=no
-convert-curves-qt=no
-enable-viewbox=no
-convert-bs-paths=no
-recalc-coords=no
+keep-singly-grads
+keep-gaussian-blur
+keep-version
+keep-grad-coords
+no-viewbox
+keep-basic-shapes

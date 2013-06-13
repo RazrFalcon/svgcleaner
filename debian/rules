@@ -15,6 +15,11 @@ build-stamp:
 	dh_testdir
 
 	# Add here commands to compile the package.
+	cd src/cli
+	qmake-qt4 -config release
+	make
+	cd ..
+	cd gui
 	qmake-qt4 -config release
 	make
 

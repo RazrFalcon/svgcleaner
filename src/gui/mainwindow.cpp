@@ -69,6 +69,7 @@ void MainWindow::on_actionWizard_triggered()
     WizardDialog wizard;
     if (wizard.exec()) {
         arguments = wizard.threadArguments();
+        qDebug() << arguments.args;
         actionStart->setEnabled(true);
     }
 }
@@ -90,7 +91,6 @@ void MainWindow::on_actionStart_triggered()
         actionStart->setVisible(false);
     }
 
-    qDebug() << "start processing using:" << arguments.cleanerPath;
     if (!arguments.args.isEmpty()) {
         qDebug() << "with keys:";
         foreach (QString key, arguments.args)
@@ -108,9 +108,9 @@ void MainWindow::on_actionStart_triggered()
         QThread *thread = new QThread(this);
         CleanerThread *cleaner = new CleanerThread(arguments);
         cleanerList.append(cleaner);
+
         connect(cleaner, SIGNAL(cleaned(SVGInfo)),
                 this, SLOT(progress(SVGInfo)),Qt::QueuedConnection);
-        connect(cleaner, SIGNAL(criticalError(QString)), this, SLOT(errorHandler(QString)));
         cleaner->moveToThread(thread);
         cleaner->startNext(arguments.inputFiles.at(position), arguments.outputFiles.at(position));
         thread->start();
@@ -173,8 +173,8 @@ void MainWindow::progress(SVGInfo info)
     } else {
         itemScroll->show();
         itemScroll->setMaximum(itemScroll->maximum()+1);
-        if (itemScroll->value() == itemScroll->maximum()-1)
-            itemScroll->setValue(itemScroll->value()+1);
+//        if (itemScroll->value() == itemScroll->maximum()-1)
+//            itemScroll->setValue(itemScroll->value()+1);
     }
     createStatistics();
 }
@@ -184,8 +184,9 @@ void MainWindow::startNext()
     CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
     if (position < arguments.inputFiles.count()
             && actionPause->isVisible() && actionStop->isEnabled()) {
-        cleaner->startNext(arguments.inputFiles.at(position),
-                           arguments.outputFiles.at(position));
+        QMetaObject::invokeMethod(cleaner, "startNext",
+                                  Q_ARG(QString, arguments.inputFiles.at(position)),
+                                  Q_ARG(QString, arguments.outputFiles.at(position)));
         position++;
     } else if (progressBar->value() == progressBar->maximum()) {
         cleaningFinished();
@@ -223,14 +224,6 @@ void MainWindow::createStatistics()
         lblIAverageTime->setText(SomeUtils::prepareTime(timeFull/lblICleaned->text().toInt()));
     if (timeMin != 999999999)
         lblIMinTime->setText(SomeUtils::prepareTime(timeMin));
-}
-
-void MainWindow::errorHandler(const QString &text)
-{
-    enableButtons(true);
-    QMessageBox::critical(this,tr("Error"),
-                          text+tr("\nProcessing will stop now."),
-                          QMessageBox::Ok);
 }
 
 void MainWindow::on_actionStop_triggered()

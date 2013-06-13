@@ -1,20 +1,20 @@
 <RCC>
     <qresource prefix="/">
-        <file>svgcleaner.svgz</file>
         <file>attributes.svgz</file>
         <file>elements.svgz</file>
+        <file>information.svgz</file>
+        <file>main.svgz</file>
         <file>open.svgz</file>
         <file>optimization.svgz</file>
         <file>output.svgz</file>
+        <file>paths.svgz</file>
+        <file>pause.svgz</file>
         <file>presets.svgz</file>
-        <file>information.svgz</file>
         <file>start.svgz</file>
         <file>stop.svgz</file>
-        <file>wizard.svgz</file>
+        <file>svgcleaner.svgz</file>
         <file>thumbs-off.svgz</file>
         <file>thumbs-on.svgz</file>
-        <file>pause.svgz</file>
-        <file>paths.svgz</file>
-        <file>main.svgz</file>
+        <file>wizard.svgz</file>
     </qresource>
 </RCC>

@@ -84,7 +84,7 @@ SVGInfo CleanerThread::info()
     info.inPath  = currentIn;
     info.outPath = currentOut;
 
-    int initialFileSize;
+    int initialFileSize = 0;
     foreach (const QString &text, scriptOutput.split("\n")) {
         if      (text.contains("The initial number of elements is:"))
             info.elemInitial = QString(text).remove(QRegExp(".*: |\"")).toInt();

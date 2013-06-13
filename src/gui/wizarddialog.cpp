@@ -220,6 +220,7 @@ ToThread WizardDialog::threadArguments()
     threadArgs.compressLevel = compressValue();
 #ifdef Q_OS_WIN
     threadArgs.zipPath       = "7za.exe";
+    threadArgs.cliPath       = "svgcleaner-cli.exe";
 #else
     threadArgs.cliPath       = SomeUtils::findFile("svgcleaner-cli", "/usr/bin/");
     threadArgs.zipPath       = SomeUtils::findFile("7z", "/usr/bin/");

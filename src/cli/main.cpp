@@ -44,7 +44,7 @@ void showHelp()
     qDebug() << "  --keep-dupl-defs         Disable removing of duplicated defining content in 'defs' element.";
     qDebug() << "  --keep-singly-grads      Do not merge 'linearGradient' into 'radialGradient',\n"
                 "                           when 'linearGradient' linked only to one 'radialGradient'.";
-    qDebug() << "  --keep-gaussian-blur     Disable removing 'feGaussianBlur' filters with 'stdDeviation' lower then '--std-deviation-limit'.";
+    qDebug() << "  --keep-gaussian-blur     Disable removing 'feGaussianBlur' filters with 'stdDeviation' lower then '--std-dev'.";
     qDebug() << "  --std-dev=<0.01..0.5>    Set minimum value for 'stdDeviation' in 'feGaussianBlur' element [default: 0.2].";
 
     qDebug() << "Attributes:";
@@ -100,16 +100,18 @@ void processFile(const QString &firstFile, const QString &secondFile)
     QFile inputFile(firstFile);
     qDebug() << "The initial file size is: " + QString::number(inputFile.size());
     if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qFatal("Error: cannot open input file.");
-        return;
+        qDebug() << "Error: cannot open input file.";
+        exit(0);
     }
     QTextStream inputStream(&inputFile);
     QDomDocument inputSvg;
     QString svgText = prepareSvg(inputStream.readAll());
     inputSvg.setContent(svgText);
 
-    if (inputSvg.elementsByTagName("svg").count() == 0)
-        qFatal("Error: it's a not well-formed SVG file.");
+    if (inputSvg.elementsByTagName("svg").count() == 0) {
+        qDebug() << "Error: it's a not well-formed SVG file.";
+        exit(0);
+    }
 
     Replacer replacer(inputSvg);
     Remover remover(inputSvg);
@@ -158,8 +160,8 @@ void processFile(const QString &firstFile, const QString &secondFile)
 
     QFile outFile(secondFile);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qFatal("Error: could not open out file for write.");
-        return;
+        qDebug() << "Error: could not open out file for write.";
+        exit(0);
     }
     QTextStream out(&outFile);
     // remove unneeded new lines in text elements, created by default xml format,
@@ -187,10 +189,14 @@ int main(int argc, char *argv[])
     QString inputFile  = argList.takeFirst();
     QString outputFile = argList.takeFirst();
 
-    if (!QFile(inputFile).exists())
-        qFatal("Error: input file does not exist.");
-    if (!QFileInfo(outputFile).absoluteDir().exists())
-        qFatal("Error: output folder does not exist.");
+    if (!QFile(inputFile).exists()) {
+        qDebug() << "Error: input file does not exist.";
+        return 0;
+    }
+    if (!QFileInfo(outputFile).absoluteDir().exists()) {
+        qDebug() << "Error: output folder does not exist.";
+        return 0;
+    }
 
     Keys::get().parceOptions(argList);
     processFile(inputFile, outputFile);

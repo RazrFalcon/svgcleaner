@@ -109,14 +109,18 @@ void WizardDialog::setupGUI()
     pageListNotTr << "main" << "presets" << "elements" << "attributes" << "paths"
                   << "optimization" << "output";
     // create icons for pages in "tabbar", which is QListWidget
+    int baseIconSize = 64;
+#ifdef Q_OS_MAC
+    baseIconSize = 70;
+#endif
     for (int i = 0; i < pageList.count(); ++i) {
         QListWidgetItem *item = new QListWidgetItem(listWidget);
         ItemWidget *w = new ItemWidget(pageListNotTr.at(i));
         item->setToolTip(pageList.at(i));
-        item->setSizeHint(QSize(64, 64));
+        item->setSizeHint(QSize(baseIconSize, baseIconSize));
         listWidget->setItemWidget(item, w);
     }
-    listWidget->setFixedWidth(64*listWidget->count()+5);
+    listWidget->setFixedWidth(baseIconSize*listWidget->count()+5);
     connect(listWidget, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
                             this, SLOT(changePage(QListWidgetItem*, QListWidgetItem*)));
     listWidget->setCurrentRow(0);

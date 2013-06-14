@@ -9,12 +9,19 @@ LineEdit::LineEdit(QWidget *parent) :
 
     angle = 0;
     timerId = -1;
+    textColor = QPalette().color(QPalette::WindowText).darker();
 
     lbl = new QLabel(this);
     lbl->setObjectName("files");
     lbl->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    lbl->setStyleSheet("QLabel#files {border: none; padding: 4px; padding-left: 1px;"
-                       "background-color: rgba(255, 255, 255, 0); color: #808080;}");
+
+    int padding = 4;
+#ifdef Q_OS_WIN
+    padding = 3;
+#endif
+    lbl->setStyleSheet(QString("QLabel#files {border: none; padding-top: %1px; padding-left: 1px;"
+                               "background-color: rgba(0, 0, 0, 0); color: %2;}")
+                               .arg(padding).arg(textColor.name()));
 }
 
 void LineEdit::initStyleOption(QStyleOptionFrameV2 *option) const
@@ -35,10 +42,12 @@ LineEdit::~LineEdit()
 void LineEdit::setValue(const int &value)
 {
     lbl->setText(QString(tr("%1 files")).arg(value));
-    QFontMetrics fm(QFont().defaultFamily());
+    QFont font;
+    QFontMetrics fm(font);
     // FIXME: make padding only for text
-    setStyleSheet(QString("padding-left: %1px;").arg(fm.boundingRect(lbl->text()).width()));
-    lbl->setFixedWidth(fm.boundingRect(lbl->text()).width()+8);
+    int w = fm.width(lbl->text() + "0");
+    setStyleSheet(QString("padding-left: %1px;").arg(w));
+    lbl->setFixedWidth(w);
 }
 
 void LineEdit::showLoading(bool value)
@@ -70,7 +79,7 @@ void LineEdit::resizeEvent(QResizeEvent *)
 
 void LineEdit::timerEvent(QTimerEvent *)
 {
-    angle = (angle + 30)%360;
+    angle = (angle + 30) % 360;
     update();
 }
 
@@ -95,7 +104,7 @@ void LineEdit::paintEvent(QPaintEvent *e)
     int capsuleRadius = capsuleWidth/2;
 
     for (int i = 0; i < 12; ++i) {
-        QColor color(Qt::black);
+        QColor color(textColor);
         color.setAlphaF(1.0f - (i/12.0f));
         p.setPen(Qt::NoPen);
         p.setBrush(color);

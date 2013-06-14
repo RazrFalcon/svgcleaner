@@ -44,7 +44,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -690,7 +690,7 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-22</y>
+               <y>0</y>
                <width>549</width>
                <height>475</height>
               </rect>
@@ -1380,7 +1380,7 @@
                <x>0</x>
                <y>0</y>
                <width>598</width>
-               <height>439</height>
+               <height>225</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">

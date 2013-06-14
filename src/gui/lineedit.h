@@ -20,6 +20,7 @@ private:
     int timerId;
     QRect progressRect;
     void initStyleOption(QStyleOptionFrameV2 *option) const;
+    QColor textColor;
 
 public slots:
     void setValue(const int &value);

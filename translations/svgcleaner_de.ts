@@ -13,24 +13,6 @@
         <translation>Über</translation>
     </message>
     <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size, but not add quality.&lt;br /&gt;&lt;br /&gt;SVG Cleaner could help you to clean up your SVG files from unnecessary data. It works in batch mode and basically does two things:&lt;br /&gt;- removing elements and attributes that don&apos;t contribute to the final rendering; &lt;br /&gt;- making those elements and attributes that are actually used more compact.&lt;br /&gt;The app has a lot of options for cleanup and optimization and provides multithreaded file processing on the multicore processors.&lt;br /&gt;Usually, images cleaned by SVG Cleaner may be as small as 10-60% of the original sizes.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Important! Internal image viewer in SVG Cleaner uses QtSvg for rendering SVG images. Since Qt supports only the static features of SVG 1.2 Tiny that imposes a number of restrictions on rendering of advanced features. For instance, elements such as clipPath, mask, filters etc. will not be rendered at all.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;We apologize in advance for any bugs. Please send bug reports to &lt;/span&gt;&lt;a href=&quot;svgcleanerteam@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;svgcleanerteam@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;(new line)
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;(new line)
-p, li { white-space: pre-wrap; }(new line)
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;(new line)
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Für Gewöhnlich enthalten SVG-Dateien, die mit SVG-Editoren erstellt wurden, viele ungenutze Elemente und Attribute im Quelltext, die lediglich ihre Größe beeinflussen, nicht jedoch ihre Qualität.&lt;br /&gt;&lt;br /&gt;SVG Cleaner kann Ihnen helfen, Ihre SVG-Dateien von ungenutzten Daten zu befreien. Er arbeitet im Stapelverarbeitungs-Modus und macht einfach betrachtet folgendes:&lt;br /&gt;- Elemente und Attribute aus dem Quelltext entfernen, die nicht zum eigetnlich darzustellenden Bild beitragen;&lt;br /&gt;- die Elemente und Attribute, die wirklich genutzt werden, komprimieren.&lt;br /&gt;Die Anwendung verfügt über eine reihe von Optionen für die Bereinigung und Optimierung der Dateien und bietet multithread Verarbeitung auf Mehrkern-CPUs.&lt;br /&gt;In der regel schrumpfen mit SVG Cleaner optimierte Bilddateien auf 10-60% 
-ihrer Ausgangsgröße.&lt;/span&gt;&lt;/p&gt;(new line)
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Achtung! Die interne Bildbetrachter in SVG Cleaner benutzt QtSvg, um die SVG-Dateien darzustellen. Da Qt nur die statischen Features von SVG 1.2 Tiny unterstützt, beeinträchtigt dies die Darstellung von einigen erweiterten Merkmalen. So können zum Beispiel Elemente wie Clip-Pfade, Masken, Filter etc. generell nicht dargestellt werden.&lt;/span&gt;&lt;/p&gt;(new line)
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Wir bitten etwaig auftretenden Programmfehler entschuldigen. Bitte senden Sie uns fehlerberichte an: &lt;/span&gt;
-&lt;a href=&quot;svgcleanerteam@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;svgcleanerteam@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
         <source>Authors</source>
         <translation>Autoren</translation>
     </message>
@@ -39,60 +21,48 @@ ihrer Ausgangsgröße.&lt;/span&gt;&lt;/p&gt;(new line)
         <translation>Lizens</translation>
     </message>
     <message>
-        <source>Donate</source>
-        <translation type="obsolete">Spenden</translation>
+        <source>Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size without providing better visible quality.</source>
+        <translation>Für Gewöhnlich enthalten SVG-Dateien, die mit SVG-Editoren erstellt wurden, viele ungenutze Elemente und Attribute im Quelltext, die lediglich ihre Größe beeinflussen, nicht jedoch ihre Qualität.</translation>
     </message>
     <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you like SVG Cleaner and it helps you in your work consider donating any amount of money to show the authors your appreciation. Moreover your donation lets us work on future versions of this program and stay it free.&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;WebMoney wallets:&lt;br /&gt;Z199089038015&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;E300018186079&lt;br /&gt;R622529560927&lt;br /&gt;U135420653690&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;(new line)
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;(new line)
-p, li { white-space: pre-wrap; }(new line)
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;(new line)
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;
-Wenn SVG Cleaner Ihnen gefällt und Sie in Ihrer Arbeit unterstützt, möchten Sie vielleicht einen Ihnen freigestellten Betrag spenden, um sich den Autoren erkenntlich zu zeigen.
-Zudem ermöglicht Ihre Spende die Arbeit an weiteren Versionen des Programmes und sichert seinen freien Erhalt.&lt;br /&gt;&lt;/p&gt;(new line)
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;WebMoney Wallets:&lt;br /&gt;Z199089038015&lt;/p&gt;(new line)
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;E300018186079&lt;br /&gt;R622529560927&lt;br /&gt;U135420653690&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>SVG Cleaner could help you to clean up your SVG files from unnecessary data. It has a lot of options for cleanup and optimization, works in batch mode, provides threaded processing on the multicore processors and basically does two things:&lt;br /&gt;- removing elements and attributes that don&apos;t contribute to the final rendering;&lt;br /&gt;- making those elements and attributes in use more compact.</source>
+        <translation>SVG Cleaner kann Ihnen helfen, Ihre SVG-Dateien von ungenutzten Daten zu befreien. Er arbeitet im Stapelverarbeitungs-Modus und macht einfach betrachtet folgendes:&lt;br /&gt;- Elemente und Attribute aus dem Quelltext entfernen, die nicht zum eigetnlich darzustellenden Bild beitragen;&lt;br /&gt;- die Elemente und Attribute, die wirklich genutzt werden, komprimieren.&lt;br /&gt;Die Anwendung verfügt über eine reihe von Optionen für die Bereinigung und Optimierung der Dateien und bietet multithread Verarbeitung auf Mehrkern-CPUs.</translation>
     </message>
     <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size without providing better visible quality.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SVG Cleaner could help you to clean up your SVG files from unnecessary data. It has a lot of options for cleanup and optimization, works in batch mode, provides threaded processing on the multicore processors and basically does two things:&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;- removing elements and attributes that don&apos;t contribute to the final rendering;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;- making those elements and attributes in use more compact.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Images cleaned by SVG Cleaner are typically 10-60 percent smaller than the original ones.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Important! The internal image viewer in SVG Cleaner uses the QtSvg module for rendering SVG images. Qt supports only the static features of SVG 1.2 Tiny, and that imposes a number of restrictions on rendering of advanced features. For instance, elements such as clipPath, mask, filters etc. will not be rendered at all.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;We apologize for any bugs in advance. Please send bug reports to &lt;a href=&quot;svgcleanerteam@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;svgcleanerteam@gmail.com&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>Images cleaned by SVG Cleaner are typically 10-60 percent smaller than the original ones.</source>
+        <translation>In der regel schrumpfen mit SVG Cleaner optimierte Bilddateien auf 10-60% ihrer Ausgangsgröße.</translation>
+    </message>
+    <message>
+        <source>Important! The internal image viewer in SVG Cleaner uses the QtSvg module for rendering SVG images. Qt supports only the static features of SVG 1.2 Tiny, and that imposes a number of restrictions on rendering of advanced features. For instance, elements such as clipPath, mask, filters etc. will not be rendered at all.</source>
+        <translation>Achtung! Die interne Bildbetrachter in SVG Cleaner benutzt QtSvg, um die SVG-Dateien darzustellen. Da Qt nur die statischen Features von SVG 1.2 Tiny unterstützt, beeinträchtigt dies die Darstellung von einigen erweiterten Merkmalen. So können zum Beispiel Elemente wie Clip-Pfade, Masken, Filter etc. generell nicht dargestellt werden.</translation>
+    </message>
+    <message>
+        <source>We apologize for any bugs in advance. Please send bug reports to </source>
+        <translation>Wir bitten etwaig auftretenden Programmfehler entschuldigen. Bitte senden Sie uns fehlerberichte an </translation>
+    </message>
+    <message>
+        <source>Developers:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous developers:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Special thanks:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Logo design:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Translators:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>CleanerThread</name>
-    <message>
-        <source>You have to install XML::Twig module.</source>
-        <translation type="obsolete">Bitte installieren Sie das Modul XML::Twig.</translation>
-    </message>
-    <message>
-        <source>It&apos;s a not well-formed SVG file!</source>
-        <translation type="obsolete">Die SVG-Datei ist nicht wohlgeformt!</translation>
-    </message>
-    <message>
-        <source>This file doesn&apos;t need cleaning!</source>
-        <translation type="obsolete">Diese Datei muss nicht bereinigt werden!</translation>
-    </message>
     <message>
         <source>Crashed</source>
         <translation type="unfinished"></translation>
@@ -107,7 +77,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>It&apos;s a not well-formed SVG file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die SVG-Datei ist nicht wohlgeformt.</translation>
     </message>
 </context>
 <context>
@@ -206,15 +176,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Sort by time</source>
         <translation>Nach Verarbeitungszeit sortieren</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="obsolete">Fehler</translation>
-    </message>
-    <message>
-        <source>
-Processing will stop now.</source>
-        <translation type="obsolete">Verarbeitung wird beendet.</translation>
     </message>
     <message>
         <source>Compare view: on</source>
@@ -430,26 +391,6 @@ Processing will stop now.</source>
         <translation>entferne Elemente aus dem Namensraum folgender Grafik-Programme:</translation>
     </message>
     <message>
-        <source>Inkscape</source>
-        <translation type="obsolete">Inkscape</translation>
-    </message>
-    <message>
-        <source>Sodipodi</source>
-        <translation type="obsolete">Sodipodi</translation>
-    </message>
-    <message>
-        <source>Adobe Illustrator</source>
-        <translation type="obsolete">Adobe Illustrator</translation>
-    </message>
-    <message>
-        <source>Corel Draw</source>
-        <translation type="obsolete">Corel Draw</translation>
-    </message>
-    <message>
-        <source>Microsoft Visio</source>
-        <translation type="obsolete">Microsoft Visio</translation>
-    </message>
-    <message>
         <source>Remove invisible elements</source>
         <translation>entferne unsichtbare Elemente</translation>
     </message>
@@ -480,10 +421,6 @@ Processing will stop now.</source>
     <message>
         <source>Remove the SVG language version</source>
         <translation>entferne die SVG-Sprachversion</translation>
-    </message>
-    <message>
-        <source>Remove unused namespaces</source>
-        <translation type="obsolete">entferne ungenutze Namensräume</translation>
     </message>
     <message>
         <source>Remove unreferenced IDs</source>
@@ -538,10 +475,6 @@ Processing will stop now.</source>
         <translation>wandle absolute Pfade in relative</translation>
     </message>
     <message>
-        <source>Remove empty line and curve segments</source>
-        <translation type="obsolete">entferne leere Linien- und Kurven-Segmente</translation>
-    </message>
-    <message>
         <source>Convert lines into horizontal/vertical equivalents when possible</source>
         <translation>wandle Linien in horizontale/vertikale Äquivalente, wenn möglich</translation>
     </message>
@@ -566,10 +499,6 @@ Processing will stop now.</source>
         <translation>wandle Style-Eigenschaften in SVG-Attribute</translation>
     </message>
     <message>
-        <source>Convert units to pixels</source>
-        <translation type="obsolete">wandle Maßangaben in Pixel</translation>
-    </message>
-    <message>
         <source>Convert colors to #RRGGBB format</source>
         <translation>wandle farbangaben ins #RRGGBB-Format</translation>
     </message>
@@ -580,14 +509,6 @@ Processing will stop now.</source>
     <message>
         <source>Convert basic shapes into paths</source>
         <translation>wandle Grundformen in Pfade</translation>
-    </message>
-    <message>
-        <source>Remove unnecessary whitespace from lists of points</source>
-        <translation type="obsolete">entferne überflüssige Leerzeichen aus Punkt-Listen</translation>
-    </message>
-    <message>
-        <source>Convert some transformations into the matrix</source>
-        <translation type="obsolete">wandle Transformationen in Martizen</translation>
     </message>
     <message>
         <source>Recalculate coordinates and remove transform attributes when possible</source>
@@ -612,18 +533,6 @@ Processing will stop now.</source>
     <message>
         <source>inside other attributes:</source>
         <translation>innerhalb anderer Attribute:</translation>
-    </message>
-    <message>
-        <source>The empty tag display style:</source>
-        <translation type="obsolete">Darstellung leerer Tags:</translation>
-    </message>
-    <message>
-        <source>The quote character for attributes:</source>
-        <translation type="obsolete">Anführungszeichen für Attribute:</translation>
-    </message>
-    <message>
-        <source>The pretty print style:</source>
-        <translation type="obsolete">Für schönen Quelltext:</translation>
     </message>
     <message>
         <source>The indentation for the pretty print style:</source>
@@ -694,14 +603,6 @@ Processing will stop now.</source>
         <translation>Ein Eingabeordner enthält keine SVG- oder SVGZ-Dateien.</translation>
     </message>
     <message>
-        <source>You have to install 7-Zip to use SVG Cleaner.</source>
-        <translation type="obsolete">Sie müssen 7-Zip installieren, um SVG Cleaner nutzen zu können.</translation>
-    </message>
-    <message>
-        <source>You have to install Perl to use SVG Cleaner.</source>
-        <translation type="obsolete">Sie müssen Perl installieren, um SVG CLeaner nutzen zu können.</translation>
-    </message>
-    <message>
         <source>Selected output folder is not writable.</source>
         <translation>Der ausgewählte Ausgabeordner ist nicht beschreibbar.</translation>
     </message>
@@ -733,10 +634,10 @@ Overwrite?</source>
     </message>
     <message>
         <source>Remove empty segments</source>
-        <translation type="unfinished"></translation>
+        <translation>entferne leere Linien- und Kurven-Segmente</translation>
     </message>
     <message>
-        <source>Merge multiply matrices into one and simplify it.</source>
+        <source>Merge multiply matrices into one and simplify it</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

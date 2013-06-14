@@ -10,6 +10,11 @@ class AboutDialog : public QDialog, public Ui::AboutDialog
 
 public:
     explicit AboutDialog(QWidget *parent = 0);
+
+private:
+    void fillAbout();
+    void fillAuthors();
+    QString genLink(const QString &link);
 };
 
 #endif // ABOUTDIALOG_H

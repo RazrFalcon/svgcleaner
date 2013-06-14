@@ -1380,7 +1380,7 @@
                <x>0</x>
                <y>0</y>
                <width>598</width>
-               <height>225</height>
+               <height>439</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -1613,8 +1613,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>534</width>
-               <height>312</height>
+               <width>563</width>
+               <height>453</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1713,7 +1713,7 @@
                  <string notr="true">keep-transform</string>
                 </property>
                 <property name="text">
-                 <string>Merge multiply matrices into one and simplify it.</string>
+                 <string>Merge multiply matrices into one and simplify it</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1934,8 +1934,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>360</width>
-               <height>29</height>
+               <width>563</width>
+               <height>453</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">

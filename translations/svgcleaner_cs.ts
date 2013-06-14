@@ -15,85 +15,68 @@
         <translation>O</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="51"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size without providing better visible quality.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SVG Cleaner could help you to clean up your SVG files from unnecessary data. It has a lot of options for cleanup and optimization, works in batch mode, provides threaded processing on the multicore processors and basically does two things:&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;- removing elements and attributes that don&apos;t contribute to the final rendering;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;- making those elements and attributes in use more compact.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Images cleaned by SVG Cleaner are typically 10-60 percent smaller than the original ones.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Important! The internal image viewer in SVG Cleaner uses the QtSvg module for rendering SVG images. Qt supports only the static features of SVG 1.2 Tiny, and that imposes a number of restrictions on rendering of advanced features. For instance, elements such as clipPath, mask, filters etc. will not be rendered at all.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;We apologize for any bugs in advance. Please send bug reports to &lt;a href=&quot;svgcleanerteam@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;svgcleanerteam@gmail.com&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size, but not add quality.&lt;br /&gt;&lt;br /&gt;SVG Cleaner could help you to clean up your SVG files from unnecessary data. It works in batch mode and basically does two things:&lt;br /&gt;- removing elements and attributes that don&apos;t contribute to the final rendering; &lt;br /&gt;- making those elements and attributes that are actually used more compact.&lt;br /&gt;The app has a lot of options for cleanup and optimization and provides multithreaded file processing on the multicore processors.&lt;br /&gt;Usually, images cleaned by SVG Cleaner may be as small as 10-60% of the original sizes.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Important! Internal image viewer in SVG Cleaner uses QtSvg for rendering SVG images. Since Qt supports only the static features of SVG 1.2 Tiny that imposes a number of restrictions on rendering of advanced features. For instance, elements such as clipPath, mask, filters etc. will not be rendered at all.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;We apologize in advance for any bugs. Please send bug reports to &lt;/span&gt;&lt;a href=&quot;svgcleanerteam@gmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0057ae;&quot;&gt;svgcleanerteam@gmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Obecně obsahují soubory SVG vytvářené vektorovými editory mnoho nepoužívaných prvků a vlastností, které jen nafukují jejich velikost, ale nezvětšují kvalitu.&lt;br /&gt;SVG Cleaner vám může pomoci soubory SVG očistit od nepotřebných dat. Pracuje v dávkovém režimu a v základě dělá dvě věci:&lt;br /&gt;- odstranění prvků a vlastností, které nepřispívají ke konečnému provedení; &lt;br /&gt;- udělání těchto prvků a vlastností, které jsou doopravdy použity kompaktněji.&lt;br /&gt;Program má hodně možností pro úklid a vyladění a poskytuje vícevláknové zpracování souboru na procesorech s více jádry.&lt;br /&gt;Obvykle jsou obrázky uklizené programem SVG Cleaner menší než 10-60% původní velikosti.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Důležité! Vnitřní prohlížeč obrázků v SVG Cleaner používá pro zpracování obrázků SVG QtSvg, protože Qt podporuje jen statické vlastnosti SVG 1.2 Tiny, které zavádí na zpracování pokročilých vlastností mnohá omezení. Například prvky jako clipPath, maska, filtry atd. nebudou zpracovány vůbec.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#000000;&quot;&gt;Předem se omlouváme za jakékoli chyby. Hlášení chyb posílejte, prosím, svgcleanerteam@gmail.com.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Donate</source>
-        <translation type="obsolete">Dary</translation>
-    </message>
-    <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you like SVG Cleaner and it helps you in your work consider donating any amount of money to show the authors your appreciation. Moreover your donation lets us work on future versions of this program and stay it free.&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;WebMoney wallets:&lt;br /&gt;Z199089038015&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;E300018186079&lt;br /&gt;R622529560927&lt;br /&gt;U135420653690&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Verdana&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Pokud se vám SVG Cleaner líbí a pomáhá vám při práci, zvažte darování jakéhokoli množství peněz, abyste autorům ukázali vaše ocenění. Navíc nám vaše peníze umožní práci na budoucích verzích programu a ten zůstane zdarma.&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;WebMoney peněženka:&lt;br /&gt;Z199089038015&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;E300018186079&lt;br /&gt;R622529560927&lt;br /&gt;U135420653690&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.ui" line="73"/>
+        <location filename="../src/gui/aboutdialog.ui" line="59"/>
         <source>Authors</source>
         <translation>Autoři</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="99"/>
+        <location filename="../src/gui/aboutdialog.ui" line="73"/>
         <source>License</source>
         <translation>Povolení</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/aboutdialog.cpp" line="16"/>
+        <source>Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size without providing better visible quality.</source>
+        <translation>Obecně obsahují soubory SVG vytvářené vektorovými editory mnoho nepoužívaných prvků a vlastností, které jen nafukují jejich velikost, ale nezvětšují kvalitu.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/aboutdialog.cpp" line="20"/>
+        <source>SVG Cleaner could help you to clean up your SVG files from unnecessary data. It has a lot of options for cleanup and optimization, works in batch mode, provides threaded processing on the multicore processors and basically does two things:&lt;br /&gt;- removing elements and attributes that don&apos;t contribute to the final rendering;&lt;br /&gt;- making those elements and attributes in use more compact.</source>
+        <translation>Obecně obsahují soubory SVG vytvářené vektorovými editory mnoho nepoužívaných prvků a vlastností, které jen nafukují jejich velikost, ale nezvětšují kvalitu.&lt;br /&gt;SVG Cleaner vám může pomoci soubory SVG očistit od nepotřebných dat. Pracuje v dávkovém režimu a v základě dělá dvě věci:&lt;br /&gt;- odstranění prvků a vlastností, které nepřispívají ke konečnému provedení; &lt;br /&gt;- udělání těchto prvků a vlastností, které jsou doopravdy použity kompaktněji.&lt;br /&gt;Program má hodně možností pro úklid a vyladění a poskytuje vícevláknové zpracování souboru na procesorech s více jádry.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/aboutdialog.cpp" line="28"/>
+        <source>Images cleaned by SVG Cleaner are typically 10-60 percent smaller than the original ones.</source>
+        <translation>Obvykle jsou obrázky uklizené programem SVG Cleaner menší než 10-60% původní velikosti.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/aboutdialog.cpp" line="31"/>
+        <source>Important! The internal image viewer in SVG Cleaner uses the QtSvg module for rendering SVG images. Qt supports only the static features of SVG 1.2 Tiny, and that imposes a number of restrictions on rendering of advanced features. For instance, elements such as clipPath, mask, filters etc. will not be rendered at all.</source>
+        <translation>Důležité! Vnitřní prohlížeč obrázků v SVG Cleaner používá pro zpracování obrázků SVG QtSvg, protože Qt podporuje jen statické vlastnosti SVG 1.2 Tiny, které zavádí na zpracování pokročilých vlastností mnohá omezení. Například prvky jako clipPath, maska, filtry atd. nebudou zpracovány vůbec.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/aboutdialog.cpp" line="37"/>
+        <source>We apologize for any bugs in advance. Please send bug reports to </source>
+        <translation>Předem se omlouváme za jakékoli chyby. Hlášení chyb posílejte, prosím, </translation>
+    </message>
+    <message>
+        <location filename="../src/gui/aboutdialog.cpp" line="43"/>
+        <source>Developers:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/aboutdialog.cpp" line="46"/>
+        <source>Previous developers:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/aboutdialog.cpp" line="49"/>
+        <source>Special thanks:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/aboutdialog.cpp" line="52"/>
+        <source>Logo design:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/aboutdialog.cpp" line="55"/>
+        <source>Translators:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>CleanerThread</name>
-    <message>
-        <source>You have to install XML::Twig module.</source>
-        <translation type="obsolete">Musíte nainstalovat XML::modul Twig.</translation>
-    </message>
-    <message>
-        <source>It&apos;s a not well-formed SVG file!</source>
-        <translation type="obsolete">Toto není dobře udělaný soubor SVG!</translation>
-    </message>
-    <message>
-        <source>This file doesn&apos;t need cleaning!</source>
-        <translation type="obsolete">Tento soubor nepotřebuje úklid!</translation>
-    </message>
     <message>
         <location filename="../src/gui/cleanerthread.cpp" line="122"/>
         <source>Crashed</source>
@@ -112,13 +95,13 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/gui/cleanerthread.cpp" line="129"/>
         <source>It&apos;s a not well-formed SVG file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Toto není dobře udělaný soubor SVG.</translation>
     </message>
 </context>
 <context>
     <name>LineEdit</name>
     <message>
-        <location filename="../src/gui/lineedit.cpp" line="37"/>
+        <location filename="../src/gui/lineedit.cpp" line="44"/>
         <source>%1 files</source>
         <translation>%1 souborů</translation>
     </message>
@@ -212,72 +195,62 @@ p, li { white-space: pre-wrap; }
         <translation>Srovnávací pohled</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="38"/>
+        <location filename="../src/gui/mainwindow.cpp" line="40"/>
         <source>Sort by name</source>
         <translation>Třídit podle názvu</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="39"/>
+        <location filename="../src/gui/mainwindow.cpp" line="41"/>
         <source>Sort by size</source>
         <translation>Třídit podle velikosti</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="40"/>
+        <location filename="../src/gui/mainwindow.cpp" line="42"/>
         <source>Sort by compression</source>
         <translation>Třídit podle komprese</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="41"/>
+        <location filename="../src/gui/mainwindow.cpp" line="43"/>
         <source>Sort by attributes</source>
         <translation>Třídit podle vlastností</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="42"/>
+        <location filename="../src/gui/mainwindow.cpp" line="44"/>
         <source>Sort by elements</source>
         <translation>Třídit podle prvků</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="43"/>
+        <location filename="../src/gui/mainwindow.cpp" line="45"/>
         <source>Sort by time</source>
         <translation>Třídit podle času</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="50"/>
+        <location filename="../src/gui/mainwindow.cpp" line="52"/>
         <source>Open the wizard</source>
         <translation>Otevřít průvodce</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="51"/>
+        <location filename="../src/gui/mainwindow.cpp" line="53"/>
         <source>Start processing</source>
         <translation>Spustit zpracování</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="52"/>
+        <location filename="../src/gui/mainwindow.cpp" line="54"/>
         <source>Pause processing</source>
         <translation>Pozastavit zpracování</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="53"/>
+        <location filename="../src/gui/mainwindow.cpp" line="55"/>
         <source>Stop cleaning</source>
         <translation>Zastavit úklid</translation>
     </message>
     <message>
-        <source>Error</source>
-        <translation type="obsolete">Chyba</translation>
-    </message>
-    <message>
-        <source>
-Processing will stop now.</source>
-        <translation type="obsolete">
-Zpracování se nyní zastaví.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/mainwindow.cpp" line="280"/>
+        <location filename="../src/gui/mainwindow.cpp" line="282"/>
         <source>Compare view: on</source>
         <translation>Srovnávací pohled: zapnuto</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="283"/>
+        <location filename="../src/gui/mainwindow.cpp" line="285"/>
         <source>Compare view: off</source>
         <translation>Srovnávací pohled: vypnuto</translation>
     </message>
@@ -328,7 +301,7 @@ Zpracování se nyní zastaví.</translation>
         <translation>Čas zpracování:</translation>
     </message>
     <message>
-        <location filename="../src/gui/thumbwidget.cpp" line="14"/>
+        <location filename="../src/gui/thumbwidget.cpp" line="15"/>
         <source>Name:</source>
         <translation>Název:</translation>
     </message>
@@ -392,7 +365,7 @@ Zpracování se nyní zastaví.</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="332"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="154"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="159"/>
         <source>For example: </source>
         <translation>Například: </translation>
     </message>
@@ -472,8 +445,9 @@ Zpracování se nyní zastaví.</translation>
         <translation>Odstranit verzi jazyka SVG</translation>
     </message>
     <message>
-        <source>Remove unused namespaces</source>
-        <translation type="obsolete">Odstranit nepoužívané jmenné prostory</translation>
+        <location filename="../src/gui/wizarddialog.ui" line="1716"/>
+        <source>Merge multiply matrices into one and simplify it</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="1086"/>
@@ -537,10 +511,6 @@ Zpracování se nyní zastaví.</translation>
         <translation>Odstranit nepotřebná prázdná místa mezi příkazy a souřadnicemi</translation>
     </message>
     <message>
-        <source>Remove empty line and curve segments</source>
-        <translation type="obsolete">Odstranit prázdné čáry a části křivek</translation>
-    </message>
-    <message>
         <location filename="../src/gui/wizarddialog.ui" line="1553"/>
         <source>Convert cubic curve segments into shorthand equivalents when possible</source>
         <translation>Převést části kubických křivek do obdoby zkratky, když je to možné</translation>
@@ -561,10 +531,6 @@ Zpracování se nyní zastaví.</translation>
         <translation>Převést vlastnosti stylů do vlastností SVG</translation>
     </message>
     <message>
-        <source>Convert units to pixels</source>
-        <translation type="obsolete">Převést jednotky na pixely</translation>
-    </message>
-    <message>
         <location filename="../src/gui/wizarddialog.ui" line="1656"/>
         <source>Convert colors to #RRGGBB format</source>
         <translation>Převést barvy do formátu #RRGGBB</translation>
@@ -580,11 +546,6 @@ Zpracování se nyní zastaví.</translation>
         <translation>Hledat soubory SVG v podsložkách</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1716"/>
-        <source>Merge multiply matrices into one and simplify it.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/gui/wizarddialog.ui" line="1732"/>
         <source>Recalculate coordinates and remove transform attributes when possible</source>
         <translation>Přepočítat souřadnice a odstranit vlastnosti proměny, když je to možné</translation>
@@ -595,17 +556,9 @@ Zpracování se nyní zastaví.</translation>
         <translation>Třídit prvky podle názvu v sekci vymezení</translation>
     </message>
     <message>
-        <source>The pretty print style:</source>
-        <translation type="obsolete">Hezký tiskový styl:</translation>
-    </message>
-    <message>
         <location filename="../src/gui/wizarddialog.ui" line="1989"/>
         <source>The indentation for the pretty print style:</source>
         <translation>Odsazení pro hezký tiskový styl:</translation>
-    </message>
-    <message>
-        <source>The empty tag display style:</source>
-        <translation type="obsolete">Styl zobrazení pro prázdnou značku:</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="153"/>
@@ -621,26 +574,6 @@ Zpracování se nyní zastaví.</translation>
         <location filename="../src/gui/wizarddialog.ui" line="783"/>
         <source>Remove elements from namespaces by the following graphics editors:</source>
         <translation>Odstranit prvky ze jmenných prostorů pomocí následujících grafických editorů:</translation>
-    </message>
-    <message>
-        <source>Inkscape</source>
-        <translation type="obsolete">Inkscape</translation>
-    </message>
-    <message>
-        <source>Sodipodi</source>
-        <translation type="obsolete">Sodipodi</translation>
-    </message>
-    <message>
-        <source>Adobe Illustrator</source>
-        <translation type="obsolete">Adobe Illustrator</translation>
-    </message>
-    <message>
-        <source>Corel Draw</source>
-        <translation type="obsolete">Corel Draw</translation>
-    </message>
-    <message>
-        <source>Microsoft Visio</source>
-        <translation type="obsolete">Microsoft Visio</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="892"/>
@@ -670,7 +603,7 @@ Zpracování se nyní zastaví.</translation>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="1508"/>
         <source>Remove empty segments</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prázdné čáry a části křivek</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="1521"/>
@@ -681,14 +614,6 @@ Zpracování se nyní zastaví.</translation>
         <location filename="../src/gui/wizarddialog.ui" line="1703"/>
         <source>Convert basic shapes into paths</source>
         <translation>Převést základní tvary na cesty</translation>
-    </message>
-    <message>
-        <source>Remove unnecessary whitespace from lists of points</source>
-        <translation type="obsolete">Odstranit nepotřebná prázdná místa ze seznamů bodů</translation>
-    </message>
-    <message>
-        <source>Convert some transformations into the matrix</source>
-        <translation type="obsolete">Převést některé proměny do matice</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="1758"/>
@@ -709,10 +634,6 @@ Zpracování se nyní zastaví.</translation>
         <location filename="../src/gui/wizarddialog.ui" line="1865"/>
         <source>inside other attributes:</source>
         <translation>Uvnitř jiných vlastností:</translation>
-    </message>
-    <message>
-        <source>The quote character for attributes:</source>
-        <translation type="obsolete">Znak uvozovek pro vlastnosti:</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="1537"/>
@@ -736,7 +657,7 @@ Zpracování se nyní zastaví.</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="325"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="155"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="160"/>
         <source>filename</source>
         <translation>Název souboru</translation>
     </message>
@@ -776,118 +697,110 @@ Zpracování se nyní zastaví.</translation>
         <translation>Uložit</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="91"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="92"/>
         <source>prefix</source>
         <translation>Předpona</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="92"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="93"/>
         <source>suffix</source>
         <translation>Přípona</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="101"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="102"/>
         <source>Presets</source>
         <translation>Přednastavení</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="102"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="103"/>
         <source>Elements</source>
         <translation>Prvky</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="103"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="104"/>
         <source>Attributes</source>
         <translation>Vlastnosti</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="105"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="106"/>
         <source>Optimization</source>
         <translation>Vyladění</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="106"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="107"/>
         <source>Output</source>
         <translation>Výstup</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="125"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="130"/>
         <source>Warning! The original files will be destroyed!</source>
         <translation>Varování! Původní soubory budou zničeny!</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="382"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="387"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Pro tento způsob ukládání musíte nastavit předponu nebo příponu.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="104"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="105"/>
         <source>Paths</source>
         <translation>Cesty</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="100"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="101"/>
         <source>Main</source>
         <translation>Hlavní</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="352"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="357"/>
         <source>Select an input folder</source>
         <translation>Vybrat vstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="365"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="370"/>
         <source>Select an output folder</source>
         <translation>Vybrat výstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="376"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="381"/>
         <source>An input folder is not selected.</source>
         <translation>Vstupní složka není vybrána.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="379"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="384"/>
         <source>An output folder is not selected.</source>
         <translation>Výstupní složka není vybrána.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="385"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="390"/>
         <source>An input folder is not exist.</source>
         <translation>Vstupní složka neexistuje.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="388"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="393"/>
         <source>An input folder did not contain any svg, svgz files.</source>
         <translation>Vstupní složka neobsahoval žádné soubory svg, svgz.</translation>
     </message>
     <message>
-        <source>You have to install 7-Zip to use SVG Cleaner.</source>
-        <translation type="obsolete">Musíte nainstalovat 7-Zip pro použití SVG Cleaner.</translation>
-    </message>
-    <message>
-        <source>You have to install Perl to use SVG Cleaner.</source>
-        <translation type="obsolete">Musíte nainstalovat Perl pro použití SVG Cleaner.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="396"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="401"/>
         <source>Selected output folder is not writable.</source>
         <translation>Vybraná výstupní složka není zapisovatelná.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="415"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="420"/>
         <source>You have to set preset name.</source>
         <translation>Musíte nastavit název přednastavení.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="424"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="429"/>
         <source>This preset already exists.
 Overwrite?</source>
         <translation>Toto přednastavení již existuje.
 Přepsat?</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="404"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="423"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="409"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="428"/>
         <source>Warning</source>
         <translation>Varování</translation>
     </message>

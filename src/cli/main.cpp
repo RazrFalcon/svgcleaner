@@ -23,8 +23,8 @@ void showHelp()
     qDebug() << "";
     qDebug() << "By default, all options are on, and you can only disable it.";
     qDebug() << "Options:";
-    qDebug() << "  -h --help  Show this text.";
-    qDebug() << "  --version  Show version.";
+    qDebug() << "  -h --help                Show this text.";
+    qDebug() << "  --version                Show version.";
 
     qDebug() << "Elements:";
     qDebug() << "  --keep-prolog            Disable xml prolog removing.";

@@ -22,7 +22,10 @@ namespace Command {
 struct Segment
 {
     QString command;
+    // absolute
     bool abs;
+    // is this command defined in source path
+    bool srcCmd;
     qreal x;
     qreal y;
     qreal x1;
@@ -31,9 +34,9 @@ struct Segment
     qreal y2;
     qreal rx;
     qreal ry;
-    int X_AXIS_ROTATION;
-    int LARGE_ARC_FLAG;
-    int SWEEP_FLAG;
+    int xAxisRotation;
+    int largeArc;
+    int sweep;
 };
 
 class SegmentList

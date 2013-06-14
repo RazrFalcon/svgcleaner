@@ -14,6 +14,8 @@
 #include "wizarddialog.h"
 #include "mainwindow.h"
 
+// FIXME: processing files like image.svg and image.svgz from different threads causes problems
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {

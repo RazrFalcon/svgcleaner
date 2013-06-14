@@ -65,6 +65,8 @@ qreal Transform::newY()
     return value;
 }
 
+// TODO: remove not important values, like
+// translate(-7 0) -> translate(-7)
 QString Transform::simplified()
 {
     QString transform;

@@ -220,9 +220,9 @@ QString SegmentList::genPath()
               % string(seg.x)  % "," % string(seg.y);
     } else if (cmd == Command::EllipticalArc) {
         out =   string(seg.rx) % "," % string(seg.ry) % " "
-                % QString::number(seg.X_AXIS_ROTATION) % " "
-                % QString::number(seg.LARGE_ARC_FLAG) % ","
-                % QString::number(seg.SWEEP_FLAG) % " "
+                % QString::number(seg.xAxisRotation) % " "
+                % QString::number(seg.largeArc) % ","
+                % QString::number(seg.sweep) % " "
                 % string(seg.x)  % "," % string(seg.y);
     }
     return out;
@@ -279,6 +279,7 @@ void Path::splitToSegments(const QString &path)
 {
     QStringList data;
     QString buf;
+    QChar prevNonDigit;
     // split path to commands and points
     for (int i = 0; i < path.size(); ++i) {
         QChar c = path.at(i);
@@ -297,9 +298,9 @@ void Path::splitToSegments(const QString &path)
                 data << buf;
             buf.clear();
         } else {
-            if (c.isNumber() || c == '.')
+            if (c.isNumber() || (c == '.' && prevNonDigit != '.') || c == 'e') {
                 buf += c;
-            else if (c == '-') {
+            } else if (c == '-' || c == '.') {
                 if (path.at(i-1).isNumber()) {
                     if (!buf.isEmpty())
                         data << buf;
@@ -310,13 +311,17 @@ void Path::splitToSegments(const QString &path)
                 }
             }
         }
+        if (!c.isDigit())
+            prevNonDigit = c;
     }
 
     QString currCmd;
     // convert to segments
     while (!data.isEmpty()) {
+        bool isNewCmd = false;
         if (data.first().at(0).isLetter()) {
             currCmd = data.takeFirst();
+            isNewCmd = true;
         }
 
         QString lowerCmd = currCmd.toLower();
@@ -324,6 +329,7 @@ void Path::splitToSegments(const QString &path)
 
         segment.command = lowerCmd;
         segment.abs = currCmd.at(0).isUpper();
+        segment.srcCmd = isNewCmd;
 
         // TODO: add count check to prevent crash
         if (   lowerCmd == Command::MoveTo
@@ -357,9 +363,9 @@ void Path::splitToSegments(const QString &path)
         } else if (lowerCmd == Command::EllipticalArc) {
             segment.rx = data.takeFirst().toDouble();
             segment.ry = data.takeFirst().toDouble();
-            segment.X_AXIS_ROTATION = data.takeFirst().toDouble();
-            segment.LARGE_ARC_FLAG  = data.takeFirst().toDouble();
-            segment.SWEEP_FLAG      = data.takeFirst().toDouble();
+            segment.xAxisRotation = data.takeFirst().toDouble();
+            segment.largeArc  = data.takeFirst().toDouble();
+            segment.sweep      = data.takeFirst().toDouble();
             segment.x = data.takeFirst().toDouble();
             segment.y = data.takeFirst().toDouble();
         }
@@ -496,7 +502,8 @@ QString Path::segmentsToPath()
         // check is previous command is the same as next
         bool writeCmd = true;
         if (currCmd == prevCom && !prevCom.isEmpty()) {
-            if (segment.abs == isPrevComAbs)
+            if (segment.abs == isPrevComAbs
+                && (!segment.srcCmd && segment.command == Command::MoveTo))
                 writeCmd = false;
         }
         prevCom = currCmd;
@@ -542,7 +549,7 @@ QString Path::trimPath(const QString &path)
                 if (curr == ' ' && next.isLetter())
                     flag = false;
                 // example: 42,-42 -> 42-42
-                if (curr == ',' && next == '-')
+                if (curr == ',' && next == '-' /*|| next == '.')*/)
                     flag = false;
                 // example: 42 -42 -> 42-42
                 if (prev.isNumber() && curr == ' ' && next == '-' && !isArc)

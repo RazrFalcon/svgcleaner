@@ -81,6 +81,7 @@ public:
     static QVariantHash initDefaultStyleHash();
 };
 
+// TODO: add percentages attr list
 namespace Props {
 static const QSet<QString> fillList = QSet<QString>() << "fill" << "fill-rule" << "fill-opacity";
 static const QSet<QString> strokeList = QSet<QString>()

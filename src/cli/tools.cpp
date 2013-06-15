@@ -468,6 +468,7 @@ QVariantHash Tools::initDefaultStyleHash()
     hash.insertMulti("fill", "#000000");
     hash.insertMulti("fill", "black");
     hash.insert("stroke-linecap", "butt");
+    // NOTE: Qt render works strage without this option
     hash.insert("stroke-linejoin", "miter");
     hash.insert("stroke-dasharray", "none");
     hash.insert("stroke-miterlimit", 4.0);

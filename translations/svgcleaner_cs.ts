@@ -52,27 +52,27 @@
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="43"/>
         <source>Developers:</source>
-        <translation type="unfinished"></translation>
+        <translation>Vývojáři:</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="46"/>
         <source>Previous developers:</source>
-        <translation type="unfinished"></translation>
+        <translation>Předchozí vývojáři:</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="49"/>
         <source>Special thanks:</source>
-        <translation type="unfinished"></translation>
+        <translation>Poděkování:</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="52"/>
         <source>Logo design:</source>
-        <translation type="unfinished"></translation>
+        <translation>Návrh symbolu:</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="55"/>
         <source>Translators:</source>
-        <translation type="unfinished"></translation>
+        <translation>Překladatelé:</translation>
     </message>
 </context>
 <context>
@@ -80,17 +80,17 @@
     <message>
         <location filename="../src/gui/cleanerthread.cpp" line="122"/>
         <source>Crashed</source>
-        <translation type="unfinished"></translation>
+        <translation>Spadlo</translation>
     </message>
     <message>
         <location filename="../src/gui/cleanerthread.cpp" line="125"/>
         <source>Input file does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vstupní soubor neexistuje.</translation>
     </message>
     <message>
         <location filename="../src/gui/cleanerthread.cpp" line="127"/>
         <source>Output folder does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation>Výstupní soubor neexistuje.</translation>
     </message>
     <message>
         <location filename="../src/gui/cleanerthread.cpp" line="129"/>
@@ -402,7 +402,7 @@
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="734"/>
         <source>Remove processing instruction</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit příkaz ke zpracování</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="747"/>
@@ -447,7 +447,7 @@
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="1716"/>
         <source>Merge multiply matrices into one and simplify it</source>
-        <translation type="unfinished"></translation>
+        <translation>Sloučit více matic do jedné a zjednodušit ji</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="1086"/>
@@ -497,7 +497,7 @@
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="1335"/>
         <source>Remove XLinks which pointed to nonexistent element</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit odkazy (XLink), které ukazují na neexistující prvek</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="1399"/>

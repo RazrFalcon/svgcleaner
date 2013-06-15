@@ -223,18 +223,15 @@ void Remover::removeUnreferencedIds()
 
 
     // remove all linked ids
-    bool isRemoveNamedIds = !Keys::get().flag(Key::RemoveNamedIds);
-    QSet<QString>::iterator it = m_allLinkList.begin();
-    while (it != m_allLinkList.end()) {
-        if (isRemoveNamedIds) {
-            // skip id's whithout digits
-            if ((QString(*it).contains(QRegExp("\\d")))) {
-                m_allIdList.remove(*it);
-            }
-        } else {
-            m_allIdList.remove(*it);
+    foreach (const QString &text, m_allLinkList)
+        m_allIdList.remove(text);
+
+    if (Keys::get().flag(Key::RemoveNamedIds)) {
+        // skip id's whithout digits
+        foreach (const QString &text, m_allIdList) {
+            if (!text.contains(QRegExp("\\d")))
+                m_allIdList.remove(text);
         }
-        it++;
     }
 
     // remove
@@ -254,6 +251,7 @@ void Remover::removeUnreferencedIds()
     }
 }
 
+// TODO: remove gradients without xlink and child elements
 // TODO: refract
 void Remover::removeElements()
 {
@@ -588,6 +586,10 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash *hash)
         }
     }
 
+    // 'enable-background' is only applicable to container elements
+    if (!Props::containers.contains(elem.tagName()))
+        hash->remove("enable-background");
+
     if (elem.tagName() != "svg" && elem.tagName() != "pattern" && elem.tagName() != "marker")
         hash->remove("overflow");
 
@@ -630,7 +632,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash *hash)
     // TODO: why we ignores fill and stroke?
     // needed for andreas_Bureau_de_change.svg
     foreach (const QString &attr, parentHash.keys()) {
-        if (attr != "fill" && attr != "stroke") {
+        if (attr != "fill" && attr != "stroke" && attr != "opacity") {
             if (hash->contains(attr))
                 if (hash->value(attr) == parentHash.value(attr))
                     hash->remove(attr);

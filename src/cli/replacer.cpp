@@ -177,6 +177,7 @@ void Replacer::convertCDATAStyle()
     }
 }
 
+// BUG: corrupts hwinfo-3.svg
 void Replacer::prepareDefs()
 {
     // move all gradient, filters, etc. to 'defs' element
@@ -275,6 +276,8 @@ void Replacer::fixWrongAttr()
     }
 }
 
+// TODO: Gradient offset values less than 0 (or less than 0%) are rounded up to 0%. Gradient offset
+//       values greater than 1 (or greater than 100%) are rounded down to 100%.
 void Replacer::finalFixes()
 {
     QList<SvgElement> list = m_svgElem.childElemList();
@@ -511,6 +514,7 @@ void Replacer::convertBasicShapes()
                     Segment seg;
                     seg.command = Command::MoveTo;
                     seg.abs = true;
+                    seg.srcCmd = false;
                     seg.x = tmpList.at(j).toDouble(&ok);
                     Q_ASSERT(ok == true);
                     seg.y = tmpList.at(j+1).toDouble(&ok);
@@ -521,6 +525,7 @@ void Replacer::convertBasicShapes()
                     Segment seg;
                     seg.command = Command::ClosePath;
                     seg.abs = false;
+                    seg.srcCmd = true;
                     segmentList.append(seg);
                 }
 
@@ -579,9 +584,9 @@ void Replacer::mergeGradients()
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst().toElement();
         if (currElem.tagName() == "radialGradient" && currElem.hasAttribute("xlink:href")) {
-            QString currId = currElem.attribute("xlink:href").remove("#");
-            if (linkList.count(currId) == 1) {
-                SvgElement lineGradElem = findLinearGradient(currId);
+            QString currLink = currElem.attribute("xlink:href").remove("#");
+            if (linkList.count(currLink) == 1) {
+                SvgElement lineGradElem = findLinearGradient(currLink);
                 if (!lineGradElem.isNull()) {
                     foreach (const SvgElement &elem, lineGradElem.childElemList())
                         currElem.appendChild(elem);
@@ -597,7 +602,7 @@ SvgElement Replacer::findLinearGradient(const QString &id)
     QList<SvgElement> list = m_defsElem.childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
-        if (currElem.attribute("id") == id) {
+        if (currElem.tagName() == "linearGradient" && currElem.attribute("id") == id) {
             return currElem;
         }
     }

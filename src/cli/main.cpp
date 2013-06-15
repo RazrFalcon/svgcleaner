@@ -90,18 +90,20 @@ QString prepareSvg(QString str)
 {
     str.replace("\t", " ");
     str.replace("\n", " ");
+    str.replace("<svg:", "<");
+    str.replace("</svg:", "</");
     if (!Keys::get().flag(Key::KeepProlog))
         str.remove(QRegExp("<\\!DOCTYPE svg .*\\.dtd('|\")>"));
     return str;
 }
 
-void processFile(const QString &firstFile, const QString &secondFile)
+bool processFile(const QString &firstFile, const QString &secondFile)
 {
     QFile inputFile(firstFile);
     qDebug() << "The initial file size is: " + QString::number(inputFile.size());
     if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Error: cannot open input file.";
-        exit(0);
+        return false;
     }
     QTextStream inputStream(&inputFile);
     QDomDocument inputSvg;
@@ -109,8 +111,9 @@ void processFile(const QString &firstFile, const QString &secondFile)
     inputSvg.setContent(svgText);
 
     if (inputSvg.elementsByTagName("svg").count() == 0) {
+        qDebug() << firstFile;
         qDebug() << "Error: it's a not well-formed SVG file.";
-        exit(0);
+        return false;
     }
 
     Replacer replacer(inputSvg);
@@ -161,7 +164,7 @@ void processFile(const QString &firstFile, const QString &secondFile)
     QFile outFile(secondFile);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qDebug() << "Error: could not open out file for write.";
-        exit(0);
+        return false;
     }
     QTextStream out(&outFile);
     // remove unneeded new lines in text elements, created by default xml format,
@@ -171,6 +174,7 @@ void processFile(const QString &firstFile, const QString &secondFile)
 
     qDebug() << "The final file size is: " + QString::number(outFile.size());
     replacer.calcElemAttrCount("final");
+    return true;
 }
 
 int main(int argc, char *argv[])

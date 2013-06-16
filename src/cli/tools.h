@@ -76,7 +76,7 @@ public:
     static QString roundNumber(qreal value, RoundType type = COORDINATES);
     static QString styleHashToString(const StringHash &hash);
     static QString trimColor(QString color);
-    static StringHash splitStyle(const QString &style);
+    static StringHash splitStyle(QString style);
     static void sortNodes(QList<QDomNode> *nodeList);
     static QVariantHash initDefaultStyleHash();
 };

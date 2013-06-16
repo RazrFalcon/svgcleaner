@@ -548,9 +548,10 @@ QList<SvgElement> Tools::childElemList(QDomNode node)
     return outList;
 }
 
-StringHash Tools::splitStyle(const QString &style)
+StringHash Tools::splitStyle(QString style)
 {
     StringHash hash;
+    style.remove(QRegExp("^ +| +$"));
     QStringList list = style.split(QRegExp("( +|);( +|)"), QString::SkipEmptyParts);
     for (int i = 0; i < list.count(); ++i) {
         QStringList tmpList = list.at(i).split(QRegExp("( +|):( +|)"));

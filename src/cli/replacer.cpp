@@ -149,7 +149,6 @@ void Replacer::convertCDATAStyle()
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst().toElement();
         if (currElem.hasAttribute("class")) {
-            QString newStyle;
             StringHash newHash;
             QStringList classList = currElem.attribute("class").split(QRegExp(" +"));
             for (int i = 0; i < classList.count(); ++i) {
@@ -165,7 +164,7 @@ void Replacer::convertCDATAStyle()
                 foreach (const QString &key, oldHash.keys())
                     newHash.insert(key, oldHash.value(key));
             }
-            newStyle = Tools::styleHashToString(newHash);
+            QString newStyle = Tools::styleHashToString(newHash);
 
             if (!newStyle.isEmpty())
                 currElem.setAttribute("style", newStyle);

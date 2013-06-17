@@ -1,9 +1,9 @@
-QT       += core xml
+QT      += core xml
 
-TARGET = svgcleaner-cli
-CONFIG   += console
-CONFIG   -= app_bundle
-
+TARGET   = svgcleaner-cli
+CONFIG  += console
+CONFIG  -= app_bundle
+DESTDIR  =../../bin
 TEMPLATE = app
 
 SOURCES += main.cpp \

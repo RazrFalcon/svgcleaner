@@ -22,7 +22,7 @@
     </message>
     <message>
         <source>Generally, SVG files produced by vector editors contain a lot of unused elements and attributes that just blow up their size without providing better visible quality.</source>
-        <translation>Für Gewöhnlich enthalten SVG-Dateien, die mit SVG-Editoren erstellt wurden, viele ungenutze Elemente und Attribute im Quelltext, die lediglich ihre Größe beeinflussen, nicht jedoch ihre Qualität.</translation>
+        <translation>Für gewöhnlich enthalten SVG-Dateien, die mit SVG-Editoren erstellt wurden, viele ungenutze Elemente und Attribute im Quelltext, die lediglich ihre Größe beeinflussen, nicht jedoch ihre Qualität.</translation>
     </message>
     <message>
         <source>SVG Cleaner could help you to clean up your SVG files from unnecessary data. It has a lot of options for cleanup and optimization, works in batch mode, provides threaded processing on the multicore processors and basically does two things:&lt;br /&gt;- removing elements and attributes that don&apos;t contribute to the final rendering;&lt;br /&gt;- making those elements and attributes in use more compact.</source>
@@ -30,7 +30,7 @@
     </message>
     <message>
         <source>Images cleaned by SVG Cleaner are typically 10-60 percent smaller than the original ones.</source>
-        <translation>In der regel schrumpfen mit SVG Cleaner optimierte Bilddateien auf 10-60% ihrer Ausgangsgröße.</translation>
+        <translation>In der Regel schrumpfen mit SVG Cleaner optimierte Bilddateien auf 10-60% ihrer Ausgangsgröße.</translation>
     </message>
     <message>
         <source>Important! The internal image viewer in SVG Cleaner uses the QtSvg module for rendering SVG images. Qt supports only the static features of SVG 1.2 Tiny, and that imposes a number of restrictions on rendering of advanced features. For instance, elements such as clipPath, mask, filters etc. will not be rendered at all.</source>
@@ -38,42 +38,42 @@
     </message>
     <message>
         <source>We apologize for any bugs in advance. Please send bug reports to </source>
-        <translation>Wir bitten etwaig auftretenden Programmfehler entschuldigen. Bitte senden Sie uns fehlerberichte an </translation>
+        <translation>Wir bitten etwaig auftretenden Programmfehler zu entschuldigen. Bitte senden Sie uns Fehlerberichte an </translation>
     </message>
     <message>
         <source>Developers:</source>
-        <translation type="unfinished"></translation>
+        <translation>Entwickler:</translation>
     </message>
     <message>
         <source>Previous developers:</source>
-        <translation type="unfinished"></translation>
+        <translation>Frühere Entwickler:</translation>
     </message>
     <message>
         <source>Special thanks:</source>
-        <translation type="unfinished"></translation>
+        <translation>Besonderer Dank:</translation>
     </message>
     <message>
         <source>Logo design:</source>
-        <translation type="unfinished"></translation>
+        <translation>Logo-Design:</translation>
     </message>
     <message>
         <source>Translators:</source>
-        <translation type="unfinished"></translation>
+        <translation>Übersetzer:</translation>
     </message>
 </context>
 <context>
     <name>CleanerThread</name>
     <message>
         <source>Crashed</source>
-        <translation type="unfinished"></translation>
+        <translation>Abgestürzt</translation>
     </message>
     <message>
         <source>Input file does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Eingabedatei existiert nicht.</translation>
     </message>
     <message>
         <source>Output folder does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Ausgabe-Ordner existiert nicht.</translation>
     </message>
     <message>
         <source>It&apos;s a not well-formed SVG file.</source>
@@ -626,11 +626,11 @@ Overwrite?</source>
     </message>
     <message>
         <source>Remove processing instruction</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne die Verarbeitungs-Angaben</translation>
     </message>
     <message>
         <source>Remove XLinks which pointed to nonexistent element</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Xlinks, die auf nicht existierende Elemente zeigen</translation>
     </message>
     <message>
         <source>Remove empty segments</source>
@@ -638,7 +638,7 @@ Overwrite?</source>
     </message>
     <message>
         <source>Merge multiply matrices into one and simplify it</source>
-        <translation type="unfinished"></translation>
+        <translation>Führe mehrfahe Matrizen in eine zusammen udn vereinfache sie</translation>
     </message>
 </context>
 </TS>

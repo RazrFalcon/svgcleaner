@@ -71,7 +71,6 @@ void MainWindow::on_actionWizard_triggered()
     WizardDialog wizard;
     if (wizard.exec()) {
         arguments = wizard.threadArguments();
-        qDebug() << arguments.args;
         actionStart->setEnabled(true);
     }
 }

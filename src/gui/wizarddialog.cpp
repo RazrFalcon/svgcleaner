@@ -231,7 +231,7 @@ ToThread WizardDialog::threadArguments()
     threadArgs.zipPath       = QApplication::applicationDirPath() + "/7za";
 #else
     threadArgs.cliPath       = SomeUtils::findFile("svgcleaner-cli", "/usr/bin/");
-    threadArgs.zipPath       = SomeUtils::findFile("7z", "/usr/bin/");
+    threadArgs.zipPath       = "/usr/bin/7z";
 #endif
     return threadArgs;
 }

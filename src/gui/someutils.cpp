@@ -1,4 +1,5 @@
 #include <QtCore/QFileInfo>
+#include <QtGui/QApplication>
 #include <QtCore/QTime>
 
 #include "someutils.h"
@@ -34,11 +35,30 @@ QString SomeUtils::prepareTime(const float ms)
     return timeStr.remove(QRegExp("^(00. )*"));
 }
 
-QString SomeUtils::findFile(const QString &name, const QString &defaultFolder)
+QString SomeUtils::findBinFile(const QString &name)
 {
-    if (QFile(defaultFolder + "/" + name).exists())
-        return defaultFolder + "/" + name;
-    else
-        return "./" + name;
-    return name;
+    QStringList names;
+    names << name << name + ".exe";
+    foreach (const QString &name, names) {
+        // next to GUI
+        if (QFile("./" + name).exists())
+            return "./" + name;
+        // MacOS package
+        if (QFile(QApplication::applicationDirPath() + "/" + name).exists())
+            return QApplication::applicationDirPath() + "/" + name;
+        // Linux default install
+        if (QFile("/usr/bin/" + name).exists())
+            return "/usr/bin/" + name;
+    }
+    return "";
+}
+
+QString SomeUtils::genSearchFolderList()
+{
+    QString paths;
+    paths += QApplication::applicationDirPath() + "/\n";
+#ifdef Q_OS_LINUX
+    paths += "/usr/bin/\n";
+#endif
+    return paths;
 }

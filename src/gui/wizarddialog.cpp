@@ -223,16 +223,8 @@ ToThread WizardDialog::threadArguments()
     threadArgs.inputFiles    = getInFiles();
     threadArgs.outputFiles   = genOutFiles();
     threadArgs.compressLevel = compressValue();
-#ifdef Q_OS_WIN
-    threadArgs.cliPath       = "svgcleaner-cli.exe";
-    threadArgs.zipPath       = "7za.exe";
-#elif defined (Q_OS_MAC)
-    threadArgs.cliPath       = QApplication::applicationDirPath() + "/svgcleaner-cli";
-    threadArgs.zipPath       = QApplication::applicationDirPath() + "/7za";
-#else
-    threadArgs.cliPath       = SomeUtils::findFile("svgcleaner-cli", "/usr/bin/");
-    threadArgs.zipPath       = "/usr/bin/7z";
-#endif
+    threadArgs.cliPath       = SomeUtils::findBinFile("svgcleaner-cli");
+    threadArgs.zipPath       = SomeUtils::findBinFile("7za");
     return threadArgs;
 }
 
@@ -392,10 +384,16 @@ bool WizardDialog::checkForWarnings()
     } else if (fileList.isEmpty()) {
         createWarning(tr("An input folder did not contain any svg, svgz files."));
         check = false;
-        // TODO: this
-    /*} else if (!checkFor("7za")) {
-        createWarning(tr("You have to install 7-Zip to use SVG Cleaner."));
-        check = false; */
+    } else if (SomeUtils::findBinFile("svgcleaner-cli").isEmpty()) {
+        QMessageBox::critical(this, tr("Error"),
+                        tr("The 'svgcleaner-cli' executable are not found in these folders:\n")
+                        + SomeUtils::genSearchFolderList());
+        check = false;
+    } else if (SomeUtils::findBinFile("7za").isEmpty()) {
+        QMessageBox::warning(this, tr("Warning"),
+                        tr("The '7za' executable are not found in these folders:\n")
+                        + SomeUtils::genSearchFolderList() + "\n\n"
+                        + tr("You can not handle the SVGZ files."));
     } else if (QFileInfo(lineEditOutDir->text()).isDir()
                && !QFileInfo(lineEditOutDir->text()).isWritable()) {
         createWarning(tr("Selected output folder is not writable."));
@@ -406,7 +404,7 @@ bool WizardDialog::checkForWarnings()
 
 void WizardDialog::createWarning(const QString &text)
 {
-    QMessageBox::warning(this, tr("Warning"), text,QMessageBox::Ok);
+    QMessageBox::warning(this, tr("Warning"), text, QMessageBox::Ok);
 }
 
 void WizardDialog::on_linePresetName_textChanged(const QString &text)

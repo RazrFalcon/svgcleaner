@@ -2,10 +2,12 @@ isEmpty(QMAKE_LRELEASE) {
     !exists($$QMAKE_LRELEASE) { QMAKE_LRELEASE = lrelease }
 }
 
-# fix for ArchLinux
-DEP_CHECK = $$system(which lrelease)
-contains($$DEP_CHECK, "no lrelease in") {
-    QMAKE_LRELEASE = lrelease-qt4
+linux {
+    # fix for ArchLinux
+    DEP_CHECK = $$system(which lrelease)
+    contains($$DEP_CHECK, "no lrelease in") {
+        QMAKE_LRELEASE = lrelease-qt4
+    }
 }
 
 TR_PATH=../../translations

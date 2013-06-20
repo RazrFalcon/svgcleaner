@@ -2,7 +2,8 @@ QT       += core gui svg
 TEMPLATE  = app
 DESTDIR   =../../bin
 TARGET      = SVGCleaner
-linux:TARGET = svgcleaner-gui
+mac:TARGET  = SVGCleaner
+unix:TARGET = svgcleaner-gui
 
 SOURCES  += main.cpp \
             thumbwidget.cpp \

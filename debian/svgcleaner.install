@@ -8,4 +8,4 @@ svgcleaner_ru.qm usr/share/svgcleaner/translations
 svgcleaner_uk.qm usr/share/svgcleaner/translations
 svgcleaner_de.qm usr/share/svgcleaner/translations
 icons/svgcleaner.svg usr/share/icons/hicolor/scalable/apps
-svgcleaner.desktop /usr/share/applications 
+svgcleaner.desktop usr/share/applications 

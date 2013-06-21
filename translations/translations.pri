@@ -9,6 +9,11 @@ isEmpty(QMAKE_LRELEASE) {
     !exists($$QMAKE_LRELEASE) { QMAKE_LRELEASE = lrelease }
 }
 
+# fix for ArchLinux
+!exists(QMAKE_LRELEASE) {
+    QMAKE_LRELEASE = lrelease-qt
+}
+
 updateqm.input = TRANSLATIONS
 updateqm.output = ${QMAKE_FILE_BASE}.qm
 updateqm.commands = $$QMAKE_LRELEASE -silent ${QMAKE_FILE_IN} -qm ${QMAKE_FILE_BASE}.qm

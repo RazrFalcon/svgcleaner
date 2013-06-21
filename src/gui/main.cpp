@@ -25,13 +25,21 @@ int main(int argc, char *argv[])
 #endif
 
     QTranslator translator;
+#ifdef Q_OS_MAC
+    if (translator.load("svgcleaner_" + locale, "../translations"))
+        app.installTranslator(&translator);
+#else
     if (translator.load("svgcleaner_" + locale, "translations"))
         app.installTranslator(&translator);
+#endif
 
     // load translation for Qt
     QTranslator qtTranslator;
 #ifdef Q_OS_WIN
     if (qtTranslator.load("qt_" + locale, "translations"))
+        app.installTranslator(&qtTranslator);
+#elif defined(Q_OS_MAC)
+    if (qtTranslator.load("qt_" + locale, "../translations"))
         app.installTranslator(&qtTranslator);
 #else
     if (qtTranslator.load("qt_" + locale, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))

@@ -13,6 +13,7 @@
 // TODO: custom xml to text covertor
 // TODO: attribute sort + id first
 // TODO: add render error detecting
+// TODO: remove 'defs' group, can be dangerous. supported by some renders
 
 void showHelp()
 {
@@ -24,7 +25,7 @@ void showHelp()
     qDebug() << "By default, all options are on, and you can only disable it.";
     qDebug() << "Options:";
     qDebug() << "  -h --help                Show this text.";
-    qDebug() << "  --version                Show version.";
+    qDebug() << "  -v --version             Show version.";
 
     qDebug() << "Elements:";
     qDebug() << "  --keep-prolog            Disable xml prolog removing.";
@@ -93,7 +94,7 @@ QString prepareSvg(QString str)
     str.replace("<svg:", "<");
     str.replace("</svg:", "</");
     if (!Keys::get().flag(Key::KeepProlog))
-        str.remove(QRegExp("<\\!DOCTYPE svg .*\\.dtd('|\")>"));
+        str.remove(QRegExp("<\\!DOCTYPE.*\\.dtd('|\")>(\n|)"));
     return str;
 }
 
@@ -153,12 +154,13 @@ bool processFile(const QString &firstFile, const QString &secondFile)
         replacer.convertBasicShapes();
     if (!Keys::get().flag(Key::KeepGroups))
         remover.removeGroups();
+    if (!Keys::get().flag(Key::SkipElemByStyleGroup))
+        replacer.groupElementsByStyles();
     if (!Keys::get().flag(Key::KeepAbsolutePaths))
         replacer.processPaths();
     if (!Keys::get().flag(Key::SkipRoundingNumbers))
         replacer.roundDefs();
-    if (!Keys::get().flag(Key::JoinStyleAttributes))
-        replacer.splitStyleAttr();
+    replacer.splitStyleAttr();
     replacer.finalFixes();
 
     QFile outFile(secondFile);
@@ -166,10 +168,15 @@ bool processFile(const QString &firstFile, const QString &secondFile)
         qDebug() << "Error: could not open out file for write.";
         return false;
     }
+    // TODO: check is out file smaller than original
     QTextStream out(&outFile);
     // remove unneeded new lines in text elements, created by default xml format,
     // but wrong in svg
-    out << inputSvg.toString(Keys::get().intNumber(Key::Indent)).replace(">\n<tspan", "><tspan");
+    QString outStr = inputSvg.toString(Keys::get().intNumber(Key::Indent));
+    if (!Keys::get().flag(Key::KeepProlog))
+        outStr.remove(QRegExp("<\\!DOCTYPE.*\\.dtd('|\")>(\n|)"));
+    outStr.replace(">\n<tspan", "><tspan");
+    out << outStr;
     outFile.close();
 
     qDebug() << "The final file size is: " + QString::number(outFile.size());
@@ -180,9 +187,16 @@ bool processFile(const QString &firstFile, const QString &secondFile)
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
+    app.setApplicationVersion("0.5");
+
     QStringList argList = app.arguments();
     // remove executable path
     argList.removeFirst();
+
+    if (argList.contains("-v") || argList.contains("--version")) {
+        qDebug() << qPrintable(app.applicationVersion());
+        return 0;
+    }
 
     if (argList.contains("-h") || argList.contains("--help")
         || argList.isEmpty() || argList.count() == 1) {

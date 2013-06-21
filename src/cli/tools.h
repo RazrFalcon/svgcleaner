@@ -8,14 +8,15 @@
 #include <QVariantHash>
 #include <QDomNode>
 #include <QGenericMatrix>
+#include <QTime>
 
 typedef QMap<QString, QString> StringMap;
 typedef QHash<QString, QString> StringHash;
 typedef QGenericMatrix<3,3,qreal> TransMatrix;
 
 namespace RegEx {
-static const QString lengthTypes = "em|ex|px|in|cm|mm|pt|pc|%";
-static const QRegExp xlinkUrl = QRegExp(".*url\\(#|\\).*");
+    static const QString lengthTypes = "em|ex|px|in|cm|mm|pt|pc|%";
+    static const QRegExp xlinkUrl = QRegExp(".*url\\(#|\\).*");
 }
 
 
@@ -35,7 +36,13 @@ public:
     QList<QDomNode> childNodeList();
     bool isReferenced();
     bool isText() const;
+    bool isContainer() const;
+    bool isGroup() const;
     StringHash styleHash();
+    void appendStyle(const QString &text);
+    void setAttribute(const QString &name, const QVariant &value);
+    QString style() const;
+    QString id() const;
 };
 
 class Transform
@@ -45,7 +52,7 @@ public:
     void setOldXY(qreal prevX, qreal prevY);
     qreal newX();
     qreal newY();
-    QString simplified();
+    QString simplified() const;
 
 private:
     QList<qreal> m_points;
@@ -65,7 +72,7 @@ private:
 class Tools
 {
 public:
-    explicit Tools();
+    explicit Tools() {}
     enum RoundType { COORDINATES, TRANSFORM, ATTRIBUTES };
     static bool isAttrEqual(QDomElement elem1, QDomElement node2, const QSet<QString> &atrr);
     static QDomNode findDefsNode(const QDomNode SvgElement);
@@ -76,12 +83,15 @@ public:
     static QString roundNumber(qreal value, RoundType type = COORDINATES);
     static QString styleHashToString(const StringHash &hash);
     static QString trimColor(QString color);
-    static StringHash splitStyle(const QString &style);
+    static StringHash splitStyle(QString style);
     static void sortNodes(QList<QDomNode> *nodeList);
     static QVariantHash initDefaultStyleHash();
+    static QSet<QString> usedElemList(const SvgElement &svgNode);
 };
 
 // TODO: add percentages attr list
+// TODO: move all this to SVGElement class
+// TODO: sort in order of max using
 namespace Props {
 static const QSet<QString> fillList = QSet<QString>() << "fill" << "fill-rule" << "fill-opacity";
 static const QSet<QString> strokeList = QSet<QString>()
@@ -117,8 +127,10 @@ static const QSet<QString> digitList = QSet<QString>()
     << "x" << "y" << "x1" << "y1" << "x2" << "y2" << "width" << "height" << "r" << "rx" << "ry"
     << "fx" << "fy" << "cx" << "cy" << "offset";
 
+// TODO: check for lsit based
 static const QSet<QString> filterDigitList = QSet<QString>()
-    << "stdDeviation" << "baseFrequency" << "k" << "k1" << "k2" << "k3" << "specularConstant";
+    << "stdDeviation" << "baseFrequency" << "k" << "k1" << "k2" << "k3" << "specularConstant"
+    << "dx" << "dy";
 
 static const QSet<QString> defsList = QSet<QString>()
     << "altGlyphDef" << "clipPath" << "cursor" << "filter" << "linearGradient"

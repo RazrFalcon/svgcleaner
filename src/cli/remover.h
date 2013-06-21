@@ -30,7 +30,7 @@ private:
     void cleanAttribute(SvgElement elem, QRegExp rx);
     void ungroupSwitch(SvgElement elem);
 
-    QSet<QString> m_useLinkList;
+    QSet<QString> m_usedElemList;
     SvgElement genGroup(SvgElement currElem, SvgElement parentGroup);
     void mergeGroups(QList<SvgElement> gNodeList);
 };

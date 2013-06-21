@@ -186,7 +186,7 @@ void MainWindow::startNext()
     CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
     if (position < arguments.inputFiles.count()
             && actionPause->isVisible() && actionStop->isEnabled()) {
-        QMetaObject::invokeMethod(cleaner, "startNext",
+        QMetaObject::invokeMethod(cleaner, "startNext", Qt::QueuedConnection,
                                   Q_ARG(QString, arguments.inputFiles.at(position)),
                                   Q_ARG(QString, arguments.outputFiles.at(position)));
         position++;

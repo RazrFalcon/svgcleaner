@@ -39,6 +39,7 @@ namespace Key {
     static const QString KeepFillProps = "--keep-fill-props";
     static const QString KeepGradientCoordinates = "--keep-grad-coords";
     static const QString KeepUnusedXLinks = "--keep-unused-xlinks";
+    static const QString SkipElemByStyleGroup = "--skip-style-group";
 
     static const QString KeepAbsolutePaths = "--keep-absolute-paths";
     static const QString KeepUnusedSymbolsFromPath = "--keep-unused-symbols";

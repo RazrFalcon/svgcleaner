@@ -45,6 +45,7 @@ private:
     void resetToDefault();
     void saveSettings();
     void setupGUI();
+    void setupToolTips();
     void deleteThreads();
 
 private slots:

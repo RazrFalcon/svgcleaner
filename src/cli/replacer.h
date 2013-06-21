@@ -4,6 +4,10 @@
 #include "paths.h"
 #include "tools.h"
 
+typedef QPair<SvgElement,QStringList> ElemListPair;
+typedef QPair<QString, int> RepetitionItem;
+typedef QList<RepetitionItem> RepetitionList;
+
 class Replacer
 {
 public:
@@ -23,13 +27,18 @@ public:
     void mergeGradients();
     void finalFixes();
     void calcElemAttrCount(const QString &text);
+    void groupElementsByStyles(SvgElement parentElem = SvgElement());
 
 private:
     QDomDocument m_dom;
     SvgElement m_svgElem;
     SvgElement m_defsElem;
+    QSet<QString> m_usedElemList;
 
     SvgElement findLinearGradient(const QString &id);
+    RepetitionList findRepetitionList(const QList<SvgElement> &list);
+    RepetitionList findRepetitionList(QList<ElemListPair> list);
+    RepetitionList genRepetitionList(const QList<QStringList> &list);
 };
 
 #endif // REPLACER_H

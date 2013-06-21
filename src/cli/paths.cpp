@@ -6,6 +6,10 @@
 
 // http://www.w3.org/TR/SVG/paths.html
 
+// TODO: add path approximation
+// fjudy2001_02_cleaned
+// warszawianka_Betel.svg
+
 SegmentList::SegmentList()
 {
     m_position = -1;

@@ -37,6 +37,7 @@ Keys::Keys()
     keyHash.insert(Key::KeepFillProps, false);
     keyHash.insert(Key::KeepGradientCoordinates, false);
     keyHash.insert(Key::KeepUnusedXLinks, false);
+    keyHash.insert(Key::SkipElemByStyleGroup, false);
 
     keyHash.insert(Key::KeepAbsolutePaths, false);
     keyHash.insert(Key::KeepUnusedSymbolsFromPath, false);

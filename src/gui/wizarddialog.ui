@@ -1340,6 +1340,19 @@
                </widget>
               </item>
               <item>
+               <widget class="QCheckBox" name="chBoxGroupByStyle">
+                <property name="accessibleName">
+                 <string notr="true">skip-style-group</string>
+                </property>
+                <property name="text">
+                 <string>Group elements by style properties</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="verticalSpacer_3">
                 <property name="accessibleName">
                  <string notr="true"/>
@@ -1934,8 +1947,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>453</height>
+               <width>360</width>
+               <height>29</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">

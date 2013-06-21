@@ -8,6 +8,8 @@
 
 Transform::Transform(const QString &text)
 {
+    if (text.isEmpty())
+        return;
     m_points = mergeMatrixes(text);
 
     // set default values
@@ -49,8 +51,7 @@ void Transform::setOldXY(qreal prevX, qreal prevY)
 
 qreal Transform::newX()
 {
-    qreal value = m_baseX;
-    value = (m_xMove + m_xScale*(cos(m_angle)*m_baseX - sin(m_angle)*m_baseY));
+    qreal value = m_xMove + m_xScale*(cos(m_angle)*m_baseX - sin(m_angle)*m_baseY);
     if (m_isXMirror)
         value = -value;
    return value;
@@ -58,8 +59,7 @@ qreal Transform::newX()
 
 qreal Transform::newY()
 {
-    qreal value = m_baseX;
-    value = (m_yMove + m_yScale*(sin(m_angle)*m_baseX + cos(m_angle)*m_baseY));
+    qreal value = m_yMove + m_yScale*(sin(m_angle)*m_baseX + cos(m_angle)*m_baseY);
     if (m_isYMirror)
         value = -value;
     return value;
@@ -67,8 +67,11 @@ qreal Transform::newY()
 
 // TODO: remove not important values, like
 // translate(-7 0) -> translate(-7)
-QString Transform::simplified()
+QString Transform::simplified() const
 {
+    if (m_points.isEmpty())
+        return "";
+
     QString transform;
     QList<qreal> pt = m_points;
 
@@ -190,11 +193,139 @@ QList<qreal> Transform::mergeMatrixes(const QString &text)
 
 // New class
 
-Tools::Tools()
+QList<SvgElement> SvgElement::childElemList()
 {
+    QList<SvgElement> outList;
+    QDomNodeList tmpList = childNodes();
+    for (int i = 0; i < tmpList.count(); ++i)
+        outList << tmpList.at(i).toElement();
+    return outList;
 }
 
+QList<QDomNode> SvgElement::childNodeList()
+{
+    QList<QDomNode> outList;
+    QDomNodeList tmpList = childNodes();
+    for (int i = 0; i < tmpList.count(); ++i)
+        outList << tmpList.at(i);
+    return outList;
+}
+
+bool SvgElement::isReferenced()
+{
+    return Props::referencedElements.contains(tagName());
+}
+
+bool SvgElement::isText() const
+{
+    return Props::textElements.contains(tagName());
+}
+
+bool SvgElement::isContainer() const
+{
+    return Props::containers.contains(tagName());
+}
+
+bool SvgElement::isGroup() const
+{
+    return (tagName() == "g");
+}
+
+
+bool SvgElement::hasAttributeByList(const QStringList &list)
+{
+    for (int i = 0; i < list.count(); ++i)
+        if (hasAttribute(list.at(i)))
+            return true;
+    return false;
+}
+
+bool SvgElement::hasAttributeByList(const QSet<QString> &list)
+{
+    foreach (const QString &attr, list) {
+        if (hasAttribute(attr))
+            return true;
+    }
+    return false;
+}
+
+bool SvgElement::hasAttributes(const QStringList &list)
+{
+    for (int i = 0; i < list.count(); ++i)
+        if (!hasAttribute(list.at(i)))
+            return false;
+    return true;
+}
+
+bool SvgElement::isStyleContains(const QString &text)
+{
+    if (hasAttribute("style"))
+        if (attribute("style").contains(text))
+            return true;
+    return false;
+}
+
+void SvgElement::removeAttributes(const QStringList &list)
+{
+    for (int i = 0; i < list.count(); ++i)
+        removeAttribute(list.at(i));
+}
+
+QStringList SvgElement::attributesList()
+{
+    QDomNamedNodeMap attrMap = attributes();
+    QStringList list;
+    for (int i = 0; i < attrMap.count(); ++i)
+        list << attrMap.item(i).toAttr().name();
+    return list;
+}
+
+StringHash SvgElement::styleHash()
+{
+    return Tools::splitStyle(attribute("style"));
+}
+
+void SvgElement::appendStyle(const QString &text)
+{
+    if (hasAttribute("style")) {
+        StringHash hash = styleHash();
+        QString param = QString(text).remove(QRegExp(":.*"));
+        if (!hash.contains(param))
+            setAttribute("style", attribute("style") + ";" + text);
+        else {
+            hash.remove(param);
+            if (hash.isEmpty())
+                setAttribute("style", text);
+            else
+                setAttribute("style", Tools::styleHashToString(hash) + ";" + text);
+        }
+    } else
+        setAttribute("style", text);
+}
+
+// TODO: update everyware
+void SvgElement::setAttribute(const QString &name, const QVariant &value)
+{
+    if (value.toString().isEmpty())
+        removeAttribute(name);
+    else
+        QDomElement::setAttribute(name, value.toString());
+}
+
+QString SvgElement::style() const
+{
+    return attribute("style");
+}
+
+QString SvgElement::id() const
+{
+    return attribute("id");
+}
+
+// New class
+
 // TODO: speedup!
+// TODO: simplify numbers like 3.00001
 QString Tools::roundNumber(qreal value, RoundType type)
 {
     double fractpart, intpart;
@@ -283,6 +414,7 @@ QString Tools::trimColor(QString color)
     return color;
 }
 
+// TODO: maybe ignore if hex is longer
 QString Tools::replaceColorName(const QString &color)
 {
     static QHash<QString, QString> colors;
@@ -457,7 +589,7 @@ QVariantHash Tools::initDefaultStyleHash()
     hash.insert("writing-mode", "lr-tb");
     hash.insert("glyph-orientation-vertical", "auto");
     hash.insert("glyph-orientation-horizontal", "0deg");
-    hash.insert("direction", "normal");
+    hash.insert("direction", "ltr");
     hash.insert("text-anchor", "start");
     hash.insert("dominant-baseline", "auto");
     hash.insert("alignment-baseline", "auto");
@@ -488,7 +620,26 @@ QVariantHash Tools::initDefaultStyleHash()
     hash.insertMulti("stop-color", "#000000");
     hash.insertMulti("stop-color", "#000");
     hash.insertMulti("stop-color", "black");
+    hash.insert("block-progression", "tb");
     return hash;
+}
+
+QSet<QString> Tools::usedElemList(const SvgElement &svgNode)
+{
+    Q_ASSERT(svgNode.tagName() == "svg");
+
+    QSet<QString> usedList;
+    QList<SvgElement> nodeList = Tools::childElemList(svgNode);
+    while (!nodeList.empty()) {
+        SvgElement currElem = nodeList.takeFirst();
+        if (currElem.tagName() == "use") {
+            if (currElem.hasAttribute("xlink:href"))
+                usedList << currElem.attribute("xlink:href").remove("#");
+        }
+        if (currElem.hasChildNodes())
+            nodeList << currElem.childElemList();
+    }
+    return usedList;
 }
 
 QDomNode Tools::findDefsNode(const QDomNode SvgElement)
@@ -500,34 +651,6 @@ QDomNode Tools::findDefsNode(const QDomNode SvgElement)
         }
     }
     return QDomNode();
-}
-
-QList<SvgElement> SvgElement::childElemList()
-{
-    QList<SvgElement> outList;
-    QDomNodeList tmpList = childNodes();
-    for (int i = 0; i < tmpList.count(); ++i)
-        outList << tmpList.at(i).toElement();
-    return outList;
-}
-
-QList<QDomNode> SvgElement::childNodeList()
-{
-    QList<QDomNode> outList;
-    QDomNodeList tmpList = childNodes();
-    for (int i = 0; i < tmpList.count(); ++i)
-        outList << tmpList.at(i);
-    return outList;
-}
-
-bool SvgElement::isReferenced()
-{
-    return Props::referencedElements.contains(tagName());
-}
-
-bool SvgElement::isText() const
-{
-    return Props::textElements.contains(tagName());
 }
 
 QList<QDomNode> Tools::childNodeList(QDomNode node)
@@ -576,59 +699,6 @@ bool Tools::isAttrEqual(QDomElement elem1, QDomElement elem2, const QSet<QString
         if (elem1.attribute(attr) != elem2.attribute(attr))
             return false;
     return true;
-}
-
-bool SvgElement::hasAttributeByList(const QStringList &list)
-{
-    for (int i = 0; i < list.count(); ++i)
-        if (hasAttribute(list.at(i)))
-            return true;
-    return false;
-}
-
-bool SvgElement::hasAttributeByList(const QSet<QString> &list)
-{
-    foreach (const QString &attr, list) {
-        if (hasAttribute(attr))
-            return true;
-    }
-    return false;
-}
-
-bool SvgElement::hasAttributes(const QStringList &list)
-{
-    for (int i = 0; i < list.count(); ++i)
-        if (!hasAttribute(list.at(i)))
-            return false;
-    return true;
-}
-
-bool SvgElement::isStyleContains(const QString &text)
-{
-    if (hasAttribute("style"))
-        if (attribute("style").contains(text))
-            return true;
-    return false;
-}
-
-void SvgElement::removeAttributes(const QStringList &list)
-{
-    for (int i = 0; i < list.count(); ++i)
-        removeAttribute(list.at(i));
-}
-
-QStringList SvgElement::attributesList()
-{
-    QDomNamedNodeMap attrMap = attributes();
-    QStringList list;
-    for (int i = 0; i < attrMap.count(); ++i)
-        list << attrMap.item(i).toAttr().name();
-    return list;
-}
-
-StringHash SvgElement::styleHash()
-{
-    return Tools::splitStyle(attribute("style"));
 }
 
 QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)

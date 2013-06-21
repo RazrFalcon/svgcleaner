@@ -2,7 +2,7 @@ isEmpty(QMAKE_LRELEASE) {
     !exists($$QMAKE_LRELEASE) { QMAKE_LRELEASE = lrelease }
 }
 
-linux {
+unix {
     # fix for ArchLinux
     DEP_CHECK = $$system(which lrelease)
     contains($$DEP_CHECK, "no lrelease in") {

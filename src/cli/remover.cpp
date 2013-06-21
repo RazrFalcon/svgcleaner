@@ -3,6 +3,13 @@
 #include "keys.h"
 #include "remover.h"
 
+// TODO: remove items which out of viewbox
+//       Anonymous_butterfly_and_flowers.svg
+
+// TODO: process use attr
+// remove x=0 y=0
+// width | height must be > 0, else it is invisible
+
 Remover::Remover(QDomDocument dom)
 {
     m_dom = dom;
@@ -12,7 +19,8 @@ Remover::Remover(QDomDocument dom)
 
 void Remover::cleanSvgElementAttribute()
 {
-    QString strIgnore = "xmlns|width|height|viewBox|enable-background|fill.*|stroke.*|style";
+    // TODO: remove xmlns:xlink only if no link used
+    QString strIgnore = "xmlns|xmlns:xlink|width|height|viewBox|enable-background|fill.*|stroke.*|style";
     if (Keys::get().flag(Key::KeepSvgVersion))
         strIgnore += "|version";
     foreach (const QString &attr, m_svgElem.attributesList()) {
@@ -35,7 +43,7 @@ void Remover::removeUnusedDefs()
 
         foreach (const SvgElement &elem, m_defsElem.childElemList())
             if (elem.tagName() != "clipPath")
-                defsIdList << elem.attribute("id");
+                defsIdList << elem.id();
 
         QList<SvgElement> nodeList = m_svgElem.childElemList();
         while (!nodeList.empty()) {
@@ -57,7 +65,7 @@ void Remover::removeUnusedDefs()
         }
 
         foreach (const SvgElement &elem, m_defsElem.childElemList()) {
-            if (defsIdList.contains(elem.attribute("id")))
+            if (defsIdList.contains(elem.id()))
                 m_defsElem.removeChild(elem);
         }
     }
@@ -75,7 +83,7 @@ void Remover::removeUnusedXLinks()
                 xlinkSet << currElem.attribute("xlink:href").remove("#");
         }
         if (currElem.hasAttribute("id"))
-            idSet << currElem.attribute("id");
+            idSet << currElem.id();
 
         if (currElem.hasChildNodes())
             list << currElem.childElemList();
@@ -83,7 +91,7 @@ void Remover::removeUnusedXLinks()
     QSet<QString>::iterator it = idSet.begin();
     while (it != idSet.end()) {
         xlinkSet.remove(*it);
-        it++;
+        ++it;
     }
 
     list = m_svgElem.childElemList();
@@ -108,11 +116,11 @@ void Remover::removeDuplicatedDefs()
     StringHash xlinkToReplace;
     QDomNodeList defsList = m_defsElem.childNodes();
     for (int i = 0; i < defsList.count(); ++i) {
-        QDomElement currElem = defsList.at(i).toElement();
+        SvgElement currElem = defsList.at(i).toElement();
         if (!currElem.hasChildNodes()) {
             for (int j = 0; j < defsList.count(); ++j) {
-                QDomElement currElem2 = defsList.at(j).toElement();
-                if (currElem2.attribute("id") != currElem.attribute("id")
+                SvgElement currElem2 = defsList.at(j).toElement();
+                if (currElem2.id() != currElem.id()
                     && currElem2.tagName() == currElem.tagName() && !currElem2.hasChildNodes()) {
 
                     QSet<QString> currAttrList;
@@ -123,13 +131,13 @@ void Remover::removeDuplicatedDefs()
 
                     if (!currAttrList.isEmpty()) {
                         if (Tools::isAttrEqual(currElem, currElem2, currAttrList)) {
-                            if (xlinkToReplace.values().contains(currElem2.attribute("id"))) {
+                            if (xlinkToReplace.values().contains(currElem2.id())) {
                                 for (int k = 0; k < xlinkToReplace.keys().count(); ++k) {
-                                    if (xlinkToReplace.value(xlinkToReplace.keys().at(k)) == currElem2.attribute("id"))
-                                        xlinkToReplace.insert(xlinkToReplace.keys().at(k), currElem.attribute("id"));
+                                    if (xlinkToReplace.value(xlinkToReplace.keys().at(k)) == currElem2.id())
+                                        xlinkToReplace.insert(xlinkToReplace.keys().at(k), currElem.id());
                                 }
                             }
-                            xlinkToReplace.insert(currElem2.attribute("id"), currElem.attribute("id"));
+                            xlinkToReplace.insert(currElem2.id(), currElem.id());
                             m_defsElem.removeChild(currElem2);
                             j--;
                         }
@@ -195,7 +203,7 @@ void Remover::removeUnreferencedIds()
 
         // collect all id's
         if (currElem.hasAttribute("id"))
-            m_allIdList << currElem.attribute("id");
+            m_allIdList << currElem.id();
 
 
         for (int i = 0; i < xlinkAttrList.count(); ++i) {
@@ -240,7 +248,7 @@ void Remover::removeUnreferencedIds()
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst().toElement();
 
-        if (m_allIdList.contains(currElem.attribute("id")))
+        if (m_allIdList.contains(currElem.id()))
             currElem.removeAttribute("id");
 
         if (m_allIdList.contains(currElem.attribute("clip-path")))
@@ -292,6 +300,8 @@ void Remover::removeElements()
             removeThisNode = true;
         else if (currTag == "desc")
             removeThisNode = true;
+        else if (currTag == "defs" && currElem.childNodes().isEmpty())
+            removeThisNode = true;
         else if (currTag == "image" && !currElem.attribute("xlink:href").contains("base64"))
             removeThisNode = true;
         else if (currElem.isReferenced() && !currElem.hasAttribute("id")
@@ -315,6 +325,8 @@ void Remover::removeElements()
     }
 
 
+    // distributions-pentubuntu.svg
+    // FIXME: switch style attr have to be cleaned before it, and other attr have to be removed
     list = Tools::childNodeList(m_dom);
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst().toElement();
@@ -420,11 +432,15 @@ bool Remover::isInvisibleElementsExist(SvgElement elem)
 }
 
 // TODO: remove 'class' attr which has linked to empty object
+// aaha_Gear.svg
 void Remover::removeAttributes()
 {
     QList<SvgElement> list = Tools::childElemList(m_dom);
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst().toElement();
+
+        // NOTE: sodipodi:type="inkscape:offset" supported only by inkscape,
+        // and its creates problems in other renderers
 
         // remove "inkscape.*", but not "inkscape:path-effect"
         if (!Keys::get().flag(Key::KeepInkscapeAttributes))
@@ -472,7 +488,9 @@ void Remover::cleanAttribute(SvgElement elem, QRegExp rx)
 // TODO: move similar styles to group
 // Anonymous_Romania_Map.svg
 // capellan2000_Escudo_Nacional_Dominicano.svg
-// zlatkodesign_Sniper_optic_cleaned.svg
+// zlatkodesign_Sniper_optic.svg
+
+// TODO: remove clip-rule if no clip-path
 
 QList<StringHash> styleHashList;
 StringHash parentHash;
@@ -483,9 +501,8 @@ void Remover::processStyleAttr(SvgElement elem)
 
     StringHash currHash = elem.styleHash();
     styleHashList << currHash;
-    for (int i = 0; i < currHash.count(); ++i) {
+    for (int i = 0; i < currHash.count(); ++i)
         parentHash.insert(currHash.keys().at(i), currHash.value(currHash.keys().at(i)));
-    }
 
     QList<SvgElement> nodeList = elem.childElemList();
     while (!nodeList.empty()) {
@@ -526,7 +543,6 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash *hash)
             if (attr.contains("font") || attr.contains("text"))
                 hash->remove(attr);
         }
-        hash->remove("line-height");
         hash->remove("writing-mode");
     } else {
         // remove default text style values
@@ -623,6 +639,10 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash *hash)
                 hash->insert("stroke", Tools::trimColor(hash->value("stroke")));
         if (hash->contains("stop-color"))
             hash->insert("stop-color", Tools::trimColor(hash->value("stop-color")));
+        if (hash->contains("color"))
+            hash->insert("color", Tools::trimColor(hash->value("color")));
+        if (hash->contains("flood-color"))
+            hash->insert("flood-color", Tools::trimColor(hash->value("flood-color")));
     }
 
     if (!parentHash.contains("stroke-width")) {
@@ -670,16 +690,8 @@ void Remover::removeDefaultValue(StringHash *hash, const QString &name)
 void Remover::removeGroups()
 {
     // get all 'use' links to prevent ungouping element linked to this use
+    m_usedElemList = Tools::usedElemList(m_svgElem);
     QList<SvgElement> nodeList = m_svgElem.childElemList();
-    while (!nodeList.empty()) {
-        SvgElement currElem = nodeList.takeFirst();
-        if (currElem.tagName() == "use") {
-            if (currElem.hasAttribute("xlink:href"))
-                m_useLinkList << currElem.attribute("xlink:href").remove("#");
-        }
-        if (currElem.hasChildNodes())
-            nodeList << currElem.childElemList();
-    }
 
     nodeList = m_svgElem.childElemList();
     while (!nodeList.empty()) {
@@ -687,7 +699,7 @@ void Remover::removeGroups()
         StringHash currStyle = currElem.styleHash();
         // ungroup only if: current group is not linked to any 'use',
         // not contains mask, clip-path, filter, opacity attributes
-        if (currElem.tagName() == "g" && !m_useLinkList.contains(currElem.attribute("id"))
+        if (currElem.tagName() == "g" && !m_usedElemList.contains(currElem.id())
             && !currStyle.contains("mask") && !currStyle.contains("clip-path")
             && !currStyle.contains("opacity") && !currStyle.contains("filter"))
         {
@@ -698,21 +710,33 @@ void Remover::removeGroups()
     // ungrouping is pretty brutal, so we need to fix some issues
     nodeList = m_svgElem.childElemList();
     QList<SvgElement> gNodeList;
-    for (int i = 1; i < nodeList.count(); ++i) {
-        SvgElement prevElem = nodeList.at(i-1);
-        SvgElement currElem = nodeList.at(i);
-        gNodeList << prevElem;
-        if (prevElem.tagName() == currElem.tagName() && currElem.tagName() == "g"
-            && prevElem.hasAttribute("tramsform") && currElem.hasAttribute("tramsform")) {
-            if (prevElem.attribute("style") != currElem.attribute("style")
-                && !currElem.hasAttribute("style") && currElem.attribute("style").contains("opacity")) {
-                if (gNodeList.count() > 1)
-                    mergeGroups(gNodeList);
-                gNodeList.clear();
+    SvgElement lastGNode;
+    while (!nodeList.empty()) {
+        SvgElement currElem = nodeList.takeFirst();
+
+        if (currElem.isGroup()) {
+            if (lastGNode.isNull()) {
+                gNodeList << currElem;
+                lastGNode = currElem;
+            } else {
+                bool flag = true;
+                if (currElem.attribute("style") == lastGNode.attribute("style")
+                    && currElem.hasAttribute("style") && !currElem.attribute("style").contains("opacity")
+                    && currElem.attribute("transform") == lastGNode.attribute("transform")) {
+                    gNodeList << currElem;
+                } else {
+                    flag = false;
+                }
+
+                if (!flag || nodeList.isEmpty()) {
+                    if (gNodeList.count() > 1)
+                        mergeGroups(gNodeList);
+                    lastGNode.clear();
+                    gNodeList.clear();
+                }
             }
         } else {
-            if (gNodeList.count() > 1)
-                mergeGroups(gNodeList);
+            lastGNode.clear();
             gNodeList.clear();
         }
     }
@@ -732,7 +756,7 @@ void Remover::removeGroup(SvgElement elem)
         StringHash currStyle = currElem.styleHash();
         // ungroup only if: current group is not linked to any 'use',
         // not contains mask, clip-path, filter, opacity attributes
-        if (currElem.tagName() == "g" && !m_useLinkList.contains(currElem.attribute("id"))
+        if (currElem.tagName() == "g" && !m_usedElemList.contains(currElem.id())
             && !currStyle.contains("mask") && !currStyle.contains("clip-path")
             && !currStyle.contains("opacity") && !currStyle.contains("filter")) {
             // TODO: ignore current group, but process childs
@@ -760,7 +784,7 @@ SvgElement Remover::genGroup(SvgElement currElem, SvgElement parentGroup)
     QStringList styles;
     SvgElement parentElem = currElem.parentNode().toElement();
     if (parentGroup.hasAttribute("id"))
-        idAttr = parentGroup.attribute("id");
+        idAttr = parentGroup.id();
     while (parentElem.tagName() != "svg") {
         if (parentElem.hasAttribute("transform"))
             transformAttr = parentElem.attribute("transform") + " " + transformAttr;
@@ -809,6 +833,7 @@ void Remover::mergeGroups(QList<SvgElement> gNodeList)
     SvgElement newGElem = m_dom.createElement("g");
     newGElem = m_svgElem.insertBefore(newGElem, gNodeList.first()).toElement();
     newGElem.setAttribute("style", gNodeList.first().attribute("style"));
+    newGElem.setAttribute("transform", gNodeList.first().attribute("transform"));
     Q_ASSERT(newGElem.isNull() == false);
     for (int i = 0; i < gNodeList.count(); ++i) {
         SvgElement cElem = gNodeList.at(i);

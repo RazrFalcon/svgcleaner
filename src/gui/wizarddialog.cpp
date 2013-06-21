@@ -21,6 +21,7 @@ WizardDialog::WizardDialog(QWidget *parent) :
     setupUi(this);
     loadSettings();
     setupGUI();
+    setupToolTips();
     adjustSize();
 }
 
@@ -145,19 +146,28 @@ void WizardDialog::setupGUI()
     loadFiles();
 }
 
+void WizardDialog::setupToolTips()
+{
+    chBoxGroupByStyle->setToolTip(tr("For example") + ":\n\n(" + tr("before") + ")\n"
+        "<path style=\"fill:#fff\" d=\"...\"/>\n<path style=\"fill:#fff\" d=\"...\"/>\n"
+        "<path style=\"fill:#fff\" d=\"...\"/>\n\n(" + tr("after") + ")\n"
+        "<g style=\"fill:#fff\">\n  <path d=\"...\"/>\n  <path d=\"...\"/>"
+        "\n  <path d=\"...\"/>\n</g>");
+}
+
 void WizardDialog::radioSelected()
 {
     frameOutDir->setVisible(radioBtn1->isChecked());
     frameRename->setVisible(radioBtn2->isChecked());
     lblOverwrite->setVisible(radioBtn3->isChecked());
     QRadioButton *rBtn = static_cast<QRadioButton *>(sender());
-    settings->setValue("Wizard/Type",rBtn->accessibleName());
+    settings->setValue("Wizard/Type", rBtn->accessibleName());
 }
 
 void WizardDialog::createExample()
 {
-    lblExample->setText(tr("For example: ")+lineEditPrefix->text()
-                       +tr("filename" )+lineEditSuffix->text()+".svg");
+    lblExample->setText(tr("For example") + ": " + lineEditPrefix->text()
+                        + tr("filename" ) + lineEditSuffix->text() + ".svg");
 }
 
 void WizardDialog::loadPresets()

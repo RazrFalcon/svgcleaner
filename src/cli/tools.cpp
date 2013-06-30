@@ -1,7 +1,4 @@
-#include <QStringList>
-#include <QtDebug>
-
-#include <math.h>
+#include <cmath>
 
 #include "keys.h"
 #include "tools.h"
@@ -65,64 +62,11 @@ qreal Transform::newY()
     return value;
 }
 
-// TODO: remove not important values, like
-// translate(-7 0) -> translate(-7)
-QString Transform::simplified() const
-{
-    if (m_points.isEmpty())
-        return "";
-
-    QString transform;
-    QList<qreal> pt = m_points;
-
-    // [1 0 0 1 tx ty] = translate
-    if (pt.at(0) == 1 && pt.at(1) == 0 && pt.at(2) == 0 && pt.at(3) == 1) {
-        transform = QString("translate(%1 %2)")
-                    .arg(Tools::roundNumber(pt.at(4), Tools::TRANSFORM),
-                         Tools::roundNumber(pt.at(5), Tools::TRANSFORM));
-        if (transform == "translate(0 0)")
-            transform.clear();
-    } // [sx 0 0 sy 0 0] = scale
-    else if (pt.at(1) == 0 && pt.at(2) == 0 && pt.at(4) == 0 && pt.at(5) == 0) {
-        transform = QString("scale(%1 %2)")
-                    .arg(Tools::roundNumber(pt.at(0), Tools::TRANSFORM),
-                         Tools::roundNumber(pt.at(3), Tools::TRANSFORM));
-        if (transform == "scale(0 0)")
-            transform.clear();
-    } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
-    else if (pt.at(0) == pt.at(3) && pt.at(1) > 0 && pt.at(2) < 0 && pt.at(4) == 0 && pt.at(5) == 0) {
-        transform = QString("rotate(%1)")
-                    .arg(Tools::roundNumber(acos(pt.at(0))*(180/M_PI), Tools::TRANSFORM));
-        if (transform == "rotate(0)")
-            transform.clear();
-    } // [1 0 tan(a) 1 0 0] = skewX
-    else if (pt.at(0) == 1 && pt.at(1) == 0 && pt.at(3) == 1 && pt.at(4) == 0 && pt.at(5) == 0) {
-        transform = QString("skewX(%1)")
-                    .arg(Tools::roundNumber(atan(pt.at(2))*(180/M_PI), Tools::TRANSFORM));
-        if (transform == "skewX(0)")
-            transform.clear();
-    } // [1 tan(a) 0 1 0 0] = skewY
-    else if (pt.at(0) == 1 && pt.at(2) == 0 && pt.at(3) == 1 && pt.at(4) == 0 && pt.at(5) == 0) {
-        transform = QString("skewY(%1)")
-                    .arg(Tools::roundNumber(atan(pt.at(1))*(180/M_PI), Tools::TRANSFORM));
-        if (transform == "skewY(0)")
-            transform.clear();
-    } else {
-        transform = "matrix(";
-        for (int i = 0; i < pt.count(); ++i)
-            transform += Tools::roundNumber(pt.at(i), Tools::TRANSFORM) + " ";
-        transform.chop(1);
-        transform += ")";
-        if (transform == "matrix(0 0 0 0 0 0)")
-            transform.clear();
-    }
-    return transform;
-}
-
 // http://www.w3.org/TR/SVG/coords.html#EstablishingANewUserSpace
-QList<qreal> Transform::mergeMatrixes(const QString &text)
+QList<qreal> Transform::mergeMatrixes(QString text)
 {
-    QStringList transList = text.split(QRegExp("\\) "), QString::SkipEmptyParts);
+    text.remove(QRegExp("^ +| +$"));
+    QStringList transList = text.split(QRegExp("\\) +"), QString::SkipEmptyParts);
 
     QList<TransMatrix> transMatrixList;
     for (int i = 0; i < transList.count(); ++i) {
@@ -138,12 +82,17 @@ QList<qreal> Transform::mergeMatrixes(const QString &text)
             Q_ASSERT(ok == true);
         }
 
+        // transform rotate(<rotate-angle> [<cx> <cy>]) to
+        // translate(<cx>, <cy>) rotate(<rotate-angle>) translate(-<cx>, -<cy>)
+        if (transformType == "rotate" && points.count() == 3) {
+            return mergeMatrixes(QString("translate(%1 %2) rotate(%3) translate(-%1 -%2)")
+                                 .arg(points.at(0)).arg(points.at(1)).arg(points.at(2)));
+        }
+
         TransMatrix matrix;
         matrix(0,0) = 1;
         matrix(1,1) = 1;
         matrix(2,2) = 1;
-
-        // TODO: rotate(<rotate-angle> [<cx> <cy>])
 
         if (transformType == "matrix") {
             matrix(0,0) = points.at(0);
@@ -174,8 +123,8 @@ QList<qreal> Transform::mergeMatrixes(const QString &text)
         } else if (transformType == "skewY") {
             matrix(1,0) = tan(points.at(0));
         } else {
-            qDebug() << text;
-            qDebug() << "wrong trans";
+            qDebug() << transformType;
+            qDebug() << "Error: wrong transform matrix";
             exit(0);
         }
         transMatrixList << matrix;
@@ -191,24 +140,80 @@ QList<qreal> Transform::mergeMatrixes(const QString &text)
     return pointList;
 }
 
+QString Transform::simplified() const
+{
+    if (m_points.isEmpty())
+        return "";
+
+    QString transform;
+    QList<qreal> pt = m_points;
+
+    // [1 0 0 1 tx ty] = translate
+    if (pt.at(0) == 1 && pt.at(1) == 0 && pt.at(2) == 0 && pt.at(3) == 1) {
+        if (pt.at(5) != 0) {
+            transform = QString("translate(%1 %2)")
+                        .arg(Tools::roundNumber(pt.at(4), Tools::TRANSFORM),
+                             Tools::roundNumber(pt.at(5), Tools::TRANSFORM));
+
+        } else if (pt.at(4) != 0) {
+            transform = QString("translate(%1)")
+                        .arg(Tools::roundNumber(pt.at(4), Tools::TRANSFORM));
+        }
+    } // [sx 0 0 sy 0 0] = scale
+    else if (pt.at(1) == 0 && pt.at(2) == 0 && pt.at(4) == 0 && pt.at(5) == 0) {
+        if (pt.at(0) != pt.at(3)) {
+            transform = QString("scale(%1 %2)")
+                        .arg(Tools::roundNumber(pt.at(0), Tools::TRANSFORM),
+                             Tools::roundNumber(pt.at(3), Tools::TRANSFORM));
+        } else {
+            transform = QString("scale(%1)")
+                        .arg(Tools::roundNumber(pt.at(0), Tools::TRANSFORM));
+        }
+    } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
+    else if (pt.at(0) == pt.at(3) && pt.at(1) > 0 && pt.at(2) < 0 && pt.at(4) == 0 && pt.at(5) == 0) {
+        transform = QString("rotate(%1)")
+                    .arg(Tools::roundNumber(acos(pt.at(0))*(180/M_PI), Tools::TRANSFORM));
+        if (transform == "rotate(0)")
+            transform.clear();
+    } // [1 0 tan(a) 1 0 0] = skewX
+    else if (pt.at(0) == 1 && pt.at(1) == 0 && pt.at(3) == 1 && pt.at(4) == 0 && pt.at(5) == 0) {
+        transform = QString("skewX(%1)")
+                    .arg(Tools::roundNumber(atan(pt.at(2))*(180/M_PI), Tools::TRANSFORM));
+        if (transform == "skewX(0)")
+            transform.clear();
+    } // [1 tan(a) 0 1 0 0] = skewY
+    else if (pt.at(0) == 1 && pt.at(2) == 0 && pt.at(3) == 1 && pt.at(4) == 0 && pt.at(5) == 0) {
+        transform = QString("skewY(%1)")
+                    .arg(Tools::roundNumber(atan(pt.at(1))*(180/M_PI), Tools::TRANSFORM));
+        if (transform == "skewY(0)")
+            transform.clear();
+    } else {
+        transform = "matrix(";
+        for (int i = 0; i < pt.count(); ++i)
+            transform += Tools::roundNumber(pt.at(i), Tools::TRANSFORM) + " ";
+        transform.chop(1);
+        transform += ")";
+        if (transform == "matrix(0 0 0 0 0 0)")
+            transform.clear();
+    }
+    return transform;
+}
+
+qreal Transform::scaleFactor()
+{
+    return m_xScale * m_yScale;
+}
+
 // New class
 
 QList<SvgElement> SvgElement::childElemList()
 {
-    QList<SvgElement> outList;
-    QDomNodeList tmpList = childNodes();
-    for (int i = 0; i < tmpList.count(); ++i)
-        outList << tmpList.at(i).toElement();
-    return outList;
+    return Tools::childElemList(this->toElement());
 }
 
 QList<QDomNode> SvgElement::childNodeList()
 {
-    QList<QDomNode> outList;
-    QDomNodeList tmpList = childNodes();
-    for (int i = 0; i < tmpList.count(); ++i)
-        outList << tmpList.at(i);
-    return outList;
+    return Tools::childNodeList(this->toElement());
 }
 
 bool SvgElement::isReferenced()
@@ -285,25 +290,29 @@ StringHash SvgElement::styleHash()
     return Tools::splitStyle(attribute("style"));
 }
 
+void SvgElement::setStyle(const QString &text)
+{
+    setAttribute("style", text);
+}
+
 void SvgElement::appendStyle(const QString &text)
 {
     if (hasAttribute("style")) {
         StringHash hash = styleHash();
         QString param = QString(text).remove(QRegExp(":.*"));
         if (!hash.contains(param))
-            setAttribute("style", attribute("style") + ";" + text);
+            setStyle(attribute("style") + ";" + text);
         else {
             hash.remove(param);
             if (hash.isEmpty())
-                setAttribute("style", text);
+                setStyle(text);
             else
-                setAttribute("style", Tools::styleHashToString(hash) + ";" + text);
+                setStyle(Tools::styleHashToString(hash) + ";" + text);
         }
     } else
-        setAttribute("style", text);
+        setStyle(text);
 }
 
-// TODO: update everyware
 void SvgElement::setAttribute(const QString &name, const QVariant &value)
 {
     if (value.toString().isEmpty())
@@ -324,18 +333,15 @@ QString SvgElement::id() const
 
 // New class
 
-// TODO: speedup!
-// TODO: simplify numbers like 3.00001
 QString Tools::roundNumber(qreal value, RoundType type)
 {
+    // check is number is integer
     double fractpart, intpart;
     fractpart = modf(value, &intpart);
     if (fractpart == 0)
         return QString::number(value);
 
-    // TODO: to global
     int precision;
-
     if (type == TRANSFORM)
         precision = Keys::get().intNumber(Key::TransformPrecision);
     else if (type == ATTRIBUTES)
@@ -346,21 +352,26 @@ QString Tools::roundNumber(qreal value, RoundType type)
     QString text;
     text = QString::number(value, 'f', precision);
 
-    if (text.contains(".")) {
-        // 1.100 -> 1.1
-        while (text.at(text.count()-1) == '0')
-            text.remove(text.count()-1, 1);
-        // 1. -> 1
-        if (text.at(text.count()-1) == '.')
-            text.remove(text.count()-1, 1);
-
-        // 0.1 -> .1
-        if (text.mid(0, 2) == "0.")
-            text.remove(0, 1);
-        // -0.1 -> -.1
-        else if (text.mid(0, 3) == "-0.")
-            text.remove(1, 1);
+    // 1.100 -> 1.1
+    while (text.at(text.count()-1) == '0')
+        text.chop(1);
+    // 1. -> 1
+    if (text.at(text.count()-1) == '.') {
+        text.chop(1);
+        // already integer
+        return text;
     }
+    // 3.00001 -> 3
+    // TODO: finish
+//    if (text.contains(QString(".").leftJustified(precision, '0')))
+//        return QString::number(intpart);
+
+    // 0.1 -> .1
+    if (text.mid(0, 2) == "0.")
+        text.remove(0, 1);
+    // -0.1 -> -.1
+    else if (text.mid(0, 3) == "-0.")
+        text.remove(1, 1);
     if (text.contains("e"))
         text.replace("e-0", "e-");
 
@@ -414,7 +425,6 @@ QString Tools::trimColor(QString color)
     return color;
 }
 
-// TODO: maybe ignore if hex is longer
 QString Tools::replaceColorName(const QString &color)
 {
     static QHash<QString, QString> colors;
@@ -642,6 +652,23 @@ QSet<QString> Tools::usedElemList(const SvgElement &svgNode)
     return usedList;
 }
 
+QRectF Tools::viewBoxRect(const SvgElement &svgNode)
+{
+    Q_ASSERT(svgNode.tagName() == "svg");
+    QRectF rect;
+    if (svgNode.hasAttribute("viewBox")) {
+        QStringList list = svgNode.attribute("viewBox").split(" ");
+        rect.setRect(list.at(0).toDouble(), list.at(1).toDouble(),
+                     list.at(2).toDouble(), list.at(3).toDouble());
+    } else if (svgNode.hasAttribute("width") && svgNode.hasAttribute("height")) {
+        rect.setRect(0, 0, svgNode.attribute("width").toDouble(),
+                           svgNode.attribute("height").toDouble());
+    } else {
+        qDebug() << "Warning: can not detect viewBox";
+    }
+    return rect;
+}
+
 QDomNode Tools::findDefsNode(const QDomNode SvgElement)
 {
     QDomNodeList tmpList = SvgElement.childNodes();
@@ -666,8 +693,10 @@ QList<SvgElement> Tools::childElemList(QDomNode node)
 {
     QList<SvgElement> outList;
     QDomNodeList tmpList = node.childNodes();
-    for (int i = 0; i < tmpList.count(); ++i)
-        outList << tmpList.at(i).toElement();
+    for (int i = 0; i < tmpList.count(); ++i) {
+        if (tmpList.at(i).isElement())
+            outList << tmpList.at(i).toElement();
+    }
     return outList;
 }
 

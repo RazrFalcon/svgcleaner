@@ -21,7 +21,7 @@ Keys::Keys()
     keyHash.insert(Key::KeepDuplicatedDefs, false);
     keyHash.insert(Key::KeepSinglyGradients, false);
     keyHash.insert(Key::KeepTinyGaussianBlur, false);
-    keyHash.insert(Key::StdDeviation, 0.2);
+    keyHash.insert(Key::StdDeviation, 0.1);
 
     keyHash.insert(Key::KeepSvgVersion, false);
     keyHash.insert(Key::KeepUnreferencedIds, false);
@@ -50,6 +50,7 @@ Keys::Keys()
     keyHash.insert(Key::SkipRRGGBBToRGB, false);
     keyHash.insert(Key::KeepBasicShapes, false);
     keyHash.insert(Key::KeepTransforms, false);
+    keyHash.insert(Key::SkipTransformsApplying, false);
     keyHash.insert(Key::KeepUnsortedDefs, false);
 
     keyHash.insert(Key::SkipRoundingNumbers, false);

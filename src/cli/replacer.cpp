@@ -1,8 +1,3 @@
-#include <QMap>
-#include <QStringList>
-
-#include <stdio.h>
-
 #include "replacer.h"
 #include "keys.h"
 
@@ -13,13 +8,12 @@
 // TODO: replace equal 'fill', 'stroke', 'stop-color', 'flood-color' and 'lighting-color' attr
 //       with 'color' attr
 
-// TODO: try to ungroup 'use' elem
-// http://www.w3.org/TR/SVG/struct.html#UseElement
-// Anonymous_Penrose_tiling_(Rhombi).svg
-
 // TODO: read about 'marker'
 // TODO: try to group similar elems to use
 // gaerfield_data-center.svg
+
+// TODO: If ‘x1’ = ‘x2’ and ‘y1’ = ‘y2’, then the area to be painted will be painted as
+//       a single color using the color and opacity of the last gradient stop.
 
 Replacer::Replacer(QDomDocument dom)
 {
@@ -49,7 +43,6 @@ void Replacer::convertSizeToViewbox()
 }
 
 // TODO: remove identical paths
-// TODO: check is new path longer then old
 // Anonymous_man_head.svg
 void Replacer::processPaths()
 {
@@ -182,7 +175,7 @@ void Replacer::convertCDATAStyle()
             QString newStyle = Tools::styleHashToString(newHash);
 
             if (!newStyle.isEmpty())
-                currElem.setAttribute("style", newStyle);
+                currElem.setStyle(newStyle);
             currElem.removeAttribute("class");
         }
 
@@ -218,7 +211,6 @@ void Replacer::prepareDefs()
     }
 }
 
-// TODO: not only join, but also split. maybe
 void Replacer::joinStyleAttr()
 {
     QList<SvgElement> list = Tools::childElemList(m_dom);
@@ -241,7 +233,7 @@ void Replacer::joinStyleAttr()
             newStyle = Tools::styleHashToString(styleHash);
 
             if (!newStyle.isEmpty())
-                currElem.setAttribute("style", newStyle);
+                currElem.setStyle(newStyle);
         }
 
         if (currElem.hasChildNodes())
@@ -263,8 +255,13 @@ void Replacer::fixWrongAttr()
             }
         }
 
-        // fix wrong 'rx', 'ry' attributes in 'rect' elem
-        if (currTag == "rect") {
+        if (currTag == "use") {
+            if (currElem.attribute("width").toDouble() < 0)
+                currElem.setAttribute("width", "0");
+            if (currElem.attribute("height").toDouble() < 0)
+                currElem.setAttribute("height", "0");
+        } else if (currTag == "rect") {
+            // fix wrong 'rx', 'ry' attributes in 'rect' elem
             // remove, if one of 'r' is null
             if ((currElem.hasAttribute("rx") && currElem.hasAttribute("ry"))
                 && (currElem.attribute("rx") == 0 || currElem.attribute("ry") == 0)) {
@@ -302,10 +299,16 @@ void Replacer::finalFixes()
         SvgElement currElem = list.takeFirst().toElement();
         QString currTag = currElem.tagName();
 
-        // fix wrong 'rx', 'ry' attributes in 'rect' elem
-        if (currTag == "rect") {
-            if (currElem.attribute("rx").toDouble() == currElem.attribute("ry").toDouble())
-                currElem.removeAttribute("ry");
+        if (!Keys::get().flag(Key::KeepNotAppliedAttributes)) {
+            if (currTag == "rect") {
+                if (currElem.attribute("rx").toDouble() == currElem.attribute("ry").toDouble())
+                    currElem.removeAttribute("ry");
+            } else if (currTag == "use") {
+                if (currElem.attribute("x") == "0")
+                    currElem.removeAttribute("x");
+                if (currElem.attribute("y") == "0")
+                    currElem.removeAttribute("y");
+            }
         }
 
         if (!Keys::get().flag(Key::KeepGradientCoordinates)) {
@@ -443,6 +446,7 @@ void Replacer::roundDefs()
 }
 
 // TODO: try to convert thin rect to line-to path
+// view-calendar-list.svg
 
 // http://www.w3.org/TR/SVG/shapes.html
 void Replacer::convertBasicShapes()
@@ -470,7 +474,8 @@ void Replacer::convertBasicShapes()
                             .arg(QString::number(x1))
                             .arg(QString::number(y1));
 
-                    currElem.removeAttributes(QStringList() << "x" << "y" << "width" << "height");
+                    currElem.removeAttributes(QStringList() << "x" << "y" << "width" << "height"
+                                                            << "rx" << "ry");
 
                 } else {
                     qreal x  = currElem.attribute("x").toDouble();
@@ -522,7 +527,7 @@ void Replacer::convertBasicShapes()
 //                        + QString("A %1,%2 0 1 0 %3,%4 ").arg(rx).arg(ry).arg(x2).arg(y)
 //                        + QString("A %1,%2 0 1 0 %3,%4").arg(rx).arg(ry).arg(x1).arg(y);
             } else if (ctag == "polyline" || ctag == "polygon") {
-                SegmentList segmentList;
+                QList<Segment> segmentList;
                 // TODO: smart split
                 // orangeobject_background-ribbon.svg
                 QStringList tmpList
@@ -531,7 +536,7 @@ void Replacer::convertBasicShapes()
                     bool ok;
                     Segment seg;
                     seg.command = Command::MoveTo;
-                    seg.abs = true;
+                    seg.absolute = true;
                     seg.srcCmd = false;
                     seg.x = tmpList.at(j).toDouble(&ok);
                     Q_ASSERT(ok == true);
@@ -542,7 +547,7 @@ void Replacer::convertBasicShapes()
                 if (ctag == "polygon") {
                     Segment seg;
                     seg.command = Command::ClosePath;
-                    seg.abs = false;
+                    seg.absolute = false;
                     seg.srcCmd = true;
                     segmentList.append(seg);
                 }
@@ -679,9 +684,33 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
         return;
     }
 
-    // exit if no repetitions or if max repetitions is 1
-    if (styleRepetList.isEmpty() || styleRepetList.first().second == 1)
+    if (styleRepetList.isEmpty())
         return;
+
+    if (styleRepetList.first().second == 1) {
+        SvgElement singleElem;
+        foreach (const SvgElement &elem, parentElem.childElemList()) {
+            if (!m_usedElemList.contains(elem.id())) {
+                if (singleElem.isNull())
+                    singleElem = elem;
+                else
+                    return;
+            }
+        }
+        if (!singleElem.isNull()) {
+//            StringHash hash =  singleElem.styleHash();
+//            StringHash parentHash =  parentElem.styleHash();
+//            foreach (const QString &attr, hash.keys()) {
+//                qDebug() << attr;
+//                if (parentHash.contains(attr))
+//                    parentHash.remove(attr);
+//            }
+//            parentElem.setStyle(Tools::styleHashToString(parentHash));
+            parentElem.removeAttribute("style");
+        }
+
+        return;
+    }
 
     const QList<SvgElement> list = parentElem.childElemList();
     // store all processed groups, to prevent retreatment processing
@@ -710,10 +739,10 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
 
             // move elem to group
             foreach (SvgElement elem, list) {
-                QStringList tmpList = elem.attribute("style").split(";", QString::SkipEmptyParts);
+                QStringList tmpList = elem.style().split(";", QString::SkipEmptyParts);
                 tmpList.removeOne(currStyle);
                 QString newStyle = tmpList.join(";");
-                elem.setAttribute("style", newStyle);
+                elem.setStyle(newStyle);
                 mainGElem.appendChild(elem);
             }
         } else {
@@ -727,7 +756,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                 }
                 // NOTE: the slowest line
                 QStringList currStyleList
-                        = currElem.attribute("style").split(";", QString::SkipEmptyParts);
+                        = currElem.style().split(";", QString::SkipEmptyParts);
 
                 bool isElemSimilar = false;
                 if (currStyleList.contains(currStyle)
@@ -773,7 +802,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                             SvgElement newGElem = m_dom.createElement("g");
                             SvgElement firstElem = similarElemList.first().first;
                             newGElem = parentElem.insertBefore(newGElem, firstElem).toElement();
-                            newGElem.setAttribute("style", stylesToRemove.join(";"));
+                            newGElem.setStyle(stylesToRemove.join(";"));
                             Q_ASSERT(newGElem.isNull() == false);
 
                             foreach (ElemListPair pair, similarElemList) {
@@ -781,7 +810,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                                 foreach (const QString &text, stylesToRemove)
                                     tmpList.removeAll(text);
                                 QString newStyle = tmpList.join(";");
-                                pair.first.setAttribute("style", newStyle);
+                                pair.first.setStyle(newStyle);
                                 newGElem.appendChild(pair.first);
                             }
                         }
@@ -799,7 +828,7 @@ RepetitionList Replacer::findRepetitionList(const QList<SvgElement> &list)
     QList<QStringList> styleList;
     foreach (const SvgElement &elem, list) {
         if (!m_usedElemList.contains(elem.id()))
-            styleList << elem.attribute("style").split(";", QString::SkipEmptyParts);
+            styleList << elem.style().split(";", QString::SkipEmptyParts);
     }
     return genRepetitionList(styleList);
 }
@@ -826,7 +855,8 @@ RepetitionList Replacer::genRepetitionList(const QList<QStringList> &list)
     foreach (const QStringList &styleList, list) {
         foreach (const QString &currStyle, styleList) {
             // TODO: 'opacity' can be grouped, sometimes
-            if (!currStyle.contains(QRegExp("opacity|clip-path|font-weight|filter|mask|fill:url"))) {
+            // TODO: test for fill:url
+            if (!currStyle.contains(QRegExp("^opacity|clip-path|font-weight|filter|mask|fill:url"))) {
                 // find style in list
                 int pos = -1;
                 for (int j = 0; j < rList.count(); ++j) {

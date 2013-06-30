@@ -1,8 +1,8 @@
 #ifndef PATHS_H
 #define PATHS_H
 
-#include <QStringList>
-#include <QPointF>
+#include <QtCore/QStringList>
+#include <QtCore/QPointF>
 
 #include "tools.h"
 
@@ -19,11 +19,20 @@ namespace Command {
     static const QString ClosePath        = "z";
 }
 
-struct Segment
+class Segment
 {
+public:
+    Segment();
+    QString toString() const;
+    QString string(qreal value) const;
+    void setTransform(const QString &text);
+    void toRelative(qreal xLast, qreal yLast);
+    void toAbsolute(qreal xLast, qreal yLast);
+    QList<Segment> toCurve(qreal prevX, qreal prevY);
+
+
     QString command;
-    // absolute
-    bool abs;
+    bool absolute;
     // is this command defined in source path
     bool srcCmd;
     qreal x;
@@ -37,33 +46,9 @@ struct Segment
     int xAxisRotation;
     int largeArc;
     int sweep;
-};
-
-class SegmentList
-{
-public:
-    SegmentList();
-    bool next();
-    int position();
-    QString genPath();
-    QString string(qreal value);
-    void append(Segment data);
-    void appendLastPoint(qreal x, qreal y);
-    QPointF lastPoint();
-    void removeCurrent();
-    void restart();
-    void setLastPoint(qreal x, qreal y);
-//    void setTransform(const QString &text);
-    void toRelative();
-    void toAbsolute();
-    Segment segment();
-    void updateSegment(const Segment &seg);
 
 private:
-    int m_position;
-    bool m_isRound;
-    QPointF m_lastPoint;
-    QList<Segment> m_data;
+    bool m_isApplyRound;
 };
 
 class Path
@@ -71,12 +56,12 @@ class Path
 public:
     explicit Path() {}
     void processPath(SvgElement elem);
-    void setSegments(const SegmentList &list);
+    void setSegments(const QList<Segment> &list);
     QString segmentsToPath();
     void segmentsToRelative();
 
 private:
-    SegmentList m_segmentList;
+    QList<Segment> m_segmentList;
     void splitToSegments(const QString &path);
     void processSegments();
     void segmentsToAbsolute();

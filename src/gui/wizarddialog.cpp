@@ -396,12 +396,12 @@ bool WizardDialog::checkForWarnings()
         check = false;
     } else if (SomeUtils::findBinFile("svgcleaner-cli").isEmpty()) {
         QMessageBox::critical(this, tr("Error"),
-                        tr("The 'svgcleaner-cli' executable are not found in these folders:\n")
+                        tr("The 'svgcleaner-cli' executable is not found in these folders:\n")
                         + SomeUtils::genSearchFolderList());
         check = false;
     } else if (SomeUtils::findBinFile("7za").isEmpty()) {
         QMessageBox::warning(this, tr("Warning"),
-                        tr("The '7za' executable are not found in these folders:\n")
+                        tr("The '7za' executable is not found in these folders:\n")
                         + SomeUtils::genSearchFolderList() + "\n\n"
                         + tr("You can not handle the SVGZ files."));
     } else if (QFileInfo(lineEditOutDir->text()).isDir()

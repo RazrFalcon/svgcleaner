@@ -13,7 +13,6 @@
 // TODO: custom xml to text covertor
 // TODO: attribute sort + id first
 // TODO: add render error detecting
-// TODO: remove 'defs' group, can be dangerous. supported by some renders
 
 void showHelp()
 {
@@ -46,7 +45,7 @@ void showHelp()
     qDebug() << "  --keep-singly-grads      Do not merge 'linearGradient' into 'radialGradient',\n"
                 "                           when 'linearGradient' linked only to one 'radialGradient'.";
     qDebug() << "  --keep-gaussian-blur     Disable removing 'feGaussianBlur' filters with 'stdDeviation' lower then '--std-dev'.";
-    qDebug() << "  --std-dev=<0.01..0.5>    Set minimum value for 'stdDeviation' in 'feGaussianBlur' element [default: 0.2].";
+    qDebug() << "  --std-dev=<0.01..0.5>    Set minimum value for 'stdDeviation' in 'feGaussianBlur' element [default: 0.1].";
 
     qDebug() << "Attributes:";
     qDebug() << "  --keep-version           Keep SVG version number.";
@@ -100,6 +99,7 @@ QString prepareSvg(QString str)
 
 bool processFile(const QString &firstFile, const QString &secondFile)
 {
+
     QFile inputFile(firstFile);
     qDebug() << "The initial file size is: " + QString::number(inputFile.size());
     if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -154,10 +154,10 @@ bool processFile(const QString &firstFile, const QString &secondFile)
         replacer.convertBasicShapes();
     if (!Keys::get().flag(Key::KeepGroups))
         remover.removeGroups();
-    if (!Keys::get().flag(Key::SkipElemByStyleGroup))
-        replacer.groupElementsByStyles();
     if (!Keys::get().flag(Key::KeepAbsolutePaths))
         replacer.processPaths();
+    if (!Keys::get().flag(Key::SkipElemByStyleGroup))
+        replacer.groupElementsByStyles();
     if (!Keys::get().flag(Key::SkipRoundingNumbers))
         replacer.roundDefs();
     replacer.splitStyleAttr();

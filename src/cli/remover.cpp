@@ -3,12 +3,9 @@
 #include "keys.h"
 #include "remover.h"
 
+// TODO: remove equal styles in used element and it use
 // TODO: remove items which out of viewbox
 //       Anonymous_butterfly_and_flowers.svg
-
-// TODO: process use attr
-// remove x=0 y=0
-// width | height must be > 0, else it is invisible
 
 Remover::Remover(QDomDocument dom)
 {
@@ -19,10 +16,23 @@ Remover::Remover(QDomDocument dom)
 
 void Remover::cleanSvgElementAttribute()
 {
-    // TODO: remove xmlns:xlink only if no link used
-    QString strIgnore = "xmlns|xmlns:xlink|width|height|viewBox|enable-background|fill.*|stroke.*|style";
+    bool isXlinkUsed = false;
+    QList<SvgElement> nodeList = m_svgElem.childElemList();
+    while (!nodeList.empty()) {
+        SvgElement currElem = nodeList.takeFirst();
+        if (currElem.hasAttribute("xmlns:xlink")) {
+            isXlinkUsed = true;
+            break;
+        }
+        if (currElem.hasChildNodes())
+            nodeList << currElem.childElemList();
+    }
+
+    QString strIgnore = "xmlns|width|height|viewBox|enable-background|fill.*|stroke.*|style";
     if (Keys::get().flag(Key::KeepSvgVersion))
         strIgnore += "|version";
+    if (!isXlinkUsed)
+        strIgnore += "|xmlns:xlink";
     foreach (const QString &attr, m_svgElem.attributesList()) {
         if (!attr.contains(QRegExp("^(" + strIgnore + ")$"))) {
             m_svgElem.removeAttribute(attr);
@@ -30,7 +40,7 @@ void Remover::cleanSvgElementAttribute()
     }
     // dirty way, but svg cannot be processed by default style cleaning func,
     // because in svg node we cannot remove default values
-    if (m_svgElem.attribute("style") == "display:inline")
+    if (m_svgElem.style() == "display:inline")
         m_svgElem.removeAttribute("style");
 }
 
@@ -47,12 +57,12 @@ void Remover::removeUnusedDefs()
 
         QList<SvgElement> nodeList = m_svgElem.childElemList();
         while (!nodeList.empty()) {
-            SvgElement currElem = nodeList.takeFirst().toElement();
+            SvgElement currElem = nodeList.takeFirst();
 
             if (currElem.hasAttribute("xlink:href"))
                 defsIdList.remove(currElem.attribute("xlink:href").remove("#"));
             if (currElem.hasAttribute("style")) {
-                QStringList tmpList = currElem.attribute("style").split(";").filter("url");
+                QStringList tmpList = currElem.style().split(";").filter("url");
                 for (int i = 0; i < tmpList.count(); ++i) {
                     QString url = tmpList.at(i);
                     url.replace(RegEx::xlinkUrl, "");
@@ -156,7 +166,7 @@ void Remover::updateXLinks(StringHash hash)
         SvgElement currElem = list.takeFirst().toElement();
 
         if (currElem.hasAttribute("style")) {
-            QString style = currElem.attribute("style");
+            QString style = currElem.style();
             QStringList tmpList = style.split(";");
             bool changed = false;
             for (int i = 0; i < tmpList.count(); ++i) {
@@ -169,7 +179,7 @@ void Remover::updateXLinks(StringHash hash)
                 }
             }
             if (changed)
-                currElem.setAttribute("style", tmpList.join(";"));
+                currElem.setStyle(tmpList.join(";"));
         }
         if (currElem.hasAttribute("xlink:href")) {
             foreach (const QString &key, hash.keys()) {
@@ -219,7 +229,7 @@ void Remover::removeUnreferencedIds()
         }
 
         if (currElem.hasAttribute("style")) {
-            QString style = currElem.attribute("style");
+            QString style = currElem.style();
             QStringList styleList = style.split(";").filter("url");
             for (int j = 0; j < styleList.count(); ++j)
                 m_allLinkList << QString(styleList.at(j)).remove(RegEx::xlinkUrl);
@@ -327,13 +337,38 @@ void Remover::removeElements()
 
     // distributions-pentubuntu.svg
     // FIXME: switch style attr have to be cleaned before it, and other attr have to be removed
+    qreal stdDevLimit = Keys::get().doubleNumber(Key::StdDeviation);
     list = Tools::childNodeList(m_dom);
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst().toElement();
-        if (currElem.tagName() == "switch") {
-            QStringList attrList = currElem.attributesList();
-            if (attrList.isEmpty() || (attrList.count() == 1 && attrList.first() == "id"))
-                ungroupSwitch(currElem);
+//        if (currElem.tagName() == "switch") {
+//            QStringList attrList = currElem.attributesList();
+//            if (attrList.isEmpty() || (attrList.count() == 1 && attrList.first() == "id")) {
+                // remove groups
+//                foreach (SvgElement elem, currElem.childElemList()) {
+//                    if (elem.isGroup())
+//                        currElem.removeChild(elem);
+//                }
+//                ungroupSwitch(currElem);
+//            }
+        /*} else */if (currElem.tagName() == "feGaussianBlur") {
+            // remove "feGaussianBlur" element with "stdDeviation" value
+            // lower than "--std-deviation-limit"
+            if (!Keys::get().flag(Key::KeepTinyGaussianBlur)) {
+                if (currElem.parentNode().childNodes().count() == 1) {
+                    // 'stdDeviation' can contains not only one value
+                    // we process when it contains only one value
+                    if (!currElem.attribute("stdDeviation").contains(QRegExp(",| "))) {
+                        bool ok = true;
+                        if (currElem.attribute("stdDeviation").toDouble(&ok) <= stdDevLimit) {
+                            Q_ASSERT(ok == true);
+                            QDomNode node = m_defsElem.removeChild(currElem.parentNode());
+                            Q_ASSERT(node.isNull() == false);
+                            // TODO: maybe remove xlink, but its slow...
+                        }
+                    }
+                }
+            }
         }
         if (currElem.hasChildNodes())
             list << currElem.childNodeList();
@@ -353,72 +388,68 @@ bool Remover::isInvisibleElementsExist(SvgElement elem)
     //remove elements "rect", "pattern" and "image" with height or width <= 0
     if (elem.tagName().contains(QRegExp("rect|pattern|image"))) {
         if (elem.hasAttributes(QStringList() << "width" << "height")) {
+            QRectF rect = Tools::viewBoxRect(m_svgElem);
             bool ok = false;
-            qreal width  = Tools::convertUnitsToPx(elem.attribute("width")).toDouble(&ok);
+            qreal width  = Tools::convertUnitsToPx(elem.attribute("width"), rect.width()).toDouble(&ok);
             Q_ASSERT(ok == true);
-            qreal height = Tools::convertUnitsToPx(elem.attribute("height")).toDouble(&ok);
+            qreal height = Tools::convertUnitsToPx(elem.attribute("height"), rect.height()).toDouble(&ok);
             Q_ASSERT(ok == true);
             if (width <= 0 || height <= 0)
                 return true;
         }
     }
 
+    StringHash hash = elem.styleHash();
+
     // TODO: finish
     // remove elements with opacity="0"
-//    if (elem.isStyleContains("opacity:"))
-//        return true;
+    if (hash.contains("opacity")) {
+        bool ok = true;
+        if (elem.styleHash().value("opacity").toDouble(&ok) == 0) {
+            Q_ASSERT_X(ok == true, "error", qPrintable(elem.styleHash().value("opacity")));
+            return true;
+        }
+    }
 
     // remove elements with "display=none"
-    if (elem.isStyleContains("display:none"))
+    if (hash.value("display") == "none")
         return true;
 
     // remove "path" elements with empty "d" attr
-    if (elem.tagName() == "path") {
-        if (elem.attribute("d").isEmpty()) {
+    if (elem.tagName() == "path")
+        if (elem.attribute("d").isEmpty())
             return true;
-        }
+
+    // A negative value is an error. A value of zero disables rendering of this element.
+    if (elem.tagName() == "use") {
+        if (elem.hasAttribute("width"))
+            if (elem.attribute("width").toDouble() == 0)
+                return true;
+        if (elem.hasAttribute("height"))
+            if (elem.attribute("height").toDouble() == 0)
+                return true;
     }
 
     // remove "polygon", "polyline" elements with empty "points" attr
-    if (elem.tagName().contains(QRegExp("polygon|polyline"))) {
-        if (elem.attribute("points").isEmpty()) {
+    if (elem.tagName().contains(QRegExp("polygon|polyline")))
+        if (elem.attribute("points").isEmpty())
             return true;
-        }
-    }
 
     // remove "circle" elements with "r" <= 0
-    if (elem.tagName() == "circle") {
-        if (elem.attribute("r").toDouble() <= 0) {
+    if (elem.tagName() == "circle")
+        if (elem.attribute("r").toDouble() <= 0)
             return true;
-        }
-    }
 
     // remove "ellipse" elements with "rx|ry" <= 0
-    if (elem.tagName() == "ellipse") {
+    if (elem.tagName() == "ellipse")
         if (   elem.attribute("rx").toFloat() <= 0
-            || elem.attribute("ry").toFloat() <= 0) {
+            || elem.attribute("ry").toFloat() <= 0)
             return true;
-        }
-    }
 
     // remove empty "text" elements
-    if (elem.tagName() == "text") {
-        if (elem.text().isEmpty()) {
+    if (elem.tagName() == "text")
+        if (elem.text().isEmpty())
             return true;
-        }
-    }
-
-    // remove "feGaussianBlur" element with "stdDeviation" value lower than "--std-deviation-limit"
-    // FIXME: have to delete <filter>
-    // TODO: stdDeviation can contains two values
-    if (!Keys::get().flag(Key::KeepTinyGaussianBlur)) {
-        if (elem.tagName() == "feGaussianBlur" && elem.parentNode().childNodes().count() == 0) {
-            if (elem.attribute("stdDeviation").toFloat()
-                <= Keys::get().doubleNumber(Key::StdDeviation)) {
-                return true;
-            }
-        }
-    }
 
     // remove "switch" with no attributes or with only "id" attribute
     if (elem.tagName() == "switch" && !elem.hasChildNodes()) {
@@ -485,19 +516,14 @@ void Remover::cleanAttribute(SvgElement elem, QRegExp rx)
     }
 }
 
-// TODO: move similar styles to group
-// Anonymous_Romania_Map.svg
-// capellan2000_Escudo_Nacional_Dominicano.svg
-// zlatkodesign_Sniper_optic.svg
-
-// TODO: remove clip-rule if no clip-path
-
 QList<StringHash> styleHashList;
 StringHash parentHash;
 void Remover::processStyleAttr(SvgElement elem)
 {
     if (elem.isNull())
         elem = m_svgElem;
+
+    m_usedElemList = Tools::usedElemList(m_svgElem);
 
     StringHash currHash = elem.styleHash();
     styleHashList << currHash;
@@ -516,7 +542,7 @@ void Remover::processStyleAttr(SvgElement elem)
             else {
                 foreach (QString attr, Props::styleAttrList)
                     currElem.removeAttribute(attr);
-                currElem.setAttribute("style", Tools::styleHashToString(hash));
+                currElem.setStyle(Tools::styleHashToString(hash));
             }
         }
 
@@ -602,6 +628,11 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash *hash)
         }
     }
 
+
+    // remove clip-rule if no clip-path
+    if (hash->contains("clip-rule") && !hash->contains("clip-path"))
+        hash->remove("clip-rule");
+
     // 'enable-background' is only applicable to container elements
     if (!Props::containers.contains(elem.tagName()))
         hash->remove("enable-background");
@@ -624,7 +655,8 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash *hash)
                 value = hash->value(key);
             }
             if (value.contains(QRegExp("^[0-9\\.]+$"))) {
-                hash->insert(key, Tools::roundNumber(value.toDouble(), Tools::ATTRIBUTES));
+                QString number = Tools::roundNumber(value.toDouble(), Tools::ATTRIBUTES);
+                hash->insert(key, number);
             }
         }
     }
@@ -645,14 +677,13 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash *hash)
             hash->insert("flood-color", Tools::trimColor(hash->value("flood-color")));
     }
 
-    if (!parentHash.contains("stroke-width")) {
+    if (!parentHash.contains("stroke-width"))
         removeDefaultValue(hash, "stroke-width");
-    }
 
-    // TODO: why we ignores fill and stroke?
-    // needed for andreas_Bureau_de_change.svg
+    // remove style props which already defined in parent style
+    // ignore used/linked elements and opacity
     foreach (const QString &attr, parentHash.keys()) {
-        if (attr != "fill" && attr != "stroke" && attr != "opacity") {
+        if (attr != "opacity" && !m_usedElemList.contains(elem.id())) {
             if (hash->contains(attr))
                 if (hash->value(attr) == parentHash.value(attr))
                     hash->remove(attr);
@@ -681,9 +712,6 @@ void Remover::removeDefaultValue(StringHash *hash, const QString &name)
 }
 
 // TODO: remove "symbol"
-// FIXME: fails with comments, because it's a null QDomElement
-// Anonymous_dartboard_cleaned.svg
-
 // TODO: apply transform from group
 // rasor_SQL_Backup.svg
 
@@ -720,8 +748,8 @@ void Remover::removeGroups()
                 lastGNode = currElem;
             } else {
                 bool flag = true;
-                if (currElem.attribute("style") == lastGNode.attribute("style")
-                    && currElem.hasAttribute("style") && !currElem.attribute("style").contains("opacity")
+                if (currElem.style() == lastGNode.style()
+                    && currElem.hasAttribute("style") && !currElem.style().contains("opacity")
                     && currElem.attribute("transform") == lastGNode.attribute("transform")) {
                     gNodeList << currElem;
                 } else {
@@ -789,7 +817,7 @@ SvgElement Remover::genGroup(SvgElement currElem, SvgElement parentGroup)
         if (parentElem.hasAttribute("transform"))
             transformAttr = parentElem.attribute("transform") + " " + transformAttr;
         if (parentElem.hasAttribute("style"))
-            styles.prepend(parentElem.attribute("style"));
+            styles.prepend(parentElem.style());
         parentElem = parentElem.parentNode().toElement();
     }
 
@@ -820,7 +848,7 @@ SvgElement Remover::genGroup(SvgElement currElem, SvgElement parentGroup)
         if (!transformAttr.isEmpty())
             newGElem.setAttribute("transform", transformAttr);
         if (!styleAttr.isEmpty())
-            newGElem.setAttribute("style", styleAttr);
+            newGElem.setStyle(styleAttr);
         if (!idAttr.isEmpty())
             newGElem.setAttribute("id", idAttr);
         return m_svgElem.insertBefore(newGElem, parentGroup).toElement();
@@ -832,7 +860,7 @@ void Remover::mergeGroups(QList<SvgElement> gNodeList)
 {
     SvgElement newGElem = m_dom.createElement("g");
     newGElem = m_svgElem.insertBefore(newGElem, gNodeList.first()).toElement();
-    newGElem.setAttribute("style", gNodeList.first().attribute("style"));
+    newGElem.setStyle(gNodeList.first().style());
     newGElem.setAttribute("transform", gNodeList.first().attribute("transform"));
     Q_ASSERT(newGElem.isNull() == false);
     for (int i = 0; i < gNodeList.count(); ++i) {

@@ -80,6 +80,7 @@
     <name>CleanerThread</name>
     <message>
         <location filename="../src/gui/cleanerthread.cpp" line="122"/>
+        <location filename="../src/gui/cleanerthread.cpp" line="131"/>
         <source>Crashed</source>
         <translation>Не підлягає обробці</translation>
     </message>
@@ -246,12 +247,12 @@
         <translation>Завершити обробку</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="282"/>
+        <location filename="../src/gui/mainwindow.cpp" line="281"/>
         <source>Compare view: on</source>
         <translation>Порівняння зображень: увімкнено</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="285"/>
+        <location filename="../src/gui/mainwindow.cpp" line="284"/>
         <source>Compare view: off</source>
         <translation>Порівняння зображень: вимкнено</translation>
     </message>
@@ -259,22 +260,22 @@
 <context>
     <name>SomeUtils</name>
     <message>
-        <location filename="../src/gui/someutils.cpp" line="20"/>
+        <location filename="../src/gui/someutils.cpp" line="21"/>
         <source>B</source>
         <translation>Б</translation>
     </message>
     <message>
-        <location filename="../src/gui/someutils.cpp" line="20"/>
+        <location filename="../src/gui/someutils.cpp" line="21"/>
         <source>KiB</source>
         <translation>КіБ</translation>
     </message>
     <message>
-        <location filename="../src/gui/someutils.cpp" line="20"/>
+        <location filename="../src/gui/someutils.cpp" line="21"/>
         <source>MiB</source>
         <translation>МіБ</translation>
     </message>
     <message>
-        <location filename="../src/gui/someutils.cpp" line="30"/>
+        <location filename="../src/gui/someutils.cpp" line="31"/>
         <source>%1h %2m %3s %4ms</source>
         <translation>%1г %2х %3с %4мс</translation>
     </message>
@@ -376,13 +377,12 @@
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="325"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="160"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="170"/>
         <source>filename</source>
         <translation>filename</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="332"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="159"/>
         <source>For example: </source>
         <translation>Наприклад: </translation>
     </message>
@@ -497,12 +497,12 @@
         <translation>Видаляти елементи із просторів імен графічних редакторів:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1716"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1729"/>
         <source>Merge multiply matrices into one and simplify it</source>
         <translation>Об&apos;єднувати декілька матриць трансформацій в одну та спрощувати її</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1508"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1521"/>
         <source>Remove empty segments</source>
         <translation>Видаляти порожні сегменти ліній і кривих</translation>
     </message>
@@ -602,204 +602,250 @@
         <translation>Видаляти XLinks, які вказують на неіснуючий елемент</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1399"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1348"/>
+        <source>Group elements by style properties</source>
+        <translation>Згрупувати елементи з подібними стилями</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.ui" line="1412"/>
         <source>Keep existing paths data</source>
         <translation>Залишати існуючи дані шляхів</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1439"/>
-        <location filename="../src/gui/wizarddialog.ui" line="1495"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1452"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1508"/>
         <source>Remove unnecessary whitespace between commands and coordinates</source>
         <translation>Видаляти зайві пробіли між командами і координатами</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1458"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1471"/>
         <source>Convert absolute paths into relative ones</source>
         <translation>Конвертувати абсолютні шляхи у відносні</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1521"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1534"/>
         <source>Convert lines into horizontal/vertical equivalents when possible</source>
         <translation>Конвертувати лінії у короткі гор./верт. еквіваленти</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1537"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1550"/>
         <source>Convert straight curves into lines when possible</source>
         <translation>Конвертувати прямі криві у лінії</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1553"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1566"/>
         <source>Convert cubic curve segments into shorthand equivalents when possible</source>
         <translation>Конвертувати сегменти кубічних кривих у короткі еквіваленти</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1569"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1582"/>
         <source>Convert quadratic curve segments into shorthand equivalents when possible</source>
         <translation>Конвертувати сегменти квадратичних кривих у короткі еквіваленти</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1630"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1643"/>
         <source>Convert width/height into a viewBox when possible</source>
         <translation>Конвертувати атрибути width і height у viewBox</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1643"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1656"/>
         <source>Convert style properties into SVG attributes</source>
         <translation>Конвертувати властивості стилів в атрибути SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1656"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1669"/>
         <source>Convert colors to #RRGGBB format</source>
         <translation>Конвертувати кольори у формат #RRGGBB</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1687"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1700"/>
         <source>Convert colors to #RGB format when possible</source>
         <translation>Конвертувати кольори у формат #RGB, якщо можливо</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1703"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1716"/>
         <source>Convert basic shapes into paths</source>
         <translation>Конвертувати основні фігури у шляхи</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1732"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1745"/>
         <source>Recalculate coordinates and remove transform attributes when possible</source>
         <translation>Перераховувати координати і видаляти атрибути трансформації</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1745"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1758"/>
         <source>Sort elements by name inside the defs section</source>
         <translation>Сортувати за ім&apos;ям елементи із секції defs</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1758"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1771"/>
         <source>Round numbers to a given precision</source>
         <translation>Округляти числа до заданої точності</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1845"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1858"/>
         <source>inside transform attributes:</source>
         <translation>всередині атрибутів трансформації:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1855"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1868"/>
         <source>inside coordinate attributes:</source>
         <translation>всередині атрибутів координат:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1865"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1878"/>
         <source>inside other attributes:</source>
         <translation>всередині інших атрибутів:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1989"/>
+        <location filename="../src/gui/wizarddialog.ui" line="2002"/>
         <source>The indentation for the pretty print style:</source>
         <translation>Розмір відступу у структурі даних:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="92"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="93"/>
         <source>prefix</source>
         <translation>префікс</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="93"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="94"/>
         <source>suffix</source>
         <translation>суфікс</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="101"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="102"/>
         <source>Main</source>
         <translation>Головна</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="102"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="103"/>
         <source>Presets</source>
         <translation>Передустановки</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="103"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="104"/>
         <source>Elements</source>
         <translation>Елементи</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="104"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="105"/>
         <source>Attributes</source>
         <translation>Атрибути</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="105"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="106"/>
         <source>Paths</source>
         <translation>Шляхи</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="106"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="107"/>
         <source>Optimization</source>
         <translation>Оптимізація</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="107"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="108"/>
         <source>Output</source>
         <translation>Вихідний формат</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="130"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="131"/>
         <source>Warning! The original files will be destroyed!</source>
         <translation>Увага! Оригінальні файли будуть знищені!</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="357"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="151"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="169"/>
+        <source>For example</source>
+        <translation>Наприклад</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="151"/>
+        <source>before</source>
+        <translation>до</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="153"/>
+        <source>after</source>
+        <translation>після</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="359"/>
         <source>Select an input folder</source>
         <translation>Обрати вхідну папку</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="370"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="372"/>
         <source>Select an output folder</source>
         <translation>Обрати вихідну папку</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="381"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="383"/>
         <source>An input folder is not selected.</source>
         <translation>Не обрано вхідну папку.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="384"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="386"/>
         <source>An output folder is not selected.</source>
         <translation>Не обрано вихідну папку.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="387"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="389"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Необхідно задати додаваємий префікс та/або суфікс.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="390"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="392"/>
         <source>An input folder is not exist.</source>
         <translation>Задана вхідна папка не існує.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="393"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="395"/>
         <source>An input folder did not contain any svg, svgz files.</source>
         <translation>Вхідна папка не містить жодних SVG-файлів.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="401"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="398"/>
+        <source>Error</source>
+        <translation>Помилка</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="406"/>
+        <source>You can not handle the SVGZ files.</source>
+        <translation>Ви не зможете обробляти SVGZ файли.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="409"/>
         <source>Selected output folder is not writable.</source>
         <translation>Обрана вихідна папка недоступна для запису.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="409"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="428"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="403"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="417"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="436"/>
         <source>Warning</source>
         <translation>Застереження</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="420"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="399"/>
+        <source>The &apos;svgcleaner-cli&apos; executable is not found in these folders:
+</source>
+        <translation>Файл &apos;svgcleaner-cli&apos; не знайден у цих папках:
+</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="404"/>
+        <source>The &apos;7za&apos; executable is not found in these folders:
+</source>
+        <translation>Файл &apos;7za&apos; не знайден у цих папках:
+</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="428"/>
         <source>You have to set preset name.</source>
         <translation>Потрібно задати ім&apos;я передустановки.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="429"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="437"/>
         <source>This preset already exists.
 Overwrite?</source>
         <translation>Ця передустановка вже існує.

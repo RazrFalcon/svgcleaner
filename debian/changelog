@@ -1,3 +1,17 @@
+svgcleaner (0.5.1) natty; urgency=low
+
+  * Added a new function: "Group elements by style properties".
+  * Added 'rotate(<rotate-angle> [<cx> <cy>])' matrix processing.
+  * Fixed xmlns:xlink prefix removing.
+  * Fixed stdDeviation processing.
+  * Fixed program freezing with --keep-comments flag.
+  * Fixed processing of --version flag.
+  * Fixed prolog removing.
+  * Fixed style attributes grouping to one attribute.
+
+ -- Raizner Evgeniy <razrfalcon@gmail.com>  Sun, 30 Jun 2013 02:00:00 +0200
+
+
 svgcleaner (0.5) natty; urgency=low
 
   * Engine rewrited from Perl to C++(Qt).

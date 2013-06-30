@@ -1,14 +1,15 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
-#include <QStringList>
-#include <QRegExp>
-#include <QMap>
-#include <QHash>
-#include <QVariantHash>
-#include <QDomNode>
-#include <QGenericMatrix>
-#include <QTime>
+#include <QtCore/QMap>
+#include <QtCore/QRegExp>
+#include <QtCore/QStringList>
+#include <QtCore/QTime>
+#include <QtCore/QVariantHash>
+#include <QtCore/QRectF>
+#include <QtXml/QDomNode>
+// NOTE: only one dependence from gui
+#include <QtGui/QGenericMatrix>
 
 typedef QMap<QString, QString> StringMap;
 typedef QHash<QString, QString> StringHash;
@@ -18,7 +19,6 @@ namespace RegEx {
     static const QString lengthTypes = "em|ex|px|in|cm|mm|pt|pc|%";
     static const QRegExp xlinkUrl = QRegExp(".*url\\(#|\\).*");
 }
-
 
 class SvgElement : public QDomElement
 {
@@ -39,10 +39,11 @@ public:
     bool isContainer() const;
     bool isGroup() const;
     StringHash styleHash();
+    void setStyle(const QString &text);
     void appendStyle(const QString &text);
     void setAttribute(const QString &name, const QVariant &value);
     QString style() const;
-    QString id() const;
+    QString id() const;    
 };
 
 class Transform
@@ -53,6 +54,7 @@ public:
     qreal newX();
     qreal newY();
     QString simplified() const;
+    qreal scaleFactor();
 
 private:
     QList<qreal> m_points;
@@ -66,7 +68,7 @@ private:
     qreal m_xMove;
     qreal m_yMove;
 
-    QList<qreal> mergeMatrixes(const QString &text);
+    QList<qreal> mergeMatrixes(QString text);
 };
 
 class Tools
@@ -87,6 +89,7 @@ public:
     static void sortNodes(QList<QDomNode> *nodeList);
     static QVariantHash initDefaultStyleHash();
     static QSet<QString> usedElemList(const SvgElement &svgNode);
+    static QRectF viewBoxRect(const SvgElement &svgNode);
 };
 
 // TODO: add percentages attr list
@@ -127,7 +130,6 @@ static const QSet<QString> digitList = QSet<QString>()
     << "x" << "y" << "x1" << "y1" << "x2" << "y2" << "width" << "height" << "r" << "rx" << "ry"
     << "fx" << "fy" << "cx" << "cy" << "offset";
 
-// TODO: check for lsit based
 static const QSet<QString> filterDigitList = QSet<QString>()
     << "stdDeviation" << "baseFrequency" << "k" << "k1" << "k2" << "k3" << "specularConstant"
     << "dx" << "dy";

@@ -1,9 +1,8 @@
 #ifndef KEYS_H
 #define KEYS_H
 
-#include <QHash>
-#include <QVariant>
-#include <QStringList>
+#include <QtCore/QVariantHash>
+#include <QtCore/QStringList>
 
 namespace Key {
     static const QString KeepProlog = "--keep-prolog";
@@ -52,11 +51,12 @@ namespace Key {
     static const QString SkipRRGGBBToRGB = "--skip-rrggbb-to-rgb";
     static const QString KeepBasicShapes = "--keep-basic-shapes";
     static const QString KeepTransforms = "--keep-transform";
+    static const QString SkipTransformsApplying = "--skip-transform-appl";
     static const QString KeepUnsortedDefs = "--keep-unsorted-defs";
     static const QString SkipRoundingNumbers = "--skip-rounding-numbers";
-    static const QString TransformPrecision = "--transfs-precision";
-    static const QString CoordsPrecision = "--coords-precision";
-    static const QString AttributesPrecision = "--attributes-precision";
+    static const QString TransformPrecision = "--transfs-prec";
+    static const QString CoordsPrecision = "--coords-prec";
+    static const QString AttributesPrecision = "--attributes-prec";
 
     static const QString Indent = "--indent";
 
@@ -81,7 +81,7 @@ public:
     void parceOptions(const QStringList &list);
 
 private:
-    QHash<QString, QVariant> keyHash;
+    QVariantHash keyHash;
 
     Keys();
     Keys(Keys const&);

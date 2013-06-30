@@ -28,6 +28,7 @@ public:
     void finalFixes();
     void calcElemAttrCount(const QString &text);
     void groupElementsByStyles(SvgElement parentElem = SvgElement());
+    void applyTransformMatrices();
 
 private:
     QDomDocument m_dom;

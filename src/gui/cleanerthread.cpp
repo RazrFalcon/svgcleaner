@@ -127,6 +127,8 @@ SVGInfo CleanerThread::info()
             info.errString = tr("Output folder does not exist.");
         else if (scriptOutput.contains("Error: it's a not well-formed SVG file."))
             info.errString = tr("It's a not well-formed SVG file.");
+        else
+            info.errString = tr("Crashed");
     }
 
     return info;

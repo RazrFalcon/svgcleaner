@@ -640,5 +640,39 @@ Overwrite?</source>
         <source>Merge multiply matrices into one and simplify it</source>
         <translation>Führe mehrfahe Matrizen in eine zusammen udn vereinfache sie</translation>
     </message>
+    <message>
+        <source>Group elements by style properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>For example</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>before</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>after</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You can not handle the SVGZ files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The &apos;svgcleaner-cli&apos; executable is not found in these folders:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The &apos;7za&apos; executable is not found in these folders:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 SUBDIRS = src/cli src/gui
 CONFIG += ordered
 
-linux {
+unix {
     isEmpty (PREFIX):PREFIX = /usr
 
     INSTALLS           += bin desktop logo presets translations

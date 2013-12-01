@@ -58,7 +58,7 @@ Keys::Keys()
     keyHash.insert(Key::CoordsPrecision, 4);
     keyHash.insert(Key::AttributesPrecision, 3);
 
-    keyHash.insert(Key::Indent, 0);
+    keyHash.insert(Key::NotCompact, false);
 }
 
 bool Keys::flag(const QString &key)
@@ -100,11 +100,6 @@ void Keys::parceOptions(const QStringList &list)
             if (flag == Key::TransformPrecision || flag == Key::AttributesPrecision
                 || flag == Key::CoordsPrecision) {
                 if (value.toInt() > 0 && value.toInt() <= 9)
-                    keyHash.insert(flag, value.toInt());
-                else
-                    isError = true;
-            } else if (flag == Key::Indent) {
-                if (value.toInt() >= -1 && value.toInt() <= 4 && !value.isEmpty())
                     keyHash.insert(flag, value.toInt());
                 else
                     isError = true;

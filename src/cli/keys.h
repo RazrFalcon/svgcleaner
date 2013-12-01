@@ -1,8 +1,8 @@
 #ifndef KEYS_H
 #define KEYS_H
 
-#include <QtCore/QVariantHash>
-#include <QtCore/QStringList>
+#include <QVariantHash>
+#include <QStringList>
 
 namespace Key {
     static const QString KeepProlog = "--keep-prolog";
@@ -56,9 +56,9 @@ namespace Key {
     static const QString SkipRoundingNumbers = "--skip-rounding-numbers";
     static const QString TransformPrecision = "--transfs-prec";
     static const QString CoordsPrecision = "--coords-prec";
-    static const QString AttributesPrecision = "--attributes-prec";
+    static const QString AttributesPrecision = "--attrs-prec";
 
-    static const QString Indent = "--indent";
+    static const QString NotCompact = "--not-compact";
 
 //    static const QString ConvertCurvesCs = "--convert-curves-cs";
 //    static const QString ConvertCurvesToLines = "--convert-curves-lines";

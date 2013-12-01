@@ -83,23 +83,19 @@ void showHelp()
     qDebug() << "  --attrs-prec=<1..9>      Set rounding precision for attributes [default: 3].";
 
     qDebug() << "Output:";
-    qDebug() << "  --indent=<-1..4>         Set xml indent for output svg [default: 0].";
+    qDebug() << "  --not-compact            Save svg with only required whitespace and newlines.";
 }
 
-QString prepareSvg(QString str)
+void prepareSvg(QString &str)
 {
     str.replace("\t", " ");
     str.replace("\n", " ");
     str.replace("<svg:", "<");
     str.replace("</svg:", "</");
-    if (!Keys::get().flag(Key::KeepProlog))
-        str.remove(QRegExp("<\\!DOCTYPE.*\\.dtd('|\")>(\n|)"));
-    return str;
 }
 
 bool processFile(const QString &firstFile, const QString &secondFile)
 {
-
     QFile inputFile(firstFile);
     qDebug() << "The initial file size is: " + QString::number(inputFile.size());
     if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -107,31 +103,25 @@ bool processFile(const QString &firstFile, const QString &secondFile)
         return false;
     }
     QTextStream inputStream(&inputFile);
-    QDomDocument inputSvg;
-    QString svgText = prepareSvg(inputStream.readAll());
-    inputSvg.setContent(svgText);
+    QString svgText = inputStream.readAll();
+    prepareSvg(svgText);
+    XMLDocument doc;
+    doc.Parse(svgText.toUtf8().constData());
 
-    if (inputSvg.elementsByTagName("svg").count() == 0) {
-        qDebug() << firstFile;
-        qDebug() << "Error: it's a not well-formed SVG file.";
-        return false;
-    }
-
-    Replacer replacer(inputSvg);
-    Remover remover(inputSvg);
+    Replacer replacer(&doc);
+    Remover remover(&doc);
 
     replacer.calcElemAttrCount("initial");
-
-    if (!Keys::get().flag(Key::KeepDefaultAttributes))
-        remover.cleanSvgElementAttribute();
 
     // mandatory fixes used to simplify subsequent functions
     replacer.convertUnits();
     replacer.fixWrongAttr();
     replacer.convertCDATAStyle();
     replacer.prepareDefs();
-    replacer.joinStyleAttr();
+    replacer.splitStyleAttr();
 
+    if (!Keys::get().flag(Key::KeepDefaultAttributes))
+        remover.cleanSvgElementAttribute();
     if (!Keys::get().flag(Key::NoViewbox))
         replacer.convertSizeToViewbox();
     if (!Keys::get().flag(Key::KeepDuplicatedDefs))
@@ -160,23 +150,22 @@ bool processFile(const QString &firstFile, const QString &secondFile)
         replacer.groupElementsByStyles();
     if (!Keys::get().flag(Key::SkipRoundingNumbers))
         replacer.roundDefs();
-    replacer.splitStyleAttr();
     replacer.finalFixes();
 
+    // TODO: check is out file smaller than original
     QFile outFile(secondFile);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qDebug() << "Error: could not open out file for write.";
         return false;
     }
-    // TODO: check is out file smaller than original
-    QTextStream out(&outFile);
-    // remove unneeded new lines in text elements, created by default xml format,
-    // but wrong in svg
-    QString outStr = inputSvg.toString(Keys::get().intNumber(Key::Indent));
-    if (!Keys::get().flag(Key::KeepProlog))
-        outStr.remove(QRegExp("<\\!DOCTYPE.*\\.dtd('|\")>(\n|)"));
+
+    XMLPrinter printer(0, !Keys::get().flag(Key::NotCompact));
+    doc.Print(&printer);
+    QString outStr = QString::fromUtf8(printer.CStr());
+
+    QTextStream outStream(&outFile);
     outStr.replace(">\n<tspan", "><tspan");
-    out << outStr;
+    outStream << outStr;
     outFile.close();
 
     qDebug() << "The final file size is: " + QString::number(outFile.size());
@@ -187,14 +176,13 @@ bool processFile(const QString &firstFile, const QString &secondFile)
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-    app.setApplicationVersion("0.5");
 
     QStringList argList = app.arguments();
     // remove executable path
     argList.removeFirst();
 
     if (argList.contains("-v") || argList.contains("--version")) {
-        qDebug() << qPrintable(app.applicationVersion());
+        qDebug() << 0.6;
         return 0;
     }
 
@@ -209,11 +197,11 @@ int main(int argc, char *argv[])
 
     if (!QFile(inputFile).exists()) {
         qDebug() << "Error: input file does not exist.";
-        return 0;
+        return 1;
     }
     if (!QFileInfo(outputFile).absoluteDir().exists()) {
         qDebug() << "Error: output folder does not exist.";
-        return 0;
+        return 1;
     }
 
     Keys::get().parceOptions(argList);

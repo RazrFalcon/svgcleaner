@@ -12,11 +12,11 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    app.setApplicationVersion("0.5");
+    app.setApplicationVersion("0.6");
 
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForLocale(  QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForTr(      QTextCodec::codecForName("UTF-8"));
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 
     // load translation for SVG Cleaner
     QString locale = QLocale::system().name();

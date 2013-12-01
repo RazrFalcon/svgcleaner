@@ -536,7 +536,7 @@
     </message>
     <message>
         <source>The indentation for the pretty print style:</source>
-        <translation>Art des Einrückens für schönen Quelltext:</translation>
+        <translation type="obsolete">Art des Einrückens für schönen Quelltext:</translation>
     </message>
     <message>
         <source>prefix</source>
@@ -672,6 +672,18 @@ Overwrite?</source>
     <message>
         <source>The &apos;7za&apos; executable is not found in these folders:
 </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If this option is set, then output is created with only required whitespace and newlines.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>not-compact</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Compact output</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

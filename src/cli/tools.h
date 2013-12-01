@@ -1,49 +1,82 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
-#include <QtCore/QMap>
-#include <QtCore/QRegExp>
-#include <QtCore/QStringList>
-#include <QtCore/QTime>
-#include <QtCore/QVariantHash>
-#include <QtCore/QRectF>
-#include <QtXml/QDomNode>
-// NOTE: only one dependence from gui
+#include <QMap>
+#include <QRegExp>
+#include <QStringList>
+#include <QTime>
+#include <QVariantHash>
+#include <QRectF>
+#include <QtDebug>
+// TODO: remove this
 #include <QtGui/QGenericMatrix>
 
 typedef QMap<QString, QString> StringMap;
 typedef QHash<QString, QString> StringHash;
 typedef QGenericMatrix<3,3,qreal> TransMatrix;
 
+#include "tinyxml2.h"
+
+
+#define ToChar(x) x.toStdString().c_str()
+
+using namespace tinyxml2;
+class SvgElement;
+
 namespace RegEx {
     static const QString lengthTypes = "em|ex|px|in|cm|mm|pt|pc|%";
     static const QRegExp xlinkUrl = QRegExp(".*url\\(#|\\).*");
 }
 
-class SvgElement : public QDomElement
+// QDomElement like wrapper class for XMLElement
+class SvgElement
 {
 public:
-    explicit SvgElement() : QDomElement() {}
-    SvgElement(const QDomElement &elem) : QDomElement(elem) {}
+    SvgElement();
+    SvgElement(XMLElement *elem);
 
-    bool hasAttributeByList(const QStringList &list);
-    bool hasAttributeByList(const QSet<QString> &list);
-    bool hasAttributes(const QStringList &list);
-    bool isStyleContains(const QString &text);
-    void removeAttributes(const QStringList &list);
-    QStringList attributesList();
-    QList<SvgElement> childElemList();
-    QList<QDomNode> childNodeList();
-    bool isReferenced();
-    bool isText() const;
+    bool hasAttribute(const char *name) const;
+    bool hasAttribute(const QString &name) const;
+    bool hasAttributes(const QStringList &list) const;
+    bool hasChildren() const;
     bool isContainer() const;
     bool isGroup() const;
-    StringHash styleHash();
-    void setStyle(const QString &text);
-    void appendStyle(const QString &text);
+    bool isNull() const;
+    bool isReferenced() const;
+    bool isText() const;
+    double doubleAttribute(const QString &name) const;
+    int attributesCount() const;
+    int childElementCount() const;
+    QList<SvgElement> childElemList() const;
+    QString attribute(const QString &name) const;
+    QString genStyleString() const;
+    QString id() const;
+    QStringList attributesList() const;
+    QString tagName() const;
+    StringHash styleHash() const;
+    SvgElement insertBefore(const SvgElement &elemNew, const SvgElement &elemBefore);
+    SvgElement parentNode() const;
+    void appendChild(const SvgElement &elem);
+    void clear();
+    void removeAttribute(const QString &name);
+    void removeAttributes(const QStringList &list);
+    void removeChild(const SvgElement &elem);
     void setAttribute(const QString &name, const QVariant &value);
-    QString style() const;
-    QString id() const;    
+    void setStyle(const QString &text);
+    void setStylesFromHash(const StringHash &hash);
+    void setTagName(const QString &name);
+
+    XMLElement* xmlElement() const { return m_elem; }
+    bool operator==(const SvgElement &elem1) {
+        return elem1.xmlElement() == this->xmlElement();
+    }
+    bool operator!=(const SvgElement &elem1) {
+        return elem1.xmlElement() != this->xmlElement();
+    }
+    void operator=(const SvgElement &elem) { m_elem = elem.xmlElement(); }
+
+private:
+    XMLElement *m_elem;
 };
 
 class Transform
@@ -51,10 +84,10 @@ class Transform
 public:
     explicit Transform(const QString &text);
     void setOldXY(qreal prevX, qreal prevY);
-    qreal newX();
-    qreal newY();
+    qreal newX() const;
+    qreal newY() const;
     QString simplified() const;
-    qreal scaleFactor();
+    qreal scaleFactor() const;
 
 private:
     QList<qreal> m_points;
@@ -76,20 +109,22 @@ class Tools
 public:
     explicit Tools() {}
     enum RoundType { COORDINATES, TRANSFORM, ATTRIBUTES };
-    static bool isAttrEqual(QDomElement elem1, QDomElement node2, const QSet<QString> &atrr);
-    static QDomNode findDefsNode(const QDomNode SvgElement);
-    static QList<QDomNode> childNodeList(QDomNode node);
-    static QList<SvgElement> childElemList(QDomNode node);
+    static bool isAttrEqual(SvgElement &elem1, SvgElement &node2, const QSet<QString> &atrr);
+    static SvgElement svgElement(XMLDocument *doc);
+    static SvgElement defsElement(XMLDocument *doc, SvgElement &svgElem);
+    static QList<XMLNode *> childNodeList(XMLNode *node);
+    static QList<SvgElement> childElemList(SvgElement node);
+    static QList<SvgElement> childElemList(XMLDocument *doc);
     static QString convertUnitsToPx(const QString &text, qreal baseValue = 0);
     static QString replaceColorName(const QString &color);
     static QString roundNumber(qreal value, RoundType type = COORDINATES);
     static QString styleHashToString(const StringHash &hash);
     static QString trimColor(QString color);
-    static StringHash splitStyle(QString style);
-    static void sortNodes(QList<QDomNode> *nodeList);
+    static void sortNodes(QList<SvgElement> &nodeList);
     static QVariantHash initDefaultStyleHash();
     static QSet<QString> usedElemList(const SvgElement &svgNode);
     static QRectF viewBoxRect(const SvgElement &svgNode);
+    static StringHash splitStyle(QString style);
 };
 
 // TODO: add percentages attr list
@@ -101,7 +136,7 @@ static const QSet<QString> strokeList = QSet<QString>()
     << "stroke" << "stroke-width" << "stroke-linecap" << "stroke-linejoin" << "stroke-miterlimit"
     << "stroke-dasharray" << "stroke-dashoffset" << "stroke-opacity";
 
-static const QSet<QString> styleAttrList = QSet<QString>()
+static const QSet<QString> styleAttributes = QSet<QString>()
     << "alignment-baseline" << "baseline-shift" << "clip" << "clip-path" << "clip-rule" << "color"
     << "color-interpolation" << "color-interpolation-filters" << "color-profile"
     << "color-rendering" << "cursor" << "direction" << "display" << "dominant-baseline"
@@ -115,6 +150,10 @@ static const QSet<QString> styleAttrList = QSet<QString>()
     << "stroke-dashoffset" << "stroke-linecap" << "stroke-linejoin" << "stroke-miterlimit"
     << "stroke-opacity" << "stroke-width" << "text-anchor" << "text-decoration" << "text-rendering"
     << "unicode-bidi" << "visibility" << "word-spacing" << "writing-mode";
+
+static const QStringList linkableStyleAttributes = QStringList()
+    << "clip-path" << "fill" << "mask" << "filter" << "stroke" << "marker-start"
+    << "marker-mid" << "marker-end";
 
 // ordered by the degree of use
 static const QSet<QString> linearGradient  = QSet<QString>()

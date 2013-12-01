@@ -4,26 +4,23 @@
 #include "paths.h"
 #include "tools.h"
 
-typedef QPair<SvgElement,QStringList> ElemListPair;
-typedef QPair<QString, int> RepetitionItem;
-typedef QList<RepetitionItem> RepetitionList;
+typedef QPair<SvgElement,StringHash> ElemListPair;
+typedef QList<QPair<QString,int> > RepetitionList;
 
 class Replacer
 {
 public:
-    explicit Replacer(QDomDocument dom);
+    explicit Replacer(XMLDocument *doc);
     void convertSizeToViewbox();
     void processPaths();
     void fixWrongAttr();
     void convertUnits();
     void convertCDATAStyle();
     void prepareDefs();
-    void joinStyleAttr();
+    void splitStyleAttr();
     void sortDefs();
     void roundDefs();
-    void processStyle(QDomElement elem);
     void convertBasicShapes();
-    void splitStyleAttr();
     void mergeGradients();
     void finalFixes();
     void calcElemAttrCount(const QString &text);
@@ -31,7 +28,7 @@ public:
     void applyTransformMatrices();
 
 private:
-    QDomDocument m_dom;
+    XMLDocument *m_dom;
     SvgElement m_svgElem;
     SvgElement m_defsElem;
     QSet<QString> m_usedElemList;
@@ -39,7 +36,7 @@ private:
     SvgElement findLinearGradient(const QString &id);
     RepetitionList findRepetitionList(const QList<SvgElement> &list);
     RepetitionList findRepetitionList(QList<ElemListPair> list);
-    RepetitionList genRepetitionList(const QList<QStringList> &list);
+    RepetitionList genRepetitionList(const QList<StringHash> &list);
 };
 
 #endif // REPLACER_H

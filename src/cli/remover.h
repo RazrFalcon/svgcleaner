@@ -6,7 +6,7 @@
 class Remover
 {
 public:
-    explicit Remover(QDomDocument dom);
+    explicit Remover(XMLDocument *dom);
     void removeUnreferencedIds();
     void removeUnusedDefs();
     void removeUnusedXLinks();
@@ -14,25 +14,25 @@ public:
     void removeElements();
     void cleanSvgElementAttribute();
     void removeAttributes();
-    void processStyleAttr(SvgElement elem = QDomElement());
+    void processStyleAttr(SvgElement elem = SvgElement());
     void removeGroups();
 
 private:
-    QDomDocument m_dom;
+    XMLDocument *m_doc;
     SvgElement m_svgElem;
     SvgElement m_defsElem;
 
-    void cleanStyle(const SvgElement &elem, StringHash *hash);
-    void removeDefaultValue(StringHash *hash, const QString &name);
-    void removeGroup(SvgElement elem);
+    void cleanStyle(const SvgElement &elem, StringHash &hash);
+    void removeDefaultValue(StringHash &hash, const QString &name);
+    void removeGroup(SvgElement &elem);
     bool isInvisibleElementsExist(SvgElement elem);
     void updateXLinks(StringHash hash);
     void cleanAttribute(SvgElement elem, QRegExp rx);
     void ungroupSwitch(SvgElement elem);
 
     QSet<QString> m_usedElemList;
-    SvgElement genGroup(SvgElement currElem, SvgElement parentGroup);
-    void mergeGroups(QList<SvgElement> gNodeList);
+    SvgElement genGroup(SvgElement &currElem, SvgElement &parentGroup);
+    void mergeGroups(QList<SvgElement> &gNodeList);
 };
 
 #endif // REMOVER_H

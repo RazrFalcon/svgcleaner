@@ -376,7 +376,7 @@
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="325"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="170"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="168"/>
         <source>filename</source>
         <translation>filename</translation>
     </message>
@@ -697,154 +697,168 @@
         <translation>внутри остальных атрибутов:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="2002"/>
-        <source>The indentation for the pretty print style:</source>
-        <translation>Размер отступа в структуре данных:</translation>
+        <location filename="../src/gui/wizarddialog.ui" line="1974"/>
+        <source>If this option is set, then output is created with only required whitespace and newlines.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="93"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1977"/>
+        <source>not-compact</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.ui" line="1980"/>
+        <source>Compact output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The indentation for the pretty print style:</source>
+        <translation type="obsolete">Размер отступа в структуре данных:</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="90"/>
         <source>prefix</source>
         <translation>префикс</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="94"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="91"/>
         <source>suffix</source>
         <translation>суффикс</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="102"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="99"/>
         <source>Main</source>
         <translation>Главная</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="103"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="100"/>
         <source>Presets</source>
         <translation>Пресеты</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="104"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="101"/>
         <source>Elements</source>
         <translation>Элементы</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="105"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="102"/>
         <source>Attributes</source>
         <translation>Атрибуты</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="106"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="103"/>
         <source>Paths</source>
         <translation>Пути</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="107"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="104"/>
         <source>Optimization</source>
         <translation>Оптимизация</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="108"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="105"/>
         <source>Output</source>
         <translation>Вывод</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="131"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="129"/>
         <source>Warning! The original files will be destroyed!</source>
         <translation>Внимание! Исходные файлы будут уничтожены!</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="151"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="169"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="149"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="167"/>
         <source>For example</source>
         <translation>Пример</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="151"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="149"/>
         <source>before</source>
         <translation>до</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="153"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="151"/>
         <source>after</source>
         <translation>после</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="359"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="357"/>
         <source>Select an input folder</source>
         <translation>Выберите исходную папку</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="372"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="370"/>
         <source>Select an output folder</source>
         <translation>Выберите итоговую папку</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="383"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="381"/>
         <source>An input folder is not selected.</source>
         <translation>Не выбрана исходная папка.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="386"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="384"/>
         <source>An output folder is not selected.</source>
         <translation>Не выбрана итоговая папка.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="389"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="387"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Необходимо установить префикс или суффикс.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="392"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="390"/>
         <source>An input folder is not exist.</source>
         <translation>Исходная папка не существует.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="395"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="393"/>
         <source>An input folder did not contain any svg, svgz files.</source>
         <translation>Исходная папка не содержит файлов svg и svgz.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="398"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="396"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="406"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="404"/>
         <source>You can not handle the SVGZ files.</source>
         <translation>Вы не сможете обрабатывать SVGZ файлы.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="409"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="407"/>
         <source>Selected output folder is not writable.</source>
         <translation>Выбранная итоговая папка недоступна для записи.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="403"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="417"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="436"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="401"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="415"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="434"/>
         <source>Warning</source>
         <translation>Предупреждение</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="399"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="397"/>
         <source>The &apos;svgcleaner-cli&apos; executable is not found in these folders:
 </source>
         <translation>Исполняемый файл &apos;svgcleaner-cli&apos; не найден в данных директориях:
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="404"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="402"/>
         <source>The &apos;7za&apos; executable is not found in these folders:
 </source>
         <translation>Исполняемый файл &apos;7za&apos; не найден в данных директориях:
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="428"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="426"/>
         <source>You have to set preset name.</source>
         <translation>Необходимо задать имя пресета.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="437"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="435"/>
         <source>This preset already exists.
 Overwrite?</source>
         <translation>Данный пресет уже существует. Перезаписать?</translation>

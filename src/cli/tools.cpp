@@ -46,7 +46,7 @@ void Transform::setOldXY(qreal prevX, qreal prevY)
     m_baseY = prevY;
 }
 
-qreal Transform::newX()
+qreal Transform::newX() const
 {
     qreal value = m_xMove + m_xScale*(cos(m_angle)*m_baseX - sin(m_angle)*m_baseY);
     if (m_isXMirror)
@@ -54,7 +54,7 @@ qreal Transform::newX()
    return value;
 }
 
-qreal Transform::newY()
+qreal Transform::newY() const
 {
     qreal value = m_yMove + m_yScale*(sin(m_angle)*m_baseX + cos(m_angle)*m_baseY);
     if (m_isYMirror)
@@ -199,24 +199,29 @@ QString Transform::simplified() const
     return transform;
 }
 
-qreal Transform::scaleFactor()
+qreal Transform::scaleFactor() const
 {
     return m_xScale * m_yScale;
 }
 
 // New class
 
-QList<SvgElement> SvgElement::childElemList()
+SvgElement::SvgElement()
 {
-    return Tools::childElemList(this->toElement());
+    m_elem = 0;
 }
 
-QList<QDomNode> SvgElement::childNodeList()
+SvgElement::SvgElement(XMLElement *elem)
 {
-    return Tools::childNodeList(this->toElement());
+    m_elem = elem;
 }
 
-bool SvgElement::isReferenced()
+QList<SvgElement> SvgElement::childElemList() const
+{
+    return Tools::childElemList(*this);
+}
+
+bool SvgElement::isReferenced() const
 {
     return Props::referencedElements.contains(tagName());
 }
@@ -233,41 +238,20 @@ bool SvgElement::isContainer() const
 
 bool SvgElement::isGroup() const
 {
-    return (tagName() == "g");
+    return !strcmp(m_elem->Name(), "g");
 }
 
-
-bool SvgElement::hasAttributeByList(const QStringList &list)
+bool SvgElement::isNull() const
 {
-    for (int i = 0; i < list.count(); ++i)
-        if (hasAttribute(list.at(i)))
-            return true;
-    return false;
+    return (m_elem == 0);
 }
 
-bool SvgElement::hasAttributeByList(const QSet<QString> &list)
-{
-    foreach (const QString &attr, list) {
-        if (hasAttribute(attr))
-            return true;
-    }
-    return false;
-}
-
-bool SvgElement::hasAttributes(const QStringList &list)
+bool SvgElement::hasAttributes(const QStringList &list) const
 {
     for (int i = 0; i < list.count(); ++i)
         if (!hasAttribute(list.at(i)))
             return false;
     return true;
-}
-
-bool SvgElement::isStyleContains(const QString &text)
-{
-    if (hasAttribute("style"))
-        if (attribute("style").contains(text))
-            return true;
-    return false;
 }
 
 void SvgElement::removeAttributes(const QStringList &list)
@@ -276,59 +260,146 @@ void SvgElement::removeAttributes(const QStringList &list)
         removeAttribute(list.at(i));
 }
 
-QStringList SvgElement::attributesList()
+QStringList SvgElement::attributesList() const
 {
-    QDomNamedNodeMap attrMap = attributes();
     QStringList list;
-    for (int i = 0; i < attrMap.count(); ++i)
-        list << attrMap.item(i).toAttr().name();
+    for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next())
+        list << QString(child->Name());
     return list;
 }
 
-StringHash SvgElement::styleHash()
+QString SvgElement::genStyleString() const
 {
-    return Tools::splitStyle(attribute("style"));
+    QString str;
+    foreach (const QString &attr, Props::styleAttributes) {
+        QString value = this->attribute(attr);
+        if (!value.isEmpty())
+            str += attr + ":" + value + ";";
+    }
+    str.chop(1);
+    return str;
 }
 
+// TODO: rewrite, remove
 void SvgElement::setStyle(const QString &text)
 {
     setAttribute("style", text);
 }
 
-void SvgElement::appendStyle(const QString &text)
+void SvgElement::setStylesFromHash(const StringHash &hash)
 {
-    if (hasAttribute("style")) {
-        StringHash hash = styleHash();
-        QString param = QString(text).remove(QRegExp(":.*"));
-        if (!hash.contains(param))
-            setStyle(attribute("style") + ";" + text);
-        else {
-            hash.remove(param);
-            if (hash.isEmpty())
-                setStyle(text);
-            else
-                setStyle(Tools::styleHashToString(hash) + ";" + text);
-        }
-    } else
-        setStyle(text);
+    foreach (const QString &attr, hash.keys())
+        setAttribute(attr, hash.value(attr));
 }
 
 void SvgElement::setAttribute(const QString &name, const QVariant &value)
 {
     if (value.toString().isEmpty())
-        removeAttribute(name);
+        m_elem->DeleteAttribute(ToChar(name));
     else
-        QDomElement::setAttribute(name, value.toString());
-}
-
-QString SvgElement::style() const
-{
-    return attribute("style");
+        m_elem->SetAttribute(ToChar(name), ToChar(value.toString()));
 }
 
 QString SvgElement::id() const
 {
     return attribute("id");
+}
+
+bool SvgElement::hasAttribute(const QString &name) const
+{
+    return hasAttribute(ToChar(name));
+}
+
+bool SvgElement::hasAttribute(const char *name) const
+{
+    return (m_elem->Attribute(name) != 0);
+}
+
+QString SvgElement::attribute(const QString &name) const
+{
+    const char *ch = ToChar(name);
+    if (m_elem->Attribute(ch) == 0)
+        return QString();
+    return m_elem->Attribute(ch);
+}
+
+double SvgElement::doubleAttribute(const QString &name) const
+{
+    return m_elem->DoubleAttribute(ToChar(name));
+}
+
+void SvgElement::removeAttribute(const QString &name)
+{
+    m_elem->DeleteAttribute(ToChar(name));
+}
+
+QString SvgElement::tagName() const
+{
+    return m_elem->Name();
+}
+
+SvgElement SvgElement::parentNode() const
+{
+    return SvgElement(m_elem->Parent()->ToElement());
+}
+
+void SvgElement::removeChild(const SvgElement &elem)
+{
+    m_elem->DeleteChild(elem.xmlElement());
+}
+
+bool SvgElement::hasChildren() const
+{
+    return !m_elem->NoChildren();
+}
+
+void SvgElement::appendChild(const SvgElement &elem)
+{
+    m_elem->InsertEndChild(elem.xmlElement());
+}
+
+void SvgElement::setTagName(const QString &name)
+{
+    m_elem->SetName(ToChar(name));
+}
+
+SvgElement SvgElement::insertBefore(const SvgElement &elemNew, const SvgElement &elemBefore)
+{
+    XMLElement *refElem = elemBefore.xmlElement()->PreviousSiblingElement();
+    if (refElem == 0)
+        return SvgElement(m_elem->InsertFirstChild(elemNew.xmlElement())->ToElement());
+    return SvgElement(m_elem->InsertAfterChild(refElem, elemNew.xmlElement())->ToElement());
+}
+
+StringHash SvgElement::styleHash() const
+{
+    StringHash hash;
+    for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next()) {
+        if (Props::styleAttributes.contains(child->Name()))
+            hash.insert(child->Name(), child->Value());
+    }
+    return hash;
+}
+
+int SvgElement::attributesCount() const
+{
+    int count = 0;
+    for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next())
+        count++;
+    return count;
+}
+
+int SvgElement::childElementCount() const
+{
+    int count = 0;
+    for (XMLElement *child = m_elem->FirstChildElement(); child; child = child->NextSiblingElement())
+        count++;
+    return count;
+}
+
+void SvgElement::clear()
+{
+    m_elem = 0;
 }
 
 // New class
@@ -572,15 +643,14 @@ QString Tools::replaceColorName(const QString &color)
     return colors.value(color);
 }
 
-bool nodeByTagNameSort(const QDomNode &node1, const QDomNode &node2)
+bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2)
 {
-    return  QString::localeAwareCompare(node1.toElement().tagName(),
-                                        node2.toElement().tagName()) < 0;
+    return  QString::localeAwareCompare(node1.tagName(), node2.tagName()) < 0;
 }
 
-void Tools::sortNodes(QList<QDomNode> *nodeList)
+void Tools::sortNodes(QList<SvgElement> &nodeList)
 {
-    qSort(nodeList->begin(), nodeList->end(), nodeByTagNameSort);
+    qSort(nodeList.begin(), nodeList.end(), nodeByTagNameSort);
 }
 
 QVariantHash Tools::initDefaultStyleHash()
@@ -646,7 +716,7 @@ QSet<QString> Tools::usedElemList(const SvgElement &svgNode)
             if (currElem.hasAttribute("xlink:href"))
                 usedList << currElem.attribute("xlink:href").remove("#");
         }
-        if (currElem.hasChildNodes())
+        if (currElem.hasChildren())
             nodeList << currElem.childElemList();
     }
     return usedList;
@@ -669,35 +739,28 @@ QRectF Tools::viewBoxRect(const SvgElement &svgNode)
     return rect;
 }
 
-QDomNode Tools::findDefsNode(const QDomNode SvgElement)
+QList<XMLNode *> Tools::childNodeList(XMLNode *node)
 {
-    QDomNodeList tmpList = SvgElement.childNodes();
-    for (int i = 0; i < tmpList.count(); ++i) {
-        if (tmpList.at(i).toElement().tagName() == "defs") {
-            return tmpList.at(i);
-        }
-    }
-    return QDomNode();
+    QList<XMLNode *> list;
+    for (XMLNode *child = node->FirstChild(); child; child = child->NextSibling())
+        list << child;
+    return list;
 }
 
-QList<QDomNode> Tools::childNodeList(QDomNode node)
+QList<SvgElement> Tools::childElemList(XMLDocument *doc)
 {
-    QList<QDomNode> outList;
-    QDomNodeList tmpList = node.childNodes();
-    for (int i = 0; i < tmpList.count(); ++i)
-        outList << tmpList.at(i);
-    return outList;
+    QList<SvgElement> list;
+    for (XMLElement *child = doc->FirstChildElement(); child; child = child->NextSiblingElement())
+        list << SvgElement(child);
+    return list;
 }
 
-QList<SvgElement> Tools::childElemList(QDomNode node)
+QList<SvgElement> Tools::childElemList(SvgElement node)
 {
-    QList<SvgElement> outList;
-    QDomNodeList tmpList = node.childNodes();
-    for (int i = 0; i < tmpList.count(); ++i) {
-        if (tmpList.at(i).isElement())
-            outList << tmpList.at(i).toElement();
-    }
-    return outList;
+    QList<SvgElement> list;
+    for (XMLElement *child = node.xmlElement()->FirstChildElement(); child; child = child->NextSiblingElement())
+        list << SvgElement(child);
+    return list;
 }
 
 StringHash Tools::splitStyle(QString style)
@@ -707,8 +770,8 @@ StringHash Tools::splitStyle(QString style)
     QStringList list = style.split(QRegExp("( +|);( +|)"), QString::SkipEmptyParts);
     for (int i = 0; i < list.count(); ++i) {
         QStringList tmpList = list.at(i).split(QRegExp("( +|):( +|)"));
-        Q_ASSERT(tmpList.count() == 2);
-        hash.insert(tmpList.at(0), tmpList.at(1));
+        if (tmpList.count() == 2)
+            hash.insert(tmpList.at(0), tmpList.at(1));
     }
     return hash;
 }
@@ -722,12 +785,39 @@ QString Tools::styleHashToString(const StringHash &hash)
     return outStr;
 }
 
-bool Tools::isAttrEqual(QDomElement elem1, QDomElement elem2, const QSet<QString> &attrList)
+bool Tools::isAttrEqual(SvgElement &elem1, SvgElement &elem2, const QSet<QString> &attrList)
 {
     foreach (const QString &attr, attrList)
         if (elem1.attribute(attr) != elem2.attribute(attr))
             return false;
     return true;
+}
+
+SvgElement Tools::svgElement(XMLDocument *doc)
+{
+    XMLElement *child;
+    for (child = doc->FirstChildElement(); child; child = child->NextSiblingElement()) {
+        if (strcmp(child->Name(), "svg") == 0) {
+            break;
+        }
+    }
+    return SvgElement(child);
+}
+
+SvgElement Tools::defsElement(XMLDocument *doc, SvgElement &svgElem)
+{
+    XMLElement *child;
+    for (child = svgElem.xmlElement()->FirstChildElement(); child; child = child->NextSiblingElement()) {
+        if (strcmp(child->Name(), "defs") == 0) {
+            break;
+        }
+    }
+    if (child == 0) {
+        XMLElement* element = doc->NewElement("defs");
+        svgElem.xmlElement()->InsertFirstChild(element);
+        child = element;
+    }
+    return SvgElement(child);
 }
 
 QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)

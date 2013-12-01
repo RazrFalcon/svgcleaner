@@ -1,22 +1,22 @@
 #ifndef PATHS_H
 #define PATHS_H
 
-#include <QtCore/QStringList>
-#include <QtCore/QPointF>
+#include <QStringList>
+#include <QPointF>
 
 #include "tools.h"
 
 namespace Command {
-    static const QString MoveTo           = "m";
-    static const QString LineTo           = "l";
-    static const QString HorizontalLineTo = "h";
-    static const QString VerticalLineTo   = "v";
-    static const QString CurveTo          = "c";
-    static const QString SmoothCurveTo    = "s";
-    static const QString Quadratic        = "q";
-    static const QString SmoothQuadratic  = "t";
-    static const QString EllipticalArc    = "a";
-    static const QString ClosePath        = "z";
+    static const QChar MoveTo           = 'm';
+    static const QChar LineTo           = 'l';
+    static const QChar HorizontalLineTo = 'h';
+    static const QChar VerticalLineTo   = 'v';
+    static const QChar CurveTo          = 'c';
+    static const QChar SmoothCurveTo    = 's';
+    static const QChar Quadratic        = 'q';
+    static const QChar SmoothQuadratic  = 't';
+    static const QChar EllipticalArc    = 'a';
+    static const QChar ClosePath        = 'z';
 }
 
 class Segment
@@ -30,8 +30,7 @@ public:
     void toAbsolute(qreal xLast, qreal yLast);
     QList<Segment> toCurve(qreal prevX, qreal prevY);
 
-
-    QString command;
+    QChar command;
     bool absolute;
     // is this command defined in source path
     bool srcCmd;

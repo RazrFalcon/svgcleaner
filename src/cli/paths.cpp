@@ -1,4 +1,4 @@
-#include <QtCore/QStringBuilder>
+#include <QStringBuilder>
 
 #include <cmath>
 
@@ -120,15 +120,15 @@ QString Segment::toString() const
 {
     QString out;
     if (command == Command::MoveTo || command == Command::LineTo || command == Command::SmoothQuadratic) {
-        out = Tools::roundNumber(x) % "," % Tools::roundNumber(y);
+        out =   string(x) % "," % string(y);
     } else if (command == Command::CurveTo) {
         out =   string(x1) % "," % string(y1) % " "
               % string(x2) % "," % string(y2) % " "
               % string(x)  % "," % string(y);
     } else if (command == Command::HorizontalLineTo) {
-        out = string(x);
+        out =   string(x);
     } else if (command == Command::VerticalLineTo) {
-        out = string(y);
+        out =   string(y);
     } else if (command == Command::SmoothCurveTo) {
         out =   string(x2) % "," % string(y2) % " "
               % string(x)  % "," % string(y);
@@ -193,7 +193,8 @@ void Path::splitToSegments(const QString &path)
     QString buf;
     QChar prevNonDigit;
     // split path to commands and points
-    for (int i = 0; i < path.size(); ++i) {
+    int pathSize = path.size();
+    for (int i = 0; i < pathSize; ++i) {
         QChar c = path.at(i);
         if (c.isLetter() && c.toLower() != 'e') {
             if (!buf.isEmpty())
@@ -204,7 +205,7 @@ void Path::splitToSegments(const QString &path)
             if (!buf.isEmpty())
                 data << buf;
             buf.clear();
-        } else if (i == path.size()-1) {
+        } else if (i == pathSize-1) {
             buf += c;
             if (!buf.isEmpty())
                 data << buf;
@@ -236,7 +237,7 @@ void Path::splitToSegments(const QString &path)
             isNewCmd = true;
         }
 
-        QString lowerCmd = currCmd.toLower();
+        QChar lowerCmd = currCmd.at(0).toLower();
         Segment segment;
 
         segment.command = lowerCmd;

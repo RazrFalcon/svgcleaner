@@ -85,9 +85,6 @@ void WizardDialog::setupGUI()
     connect(lineEditInDir,  SIGNAL(textChanged(QString)), this, SLOT(loadFiles()));
     connect(chBoxRecursive, SIGNAL(clicked()),            this, SLOT(loadFiles()));
 
-    // alignment fixes
-    gridLayoutOutput->setAlignment(spinBoxIndent, Qt::AlignRight);
-
     // Placeholder text work only on qt>4.7
 #if QT_VERSION >= 0x040700
     lineEditPrefix->setPlaceholderText(tr("prefix"));
@@ -110,9 +107,10 @@ void WizardDialog::setupGUI()
     pageListNotTr << "main" << "presets" << "elements" << "attributes" << "paths"
                   << "optimization" << "output";
     // create icons for pages in "tabbar", which is QListWidget
-    int baseIconSize = 64;
 #ifdef Q_OS_MAC
-    baseIconSize = 70;
+    int baseIconSize = 70;
+#else
+    int baseIconSize = 64;
 #endif
     for (int i = 0; i < pageList.count(); ++i) {
         QListWidgetItem *item = new QListWidgetItem(listWidget);

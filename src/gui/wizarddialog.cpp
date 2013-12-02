@@ -7,13 +7,15 @@
 #include <QtGui/QScrollBar>
 #include <QtGui/QWheelEvent>
 
+#include <QtDebug>
+
 #include "itemwidget.h"
 #include "someutils.h"
 #include "wizarddialog.h"
 
 // TODO: rewrite presets
 // TODO: save last options automaticly
-// TODO: hide multithreading option if detected only one core
+// TODO: save as svg when src is svgz
 
 WizardDialog::WizardDialog(QWidget *parent) :
     QDialog(parent)
@@ -495,7 +497,6 @@ void WizardDialog::setPreset(const QString &preset)
             argMap.insert(QString(name).remove(QRegExp("=.*")),
                           QString(name).remove(QRegExp(".*=")));
         }
-        inputFile.close();
     } else {
         args = "convert-abs-paths=yes";
         argMap.insert("convert-abs-paths", "yes");
@@ -623,7 +624,6 @@ void WizardDialog::deleteThreads()
     // stops fileSearch loop
     fileSearch->stopSearch();
     searchThread->quit();
-    // NOTE: program crash without it
     searchThread->wait();
     searchThread->deleteLater();
 }

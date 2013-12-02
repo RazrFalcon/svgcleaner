@@ -26,7 +26,7 @@ namespace Key {
 
     static const QString KeepSvgVersion = "--keep-version";
     static const QString KeepUnreferencedIds = "--keep-unref-ids";
-    static const QString RemoveNamedIds = "--remove-named-ids";
+    static const QString KeepNamedIds = "--keep-named-ids";
     static const QString KeepNotAppliedAttributes = "--keep-notappl-atts";
     static const QString KeepDefaultAttributes = "--keep-default-atts";
     static const QString KeepInkscapeAttributes = "--keep-inkscape-atts";
@@ -39,6 +39,7 @@ namespace Key {
     static const QString KeepGradientCoordinates = "--keep-grad-coords";
     static const QString KeepUnusedXLinks = "--keep-unused-xlinks";
     static const QString SkipElemByStyleGroup = "--skip-style-group";
+    static const QString SkipIdsTrim = "--skip-ids-trim";
 
     static const QString KeepAbsolutePaths = "--keep-absolute-paths";
     static const QString KeepUnusedSymbolsFromPath = "--keep-unused-symbols";
@@ -78,7 +79,7 @@ public:
     bool flag(const QString &key);
     int intNumber(const QString &key);
     double doubleNumber(const QString &key);
-    void parceOptions(const QStringList &list);
+    void parseOptions(const QStringList &list);
 
 private:
     QVariantHash keyHash;

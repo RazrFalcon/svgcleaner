@@ -1,6 +1,6 @@
 QT       += core gui svg
 TEMPLATE  = app
-DESTDIR   =../../bin
+DESTDIR   = ../../bin
 TARGET      = SVGCleaner
 unix:TARGET = svgcleaner-gui
 mac:TARGET  = SVGCleaner

@@ -25,7 +25,7 @@ Keys::Keys()
 
     keyHash.insert(Key::KeepSvgVersion, false);
     keyHash.insert(Key::KeepUnreferencedIds, false);
-    keyHash.insert(Key::RemoveNamedIds, false);
+    keyHash.insert(Key::KeepNamedIds, false);
     keyHash.insert(Key::KeepNotAppliedAttributes, false);
     keyHash.insert(Key::KeepDefaultAttributes, false);
     keyHash.insert(Key::KeepInkscapeAttributes, false);
@@ -38,6 +38,7 @@ Keys::Keys()
     keyHash.insert(Key::KeepGradientCoordinates, false);
     keyHash.insert(Key::KeepUnusedXLinks, false);
     keyHash.insert(Key::SkipElemByStyleGroup, false);
+    keyHash.insert(Key::SkipIdsTrim, false);
 
     keyHash.insert(Key::KeepAbsolutePaths, false);
     keyHash.insert(Key::KeepUnusedSymbolsFromPath, false);
@@ -82,7 +83,7 @@ QVariant Keys::value(const QString &key)
     return keyHash.value(key);
 }
 
-void Keys::parceOptions(const QStringList &list)
+void Keys::parseOptions(const QStringList &list)
 {
     QStringList keys = keyHash.keys();
     foreach (QString flag, list) {

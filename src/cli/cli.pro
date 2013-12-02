@@ -4,8 +4,9 @@ QT      -= gui
 TARGET   = svgcleaner-cli
 CONFIG  += console
 CONFIG  -= app_bundle
-DESTDIR  =../../bin
+DESTDIR  = ../../bin
 TEMPLATE = app
+DEFINES *= QT_USE_QSTRINGBUILDER
 
 SOURCES += \
     main.cpp \

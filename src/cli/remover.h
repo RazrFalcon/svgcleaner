@@ -3,6 +3,14 @@
 
 #include "tools.h"
 
+struct DefsElemStruct
+{
+    SvgElement elem;
+    QString tagName;
+    bool hasChildren;
+    StringMap attrMap;
+};
+
 class Remover
 {
 public:
@@ -26,7 +34,7 @@ private:
     void removeDefaultValue(StringHash &hash, const QString &name);
     void removeGroup(SvgElement &elem);
     bool isInvisibleElementsExist(SvgElement elem);
-    void updateXLinks(StringHash hash);
+    void updateXLinks(StringHash &hash);
     void cleanAttribute(SvgElement elem, QRegExp rx);
     void ungroupSwitch(SvgElement elem);
 

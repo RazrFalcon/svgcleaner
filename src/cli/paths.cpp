@@ -25,7 +25,8 @@ QString Segment::string(qreal value) const
 void Segment::setTransform(const QString &text)
 {
     Transform tr(text);
-    if (command == Command::MoveTo || command == Command::LineTo || command == Command::SmoothQuadratic) {
+    if (command == Command::MoveTo || command == Command::LineTo
+        || command == Command::SmoothQuadratic) {
         tr.setOldXY(x, y);
         x = tr.newX();
         y = tr.newY();

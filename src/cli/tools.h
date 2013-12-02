@@ -17,16 +17,10 @@ typedef QGenericMatrix<3,3,qreal> TransMatrix;
 
 #include "tinyxml2.h"
 
-
 #define ToChar(x) x.toStdString().c_str()
 
 using namespace tinyxml2;
 class SvgElement;
-
-namespace RegEx {
-    static const QString lengthTypes = "em|ex|px|in|cm|mm|pt|pc|%";
-    static const QRegExp xlinkUrl = QRegExp(".*url\\(#|\\).*");
-}
 
 // QDomElement like wrapper class for XMLElement
 class SvgElement
@@ -51,6 +45,7 @@ public:
     QString attribute(const QString &name) const;
     QString genStyleString() const;
     QString id() const;
+    StringMap attributesMap() const;
     QStringList attributesList() const;
     QString tagName() const;
     StringHash styleHash() const;
@@ -62,7 +57,6 @@ public:
     void removeAttributes(const QStringList &list);
     void removeChild(const SvgElement &elem);
     void setAttribute(const QString &name, const QVariant &value);
-    void setStyle(const QString &text);
     void setStylesFromHash(const StringHash &hash);
     void setTagName(const QString &name);
 
@@ -109,7 +103,8 @@ class Tools
 public:
     explicit Tools() {}
     enum RoundType { COORDINATES, TRANSFORM, ATTRIBUTES };
-    static bool isAttrEqual(SvgElement &elem1, SvgElement &node2, const QSet<QString> &atrr);
+    static bool isAttributesEqual(const StringMap &map1, const StringMap &map2, const QSet<QString> &attrList);
+    static bool isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2);
     static SvgElement svgElement(XMLDocument *doc);
     static SvgElement defsElement(XMLDocument *doc, SvgElement &svgElem);
     static QList<XMLNode *> childNodeList(XMLNode *node);
@@ -122,13 +117,16 @@ public:
     static QString trimColor(QString color);
     static void sortNodes(QList<SvgElement> &nodeList);
     static QVariantHash initDefaultStyleHash();
-    static QSet<QString> usedElemList(const SvgElement &svgNode);
-    static QRectF viewBoxRect(const SvgElement &svgNode);
+    static QSet<QString> usedElemList(const SvgElement &svgElem);
+    static QRectF viewBoxRect(const SvgElement &svgElem);
     static StringHash splitStyle(QString style);
+    static QString removeEdgeSpaces(const QString &str);
+
+private:
+    static bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2);
 };
 
 // TODO: add percentages attr list
-// TODO: move all this to SVGElement class
 // TODO: sort in order of max using
 namespace Props {
 static const QSet<QString> fillList = QSet<QString>() << "fill" << "fill-rule" << "fill-opacity";
@@ -156,14 +154,18 @@ static const QStringList linkableStyleAttributes = QStringList()
     << "marker-mid" << "marker-end";
 
 // ordered by the degree of use
-static const QSet<QString> linearGradient  = QSet<QString>()
-    << "gradientTransform" << "xlink:href" << "style" << "x1" << "y1" << "x2" << "y2"
+static const QSet<QString> linearGradient = QSet<QString>()
+    << "gradientTransform" << "xlink:href" << "x1" << "y1" << "x2" << "y2"
     << "gradientUnits" << "spreadMethod" << "externalResourcesRequired";
 
 // ordered by the degree of use
 static const QSet<QString> radialGradient = QSet<QString>()
-    << "gradientTransform" << "xlink:href" << "style" << "cx" << "cy" << "r" << "fx" << "fy"
+    << "gradientTransform" << "xlink:href" << "cx" << "cy" << "r" << "fx" << "fy"
     << "gradientUnits" << "spreadMethod" << "externalResourcesRequired";
+
+static const QSet<QString> maskAttributes = QSet<QString>()
+    << "x" << "y" << "width" << "height"
+    << "maskUnits" << "maskContentUnits" << "externalResourcesRequired";
 
 static const QSet<QString> digitList = QSet<QString>()
     << "x" << "y" << "x1" << "y1" << "x2" << "y2" << "width" << "height" << "r" << "rx" << "ry"
@@ -213,6 +215,12 @@ static const QSet<QString> svgElementList = QSet<QString>()
 static const QSet<QString> containers = QSet<QString>()
     << "a" << "defs" << "glyph" << "g" << "marker" /*<< "mask"*/ << "missing-glyph" /*<< "pattern"*/
     << "svg" << "switch" <<  "symbol";
+
+static const QSet<QString> stopAttributes = QSet<QString>()
+    << "offset" << "stop-color" << "stop-opacity";
+
+static const QSet<QString> lengthTypes = QSet<QString>()
+    << "em" << "ex" << "px" << "in" << "cm" << "mm" << "pt" << "pc";
 }
 
 #endif // TOOLS_H

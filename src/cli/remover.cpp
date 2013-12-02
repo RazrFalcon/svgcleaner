@@ -5,6 +5,9 @@
 // TODO: remove items which out of viewbox
 //       Anonymous_butterfly_and_flowers.svg
 // TODO: remove "tspan" without attributes
+// TODO: remove "feBlend" element with in or in2 linked to empty object
+//       babayasin_air_hammer.svg
+// TODO: xlink:href could not contains uri with spaces, remove this elements
 
 Remover::Remover(XMLDocument *doc)
 {
@@ -27,16 +30,22 @@ void Remover::cleanSvgElementAttribute()
             nodeList << currElem.childElemList();
     }
 
-    QString strIgnore = "xmlns|width|height|viewBox|enable-background|fill.*|stroke.*|style";
+    QSet<QString> ignoreAttr = Props::styleAttributes;
+    ignoreAttr << "xmlns" << "width" << "height" << "viewBox" << "enable-background";
+
     if (Keys::get().flag(Key::KeepSvgVersion))
-        strIgnore += "|version";
-    if (!isXlinkUsed)
-        strIgnore += "|xmlns:xlink";
-    foreach (const QString &attr, m_svgElem.attributesList()) {
-        if (!attr.contains(QRegExp("^(" + strIgnore + ")$"))) {
-            m_svgElem.removeAttribute(attr);
+        ignoreAttr << "version";
+    if (isXlinkUsed)
+        ignoreAttr << "xmlns:xlink";
+    foreach (const QString &attrName, m_svgElem.attributesList()) {
+        if (!ignoreAttr.contains(attrName)) {
+            m_svgElem.removeAttribute(attrName);
         }
     }
+
+    if (isXlinkUsed && !m_svgElem.hasAttribute("xmlns:xlink"))
+        m_svgElem.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+
     // dirty way, but svg cannot be processed by default style cleaning func,
     // because in svg node we cannot remove default values
     if (m_svgElem.hasAttribute("display")) {
@@ -61,11 +70,10 @@ void Remover::removeUnusedDefs()
             SvgElement currElem = nodeList.takeFirst();
             if (currElem.hasAttribute("xlink:href"))
                 defsIdList.remove(currElem.attribute("xlink:href").remove("#"));
-            for (int i = 0; i < Props::linkableStyleAttributes.size(); ++i) {
-                if (currElem.hasAttribute(Props::linkableStyleAttributes.at(i))) {
-                    QString url = currElem.attribute(Props::linkableStyleAttributes.at(i));
-                    url.replace(RegEx::xlinkUrl, "");
-                    defsIdList.remove(url);
+            foreach (const QString &attrName, Props::linkableStyleAttributes) {
+                if (currElem.hasAttribute(attrName)) {
+                    QString url = currElem.attribute(attrName);
+                    defsIdList.remove(url.mid(5, url.size()-6));
                 }
             }
             if (currElem.hasChildren())
@@ -117,38 +125,51 @@ void Remover::removeUnusedXLinks()
 
 // TODO: detect not only equal, but with diff less than 1%
 // TODO: add other defs
-// TODO: compare with child nodes
-// TODO: refract
-// TODO: speed up
 void Remover::removeDuplicatedDefs()
 {
     StringHash xlinkToReplace;
     QList<SvgElement> defsList = Tools::childElemList(m_defsElem);
-    for (int i = 0; i < defsList.count(); ++i) {
-        SvgElement currElem1 = defsList.at(i);
-        QString id1 = currElem1.id();
-        if (!currElem1.hasChildren()) {
-            for (int j = i; j < defsList.count(); ++j) {
-                SvgElement currElem2 = defsList.at(j);
-                if (currElem1 != currElem2 && !currElem2.hasChildren() && currElem2.tagName() == currElem1.tagName()) {
-                    QSet<QString> currAttrList;
-                    if (currElem1.tagName() == "linearGradient")
-                        currAttrList = Props::linearGradient;
-                    else if (currElem1.tagName() == "radialGradient")
-                        currAttrList = Props::radialGradient;
 
-                    if (!currAttrList.isEmpty()) {
-                        if (Tools::isAttrEqual(currElem1, currElem2, currAttrList)) {
-                            QString id2 = currElem2.id();
-                            if (xlinkToReplace.values().contains(id2)) {
-                                for (int k = 0; k < xlinkToReplace.keys().count(); ++k) {
-                                    if (xlinkToReplace.value(xlinkToReplace.keys().at(k)) == id2)
-                                        xlinkToReplace.insert(xlinkToReplace.keys().at(k), id1);
+    // using of structure is faster than actual node accessing
+    QList<DefsElemStruct> elemStructList;
+    for (int i = 0; i < defsList.count(); ++i) {
+        SvgElement elem = defsList.at(i);
+        DefsElemStruct es = { elem, elem.tagName(), elem.hasChildren(), elem.attributesMap() };
+        elemStructList << es;
+    }
+
+    for (int i = 0; i < elemStructList.count(); ++i) {
+        DefsElemStruct des1 = elemStructList.at(i);
+        QString id1 = des1.attrMap.value("id");
+        if (des1.tagName == "linearGradient" || des1.tagName == "radialGradient") {
+            for (int j = i; j < elemStructList.count(); ++j) {
+                DefsElemStruct des2 = elemStructList.at(j);
+                if (des1.tagName == des2.tagName && des1.attrMap.value("id") != des2.attrMap.value("id")) {
+                    if ((des1.hasChildren && des2.hasChildren) || (!des1.hasChildren && !des2.hasChildren)) {
+                        bool isRemove = false;
+                        if (des1.tagName == "linearGradient")
+                            isRemove = Tools::isAttributesEqual(des1.attrMap, des2.attrMap,
+                                                            Props::linearGradient);
+                        else if (des1.tagName == "radialGradient")
+                            isRemove = Tools::isAttributesEqual(des1.attrMap, des2.attrMap,
+                                                            Props::radialGradient);
+                        if (isRemove) {
+                            if (des1.hasChildren && des2.hasChildren)
+                                isRemove = Tools::isGradientsEqual(des1.elem, des2.elem);
+
+                            if (isRemove) {
+                                QString id2 = des2.attrMap.value("id");
+                                if (xlinkToReplace.values().contains(id2)) {
+                                    for (int k = 0; k < xlinkToReplace.keys().count(); ++k) {
+                                        if (xlinkToReplace.value(xlinkToReplace.keys().at(k)) == id2)
+                                            xlinkToReplace.insert(xlinkToReplace.keys().at(k), id1);
+                                    }
                                 }
+                                xlinkToReplace.insert(id2, id1);
+                                m_defsElem.removeChild(des2.elem);
+                                elemStructList.removeAt(j);
+                                j--;
                             }
-                            xlinkToReplace.insert(id2, id1);
-                            m_defsElem.removeChild(currElem2);
-                            j--;
                         }
                     }
                 }
@@ -158,7 +179,7 @@ void Remover::removeDuplicatedDefs()
     updateXLinks(xlinkToReplace);
 }
 
-void Remover::updateXLinks(StringHash hash)
+void Remover::updateXLinks(StringHash &hash)
 {
     QStringList xlinkStyles;
     xlinkStyles << "fill" << "stroke";
@@ -166,31 +187,28 @@ void Remover::updateXLinks(StringHash hash)
     QList<SvgElement> list = m_svgElem.childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
-
         for (int i = 0; i < xlinkStyles.size(); ++i) {
             if (currElem.hasAttribute(xlinkStyles.at(i))) {
-                bool changed = false;
                 QString attrValue = currElem.attribute(xlinkStyles.at(i));
                 if (attrValue.contains("url")) {
-                    QString url = QString(attrValue).replace(RegEx::xlinkUrl, "");
+                    QString url = attrValue.mid(5, attrValue.size()-6);
                     if (hash.contains(url)) {
-                        attrValue.replace(url, hash.value(url));
-                        changed = true;
+                        currElem.setAttribute(xlinkStyles.at(i),
+                                              QString("url(#" + hash.value(url) + ")"));
                     }
                 }
-                if (changed)
-                    currElem.setAttribute(xlinkStyles.at(i), attrValue);
             }
         }
         if (currElem.hasAttribute("xlink:href")) {
+            QString value = currElem.attribute("xlink:href");
+            value.remove("#");
             foreach (const QString &key, hash.keys()) {
-                if (currElem.attribute("xlink:href") == "#" + key) {
-                    currElem.setAttribute("xlink:href", "#" + hash.value(key));
+                if (value == key) {
+                    currElem.setAttribute("xlink:href", QString("#" + hash.value(key)));
                     break;
                 }
             }
         }
-
         if (currElem.hasChildren())
             list << currElem.childElemList();
     }
@@ -222,9 +240,12 @@ void Remover::removeUnreferencedIds()
         }
 
         for (int i = 0; i < urlAttrList.count(); ++i) {
-            if (currElem.hasAttribute(urlAttrList.at(i))) {
-                if (currElem.attribute(urlAttrList.at(i)).contains("url"))
-                    m_allLinkList << currElem.attribute(urlAttrList.at(i)).remove(RegEx::xlinkUrl);
+            QString attr = urlAttrList.at(i);
+            if (currElem.hasAttribute(attr)) {
+                QString attrValue =currElem.attribute(attr);
+                if (attrValue.contains("url"))
+                    attrValue = attrValue.mid(5, attrValue.size()-6);
+                    m_allLinkList << attrValue;
             }
         }
 
@@ -237,7 +258,7 @@ void Remover::removeUnreferencedIds()
     foreach (const QString &text, m_allLinkList)
         m_allIdList.remove(text);
 
-    if (Keys::get().flag(Key::RemoveNamedIds)) {
+    if (Keys::get().flag(Key::KeepNamedIds)) {
         // skip id's whithout digits
         foreach (const QString &text, m_allIdList) {
             if (!text.contains(QRegExp("\\d")))
@@ -262,8 +283,6 @@ void Remover::removeUnreferencedIds()
     }
 }
 
-// TODO: remove gradients without xlink and child elements
-// TODO: refract
 void Remover::removeElements()
 {
     // have to use XMLNode insted of SvgElement, because after converting to element
@@ -300,7 +319,10 @@ void Remover::removeElements()
                 removeThisNode = true;
             else if (currTag == "defs" && !currElem.hasChildren())
                 removeThisNode = true;
-            else if (currTag == "image" && !currElem.attribute("xlink:href").contains("base64"))
+            else if (currTag == "linearGradient" || currTag == "radialGradient") {
+                if (!currElem.hasChildren() && !currElem.hasAttribute("xlink:href"))
+                    removeThisNode = true;
+            } else if (currTag == "image" && !currElem.attribute("xlink:href").contains("base64"))
                 removeThisNode = true;
             else if (currElem.isReferenced() && !currElem.hasAttribute("id")
                      && currElem.parentNode().tagName() == "defs")
@@ -461,18 +483,17 @@ void Remover::removeAttributes()
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
 
-        // NOTE: sodipodi:type="inkscape:offset" supported only by inkscape,
+        // sodipodi:type="inkscape:offset" supported only by inkscape,
         // and its creates problems in other renderers
 
-        // remove "inkscape.*", but not "inkscape:path-effect"
         if (!Keys::get().flag(Key::KeepInkscapeAttributes))
-            cleanAttribute(currElem, QRegExp("inkscape:(?!path-effect).*"));
+            cleanAttribute(currElem, QRegExp("inkscape.*"));
 
         if (!Keys::get().flag(Key::KeepSodipodiAttributes))
             cleanAttribute(currElem, QRegExp("sodipodi.*"));
 
         if (!Keys::get().flag(Key::KeepIllustratorAttributes))
-            cleanAttribute(currElem, QRegExp("i\\:.*"));
+            cleanAttribute(currElem, QRegExp("i\\:.*|a\\:adobe.*"));
 
         if (!Keys::get().flag(Key::KeepMSVisioAttributes))
             cleanAttribute(currElem, QRegExp("v\\:.*"));
@@ -633,13 +654,16 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash &hash)
     foreach (const QString &key, hash.keys()) {
         if (!key.contains("font")) {
             QString value = hash.value(key);
-            if (value.contains(QRegExp("^[0-9].*(" + RegEx::lengthTypes + ")(\\ +|)$"))
-                && !value.contains("url"))
+            QString lengthType = value.right(2);
+            if (Props::lengthTypes.contains(lengthType) && !value.contains("url"))
             {
                 hash.insert(key, Tools::convertUnitsToPx(hash.value(key)));
                 value = hash.value(key);
             }
-            if (value.contains(QRegExp("^[0-9\\.]+$"))) {
+
+            bool ok = false;
+            value.toDouble(&ok);
+            if (ok) {
                 QString number = Tools::roundNumber(value.toDouble(), Tools::ATTRIBUTES);
                 hash.insert(key, number);
             }

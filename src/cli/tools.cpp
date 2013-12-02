@@ -170,7 +170,8 @@ QString Transform::simplified() const
                         .arg(Tools::roundNumber(pt.at(0), Tools::TRANSFORM));
         }
     } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
-    else if (pt.at(0) == pt.at(3) && pt.at(1) > 0 && pt.at(2) < 0 && pt.at(4) == 0 && pt.at(5) == 0) {
+    else if (pt.at(0) == pt.at(3) && pt.at(1) > 0 && pt.at(2) < 0
+             && pt.at(4) == 0 && pt.at(5) == 0) {
         transform = QString("rotate(%1)")
                     .arg(Tools::roundNumber(acos(pt.at(0))*(180/M_PI), Tools::TRANSFORM));
         if (transform == "rotate(0)")
@@ -260,6 +261,14 @@ void SvgElement::removeAttributes(const QStringList &list)
         removeAttribute(list.at(i));
 }
 
+StringMap SvgElement::attributesMap() const
+{
+    StringMap map;
+    for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next())
+        map.insert(QString(child->Name()), QString(child->Value()));
+    return map;
+}
+
 QStringList SvgElement::attributesList() const
 {
     QStringList list;
@@ -278,12 +287,6 @@ QString SvgElement::genStyleString() const
     }
     str.chop(1);
     return str;
-}
-
-// TODO: rewrite, remove
-void SvgElement::setStyle(const QString &text)
-{
-    setAttribute("style", text);
 }
 
 void SvgElement::setStylesFromHash(const StringHash &hash)
@@ -392,8 +395,11 @@ int SvgElement::attributesCount() const
 int SvgElement::childElementCount() const
 {
     int count = 0;
-    for (XMLElement *child = m_elem->FirstChildElement(); child; child = child->NextSiblingElement())
+    for (XMLElement *child = m_elem->FirstChildElement(); child;
+         child = child->NextSiblingElement())
+    {
         count++;
+    }
     return count;
 }
 
@@ -643,14 +649,14 @@ QString Tools::replaceColorName(const QString &color)
     return colors.value(color);
 }
 
-bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2)
+bool Tools::nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2)
 {
     return  QString::localeAwareCompare(node1.tagName(), node2.tagName()) < 0;
 }
 
 void Tools::sortNodes(QList<SvgElement> &nodeList)
 {
-    qSort(nodeList.begin(), nodeList.end(), nodeByTagNameSort);
+    qSort(nodeList.begin(), nodeList.end(), &Tools::nodeByTagNameSort);
 }
 
 QVariantHash Tools::initDefaultStyleHash()
@@ -704,35 +710,35 @@ QVariantHash Tools::initDefaultStyleHash()
     return hash;
 }
 
-QSet<QString> Tools::usedElemList(const SvgElement &svgNode)
+QSet<QString> Tools::usedElemList(const SvgElement &svgElem)
 {
-    Q_ASSERT(svgNode.tagName() == "svg");
+    Q_ASSERT(svgElem.tagName() == "svg");
 
     QSet<QString> usedList;
-    QList<SvgElement> nodeList = Tools::childElemList(svgNode);
-    while (!nodeList.empty()) {
-        SvgElement currElem = nodeList.takeFirst();
+    QList<SvgElement> list = Tools::childElemList(svgElem);
+    while (!list.empty()) {
+        SvgElement currElem = list.takeFirst();
         if (currElem.tagName() == "use") {
             if (currElem.hasAttribute("xlink:href"))
                 usedList << currElem.attribute("xlink:href").remove("#");
         }
         if (currElem.hasChildren())
-            nodeList << currElem.childElemList();
+            list << currElem.childElemList();
     }
     return usedList;
 }
 
-QRectF Tools::viewBoxRect(const SvgElement &svgNode)
+QRectF Tools::viewBoxRect(const SvgElement &svgElem)
 {
-    Q_ASSERT(svgNode.tagName() == "svg");
+    Q_ASSERT(svgElem.tagName() == "svg");
     QRectF rect;
-    if (svgNode.hasAttribute("viewBox")) {
-        QStringList list = svgNode.attribute("viewBox").split(" ");
+    if (svgElem.hasAttribute("viewBox")) {
+        QStringList list = svgElem.attribute("viewBox").split(" ");
         rect.setRect(list.at(0).toDouble(), list.at(1).toDouble(),
                      list.at(2).toDouble(), list.at(3).toDouble());
-    } else if (svgNode.hasAttribute("width") && svgNode.hasAttribute("height")) {
-        rect.setRect(0, 0, svgNode.attribute("width").toDouble(),
-                           svgNode.attribute("height").toDouble());
+    } else if (svgElem.hasAttribute("width") && svgElem.hasAttribute("height")) {
+        rect.setRect(0, 0, svgElem.attribute("width").toDouble(),
+                           svgElem.attribute("height").toDouble());
     } else {
         qDebug() << "Warning: can not detect viewBox";
     }
@@ -758,20 +764,31 @@ QList<SvgElement> Tools::childElemList(XMLDocument *doc)
 QList<SvgElement> Tools::childElemList(SvgElement node)
 {
     QList<SvgElement> list;
-    for (XMLElement *child = node.xmlElement()->FirstChildElement(); child; child = child->NextSiblingElement())
+    for (XMLElement *child = node.xmlElement()->FirstChildElement();
+         child; child = child->NextSiblingElement())
         list << SvgElement(child);
     return list;
+}
+
+QString Tools::removeEdgeSpaces(const QString &str)
+{
+    QString tmpstr = str;
+    while (tmpstr.at(0) == QLatin1Char(' '))
+        tmpstr.remove(0,1);
+    while (tmpstr.at(tmpstr.size()-1) == QLatin1Char(' '))
+        tmpstr.remove(tmpstr.size()-1,1);
+    return tmpstr;
 }
 
 StringHash Tools::splitStyle(QString style)
 {
     StringHash hash;
-    style.remove(QRegExp("^ +| +$"));
-    QStringList list = style.split(QRegExp("( +|);( +|)"), QString::SkipEmptyParts);
+    QStringList list = removeEdgeSpaces(style).split(";", QString::SkipEmptyParts);
     for (int i = 0; i < list.count(); ++i) {
-        QStringList tmpList = list.at(i).split(QRegExp("( +|):( +|)"));
-        if (tmpList.count() == 2)
-            hash.insert(tmpList.at(0), tmpList.at(1));
+        QString attr = list.at(i);
+        int pos = attr.indexOf(QLatin1Char(':'));
+        if (pos != -1)
+            hash.insert(removeEdgeSpaces(attr.mid(0, pos)), removeEdgeSpaces(attr.mid(pos+1)));
     }
     return hash;
 }
@@ -785,11 +802,36 @@ QString Tools::styleHashToString(const StringHash &hash)
     return outStr;
 }
 
-bool Tools::isAttrEqual(SvgElement &elem1, SvgElement &elem2, const QSet<QString> &attrList)
+bool Tools::isAttributesEqual(const StringMap &map1, const StringMap &map2,
+                              const QSet<QString> &attrList)
 {
-    foreach (const QString &attr, attrList)
-        if (elem1.attribute(attr) != elem2.attribute(attr))
+    foreach (const QString &attr, attrList) {
+        if (map1.value(attr) != map2.value(attr))
             return false;
+    }
+    return true;
+}
+
+bool Tools::isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2)
+{
+    if (elem1.childElementCount() != elem2.childElementCount())
+        return false;
+
+    QList<SvgElement> list1 = elem1.childElemList();
+    QList<SvgElement> list2 = elem2.childElemList();
+
+    for (int i = 0; i < list1.size(); ++i) {
+        SvgElement childElem1 = list1.at(i);
+        SvgElement childElem2 = list2.at(i);
+
+        if (childElem1.tagName() != childElem2.tagName())
+            return false;
+
+        foreach (const QString &attrName, Props::stopAttributes) {
+            if (childElem1.attribute(attrName) != childElem2.attribute(attrName))
+                return false;
+        }
+    }
     return true;
 }
 
@@ -807,7 +849,8 @@ SvgElement Tools::svgElement(XMLDocument *doc)
 SvgElement Tools::defsElement(XMLDocument *doc, SvgElement &svgElem)
 {
     XMLElement *child;
-    for (child = svgElem.xmlElement()->FirstChildElement(); child; child = child->NextSiblingElement()) {
+    for (child = svgElem.xmlElement()->FirstChildElement(); child;
+         child = child->NextSiblingElement()) {
         if (strcmp(child->Name(), "defs") == 0) {
             break;
         }
@@ -822,38 +865,40 @@ SvgElement Tools::defsElement(XMLDocument *doc, SvgElement &svgElem)
 
 QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
 {
-    if (!text.contains(QRegExp(RegEx::lengthTypes)))
-        return text;
-
     if (text.contains("px"))
         return QString(text).remove("px");
 
     // TODO: em/ex
-    if (text.contains(QRegExp("em|ex")))
+    if (text.contains("em") || text.contains("ex"))
         return text;
 
-    QString unit = QString(text).remove(QRegExp(".*[0-9]"));
-    QString value = QString(text).remove(QRegExp(RegEx::lengthTypes));
+    QString value;
+    QString unit;
+    if (text.right(1) == QLatin1String("%")) {
+        unit = "%";
+        value = text.mid(0, text.size() - 1);
+    } else if (text.at(text.size()-1).isLetter()) {
+        unit = text.right(2);
+        value = text.mid(0, text.size() - 2);
+    } else {
+        value = text;
+    }
 
-    bool ok = true;
+    bool ok = false;
     qreal number = value.toDouble(&ok);
     Q_ASSERT(ok == true);
 
-    if (unit == "pt")
+    if (unit == QLatin1String("pt"))
         number = number * 1.25;
-    else if (unit == "pc")
+    else if (unit == QLatin1String("pc"))
         number = number * 15;
-    else if (unit == "mm")
+    else if (unit == QLatin1String("mm"))
         number = number * 3.543307;
-    else if (unit == "cm")
+    else if (unit == QLatin1String("cm"))
         number = number * 35.43307;
-    else if (unit == "m")
-        number = number * 3543.307;
-    else if (unit == "in")
+    else if (unit == QLatin1String("in"))
         number = number * 90;
-    else if (unit == "ft")
-        number = number * 1080;
-    else if (unit == "%" && baseValue > 0)
+    else if (unit == QLatin1String("%") && baseValue > 0)
         number = number * baseValue / 100;
     else
         return text;

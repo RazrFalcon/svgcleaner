@@ -23,12 +23,13 @@ public:
     void convertBasicShapes();
     void mergeGradients();
     void finalFixes();
+    void trimIds();
     void calcElemAttrCount(const QString &text);
     void groupElementsByStyles(SvgElement parentElem = SvgElement());
     void applyTransformMatrices();
 
 private:
-    XMLDocument *m_dom;
+    XMLDocument *m_doc;
     SvgElement m_svgElem;
     SvgElement m_defsElem;
     QSet<QString> m_usedElemList;

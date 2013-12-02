@@ -9,5 +9,4 @@ Homepage: https://launchpad.net/svg-cleaner
 Package: svgcleaner
 Depends: libqt4-core, libqt4-gui, libqt4-svg, libqt4-xml, p7zip-full, xdg-utils, ${shlibs:Depends}
 Architecture: any
-Description: Batch, tunable, crossplatform SVG cleaning program
- 
+Description: Batch, tunable, crossplatform SVG cleaning program.

@@ -44,7 +44,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -691,7 +691,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>549</width>
+               <width>494</width>
                <height>475</height>
               </rect>
              </property>
@@ -1056,8 +1056,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>453</height>
+               <width>549</width>
+               <height>471</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1126,7 +1126,7 @@
                     <string notr="true">keep-named-ids</string>
                    </property>
                    <property name="text">
-                    <string>Always keep IDs that contain only letters</string>
+                    <string>Remove IDs that contain only letters</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1346,6 +1346,19 @@
                 </property>
                 <property name="text">
                  <string>Group elements by style properties</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_32">
+                <property name="accessibleName">
+                 <string>skip-ids-trim</string>
+                </property>
+                <property name="text">
+                 <string>Trim the id attributes into hexadecimal format</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1626,8 +1639,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>453</height>
+               <width>532</width>
+               <height>312</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1947,8 +1960,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>563</width>
-               <height>453</height>
+               <width>145</width>
+               <height>25</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">

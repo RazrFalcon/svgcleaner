@@ -10,8 +10,7 @@
 #include "replacer.h"
 
 // TODO: add support for preset file reading
-// TODO: custom xml to text covertor
-// TODO: attribute sort + id first
+// TODO: custom xml printing
 // TODO: add render error detecting
 
 void showHelp()
@@ -50,7 +49,7 @@ void showHelp()
     qDebug() << "Attributes:";
     qDebug() << "  --keep-version           Keep SVG version number.";
     qDebug() << "  --keep-unref-ids         Disable removing of unreferenced id's.";
-    qDebug() << "  --remove-named-ids       Disable skipping of unreferenced id's which contains only letters.";
+    qDebug() << "  --keep-named-ids         Disable removing of unreferenced id's which contains only letters.";
     qDebug() << "  --keep-notappl-atts      Keep not applied attributes, like 'font-size' for 'rect' element.";
     qDebug() << "  --keep-default-atts      Skip removing attributes with default values.";
     qDebug() << "  --keep-inkscape-atts     Keep Inkscape attributes.";
@@ -62,6 +61,8 @@ void showHelp()
     qDebug() << "  --keep-fill-props        Keep fill properties when no filling.";
     qDebug() << "  --keep-grad-coords       Disable removing of unneeded gradient attributes.";
     qDebug() << "  --keep-unused-xlinks     Keep XLinks which pointed to nonexistent element.";
+    qDebug() << "  --skip-style-group       Group elements by style properties.";
+    qDebug() << "  --skip-ids-trim          Skip triming ot the id attributes into hexadecimal format.";
 
     qDebug() << "Paths:";
     qDebug() << "  --keep-absolute-paths    Disable absolute to relative coordinates converting in path element.";
@@ -114,11 +115,11 @@ bool processFile(const QString &firstFile, const QString &secondFile)
     replacer.calcElemAttrCount("initial");
 
     // mandatory fixes used to simplify subsequent functions
+    replacer.splitStyleAttr();
     replacer.convertUnits();
-    replacer.fixWrongAttr();
     replacer.convertCDATAStyle();
     replacer.prepareDefs();
-    replacer.splitStyleAttr();
+    replacer.fixWrongAttr();
 
     if (!Keys::get().flag(Key::KeepDefaultAttributes))
         remover.cleanSvgElementAttribute();
@@ -128,6 +129,7 @@ bool processFile(const QString &firstFile, const QString &secondFile)
         remover.removeDuplicatedDefs();
     if (!Keys::get().flag(Key::KeepSinglyGradients))
         replacer.mergeGradients();
+    // TODO: add key
     remover.removeElements();
     remover.removeAttributes();
     if (!Keys::get().flag(Key::KeepUnusedDefs))
@@ -136,6 +138,8 @@ bool processFile(const QString &firstFile, const QString &secondFile)
         remover.removeUnreferencedIds();
     if (!Keys::get().flag(Key::KeepUnusedXLinks))
         remover.removeUnusedXLinks();
+    if (!Keys::get().flag(Key::SkipIdsTrim))
+        replacer.trimIds();
     if (!Keys::get().flag(Key::KeepDefaultAttributes))
         remover.processStyleAttr();
     if (!Keys::get().flag(Key::KeepUnsortedDefs))
@@ -204,7 +208,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    Keys::get().parceOptions(argList);
+    Keys::get().parseOptions(argList);
     processFile(inputFile, outputFile);
 
     return 0;

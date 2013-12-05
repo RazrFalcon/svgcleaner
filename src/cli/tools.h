@@ -2,6 +2,7 @@
 #define TOOLS_H
 
 #include <QMap>
+// TODO: remove regex as much as possible
 #include <QRegExp>
 #include <QStringList>
 #include <QTime>
@@ -102,7 +103,7 @@ class Tools
 {
 public:
     explicit Tools() {}
-    enum RoundType { COORDINATES, TRANSFORM, ATTRIBUTES };
+    enum RoundType { COORDINATE, TRANSFORM, ATTRIBUTE };
     static bool isAttributesEqual(const StringMap &map1, const StringMap &map2, const QSet<QString> &attrList);
     static bool isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2);
     static SvgElement svgElement(XMLDocument *doc);
@@ -112,7 +113,7 @@ public:
     static QList<SvgElement> childElemList(XMLDocument *doc);
     static QString convertUnitsToPx(const QString &text, qreal baseValue = 0);
     static QString replaceColorName(const QString &color);
-    static QString roundNumber(qreal value, RoundType type = COORDINATES);
+    static QString roundNumber(qreal value, RoundType type = COORDINATE);
     static QString styleHashToString(const StringHash &hash);
     static QString trimColor(QString color);
     static void sortNodes(QList<SvgElement> &nodeList);

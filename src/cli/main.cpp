@@ -127,13 +127,13 @@ bool processFile(const QString &firstFile, const QString &secondFile)
         replacer.convertSizeToViewbox();
     if (!Keys::get().flag(Key::KeepDuplicatedDefs))
         remover.removeDuplicatedDefs();
-    if (!Keys::get().flag(Key::KeepSinglyGradients))
-        replacer.mergeGradients();
     // TODO: add key
     remover.removeElements();
     remover.removeAttributes();
     if (!Keys::get().flag(Key::KeepUnusedDefs))
         remover.removeUnusedDefs();
+    if (!Keys::get().flag(Key::KeepSinglyGradients))
+        replacer.mergeGradients();
     if (!Keys::get().flag(Key::KeepUnreferencedIds))
         remover.removeUnreferencedIds();
     if (!Keys::get().flag(Key::KeepUnusedXLinks))

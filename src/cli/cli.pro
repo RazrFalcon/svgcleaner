@@ -10,17 +10,19 @@ DEFINES *= QT_USE_QSTRINGBUILDER
 
 SOURCES += \
     main.cpp \
-    replacer.cpp \
-    remover.cpp \
-    paths.cpp \
-    tools.cpp \
+    basecleaner.cpp \
     keys.cpp \
-    tinyxml2.cpp
+    paths.cpp \
+    remover.cpp \
+    replacer.cpp \
+    tinyxml2.cpp \
+    tools.cpp
 
 HEADERS += \
-    replacer.h \
-    remover.h \
-    paths.h \
-    tools.h \
+    basecleaner.h \
     keys.h \
-    tinyxml2.h
+    paths.h \
+    remover.h \
+    replacer.h \
+    tinyxml2.h \
+    tools.h

@@ -62,29 +62,42 @@ Keys::Keys()
     keyHash.insert(Key::NotCompact, false);
 }
 
-bool Keys::flag(const QString &key)
+bool Keys::flag(const QString &key) const
 {
     return keyHash.value(key).toBool();
 }
 
-int Keys::intNumber(const QString &key)
+int Keys::intNumber(const QString &key) const
 {
     return keyHash.value(key).toInt();
 }
 
-double Keys::doubleNumber(const QString &key)
+int Keys::coordinatesPrecision() const
+{
+    return m_coordinatesPrecision;
+}
+
+int Keys::attributesPrecision() const
+{
+    return m_attributesPrecision;
+}
+
+int Keys::transformPrecision() const
+{
+    return m_transformPrecision;
+}
+
+double Keys::doubleNumber(const QString &key) const
 {
     return keyHash.value(key).toDouble();
 }
 
-QVariant Keys::value(const QString &key)
-{
-    Q_ASSERT(keyHash.contains(key));
-    return keyHash.value(key);
-}
-
 void Keys::parseOptions(const QStringList &list)
 {
+    m_transformPrecision = intNumber(Key::TransformPrecision);
+    m_attributesPrecision = intNumber(Key::AttributesPrecision);
+    m_coordinatesPrecision = intNumber(Key::CoordsPrecision);
+
     QStringList keys = keyHash.keys();
     foreach (QString flag, list) {
         bool isError = false;
@@ -98,12 +111,21 @@ void Keys::parseOptions(const QStringList &list)
                 isError = true;
         }
         if (keys.contains(flag) && !isError) {
-            if (flag == Key::TransformPrecision || flag == Key::AttributesPrecision
-                || flag == Key::CoordsPrecision) {
-                if (value.toInt() > 0 && value.toInt() <= 9)
+            if (   flag == Key::TransformPrecision
+                || flag == Key::AttributesPrecision
+                || flag == Key::CoordsPrecision)
+            {
+                if (value.toInt() > 0 && value.toInt() <= 9) {
                     keyHash.insert(flag, value.toInt());
-                else
+                    if (flag == Key::TransformPrecision)
+                        m_transformPrecision = value.toInt();
+                    else if (flag == Key::AttributesPrecision)
+                        m_attributesPrecision = value.toInt();
+                    else if (flag == Key::CoordsPrecision)
+                        m_coordinatesPrecision = value.toInt();
+                } else {
                     isError = true;
+                }
             } else if (flag == Key::StdDeviation) {
                 if (value.toDouble() >= 0.01 && value.toDouble() <= 0.5)
                     keyHash.insert(flag, value.toDouble());

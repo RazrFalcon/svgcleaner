@@ -1,7 +1,7 @@
 #ifndef REMOVER_H
 #define REMOVER_H
 
-#include "tools.h"
+#include "basecleaner.h"
 
 struct DefsElemStruct
 {
@@ -11,10 +11,10 @@ struct DefsElemStruct
     StringMap attrMap;
 };
 
-class Remover
+class Remover : public BaseCleaner
 {
 public:
-    explicit Remover(XMLDocument *dom);
+    explicit Remover(XMLDocument *doc);
     void removeUnreferencedIds();
     void removeUnusedDefs();
     void removeUnusedXLinks();
@@ -26,19 +26,16 @@ public:
     void removeGroups();
 
 private:
-    XMLDocument *m_doc;
-    SvgElement m_svgElem;
-    SvgElement m_defsElem;
+    QSet<QString> m_usedElemList;
+    QList<StringHash> styleHashList;
+    StringHash parentHash;
 
     void cleanStyle(const SvgElement &elem, StringHash &hash);
     void removeDefaultValue(StringHash &hash, const QString &name);
     void removeGroup(SvgElement &elem);
-    bool isInvisibleElementsExist(SvgElement elem);
-    void updateXLinks(StringHash &hash);
-    void cleanAttribute(SvgElement elem, QRegExp rx);
+    bool isInvisibleElementsExist(const SvgElement &elem);
+    void cleanAttribute(SvgElement &elem, const QString &startWith, QStringList &attrList);
     void ungroupSwitch(SvgElement elem);
-
-    QSet<QString> m_usedElemList;
     SvgElement genGroup(SvgElement &currElem, SvgElement &parentGroup);
     void mergeGroups(QList<SvgElement> &gNodeList);
 };

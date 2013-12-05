@@ -75,14 +75,19 @@ public:
         static Keys instance;
         return instance;
     }
-    QVariant value(const QString &key);
-    bool flag(const QString &key);
-    int intNumber(const QString &key);
-    double doubleNumber(const QString &key);
+    bool flag(const QString &key) const;
+    int intNumber(const QString &key) const;
+    int coordinatesPrecision() const;
+    int attributesPrecision() const;
+    int transformPrecision() const;
+    double doubleNumber(const QString &key) const;
     void parseOptions(const QStringList &list);
 
 private:
     QVariantHash keyHash;
+    int m_coordinatesPrecision;
+    int m_attributesPrecision;
+    int m_transformPrecision;
 
     Keys();
     Keys(Keys const&);

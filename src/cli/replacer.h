@@ -2,12 +2,12 @@
 #define REPLACER_H
 
 #include "paths.h"
-#include "tools.h"
+#include "basecleaner.h"
 
 typedef QPair<SvgElement,StringHash> ElemListPair;
 typedef QList<QPair<QString,int> > RepetitionList;
 
-class Replacer
+class Replacer : public BaseCleaner
 {
 public:
     explicit Replacer(XMLDocument *doc);
@@ -29,15 +29,13 @@ public:
     void applyTransformMatrices();
 
 private:
-    XMLDocument *m_doc;
-    SvgElement m_svgElem;
-    SvgElement m_defsElem;
     QSet<QString> m_usedElemList;
 
     SvgElement findLinearGradient(const QString &id);
     RepetitionList findRepetitionList(const QList<SvgElement> &list);
     RepetitionList findRepetitionList(QList<ElemListPair> list);
     RepetitionList genRepetitionList(const QList<StringHash> &list);
+    static bool repetitionListSort(const QPair<QString,int> &s1, const QPair<QString,int> &s2);
 };
 
 #endif // REPLACER_H

@@ -15,22 +15,31 @@
 
 // TODO: merge "tspan" elements with similar styles
 
-Replacer::Replacer(XMLDocument *doc)
+Replacer::Replacer(XMLDocument *doc) : BaseCleaner(doc)
 {
-    m_doc = doc;
-    m_svgElem = Tools::svgElement(doc);
-    m_defsElem = Tools::defsElement(doc, m_svgElem);
 }
 
 void Replacer::convertSizeToViewbox()
 {
-    if (!m_svgElem.hasAttribute("viewBox")) {
-        if (m_svgElem.hasAttribute("width") && m_svgElem.hasAttribute("height")) {
-            QString width  = Tools::roundNumber(m_svgElem.attribute("width").toDouble());
-            QString height = Tools::roundNumber(m_svgElem.attribute("height").toDouble());
-            m_svgElem.setAttribute("viewBox", QString("0 0 %1 %2").arg(width).arg(height));
-            m_svgElem.removeAttribute("width");
-            m_svgElem.removeAttribute("height");
+    if (!svgElement().hasAttribute("viewBox")) {
+        if (svgElement().hasAttribute("width") && svgElement().hasAttribute("height")) {
+            QString width  = Tools::roundNumber(svgElement().doubleAttribute("width"));
+            QString height = Tools::roundNumber(svgElement().doubleAttribute("height"));
+            svgElement().setAttribute("viewBox", QString("0 0 %1 %2").arg(width).arg(height));
+            svgElement().removeAttribute("width");
+            svgElement().removeAttribute("height");
+        }
+    } else {
+        QRectF rect = Tools::viewBoxRect(svgElement());
+        if (svgElement().hasAttribute("width")) {
+            if (rect.width() == svgElement().doubleAttribute("width")
+                || svgElement().attribute("width") == "100%")
+                svgElement().removeAttribute("width");
+        }
+        if (svgElement().hasAttribute("height")) {
+            if (rect.height() == svgElement().doubleAttribute("height")
+                || svgElement().attribute("height") == "100%")
+                svgElement().removeAttribute("height");
         }
     }
 }
@@ -39,7 +48,7 @@ void Replacer::convertSizeToViewbox()
 // Anonymous_man_head.svg
 void Replacer::processPaths()
 {
-    QList<SvgElement> list = m_svgElem.childElemList();
+    QList<SvgElement> list = svgElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
 
@@ -64,23 +73,23 @@ void Replacer::convertUnits()
     // get
     qreal width = 0;
     qreal height = 0;
-    if (m_svgElem.hasAttribute("width")) {
-        if (m_svgElem.attribute("width").contains("%") && m_svgElem.hasAttribute("viewBox")) {
-            QRectF rect = Tools::viewBoxRect(m_svgElem);
-            width = Tools::convertUnitsToPx(m_svgElem.attribute("width"), rect.width()).toDouble();
+    if (svgElement().hasAttribute("width")) {
+        if (svgElement().attribute("width").contains("%") && svgElement().hasAttribute("viewBox")) {
+            QRectF rect = Tools::viewBoxRect(svgElement());
+            width = Tools::convertUnitsToPx(svgElement().attribute("width"), rect.width()).toDouble();
         } else {
             bool ok;
-            width = Tools::convertUnitsToPx(m_svgElem.attribute("width")).toDouble(&ok);
+            width = Tools::convertUnitsToPx(svgElement().attribute("width")).toDouble(&ok);
             Q_ASSERT(ok == true);
         }
     }
-    if (m_svgElem.hasAttribute("height")) {
-        if (m_svgElem.attribute("height").contains("%") && m_svgElem.hasAttribute("viewBox")) {
-            QRectF rect = Tools::viewBoxRect(m_svgElem);
-            height = Tools::convertUnitsToPx(m_svgElem.attribute("height"), rect.height()).toDouble();
+    if (svgElement().hasAttribute("height")) {
+        if (svgElement().attribute("height").contains("%") && svgElement().hasAttribute("viewBox")) {
+            QRectF rect = Tools::viewBoxRect(svgElement());
+            height = Tools::convertUnitsToPx(svgElement().attribute("height"), rect.height()).toDouble();
         } else {
             bool ok;
-            height = Tools::convertUnitsToPx(m_svgElem.attribute("height")).toDouble(&ok);
+            height = Tools::convertUnitsToPx(svgElement().attribute("height")).toDouble(&ok);
             Q_ASSERT(ok == true);
         }
     }
@@ -89,7 +98,7 @@ void Replacer::convertUnits()
     //       For gradientUnits="objectBoundingBox", percentages represent values relative to the bounding box for the object.
 
     QSet<QString> attributes = Props::digitList;
-    QList<SvgElement> list = Tools::childElemList(m_doc);
+    QList<SvgElement> list = Tools::childElemList(document());
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
         QString currTag = currElem.tagName();
@@ -132,7 +141,7 @@ void Replacer::convertUnits()
 void Replacer::convertCDATAStyle()
 {
     QStringList styleList;
-    QList<XMLNode *> nodeList = Tools::childNodeList(m_doc);
+    QList<XMLNode *> nodeList = Tools::childNodeList(document());
     while (!nodeList.empty()) {
         XMLNode *currNode = nodeList.takeFirst();
         if (currNode->ToElement() != 0) {
@@ -165,7 +174,7 @@ void Replacer::convertCDATAStyle()
         }
     }
 
-    QList<SvgElement> list = m_svgElem.childElemList();
+    QList<SvgElement> list = svgElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.hasAttribute("class")) {
@@ -194,24 +203,24 @@ void Replacer::convertCDATAStyle()
 void Replacer::prepareDefs()
 {
     // move all gradient, filters, etc. to 'defs' element
-    QList<SvgElement> list = m_svgElem.childElemList();
+    QList<SvgElement> list = svgElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
-        if (currElem.parentNode() != m_defsElem) {
+        if (currElem.parentNode() != defsElement()) {
             if (Props::defsList.contains(currElem.tagName()))
-                m_defsElem.appendChild(currElem);
+                defsElement().appendChild(currElem);
             else if (currElem.hasChildren())
                 list << currElem.childElemList();
         }
     }
 
     // ungroup all defs in defs
-    list = m_svgElem.childElemList();
+    list = svgElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.parentNode().tagName() == "defs"
-            && currElem.parentNode() != m_defsElem) {
-            m_defsElem.appendChild(currElem);
+            && currElem.parentNode() != defsElement()) {
+            defsElement().appendChild(currElem);
         } else if (currElem.hasChildren())
             list << currElem.childElemList();
     }
@@ -220,12 +229,12 @@ void Replacer::prepareDefs()
 void Replacer::fixWrongAttr()
 {
     // fix bad Adobe Illustrator SVG exporting
-    if (m_svgElem.attribute("xmlns") == QLatin1String("&ns_svg;"))
-        m_svgElem.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    if (m_svgElem.attribute("xmlns:xlink") == QLatin1String("&ns_xlink;"))
-        m_svgElem.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+    if (svgElement().attribute("xmlns") == QLatin1String("&ns_svg;"))
+        svgElement().setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    if (svgElement().attribute("xmlns:xlink") == QLatin1String("&ns_xlink;"))
+        svgElement().setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
-    QList<SvgElement> list = m_svgElem.childElemList();
+    QList<SvgElement> list = svgElement().childElemList();
     QStringList tmpList = QStringList() << "fill" << "stroke";
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
@@ -291,7 +300,7 @@ void Replacer::fixWrongAttr()
 //       values greater than 1 (or greater than 100%) are rounded down to 100%.
 void Replacer::finalFixes()
 {
-    QList<SvgElement> list = m_svgElem.childElemList();
+    QList<SvgElement> list = svgElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
         QString currTag = currElem.tagName();
@@ -347,7 +356,7 @@ void Replacer::trimIds()
 {
     int pos = 0;
     StringHash idHash;
-    QList<SvgElement> list = m_svgElem.childElemList();
+    QList<SvgElement> list = svgElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.hasAttribute("id")) {
@@ -360,7 +369,7 @@ void Replacer::trimIds()
             list << currElem.childElemList();
     }
 
-    list = m_svgElem.childElemList();
+    list = svgElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
         foreach (const QString &attrName, Props::linkableStyleAttributes) {
@@ -388,7 +397,7 @@ void Replacer::calcElemAttrCount(const QString &text)
 {
     int elemCount = 0;
     int attrCount = 0;
-    QList<SvgElement> list = Tools::childElemList(m_doc);
+    QList<SvgElement> list = Tools::childElemList(document());
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
         elemCount++;
@@ -400,37 +409,38 @@ void Replacer::calcElemAttrCount(const QString &text)
     qDebug() << "The " + text + " number of attributes is: " + QString::number(attrCount);
 }
 
+// TODO: sort with linking order
+//       flag-um.svg
 void Replacer::sortDefs()
 {
-    if (m_defsElem.isNull())
-        return;
-    QList<SvgElement> list = m_defsElem.childElemList();
+    QList<SvgElement> list = defsElement().childElemList();
     if (!list.isEmpty()) {
         Tools::sortNodes(list);
         for (int i = 0; i < list.count(); ++i)
-            m_defsElem.appendChild(list.at(i));
+            defsElement().appendChild(list.at(i));
     }
 }
 
 void Replacer::roundDefs()
 {
-    QList<SvgElement> list = m_svgElem.childElemList();
+    QList<SvgElement> list = svgElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
+        QStringList attrList = currElem.attributesList();
 
         foreach (const QString &attr, Props::digitList) {
-            if (currElem.hasAttribute(attr)) {
+            if (attrList.contains(attr)) {
                 QString value = currElem.attribute(attr);
                 if (!value.contains("%")) {
                     bool ok;
-                    QString attrVal = Tools::roundNumber(value.toDouble(&ok), Tools::ATTRIBUTES);
+                    QString attrVal = Tools::roundNumber(value.toDouble(&ok), Tools::ATTRIBUTE);
                     Q_ASSERT_X(ok == true, value.toAscii(), "wrong unit type");
                     currElem.setAttribute(attr, attrVal);
                 }
             }
         }
         foreach (const QString &attr, Props::filterDigitList) {
-            if (currElem.hasAttribute(attr)) {
+            if (attrList.contains(attr)) {
                 QString value = currElem.attribute(attr);
                 // process list based attributes
                 if (attr == "stdDeviation" || attr == "baseFrequency" || attr == "dx") {
@@ -452,29 +462,27 @@ void Replacer::roundDefs()
                 }
             }
         }
-        // TODO: refract
         if (!Keys::get().flag(Key::KeepTransforms)) {
-            if (currElem.hasAttribute("gradientTransform")) {
+            if (attrList.contains("gradientTransform")) {
                 Transform ts(currElem.attribute("gradientTransform"));
                 QString transform = ts.simplified();
                 if (transform.isEmpty())
                     currElem.removeAttribute("gradientTransform");
                 else {
-                    QString text = ts.simplified();
                     // NOTE: some kind of bug...
                     // with rotate transform some files are crashed
-                    // pitr_green_double_arrows_set_2_cleaned.svg
-                    if (!text.contains("rotate"))
-                        currElem.setAttribute("gradientTransform", ts.simplified());
+                    // pitr_green_double_arrows_set_2.svg
+                    if (!transform.contains("rotate"))
+                        currElem.setAttribute("gradientTransform", transform);
                 }
             }
-            if (currElem.hasAttribute("transform")) {
+            if (attrList.contains("transform")) {
                 Transform ts(currElem.attribute("transform"));
                 QString transform = ts.simplified();
                 if (transform.isEmpty())
                     currElem.removeAttribute("transform");
                 else
-                    currElem.setAttribute("transform", ts.simplified());
+                    currElem.setAttribute("transform", transform);
             }
         }
 
@@ -489,7 +497,7 @@ void Replacer::roundDefs()
 // http://www.w3.org/TR/SVG/shapes.html
 void Replacer::convertBasicShapes()
 {
-    QList<SvgElement> list = m_svgElem.childElemList();
+    QList<SvgElement> list = svgElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
         QString ctag = currElem.tagName();
@@ -610,7 +618,7 @@ void Replacer::convertBasicShapes()
 
 void Replacer::splitStyleAttr()
 {
-    QList<SvgElement> list = Tools::childElemList(m_doc);
+    QList<SvgElement> list = Tools::childElemList(document());
     bool flag = Keys::get().flag(Key::JoinStyleAttributes);
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
@@ -619,7 +627,8 @@ void Replacer::splitStyleAttr()
                 StringHash hash = Tools::splitStyle(currElem.attribute("style"));
                 foreach (const QString &key, hash.keys()) {
                     // ignore attributes like "-inkscape-font-specification"
-                    if (key.at(0) != '-')
+                    // NOTE: qt render prefer property attributes instead of "style" attribute
+                    if (key.at(0) != '-'/* && !currElem.hasAttribute(key)*/)
                         currElem.setAttribute(key, hash.value(key));
                 }
                 currElem.removeAttribute("style");
@@ -637,7 +646,7 @@ void Replacer::splitStyleAttr()
 void Replacer::mergeGradients()
 {
     QStringList linkList;
-    QList<SvgElement> list = m_defsElem.childElemList();
+    QList<SvgElement> list = defsElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.tagName() == "radialGradient" || currElem.tagName() == "linearGradient") {
@@ -647,27 +656,32 @@ void Replacer::mergeGradients()
         }
     }
 
-    list = m_defsElem.childElemList();
+    list = defsElement().childElemList();
+    StringHash xlinkHash;
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
         if ((currElem.tagName() == "radialGradient" || currElem.tagName() == "linearGradient")
-                && currElem.hasAttribute("xlink:href")) {
+                && currElem.hasAttribute("xlink:href") && !currElem.hasChildren()) {
             QString currLink = currElem.attribute("xlink:href").remove("#");
             if (linkList.count(currLink) == 1) {
                 SvgElement lineGradElem = findLinearGradient(currLink);
                 if (!lineGradElem.isNull()) {
-                    foreach (const SvgElement &elem, lineGradElem.childElemList())
-                        currElem.appendChild(elem);
-                    m_defsElem.removeChild(lineGradElem);
+                    if (lineGradElem.hasChildren()) {
+                        foreach (const SvgElement &elem, lineGradElem.childElemList())
+                            currElem.appendChild(elem);
+                        xlinkHash.insert(lineGradElem.attribute("id"), currElem.attribute("id"));
+                        defsElement().removeChild(lineGradElem);
+                    }
                 }
             }
         }
     }
+    updateXLinks(xlinkHash);
 }
 
 SvgElement Replacer::findLinearGradient(const QString &id)
 {
-    QList<SvgElement> list = m_defsElem.childElemList();
+    QList<SvgElement> list = defsElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.tagName() == "linearGradient" && currElem.id() == id) {
@@ -700,8 +714,8 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
     // first start
     if (parentElem.isNull()) {
         // elem linked to 'use' have to store style properties only in elem, not in group
-        m_usedElemList = Tools::usedElemList(m_svgElem);
-        groupElementsByStyles(m_svgElem);
+        m_usedElemList = Tools::usedElemList(svgElement());
+        groupElementsByStyles(svgElement());
     }
 
     // check whether there styles in child elements
@@ -764,7 +778,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                 if (parentElem.isGroup()) {
                     mainGElem = parentElem;
                 } else {
-                    mainGElem = SvgElement(m_doc->NewElement("g"));
+                    mainGElem = SvgElement(document()->NewElement("g"));
                     mainGElem = parentElem.insertBefore(mainGElem, list.first());
                 }
             }
@@ -833,7 +847,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                         }
 
                         if (!stylesToRemove.isEmpty()) {
-                            SvgElement newGElem = SvgElement(m_doc->NewElement("g"));
+                            SvgElement newGElem = SvgElement(document()->NewElement("g"));
                             SvgElement firstElem = similarElemList.first().first;
                             newGElem = parentElem.insertBefore(newGElem, firstElem);
                             newGElem.setAttribute("style", stylesToRemove.join(";"));
@@ -877,7 +891,7 @@ RepetitionList Replacer::findRepetitionList(QList<ElemListPair> list)
     return genRepetitionList(styleList);
 }
 
-bool repetitionListSort(const QPair<QString,int> &s1, const QPair<QString,int> &s2)
+bool Replacer::repetitionListSort(const QPair<QString,int> &s1, const QPair<QString,int> &s2)
 {
     return s1.second > s2.second;
 }
@@ -906,6 +920,6 @@ RepetitionList Replacer::genRepetitionList(const QList<StringHash> &list)
             }
         }
     }
-    qSort(rList.begin(), rList.end(), repetitionListSort);
+    qSort(rList.begin(), rList.end(), &repetitionListSort);
     return rList;
 }

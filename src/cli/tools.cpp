@@ -65,7 +65,7 @@ qreal Transform::newY() const
 // http://www.w3.org/TR/SVG/coords.html#EstablishingANewUserSpace
 QList<qreal> Transform::mergeMatrixes(QString text)
 {
-    text.remove(QRegExp("^ +| +$"));
+    text = Tools::removeEdgeSpaces(text);
     QStringList transList = text.split(QRegExp("\\) +"), QString::SkipEmptyParts);
 
     QList<TransMatrix> transMatrixList;
@@ -247,14 +247,6 @@ bool SvgElement::isNull() const
     return (m_elem == 0);
 }
 
-bool SvgElement::hasAttributes(const QStringList &list) const
-{
-    for (int i = 0; i < list.count(); ++i)
-        if (!hasAttribute(list.at(i)))
-            return false;
-    return true;
-}
-
 void SvgElement::removeAttributes(const QStringList &list)
 {
     for (int i = 0; i < list.count(); ++i)
@@ -419,12 +411,12 @@ QString Tools::roundNumber(qreal value, RoundType type)
         return QString::number(value);
 
     int precision;
-    if (type == TRANSFORM)
-        precision = Keys::get().intNumber(Key::TransformPrecision);
-    else if (type == ATTRIBUTES)
-        precision = Keys::get().intNumber(Key::AttributesPrecision);
+    if (type == COORDINATE)
+        precision = Keys::get().coordinatesPrecision();
+    else if (type == ATTRIBUTE)
+        precision = Keys::get().attributesPrecision();
     else
-        precision = Keys::get().intNumber(Key::CoordsPrecision);
+        precision = Keys::get().transformPrecision();
 
     QString text;
     text = QString::number(value, 'f', precision);
@@ -783,6 +775,8 @@ QString Tools::removeEdgeSpaces(const QString &str)
 StringHash Tools::splitStyle(QString style)
 {
     StringHash hash;
+    if (style.isEmpty())
+        return hash;
     QStringList list = removeEdgeSpaces(style).split(";", QString::SkipEmptyParts);
     for (int i = 0; i < list.count(); ++i) {
         QString attr = list.at(i);

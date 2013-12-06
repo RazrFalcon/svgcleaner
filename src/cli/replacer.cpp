@@ -8,11 +8,9 @@
 //       with 'color' attr
 // TODO: sort functions like in main
 // TODO: try to group similar elems to use
-// gaerfield_data-center.svg
-
+//       gaerfield_data-center.svg, alnilam_Stars_Pattern.svg
 // TODO: If 'x1' = 'x2' and 'y1' = 'y2', then the area to be painted will be painted as
 //       a single color using the color and opacity of the last gradient stop.
-
 // TODO: merge "tspan" elements with similar styles
 
 Replacer::Replacer(XMLDocument *doc) : BaseCleaner(doc)
@@ -45,7 +43,7 @@ void Replacer::convertSizeToViewbox()
 }
 
 // TODO: remove identical paths
-// Anonymous_man_head.svg
+//       Anonymous_man_head.svg
 void Replacer::processPaths()
 {
     QList<SvgElement> list = svgElement().childElemList();
@@ -709,217 +707,86 @@ SvgElement Replacer::findLinearGradient(const QString &id)
  *   <path d="..."/>
  * </g>
  */
+
 void Replacer::groupElementsByStyles(SvgElement parentElem)
 {
     // first start
     if (parentElem.isNull()) {
         // elem linked to 'use' have to store style properties only in elem, not in group
         m_usedElemList = Tools::usedElemList(svgElement());
-        groupElementsByStyles(svgElement());
+        parentElem = svgElement();
     }
 
-    // check whether there styles in child elements
-    int styleCount = 0;
-    if (parentElem.isNull())
-        return;
-    foreach (const SvgElement &elem, parentElem.childElemList()) {
-        if (!elem.styleHash().isEmpty())
-            styleCount++;
-    }
+    StringHash groupHash;
+    QList<SvgElement> similarElemList;
+    QStringList ignoreAttrList;
+    ignoreAttrList << "clip-path" << "mask" << "filter" << "opacity";
+    QList<SvgElement> list = parentElem.childElemList();
+    while (!list.empty()) {
+        SvgElement currElem = list.takeFirst();
+        if (currElem.isGroup())
+            groupElementsByStyles(currElem);
 
-    RepetitionList styleRepeatList;
-    if (styleCount > 1) {
-        // get list of all unique style properties sorted by the number of coincidences
-        styleRepeatList = findRepetitionList(parentElem.childElemList());
-    } else {
-        // if no styles - trying to find and process groups in this element
-        QList<SvgElement> list = parentElem.childElemList();
-        while (!list.isEmpty()) {
-            SvgElement currElem = list.takeFirst();
-            if (currElem.isGroup())
-                groupElementsByStyles(currElem);
-        }
-        return;
-    }
-
-    if (styleRepeatList.isEmpty())
-        return;
-
-    if (styleRepeatList.first().second == 1) {
-        SvgElement singleElem;
-        foreach (const SvgElement &elem, parentElem.childElemList()) {
-            if (!m_usedElemList.contains(elem.id())) {
-                if (singleElem.isNull())
-                    singleElem = elem;
-                else
-                    return;
+        if (groupHash.isEmpty()) {
+            // get hash of all style attributes of element
+            groupHash = currElem.styleHash();
+            // we can not group elements by some attributes
+            for (int i = 0; i < ignoreAttrList.size(); ++i) {
+                if (groupHash.contains(ignoreAttrList.at(i)))
+                    groupHash.remove(ignoreAttrList.at(i));
             }
-        }
-        if (!singleElem.isNull())
-            parentElem.removeAttribute(QString(styleRepeatList.first().first).remove(QRegExp(":.*")));
-        return;
-    }
-
-    const QList<SvgElement> list = parentElem.childElemList();
-    // store all processed groups, to prevent retreatment processing
-    QList<SvgElement> precessedGList;
-    SvgElement mainGElem;
-    // process child elements
-    while (!styleRepeatList.isEmpty()) {
-        // stop when no repetitions are left
-        if (styleRepeatList.first().second == 1)
-            break;
-
-        QString currStyle = styleRepeatList.first().first;
-        // if current style property repeats equal to child elements count
-        if (styleRepeatList.first().second == list.count()) {
-            // create new group if parent elem is not a group
-            if (mainGElem.isNull()) {
-                if (parentElem.isGroup()) {
-                    mainGElem = parentElem;
-                } else {
-                    mainGElem = SvgElement(document()->NewElement("g"));
-                    mainGElem = parentElem.insertBefore(mainGElem, list.first());
-                }
-            }
-            Q_ASSERT(mainGElem.isNull() == false);
-            mainGElem.setAttribute(QString(currStyle).remove(QRegExp(":.*")),
-                                   QString(currStyle).remove(QRegExp(".*:")));
-
-            // move elem to group
-            foreach (SvgElement elem, list) {
-                QString attr = QString(currStyle).remove(QRegExp(":.*"));
-                if (elem.hasAttribute(attr))
-                    elem.removeAttribute(attr);
-                mainGElem.appendChild(elem);
+            if (!groupHash.isEmpty())
+                similarElemList << currElem;
+            // we can not group use or used elements
+            if (m_usedElemList.contains(currElem.id()) || currElem.tagName() == "use") {
+                groupHash.clear();
+                similarElemList.clear();
             }
         } else {
-            QList<SvgElement> childList = parentElem.childElemList();
-            QList<ElemListPair> similarElemList;
-            while (!childList.empty()) {
-                SvgElement currElem = childList.takeFirst();
-                if (currElem.isGroup() && !precessedGList.contains(currElem)) {
-                    groupElementsByStyles(currElem);
-                    precessedGList << currElem;
-                }
-                // NOTE: the slowest line
-
-                StringHash currStyleHash = currElem.styleHash();
-
-                bool isElemSimilar = false;
-                if (currStyleHash.contains(currStyle)
-                    && currElem.tagName() != "use"
-                    && !m_usedElemList.contains(currElem.id()))
-                {
-                    similarElemList << ElemListPair(currElem, currStyleHash);
-                    isElemSimilar = true;
-                }
-                if (!isElemSimilar || childList.isEmpty()) {
-                    if (similarElemList.count() > 1) {
-                        QStringList stylesToRemove;
-                        stylesToRemove << currStyle;
-                        // also remove style props which equal for current elem list
-                        for (int j = 1; j < styleRepeatList.count(); ++j) {
-                            bool flag = true;
-                            foreach (ElemListPair pair, similarElemList) {
-                                if (!pair.second.contains(styleRepeatList.at(j).first)) {
-                                    flag = false;
-                                    break;
-                                }
-                            }
-                            if (flag)
-                                stylesToRemove << styleRepeatList.at(j).first;
-                        }
-
-                        // add first most popular style, which not exist before
-                        // NOTE: actualy can add not only first
-                        RepetitionList tmpRList = findRepetitionList(similarElemList);
-                        for (int k = 0; k < tmpRList.count(); ++k) {
-                            if (!tmpRList.at(k).first
-                                    .contains(QRegExp("stroke|fill|opacity|marker|font-size"))) {
-                                if (!stylesToRemove.contains(tmpRList.at(k).first)) {
-                                    if (tmpRList.at(k).second > 1) {
-                                        stylesToRemove << tmpRList.at(k).first;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-
-                        if (!stylesToRemove.isEmpty()) {
-                            SvgElement newGElem = SvgElement(document()->NewElement("g"));
-                            SvgElement firstElem = similarElemList.first().first;
-                            newGElem = parentElem.insertBefore(newGElem, firstElem);
-                            newGElem.setAttribute("style", stylesToRemove.join(";"));
-                            Q_ASSERT(newGElem.isNull() == false);
-
-                            foreach (ElemListPair pair, similarElemList) {
-                                StringHash tmpHash = pair.second;
-                                foreach (const QString &text, stylesToRemove)
-                                    tmpHash.remove(text);
-                                QString newStyle = Tools::styleHashToString(tmpHash);
-                                pair.first.setAttribute("style", newStyle);
-                                newGElem.appendChild(pair.first);
-                            }
-                        }
-                    }
-                    similarElemList.clear();
-                }
+            StringHash lastGroupHash = groupHash;
+            // remove attributes which is not exist or different in next element
+            foreach (const QString &attrName, groupHash.keys()) {
+                if (!currElem.hasAttribute(attrName))
+                    groupHash.remove(attrName);
+                else if (currElem.attribute(attrName) != groupHash.value(attrName))
+                    groupHash.remove(attrName);
             }
-        }
-        styleRepeatList.removeFirst();
-    }
-}
+            if (m_usedElemList.contains(currElem.id()) || currElem.tagName() == "use") {
+                groupHash.clear();
+                similarElemList.clear();
+            }
 
-RepetitionList Replacer::findRepetitionList(const QList<SvgElement> &list)
-{
-    QList<StringHash> styleList;
-    foreach (const SvgElement &elem, list) {
-        if (!m_usedElemList.contains(elem.id()))
-            styleList << elem.styleHash();
-    }
-    return genRepetitionList(styleList);
-}
-
-RepetitionList Replacer::findRepetitionList(QList<ElemListPair> list)
-{
-    QList<StringHash> styleList;
-    foreach (const ElemListPair &pair, list) {
-        if (!m_usedElemList.contains(pair.first.id()))
-            styleList << pair.second;
-    }
-    return genRepetitionList(styleList);
-}
-
-bool Replacer::repetitionListSort(const QPair<QString,int> &s1, const QPair<QString,int> &s2)
-{
-    return s1.second > s2.second;
-}
-
-// create list of used unique styles sorted by the number of coincidences
-RepetitionList Replacer::genRepetitionList(const QList<StringHash> &list)
-{
-    RepetitionList rList;
-    foreach (const StringHash &styleHash, list) {
-        foreach (const QString &attr, styleHash.keys()) {
-            // TODO: 'opacity' can be grouped, sometimes
-            // TODO: test for fill:url
-            if (!attr.contains(QRegExp("^opacity|clip-path|font-weight|filter|mask|fill:url"))) {
-                // find style in list
-                int pos = -1;
-                for (int j = 0; j < rList.count(); ++j) {
-                    if (rList.at(j).first == attr + ":" + styleHash.value(attr)) {
-                        pos = j;
-                        break;
+            // if hash of style attrs is empty - then current element is has completely different
+            // style attributes and so we can not group it
+            if (!groupHash.isEmpty())
+                similarElemList << currElem;
+            if (list.isEmpty() || groupHash.isEmpty()) {
+                if (list.isEmpty())
+                    lastGroupHash = groupHash;
+                //
+                if (similarElemList.size() > 1) {
+                    // find or create parent group
+                    SvgElement mainGElem;
+                    if (parentElem.isGroup() && parentElem.childElementCount() == similarElemList.size()) {
+                        mainGElem = parentElem;
+                    } else {
+                        mainGElem = SvgElement(document()->NewElement("g"));
+                        mainGElem = parentElem.insertBefore(mainGElem, similarElemList.first());
                     }
+                    // move equal style attributes of selected elements to parent group
+                    foreach (const QString &attrName, lastGroupHash.keys())
+                        mainGElem.setAttribute(attrName, lastGroupHash.value(attrName));
+                    // move elem to group
+                    foreach (SvgElement elem, similarElemList) {
+                        foreach (const QString &attrName, lastGroupHash.keys())
+                            elem.removeAttribute(attrName);
+                        mainGElem.appendChild(elem);
+                    }
+                    groupElementsByStyles(mainGElem);
                 }
-                if (pos == -1)
-                    rList.append(QPair<QString,int>(attr + ":" + styleHash.value(attr), 1));
-                else
-                    rList[pos].second = rList.at(pos).second + 1;
+                similarElemList.clear();
+                list.prepend(currElem);
             }
         }
     }
-    qSort(rList.begin(), rList.end(), &repetitionListSort);
-    return rList;
 }

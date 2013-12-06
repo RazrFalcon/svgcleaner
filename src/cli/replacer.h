@@ -4,9 +4,6 @@
 #include "paths.h"
 #include "basecleaner.h"
 
-typedef QPair<SvgElement,StringHash> ElemListPair;
-typedef QList<QPair<QString,int> > RepetitionList;
-
 class Replacer : public BaseCleaner
 {
 public:
@@ -32,10 +29,6 @@ private:
     QSet<QString> m_usedElemList;
 
     SvgElement findLinearGradient(const QString &id);
-    RepetitionList findRepetitionList(const QList<SvgElement> &list);
-    RepetitionList findRepetitionList(QList<ElemListPair> list);
-    RepetitionList genRepetitionList(const QList<StringHash> &list);
-    static bool repetitionListSort(const QPair<QString,int> &s1, const QPair<QString,int> &s2);
 };
 
 #endif // REPLACER_H

@@ -757,7 +757,7 @@ QList<SvgElement> Tools::childElemList(SvgElement node)
 {
     QList<SvgElement> list;
     for (XMLElement *child = node.xmlElement()->FirstChildElement();
-         child; child = child->NextSiblingElement())
+            child; child = child->NextSiblingElement())
         list << SvgElement(child);
     return list;
 }

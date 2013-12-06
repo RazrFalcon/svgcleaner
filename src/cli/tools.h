@@ -128,7 +128,6 @@ private:
 };
 
 // TODO: add percentages attr list
-// TODO: sort in order of max using
 namespace Props {
 static const QSet<QString> fillList = QSet<QString>() << "fill" << "fill-rule" << "fill-opacity";
 static const QSet<QString> strokeList = QSet<QString>()

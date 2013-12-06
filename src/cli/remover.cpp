@@ -62,9 +62,9 @@ void Remover::removeUnusedDefs()
             if (elem.tagName() != "clipPath")
                 defsIdList << elem.id();
 
-        QList<SvgElement> nodeList = svgElement().childElemList();
-        while (!nodeList.empty()) {
-            SvgElement currElem = nodeList.takeFirst();
+        QList<SvgElement> list = svgElement().childElemList();
+        while (!list.empty()) {
+            SvgElement currElem = list.takeFirst();
             if (currElem.hasAttribute("xlink:href"))
                 defsIdList.remove(currElem.attribute("xlink:href").remove("#"));
             foreach (const QString &attrName, Props::linkableStyleAttributes) {
@@ -74,7 +74,7 @@ void Remover::removeUnusedDefs()
                 }
             }
             if (currElem.hasChildren())
-                nodeList << currElem.childElemList();
+                list << currElem.childElemList();
         }
 
         foreach (const SvgElement &elem, defsElement().childElemList()) {
@@ -196,7 +196,6 @@ void Remover::removeUnreferencedIds()
         if (attrList.contains("id"))
             m_allIdList << elem.id();
 
-
         for (int i = 0; i < xlinkAttrList.count(); ++i) {
             if (attrList.contains(xlinkAttrList.at(i)))
                 m_allLinkList << elem.attribute(xlinkAttrList.at(i)).remove("#");
@@ -205,7 +204,7 @@ void Remover::removeUnreferencedIds()
         for (int i = 0; i < urlAttrList.count(); ++i) {
             QString attr = urlAttrList.at(i);
             if (attrList.contains(attr)) {
-                QString attrValue =elem.attribute(attr);
+                QString attrValue = elem.attribute(attr);
                 if (attrValue.contains("url"))
                     attrValue = attrValue.mid(5, attrValue.size()-6);
                     m_allLinkList << attrValue;
@@ -215,7 +214,6 @@ void Remover::removeUnreferencedIds()
         if (elem.hasChildren())
             list << elem.childElemList();
     }
-
 
     // remove all linked ids
     foreach (const QString &text, m_allLinkList)
@@ -230,7 +228,6 @@ void Remover::removeUnreferencedIds()
     }
 
     // remove
-    list.clear();
     list = svgElement().childElemList();
     while (!list.empty()) {
         SvgElement currElem = list.takeFirst();
@@ -316,11 +313,29 @@ void Remover::removeElements()
             nodeList << Tools::childNodeList(currNode);
     }
 
+    // ungroup "a" element
+    QList<SvgElement> elemList = Tools::childElemList(svgElement());
+    SvgElement prevElem;
+    while (!elemList.empty()) {
+        SvgElement currElem = elemList.takeFirst();
+        if (currElem.tagName() == "a") {
+            if ((currElem.hasAttribute("id") && currElem.attributesCount() == 1)
+                || currElem.attributesCount() == 0)
+            {
+                foreach (const SvgElement &elem, currElem.childElemList())
+                    prevElem.insertBefore(elem, currElem);
+                currElem.parentNode().removeChild(currElem);
+            }
+        }
+        prevElem = currElem;
+        if (currElem.hasChildren())
+            elemList << Tools::childElemList(currElem);
+    }
 
     // distributions-pentubuntu.svg
     // FIXME: switch style attr have to be cleaned before it, and other attr have to be removed
     qreal stdDevLimit = Keys::get().doubleNumber(Key::StdDeviation);
-    QList<SvgElement> elemList = Tools::childElemList(svgElement());
+    elemList = Tools::childElemList(svgElement());
     while (!elemList.empty()) {
         SvgElement currElem = elemList.takeFirst();
 //        if (currElem.tagName() == "switch") {

@@ -320,7 +320,7 @@ void Replacer::finalFixes()
                 && (currElem.hasAttribute("x2") || currElem.hasAttribute("y2"))) {
                 if (currElem.attribute("x1") == currElem.attribute("x2")) {
                     currElem.removeAttribute("x1");
-                    currElem.setAttribute("x2", 0);
+                    currElem.setAttribute("x2", "0");
                 }
                 if (currElem.attribute("y1") == currElem.attribute("y2")) {
                     currElem.removeAttribute("y1");

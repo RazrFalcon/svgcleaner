@@ -117,33 +117,54 @@ void Segment::toAbsolute(qreal xLast, qreal yLast)
     absolute = true;
 }
 
-QString Segment::toString() const
+QStringList Segment::toStringList() const
 {
-    QString out;
-    if (command == Command::MoveTo || command == Command::LineTo || command == Command::SmoothQuadratic) {
-        out =   string(x) % "," % string(y);
-    } else if (command == Command::CurveTo) {
-        out =   string(x1) % "," % string(y1) % " "
-              % string(x2) % "," % string(y2) % " "
-              % string(x)  % "," % string(y);
-    } else if (command == Command::HorizontalLineTo) {
-        out =   string(x);
-    } else if (command == Command::VerticalLineTo) {
-        out =   string(y);
-    } else if (command == Command::SmoothCurveTo) {
-        out =   string(x2) % "," % string(y2) % " "
-              % string(x)  % "," % string(y);
-    } else if (command == Command::Quadratic) {
-        out =   string(x1) % "," % string(y1) % " "
-              % string(x)  % "," % string(y);
-    } else if (command == Command::EllipticalArc) {
-        out =   string(rx) % "," % string(ry) % " "
-                % QString::number(xAxisRotation) % " "
-                % QString::number(largeArc) % ","
-                % QString::number(sweep) % " "
-                % string(x)  % "," % string(y);
+    QStringList list;
+    if (command == Command::CurveTo)
+    {
+        list.reserve(11);
+        list << string(x1) << "," << string(y1) << " "
+             << string(x2) << "," << string(y2) << " "
+             << string(x)  << "," << string(y);
     }
-    return out;
+    else if (command == Command::MoveTo || command == Command::LineTo
+        || command == Command::SmoothQuadratic)
+    {
+        list.reserve(3);
+        list << string(x) << "," << string(y);
+    }
+    else if (command == Command::HorizontalLineTo)
+    {
+        list.reserve(1);
+        list << string(x);
+    }
+    else if (command == Command::VerticalLineTo)
+    {
+        list.reserve(1);
+        list << string(y);
+    }
+    else if (command == Command::SmoothCurveTo)
+    {
+        list.reserve(7);
+        list << string(x2) << "," << string(y2) << " "
+             << string(x)  << "," << string(y);
+    }
+    else if (command == Command::Quadratic)
+    {
+        list.reserve(7);
+        list << string(x1) << "," << string(y1) << " "
+             << string(x)  << "," << string(y);
+    }
+    else if (command == Command::EllipticalArc)
+    {
+        list.reserve(13);
+        list << string(rx) << "," << string(ry) << " "
+             << QString::number(xAxisRotation) << " "
+             << QString::number(largeArc) << ","
+             << QString::number(sweep) << " "
+             << string(x)  << "," << string(y);
+    }
+    return list;
 }
 
 // New class
@@ -417,14 +438,16 @@ void Path::segmentsToRelative()
 QString Path::segmentsToPath()
 {
     QString outPath;
-    QString prevCom;
+    QChar prevCom;
     bool isPrevComAbs = false;
+    bool isTrim = !Keys::get().flag(Key::KeepUnusedSymbolsFromPath);
+    QString prevPos;
     for (int i = 0; i < m_segmentList.count(); ++i) {
         Segment segment = m_segmentList.at(i);
-        QString currCmd = segment.command;
+        QChar currCmd = segment.command;
         // check is previous command is the same as next
         bool writeCmd = true;
-        if (currCmd == prevCom && !prevCom.isEmpty()) {
+        if (currCmd == prevCom && !prevCom.isNull()) {
             if (segment.absolute == isPrevComAbs
                 && !(segment.srcCmd && segment.command == Command::MoveTo))
                 writeCmd = false;
@@ -434,59 +457,49 @@ QString Path::segmentsToPath()
 
         if (writeCmd) {
             if (segment.absolute)
-                outPath += segment.command.toUpper() % " ";
+                outPath += segment.command.toUpper();
             else
-                outPath += segment.command % " ";
+                outPath += segment.command;
+            if (!isTrim)
+                outPath += " ";
         }
-        outPath += m_segmentList.at(i).toString() % " ";
-    }
-    outPath.chop(1);
 
-    if (!Keys::get().flag(Key::KeepUnusedSymbolsFromPath))
-        outPath = trimPath(outPath);
-
-    return outPath;
-}
-
-// remove unneeded spaces and comas
-// m 30    to  m30
-// 10,-30  to  10-30
-// 15,.5   to  15.5
-QString Path::trimPath(const QString &path)
-{
-    QString outPath;
-    bool isArc = false;
-    for (int i = 0; i < path.size(); ++i) {
-        QChar curr = path.at(i);
-        if (curr == ',' || curr == ' ') {
-            if (i < path.size()-1 && i > 0) {
-                QChar prev = path.at(i-1);
-                QChar next = path.at(i+1);
-
-                bool keep = true;
-                // example: m 100 -> m100
-                if (prev.isLetter() && curr == ' ')
-                    keep = false;
-                // example: 100 c -> 100c
-                if (curr == ' ' && next.isLetter())
-                    keep = false;
-                // example: 42,-42 -> 42-42
-                if (curr == ',' && next == '-')
-                    keep = false;
-                // example: 42 -42 -> 42-42
-                if (prev.isNumber() && curr == ' ' && next == '-' && !isArc)
-                    keep = false;
-
-                if (keep)
-                    outPath += curr;                 
+        QStringList tmpList = segment.toStringList();
+        if (isTrim) {
+            // remove unneeded spaces and comas
+            // m 30    to  m30
+            // 10,-30  to  10-30
+            // 15,.5   to  15.5
+            QString prevSep = " ";
+            for (int j = 0; j < tmpList.size(); ++j) {
+                QString currSeg = tmpList.at(j);
+                if (j % 2 != 0) {
+                    prevSep = currSeg;
+                } else {
+                    bool useSep = false;
+                    if (prevPos.contains('.') && !currSeg.contains('.') && !prevPos.isEmpty())
+                        useSep = true;
+                    else if (!prevPos.contains('.') && currSeg.contains('.'))
+                        useSep = true;
+                    else if (currSeg.at(0).isDigit())
+                        useSep = true;
+                    if (currCmd == Command::EllipticalArc)
+                        useSep = true;
+                    if (j == 0 && writeCmd)
+                        useSep = false;
+                    if (useSep)
+                        outPath += prevSep;
+                    outPath += currSeg;
+                    prevPos = currSeg;
+                }
             }
         } else {
-            if (curr.toLower() == 'a')
-                isArc = true;
-            else if (curr.isLetter())
-                isArc = false;
-            outPath += curr;
+            outPath += tmpList.join("");
+            if (currCmd != Command::ClosePath)
+                outPath += " ";
         }
     }
+    if (!isTrim)
+        outPath.chop(1);
     return outPath;
 }

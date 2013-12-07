@@ -33,7 +33,7 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
         for (int i = 0; i < xlinkStyles.size(); ++i) {
             if (currElem.hasAttribute(xlinkStyles.at(i))) {
                 QString attrValue = currElem.attribute(xlinkStyles.at(i));
-                if (attrValue.contains("url")) {
+                if (attrValue.startsWith("url")) {
                     QString url = attrValue.mid(5, attrValue.size()-6);
                     if (hash.contains(url)) {
                         currElem.setAttribute(xlinkStyles.at(i),
@@ -44,7 +44,7 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
         }
         if (currElem.hasAttribute("xlink:href")) {
             QString value = currElem.attribute("xlink:href");
-            value.remove("#");
+            value.remove(0,1); // #
             QString elemId = currElem.attribute("id");
             foreach (const QString &key, hash.keys()) {
                 if (value == key) {

@@ -23,7 +23,7 @@ class Segment
 {
 public:
     Segment();
-    QString toString() const;
+    QStringList toStringList() const;
     QString string(qreal value) const;
     void setTransform(const QString &text);
     void toRelative(qreal xLast, qreal yLast);

@@ -50,14 +50,14 @@ public:
     QStringList attributesList() const;
     QString tagName() const;
     StringHash styleHash() const;
-    SvgElement insertBefore(const SvgElement &elemNew, const SvgElement &elemBefore);
+    SvgElement insertBefore(const SvgElement &elemNew, const SvgElement &elemBefore) const;
     SvgElement parentNode() const;
     void appendChild(const SvgElement &elem);
     void clear();
     void removeAttribute(const QString &name);
     void removeAttributes(const QStringList &list);
     void removeChild(const SvgElement &elem);
-    void setAttribute(const QString &name, const QVariant &value);
+    void setAttribute(const QString &name, const QString &value);
     void setStylesFromHash(const StringHash &hash);
     void setTagName(const QString &name);
 

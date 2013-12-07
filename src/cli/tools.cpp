@@ -264,6 +264,7 @@ StringMap SvgElement::attributesMap() const
 QStringList SvgElement::attributesList() const
 {
     QStringList list;
+    list.reserve(attributesCount());
     for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next())
         list << QString(child->Name());
     return list;
@@ -287,12 +288,12 @@ void SvgElement::setStylesFromHash(const StringHash &hash)
         setAttribute(attr, hash.value(attr));
 }
 
-void SvgElement::setAttribute(const QString &name, const QVariant &value)
+void SvgElement::setAttribute(const QString &name, const QString &value)
 {
-    if (value.toString().isEmpty())
+    if (value.isEmpty())
         m_elem->DeleteAttribute(ToChar(name));
     else
-        m_elem->SetAttribute(ToChar(name), ToChar(value.toString()));
+        m_elem->SetAttribute(ToChar(name), ToChar(value));
 }
 
 QString SvgElement::id() const
@@ -358,7 +359,7 @@ void SvgElement::setTagName(const QString &name)
     m_elem->SetName(ToChar(name));
 }
 
-SvgElement SvgElement::insertBefore(const SvgElement &elemNew, const SvgElement &elemBefore)
+SvgElement SvgElement::insertBefore(const SvgElement &elemNew, const SvgElement &elemBefore) const
 {
     XMLElement *refElem = elemBefore.xmlElement()->PreviousSiblingElement();
     if (refElem == 0)
@@ -388,7 +389,7 @@ int SvgElement::childElementCount() const
 {
     int count = 0;
     for (XMLElement *child = m_elem->FirstChildElement(); child;
-         child = child->NextSiblingElement())
+            child = child->NextSiblingElement())
     {
         count++;
     }
@@ -407,7 +408,7 @@ QString Tools::roundNumber(qreal value, RoundType type)
     // check is number is integer
     double fractpart, intpart;
     fractpart = modf(value, &intpart);
-    if (fractpart == 0)
+    if (qFuzzyCompare(fractpart, 0))
         return QString::number(value);
 
     int precision;
@@ -418,14 +419,13 @@ QString Tools::roundNumber(qreal value, RoundType type)
     else
         precision = Keys::get().transformPrecision();
 
-    QString text;
-    text = QString::number(value, 'f', precision);
+    QString text = QString::number(value, 'f', precision);
 
     // 1.100 -> 1.1
-    while (text.at(text.count()-1) == '0')
+    while (text.at(text.count()-1) == QLatin1Char('0'))
         text.chop(1);
     // 1. -> 1
-    if (text.at(text.count()-1) == '.') {
+    if (text.at(text.count()-1) == QLatin1Char('.')) {
         text.chop(1);
         // already integer
         return text;
@@ -436,18 +436,18 @@ QString Tools::roundNumber(qreal value, RoundType type)
 //        return QString::number(intpart);
 
     // 0.1 -> .1
-    if (text.mid(0, 2) == "0.")
+    if (text.midRef(0, 2) == QLatin1String("0."))
         text.remove(0, 1);
     // -0.1 -> -.1
-    else if (text.mid(0, 3) == "-0.")
+    else if (text.midRef(0, 3) == QLatin1String("-0."))
         text.remove(1, 1);
-    if (text.contains("e"))
-        text.replace("e-0", "e-");
+    if (text.contains(QLatin1Char('e')))
+        text.replace(QLatin1String("e-0"), QLatin1String("e-"));
 
-    if (text == "-0")
-        text = "0";
+    if (text == QLatin1String("-0"))
+        text = QLatin1String("0");
     else if (text.isEmpty())
-        text = "0";
+        text = QLatin1String("0");
 
     return text;
 }
@@ -653,7 +653,9 @@ void Tools::sortNodes(QList<SvgElement> &nodeList)
 
 QVariantHash Tools::initDefaultStyleHash()
 {
-    QVariantHash hash;
+    static QVariantHash hash;
+    if (!hash.isEmpty())
+        return hash;
     hash.insert("font-style", "normal");
     hash.insert("font-variant", "normal");
     hash.insert("font-weight", "normal");
@@ -756,6 +758,7 @@ QList<SvgElement> Tools::childElemList(XMLDocument *doc)
 QList<SvgElement> Tools::childElemList(SvgElement node)
 {
     QList<SvgElement> list;
+    list.reserve(node.childElementCount());
     for (XMLElement *child = node.xmlElement()->FirstChildElement();
             child; child = child->NextSiblingElement())
         list << SvgElement(child);
@@ -868,7 +871,7 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
 
     QString value;
     QString unit;
-    if (text.right(1) == QLatin1String("%")) {
+    if (text.at(1) == QLatin1Char('%')) {
         unit = "%";
         value = text.mid(0, text.size() - 1);
     } else if (text.at(text.size()-1).isLetter()) {

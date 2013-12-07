@@ -1,78 +1,17 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
-#include <QMap>
 // TODO: remove regex as much as possible
 #include <QRegExp>
 #include <QStringList>
-#include <QTime>
-#include <QVariantHash>
 #include <QRectF>
 #include <QtDebug>
 // TODO: remove this
 #include <QtGui/QGenericMatrix>
 
-typedef QMap<QString, QString> StringMap;
-typedef QHash<QString, QString> StringHash;
+#include "svgelement.h"
+
 typedef QGenericMatrix<3,3,qreal> TransMatrix;
-
-#include "tinyxml2.h"
-
-#define ToChar(x) x.toStdString().c_str()
-
-using namespace tinyxml2;
-class SvgElement;
-
-// QDomElement like wrapper class for XMLElement
-class SvgElement
-{
-public:
-    SvgElement();
-    SvgElement(XMLElement *elem);
-
-    bool hasAttribute(const char *name) const;
-    bool hasAttribute(const QString &name) const;
-    bool hasAttributes(const QStringList &list) const;
-    bool hasChildren() const;
-    bool isContainer() const;
-    bool isGroup() const;
-    bool isNull() const;
-    bool isReferenced() const;
-    bool isText() const;
-    double doubleAttribute(const QString &name) const;
-    int attributesCount() const;
-    int childElementCount() const;
-    QList<SvgElement> childElemList() const;
-    QString attribute(const QString &name) const;
-    QString genStyleString() const;
-    QString id() const;
-    StringMap attributesMap() const;
-    QStringList attributesList() const;
-    QString tagName() const;
-    StringHash styleHash() const;
-    SvgElement insertBefore(const SvgElement &elemNew, const SvgElement &elemBefore) const;
-    SvgElement parentNode() const;
-    void appendChild(const SvgElement &elem);
-    void clear();
-    void removeAttribute(const QString &name);
-    void removeAttributes(const QStringList &list);
-    void removeChild(const SvgElement &elem);
-    void setAttribute(const QString &name, const QString &value);
-    void setStylesFromHash(const StringHash &hash);
-    void setTagName(const QString &name);
-
-    XMLElement* xmlElement() const { return m_elem; }
-    bool operator==(const SvgElement &elem1) {
-        return elem1.xmlElement() == this->xmlElement();
-    }
-    bool operator!=(const SvgElement &elem1) {
-        return elem1.xmlElement() != this->xmlElement();
-    }
-    void operator=(const SvgElement &elem) { m_elem = elem.xmlElement(); }
-
-private:
-    XMLElement *m_elem;
-};
 
 class Transform
 {
@@ -109,7 +48,7 @@ public:
     static SvgElement svgElement(XMLDocument *doc);
     static SvgElement defsElement(XMLDocument *doc, SvgElement &svgElem);
     static QList<XMLNode *> childNodeList(XMLNode *node);
-    static QList<SvgElement> childElemList(SvgElement node);
+    static QList<SvgElement> childElemList(const SvgElement &node);
     static QList<SvgElement> childElemList(XMLDocument *doc);
     static QString convertUnitsToPx(const QString &text, qreal baseValue = 0);
     static QString replaceColorName(const QString &color);

@@ -45,7 +45,7 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
         if (currElem.hasAttribute("xlink:href")) {
             QString value = currElem.attribute("xlink:href");
             value.remove(0,1); // #
-            QString elemId = currElem.attribute("id");
+            QString elemId = currElem.id();
             foreach (const QString &key, hash.keys()) {
                 if (value == key) {
                     if (hash.value(key) != elemId)

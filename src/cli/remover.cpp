@@ -125,7 +125,7 @@ void Remover::removeUnusedXLinks()
 void Remover::removeDuplicatedDefs()
 {
     StringHash xlinkToReplace;
-    QList<SvgElement> defsList = Tools::childElemList(defsElement());
+    QList<SvgElement> defsList = defsElement().childElemList();
 
     // using of structure is faster than actual node accessing
     QList<DefsElemStruct> elemStructList;
@@ -314,7 +314,7 @@ void Remover::removeElements()
     }
 
     // ungroup "a" element
-    QList<SvgElement> elemList = Tools::childElemList(svgElement());
+    QList<SvgElement> elemList = svgElement().childElemList();
     SvgElement prevElem;
     while (!elemList.empty()) {
         SvgElement currElem = elemList.takeFirst();
@@ -329,13 +329,13 @@ void Remover::removeElements()
         }
         prevElem = currElem;
         if (currElem.hasChildren())
-            elemList << Tools::childElemList(currElem);
+            elemList << currElem.childElemList();
     }
 
     // distributions-pentubuntu.svg
     // FIXME: switch style attr have to be cleaned before it, and other attr have to be removed
     qreal stdDevLimit = Keys::get().doubleNumber(Key::StdDeviation);
-    elemList = Tools::childElemList(svgElement());
+    elemList = svgElement().childElemList();
     while (!elemList.empty()) {
         SvgElement currElem = elemList.takeFirst();
 //        if (currElem.tagName() == "switch") {
@@ -368,7 +368,7 @@ void Remover::removeElements()
             }
         }
         if (currElem.hasChildren())
-            elemList << Tools::childElemList(currElem);
+            elemList << currElem.childElemList();
     }
 }
 

@@ -359,7 +359,7 @@ void Replacer::trimIds()
         SvgElement currElem = list.takeFirst();
         if (currElem.hasAttribute("id")) {
             QString newId = QString::number(pos, 16);
-            idHash.insert(currElem.attribute("id"), newId);
+            idHash.insert(currElem.id(), newId);
             currElem.setAttribute("id", newId);
             pos++;
         }
@@ -667,7 +667,7 @@ void Replacer::mergeGradients()
                     if (lineGradElem.hasChildren()) {
                         foreach (const SvgElement &elem, lineGradElem.childElemList())
                             currElem.appendChild(elem);
-                        xlinkHash.insert(lineGradElem.attribute("id"), currElem.attribute("id"));
+                        xlinkHash.insert(lineGradElem.id(), currElem.id());
                         defsElement().removeChild(lineGradElem);
                     }
                 }

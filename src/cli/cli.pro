@@ -15,6 +15,7 @@ SOURCES += \
     paths.cpp \
     remover.cpp \
     replacer.cpp \
+    svgelement.cpp \
     tinyxml2.cpp \
     tools.cpp
 
@@ -24,5 +25,6 @@ HEADERS += \
     paths.h \
     remover.h \
     replacer.h \
+    svgelement.h \
     tinyxml2.h \
     tools.h

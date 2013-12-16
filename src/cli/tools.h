@@ -25,15 +25,10 @@ public:
 
 private:
     QList<qreal> m_points;
-    bool m_isXMirror;
-    bool m_isYMirror;
     qreal m_baseX;
     qreal m_baseY;
-    qreal m_angle;
     qreal m_xScale;
     qreal m_yScale;
-    qreal m_xMove;
-    qreal m_yMove;
 
     QList<qreal> mergeMatrixes(QString text);
 };

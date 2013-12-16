@@ -17,7 +17,7 @@ void Remover::cleanSvgElementAttribute()
 {
     bool isXlinkUsed = false;
     QList<SvgElement> nodeList = svgElement().childElemList();
-    while (!nodeList.empty()) {
+    while (!nodeList.isEmpty()) {
         SvgElement currElem = nodeList.takeFirst();
         if (currElem.hasAttribute("xlink:href")) {
             isXlinkUsed = true;
@@ -63,7 +63,7 @@ void Remover::removeUnusedDefs()
                 defsIdList << elem.id();
 
         QList<SvgElement> list = svgElement().childElemList();
-        while (!list.empty()) {
+        while (!list.isEmpty()) {
             SvgElement currElem = list.takeFirst();
             if (currElem.hasAttribute("xlink:href"))
                 defsIdList.remove(currElem.attribute("xlink:href").remove("#"));
@@ -89,7 +89,7 @@ void Remover::removeUnusedXLinks()
     QSet<QString> xlinkSet;
     QSet<QString> idSet;
     QList<SvgElement> list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.hasAttribute("xlink:href")) {
             if (!currElem.attribute("xlink:href").contains("base64"))
@@ -108,7 +108,7 @@ void Remover::removeUnusedXLinks()
     }
 
     list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.hasAttribute("xlink:href")) {
             if (xlinkSet.contains(currElem.attribute("xlink:href").remove("#"))) {
@@ -188,7 +188,7 @@ void Remover::removeUnreferencedIds()
     QStringList urlAttrList = Props::linkableStyleAttributes;
 
     QList<SvgElement> list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement elem = list.takeFirst();
         QStringList attrList = elem.attributesList();
 
@@ -229,7 +229,7 @@ void Remover::removeUnreferencedIds()
 
     // remove
     list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
 
         if (m_allIdList.contains(currElem.id()))
@@ -243,19 +243,20 @@ void Remover::removeUnreferencedIds()
     }
 }
 
+// TODO: should be in 'while', while no elem is removed
 void Remover::removeElements()
 {
     // have to use XMLNode insted of SvgElement, because after converting to element
     // detecting and removing of "comment" or "processing instruction" is impossible
     QList<XMLNode *> nodeList = Tools::childNodeList(document());
-    while (!nodeList.empty()) {
+    while (!nodeList.isEmpty()) {
         XMLNode *currNode = nodeList.takeFirst();
         SvgElement currElem = SvgElement(currNode->ToElement());
 
         bool removeThisNode = false;
         if (!currElem.isNull()) {
             QString currTag = currElem.tagName();
-            if (Props::containers.contains(currTag) && !currElem.hasChildren()
+            if (currElem.isContainer() && !currElem.hasChildren()
                 && !Keys::get().flag(Key::KeepEmptyContainer))
                 removeThisNode = true;
             else if (currTag == "metadata" && !Keys::get().flag(Key::KeepMetadata))
@@ -276,6 +277,8 @@ void Remover::removeElements()
             else if (currTag == "title")
                 removeThisNode = true;
             else if (currTag == "desc")
+                removeThisNode = true;
+            else if (currTag == "script")
                 removeThisNode = true;
             else if (currTag == "defs" && !currElem.hasChildren())
                 removeThisNode = true;
@@ -299,12 +302,9 @@ void Remover::removeElements()
             removeThisNode = true;
         else if (currNode->ToDeclaration() != 0 && !Keys::get().flag(Key::KeepProcessingInstruction))
             removeThisNode = true;
-        else if (QString(currNode->Value()).contains(QRegExp("DOCTYPE|ENTITY|\\]\\>")) && !Keys::get().flag(Key::KeepProlog))
+        else if (QString(currNode->Value()).contains(QRegExp("!DOCTYPE|!ENTITY|\\]\\>"))
+                 && !Keys::get().flag(Key::KeepProlog))
             removeThisNode = true;
-        else if (currNode->ToText() != 0) {
-            if (currNode->ToText()->Value() == 0)
-                removeThisNode = true;
-        }
 
         if (removeThisNode)
             currNode->Parent()->DeleteChild(currNode);
@@ -315,28 +315,28 @@ void Remover::removeElements()
 
     // ungroup "a" element
     QList<SvgElement> elemList = svgElement().childElemList();
-    SvgElement prevElem;
-    while (!elemList.empty()) {
+    while (!elemList.isEmpty()) {
         SvgElement currElem = elemList.takeFirst();
         if (currElem.tagName() == "a") {
             if ((currElem.hasAttribute("id") && currElem.attributesCount() == 1)
                 || currElem.attributesCount() == 0)
             {
-                foreach (const SvgElement &elem, currElem.childElemList())
-                    prevElem.insertBefore(elem, currElem);
+                foreach (const SvgElement &childElem, currElem.childElemList())
+                    currElem.parentNode().insertBefore(childElem, currElem);
                 currElem.parentNode().removeChild(currElem);
+                currElem.clear();
             }
         }
-        prevElem = currElem;
-        if (currElem.hasChildren())
-            elemList << currElem.childElemList();
+        if (!currElem.isNull())
+            if (currElem.hasChildren())
+                elemList << currElem.childElemList();
     }
 
     // distributions-pentubuntu.svg
     // FIXME: switch style attr have to be cleaned before it, and other attr have to be removed
     qreal stdDevLimit = Keys::get().doubleNumber(Key::StdDeviation);
     elemList = svgElement().childElemList();
-    while (!elemList.empty()) {
+    while (!elemList.isEmpty()) {
         SvgElement currElem = elemList.takeFirst();
 //        if (currElem.tagName() == "switch") {
 //            QStringList attrList = currElem.attributesList();
@@ -413,6 +413,11 @@ bool Remover::isInvisibleElementsExist(const SvgElement &elem)
             return true;
     }
 
+    if (elem.hasAttribute("visibility")) {
+        if (elem.attribute("visibility") == "hidden")
+            return true;
+    }
+
     // remove "path" elements with empty "d" attr
     if (tagName == "path")
         if (elem.attribute("d").isEmpty())
@@ -460,7 +465,7 @@ bool Remover::isInvisibleElementsExist(const SvgElement &elem)
 void Remover::removeAttributes()
 {
     QList<SvgElement> list = Tools::childElemList(document());
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         QStringList attrList = currElem.attributesList();
         if (!attrList.isEmpty()) {
@@ -487,6 +492,8 @@ void Remover::removeAttributes()
                 if (currElem.attribute("spreadMethod") == "pad")
                     currElem.removeAttribute("spreadMethod");
             }
+
+            // TODO: 'display' attr remove
 
             // remove empty attributes
             for (const XMLAttribute *child = currElem.xmlElement()->FirstAttribute(); child;
@@ -516,6 +523,7 @@ void Remover::processStyleAttr(SvgElement elem)
     // TODO: process svgElement() too
     if (elem.isNull()) {
         elem = svgElement();
+        // TODO: maybe mark all used elements at start
         m_usedElemList = Tools::usedElemList(svgElement());
     }
 
@@ -525,7 +533,7 @@ void Remover::processStyleAttr(SvgElement elem)
         parentHash.insert(currHash.keys().at(i), currHash.value(currHash.keys().at(i)));
 
     QList<SvgElement> nodeList = elem.childElemList();
-    while (!nodeList.empty()) {
+    while (!nodeList.isEmpty()) {
         SvgElement currElem = nodeList.takeFirst();
         StringHash hash = currElem.styleHash();
         cleanStyle(currElem, hash);
@@ -622,7 +630,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash &hash)
         hash.remove("clip-rule");
 
     // 'enable-background' is only applicable to container elements
-    if (!Props::containers.contains(elem.tagName()))
+    if (!elem.isContainer())
         hash.remove("enable-background");
 
     if (elem.tagName() != "svg" && elem.tagName() != "pattern" && elem.tagName() != "marker")
@@ -705,13 +713,14 @@ void Remover::removeDefaultValue(StringHash &hash, const QString &name)
 
 // TODO: remove "symbol"
 // TODO: apply transform from group
-// rasor_SQL_Backup.svg
+//       rasor_SQL_Backup.svg
+// FIXME: merged groups has equal id
 void Remover::removeGroups()
 {
     // get all 'use' links to prevent ungouping element linked to this use
     m_usedElemList = Tools::usedElemList(svgElement());
     QList<SvgElement> nodeList = svgElement().childElemList();
-    while (!nodeList.empty()) {
+    while (!nodeList.isEmpty()) {
         SvgElement currElem = nodeList.takeFirst();
         // ungroup only if: current group is not linked to any 'use',
         // not contains mask, clip-path, filter, opacity attributes
@@ -728,7 +737,7 @@ void Remover::removeGroups()
     nodeList = svgElement().childElemList();
     QList<SvgElement> gNodeList;
     SvgElement lastGNode;
-    while (!nodeList.empty()) {
+    while (!nodeList.isEmpty()) {
         SvgElement currElem = nodeList.takeFirst();
         if (currElem.isGroup()) {
             if (lastGNode.isNull()) {
@@ -767,7 +776,7 @@ void Remover::removeGroup(SvgElement &elem)
 
     SvgElement newGroupElem;
     QList<SvgElement> nodeList = elem.childElemList();
-    while (!nodeList.empty()) {
+    while (!nodeList.isEmpty()) {
         SvgElement currElem = nodeList.takeFirst();
         // ungroup only if: current group is not linked to any 'use',
         // not contains mask, clip-path, filter, opacity attributes

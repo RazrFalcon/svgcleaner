@@ -8,9 +8,9 @@ class BaseCleaner
 public:
     BaseCleaner(XMLDocument *doc);
     virtual ~BaseCleaner() {}
-    XMLDocument* document();
-    SvgElement svgElement();
-    SvgElement defsElement();
+    XMLDocument* document() const;
+    SvgElement svgElement() const;
+    SvgElement defsElement() const;
     void updateXLinks(const StringHash &hash);
 
 private:

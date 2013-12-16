@@ -7,17 +7,17 @@ BaseCleaner::BaseCleaner(XMLDocument *doc)
     m_defsElem = Tools::defsElement(doc, m_svgElem);
 }
 
-XMLDocument* BaseCleaner::document()
+XMLDocument* BaseCleaner::document() const
 {
     return m_doc;
 }
 
-SvgElement BaseCleaner::svgElement()
+SvgElement BaseCleaner::svgElement() const
 {
     return m_svgElem;
 }
 
-SvgElement BaseCleaner::defsElement()
+SvgElement BaseCleaner::defsElement() const
 {
     return m_defsElem;
 }
@@ -28,7 +28,7 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
     xlinkStyles << "fill" << "stroke";
 
     QList<SvgElement> list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         for (int i = 0; i < xlinkStyles.size(); ++i) {
             if (currElem.hasAttribute(xlinkStyles.at(i))) {

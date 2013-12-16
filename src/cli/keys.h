@@ -44,7 +44,7 @@ namespace Key {
     static const QString KeepAbsolutePaths = "--keep-absolute-paths";
     static const QString KeepUnusedSymbolsFromPath = "--keep-unused-symbols";
     static const QString KeepEmptySegments = "--keep-empty-segments";
-    static const QString KeepLinesTo = "--keep-lineto";
+    static const QString KeepOriginalCurveTo = "--keep-curveto";
 
     static const QString NoViewbox = "--no-viewbox";
     static const QString JoinStyleAttributes = "--join-style-atts";
@@ -52,7 +52,6 @@ namespace Key {
     static const QString SkipRRGGBBToRGB = "--skip-rrggbb-to-rgb";
     static const QString KeepBasicShapes = "--keep-basic-shapes";
     static const QString KeepTransforms = "--keep-transform";
-    static const QString SkipTransformsApplying = "--skip-transform-appl";
     static const QString KeepUnsortedDefs = "--keep-unsorted-defs";
     static const QString SkipRoundingNumbers = "--skip-rounding-numbers";
     static const QString TransformPrecision = "--transfs-prec";
@@ -60,11 +59,6 @@ namespace Key {
     static const QString AttributesPrecision = "--attrs-prec";
 
     static const QString NotCompact = "--not-compact";
-
-//    static const QString ConvertCurvesCs = "--convert-curves-cs";
-//    static const QString ConvertCurvesToLines = "--convert-curves-lines";
-//    static const QString convertCurvesQT = "--convert-curves-qt";
-//    static const QString RoundNumbersToInt = "--round-numbers-int";
 }
 
 // singleton

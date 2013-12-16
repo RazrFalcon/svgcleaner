@@ -43,7 +43,7 @@ Keys::Keys()
     keyHash.insert(Key::KeepAbsolutePaths, false);
     keyHash.insert(Key::KeepUnusedSymbolsFromPath, false);
     keyHash.insert(Key::KeepEmptySegments, false);
-    keyHash.insert(Key::KeepLinesTo, false);
+    keyHash.insert(Key::KeepOriginalCurveTo, false);
 
     keyHash.insert(Key::NoViewbox, false);
     keyHash.insert(Key::JoinStyleAttributes, false);
@@ -51,7 +51,6 @@ Keys::Keys()
     keyHash.insert(Key::SkipRRGGBBToRGB, false);
     keyHash.insert(Key::KeepBasicShapes, false);
     keyHash.insert(Key::KeepTransforms, false);
-    keyHash.insert(Key::SkipTransformsApplying, false);
     keyHash.insert(Key::KeepUnsortedDefs, false);
 
     keyHash.insert(Key::SkipRoundingNumbers, false);

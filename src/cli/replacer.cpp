@@ -6,6 +6,7 @@
 // TODO: round style attributes
 // TODO: replace equal 'fill', 'stroke', 'stop-color', 'flood-color' and 'lighting-color' attr
 //       with 'color' attr
+//       addon_the_couch.svg
 // TODO: sort functions like in main
 // TODO: try to group similar elems to use
 //       gaerfield_data-center.svg, alnilam_Stars_Pattern.svg
@@ -47,7 +48,7 @@ void Replacer::convertSizeToViewbox()
 void Replacer::processPaths()
 {
     QList<SvgElement> list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
 
         bool removed = false;
@@ -97,7 +98,7 @@ void Replacer::convertUnits()
 
     QSet<QString> attributes = Props::digitList;
     QList<SvgElement> list = Tools::childElemList(document());
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         QString currTag = currElem.tagName();
         QStringList attrList = currElem.attributesList();
@@ -140,7 +141,7 @@ void Replacer::convertCDATAStyle()
 {
     QStringList styleList;
     QList<XMLNode *> nodeList = Tools::childNodeList(document());
-    while (!nodeList.empty()) {
+    while (!nodeList.isEmpty()) {
         XMLNode *currNode = nodeList.takeFirst();
         if (currNode->ToElement() != 0) {
             if (!strcmp(currNode->ToElement()->Name(), "style")) {
@@ -173,7 +174,7 @@ void Replacer::convertCDATAStyle()
     }
 
     QList<SvgElement> list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.hasAttribute("class")) {
             StringHash newHash;
@@ -202,7 +203,7 @@ void Replacer::prepareDefs()
 {
     // move all gradient, filters, etc. to 'defs' element
     QList<SvgElement> list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.parentNode() != defsElement()) {
             if (Props::defsList.contains(currElem.tagName()))
@@ -214,7 +215,7 @@ void Replacer::prepareDefs()
 
     // ungroup all defs in defs
     list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.parentNode().tagName() == "defs"
             && currElem.parentNode() != defsElement()) {
@@ -234,7 +235,7 @@ void Replacer::fixWrongAttr()
 
     QList<SvgElement> list = svgElement().childElemList();
     QStringList tmpList = QStringList() << "fill" << "stroke";
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         QString currTag = currElem.tagName();
 
@@ -299,7 +300,7 @@ void Replacer::fixWrongAttr()
 void Replacer::finalFixes()
 {
     QList<SvgElement> list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         QString currTag = currElem.tagName();
 
@@ -355,7 +356,7 @@ void Replacer::trimIds()
     int pos = 0;
     StringHash idHash;
     QList<SvgElement> list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.hasAttribute("id")) {
             QString newId = QString::number(pos, 16);
@@ -368,7 +369,7 @@ void Replacer::trimIds()
     }
 
     list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         foreach (const QString &attrName, Props::linkableStyleAttributes) {
             if (currElem.hasAttribute(attrName)) {
@@ -396,7 +397,7 @@ void Replacer::calcElemAttrCount(const QString &text)
     int elemCount = 0;
     int attrCount = 0;
     QList<SvgElement> list = Tools::childElemList(document());
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         elemCount++;
         attrCount += currElem.attributesCount();
@@ -422,7 +423,7 @@ void Replacer::sortDefs()
 void Replacer::roundDefs()
 {
     QList<SvgElement> list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         QStringList attrList = currElem.attributesList();
 
@@ -496,7 +497,7 @@ void Replacer::roundDefs()
 void Replacer::convertBasicShapes()
 {
     QList<SvgElement> list = svgElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         QString ctag = currElem.tagName();
         if (   ctag == "polygon" || ctag == "polyline" || ctag == "line"
@@ -596,11 +597,7 @@ void Replacer::convertBasicShapes()
                     seg.srcCmd = true;
                     segmentList.append(seg);
                 }
-
-                Path path;
-                path.setSegments(segmentList);
-                dAttr = path.segmentsToPath();
-
+                dAttr = Path().segmentsToPath(segmentList);
                 currElem.removeAttribute("points");
             }
             if (!dAttr.isEmpty()) {
@@ -618,7 +615,7 @@ void Replacer::splitStyleAttr()
 {
     QList<SvgElement> list = Tools::childElemList(document());
     bool flag = Keys::get().flag(Key::JoinStyleAttributes);
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if (!flag || currElem.tagName().contains("feFlood")) {
             if (currElem.hasAttribute("style")) {
@@ -645,18 +642,30 @@ void Replacer::mergeGradients()
 {
     QStringList linkList;
     QList<SvgElement> list = defsElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
-        if (currElem.tagName() == "radialGradient" || currElem.tagName() == "linearGradient") {
-            if (currElem.hasAttribute("xlink:href")) {
-                linkList << currElem.attribute("xlink:href").remove("#");
+        if (currElem.hasAttribute("xlink:href"))
+            linkList << currElem.attribute("xlink:href").remove("#");
+
+    }
+    list = svgElement().childElemList();
+    QStringList attrList = QStringList() << "fill" << "stroke";
+    while (!list.isEmpty()) {
+        SvgElement currElem = list.takeFirst();
+        foreach (const QString &attrName, attrList) {
+            if (currElem.hasAttribute(attrName)) {
+                QString id = currElem.defIdFromAttribute(attrName);
+                if (!id.isEmpty())
+                    linkList << id;
             }
         }
+        if (currElem.hasChildren())
+            list << currElem.childElemList();
     }
 
     list = defsElement().childElemList();
     StringHash xlinkHash;
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if ((currElem.tagName() == "radialGradient" || currElem.tagName() == "linearGradient")
                 && currElem.hasAttribute("xlink:href") && !currElem.hasChildren()) {
@@ -680,7 +689,7 @@ void Replacer::mergeGradients()
 SvgElement Replacer::findLinearGradient(const QString &id)
 {
     QList<SvgElement> list = defsElement().childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.tagName() == "linearGradient" && currElem.id() == id) {
             return currElem;
@@ -708,6 +717,10 @@ SvgElement Replacer::findLinearGradient(const QString &id)
  * </g>
  */
 
+// TODO: move style of main group to svg elem
+// TODO: group elem by transform
+//       Anonymous_Australia.svg
+// TODO: works badly on cbeau_shm_projection_of_circular_motion.svg
 void Replacer::groupElementsByStyles(SvgElement parentElem)
 {
     // first start
@@ -722,7 +735,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
     QStringList ignoreAttrList;
     ignoreAttrList << "clip-path" << "mask" << "filter" << "opacity";
     QList<SvgElement> list = parentElem.childElemList();
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.isGroup())
             groupElementsByStyles(currElem);

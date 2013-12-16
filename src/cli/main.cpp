@@ -62,19 +62,19 @@ void showHelp()
     qDebug() << "  --keep-grad-coords       Disable removing of unneeded gradient attributes.";
     qDebug() << "  --keep-unused-xlinks     Keep XLinks which pointed to nonexistent element.";
     qDebug() << "  --skip-style-group       Group elements by style properties.";
-    qDebug() << "  --skip-ids-trim          Skip triming ot the id attributes into hexadecimal format.";
+    qDebug() << "  --skip-ids-trim          Skip trimming to the id attributes into hexadecimal format.";
 
     qDebug() << "Paths:";
     qDebug() << "  --keep-absolute-paths    Disable absolute to relative coordinates converting in path element.";
     qDebug() << "  --keep-unused-symbols    Keep unused symbols in 'd' attribute from 'path' element.";
     qDebug() << "  --keep-empty-segments    Keep empty segment in path element.";
-    qDebug() << "  --keep-lineto            Disable converting 'lineto' segment to 'vertical lineto/horizontal lineto', when posible.";
+    qDebug() << "  --keep-curveto           Disable converting 'curveto' segment to short one, when possible.";
 
     qDebug() << "Optimization:";
     qDebug() << "  --no-viewbox             Disable 'viewBox' attribute creating from 'height' and 'width' in 'svg' element.";
     qDebug() << "  --join-style-atts        Do not convert style properties into SVG attributes.";
     qDebug() << "  --skip-color-to-rrggbb   Skip converting 'rgb(255,255,255)', 'color-name' into #RRGGBB format.";
-    qDebug() << "  --skip-rrggbb-to-rgb     Skip color converting from #RRGGBB into #RGB format, when posible.";
+    qDebug() << "  --skip-rrggbb-to-rgb     Skip color converting from #RRGGBB into #RGB format, when possible.";
     qDebug() << "  --keep-basic-shapes      Disable converting basic shapes (rect, line, polygon, polyline) into path.";
     qDebug() << "  --keep-transform         Skip merging and simplifying of 'transform' matrices.";
     qDebug() << "  --keep-unsorted-defs     Disable element by name sorting in 'defs' element.";
@@ -87,6 +87,7 @@ void showHelp()
     qDebug() << "  --not-compact            Save svg with only required whitespace and newlines.";
 }
 
+// TODO: remove it, too slow
 void prepareSvg(QString &str)
 {
     str.replace("\t", " ");

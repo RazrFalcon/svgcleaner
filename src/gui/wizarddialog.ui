@@ -1541,10 +1541,10 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_44">
                    <property name="accessibleName">
-                    <string notr="true">keep-lineto</string>
+                    <string notr="true">keep-curveto</string>
                    </property>
                    <property name="text">
-                    <string>Convert lines into horizontal/vertical equivalents when possible</string>
+                    <string>Convert 'curveto' segment to short one, when possible</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>

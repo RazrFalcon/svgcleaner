@@ -55,16 +55,15 @@ class Path
 public:
     explicit Path() {}
     void processPath(SvgElement elem);
-    void setSegments(const QList<Segment> &list);
-    QString segmentsToPath();
-    void segmentsToRelative();
+    QString segmentsToPath(QList<Segment> &segList);
 
 private:
-    QList<Segment> m_segmentList;
-    void splitToSegments(const QString &path);
-    void processSegments();
-    void segmentsToAbsolute();
+    QList<Segment> splitToSegments(const QString &path);
+    void processSegments(QList<Segment> &segList);
+    void segmentsToAbsolute(QList<Segment> &segList);
+    void segmentsToRelative(QList<Segment> &segList);
     QString trimPath(const QString &path);
+    bool isZero(double value);
 };
 
 #endif // PATHS_H

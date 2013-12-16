@@ -5,38 +5,14 @@
 
 Transform::Transform(const QString &text)
 {
+    Q_ASSERT(text.isEmpty() == false);
     if (text.isEmpty())
         return;
     m_points = mergeMatrixes(text);
 
-    // set default values
-    m_angle  = 0;
-    m_xScale = 0;
-    m_yScale = 0;
-    m_xMove  = 0;
-    m_yMove  = 0;
-    m_baseX  = 0;
-    m_baseY  = 0;
-    m_isXMirror = false;
-    m_isYMirror = false;
-
     // calculate
-    m_angle  = atan(m_points.at(1) / m_points.at(3));
     m_xScale = sqrt(pow(m_points.at(0), 2) + pow(m_points.at(2), 2));
     m_yScale = sqrt(pow(m_points.at(1), 2) + pow(m_points.at(3), 2));
-    if (m_points.at(0) < 0) {
-        m_isXMirror = true;
-        m_xMove = -m_points.at(4);
-    } else {
-        m_xMove = m_points.at(4);
-    }
-
-    if (m_points.at(3) < 0) {
-        m_isYMirror = true;
-        m_yMove = -m_points.at(5);
-    } else {
-        m_yMove = m_points.at(5);
-    }
 }
 
 void Transform::setOldXY(qreal prevX, qreal prevY)
@@ -48,18 +24,12 @@ void Transform::setOldXY(qreal prevX, qreal prevY)
 
 qreal Transform::newX() const
 {
-    qreal value = m_xMove + m_xScale*(cos(m_angle)*m_baseX - sin(m_angle)*m_baseY);
-    if (m_isXMirror)
-        value = -value;
-   return value;
+    return m_points.at(0)*m_baseX + m_points.at(2)*m_baseY + m_points.at(4);
 }
 
 qreal Transform::newY() const
 {
-    qreal value = m_yMove + m_yScale*(sin(m_angle)*m_baseX + cos(m_angle)*m_baseY);
-    if (m_isYMirror)
-        value = -value;
-    return value;
+    return m_points.at(1)*m_baseX + m_points.at(3)*m_baseY + m_points.at(5);
 }
 
 // http://www.w3.org/TR/SVG/coords.html#EstablishingANewUserSpace
@@ -135,6 +105,7 @@ QList<qreal> Transform::mergeMatrixes(QString text)
         newMatrix = newMatrix * transMatrixList.at(i);
 
     QList<qreal> pointList;
+    pointList.reserve(6);
     pointList << newMatrix(0,0) << newMatrix(1,0) << newMatrix(0,1)
               << newMatrix(1,1) << newMatrix(0,2) << newMatrix(1,2);
     return pointList;
@@ -159,6 +130,8 @@ QString Transform::simplified() const
             transform = QString("translate(%1)")
                         .arg(Tools::roundNumber(pt.at(4), Tools::TRANSFORM));
         }
+        if (transform == "translate(0)" || transform == "translate(0 0)")
+            transform.clear();
     } // [sx 0 0 sy 0 0] = scale
     else if (pt.at(1) == 0 && pt.at(2) == 0 && pt.at(4) == 0 && pt.at(5) == 0) {
         if (pt.at(0) != pt.at(3)) {
@@ -202,7 +175,7 @@ QString Transform::simplified() const
 
 qreal Transform::scaleFactor() const
 {
-    return m_xScale * m_yScale;
+    return m_xScale;
 }
 
 
@@ -214,7 +187,7 @@ QString Tools::roundNumber(qreal value, RoundType type)
     double fractpart, intpart;
     fractpart = modf(value, &intpart);
     if (qFuzzyCompare(fractpart, 0))
-        return QString::number(value);
+        return QString::number((int)value);
 
     int precision;
     if (type == COORDINATE)
@@ -246,8 +219,6 @@ QString Tools::roundNumber(qreal value, RoundType type)
     // -0.1 -> -.1
     else if (text.midRef(0, 3) == QLatin1String("-0."))
         text.remove(1, 1);
-    if (text.contains(QLatin1Char('e')))
-        text.replace(QLatin1String("e-0"), QLatin1String("e-"));
 
     if (text == QLatin1String("-0"))
         text = QLatin1String("0");
@@ -515,7 +486,7 @@ QSet<QString> Tools::usedElemList(const SvgElement &svgElem)
 
     QSet<QString> usedList;
     QList<SvgElement> list = Tools::childElemList(svgElem);
-    while (!list.empty()) {
+    while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.tagName() == "use") {
             if (currElem.hasAttribute("xlink:href"))
@@ -676,7 +647,13 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
 
     QString value;
     QString unit;
-    if (text.at(1) == QLatin1Char('%')) {
+    if (text.size() == 1) {
+        if (text.at(0).isDigit()) {
+            value = text;
+        } else {
+            value = "0";
+        }
+    } else if (text.at(1) == QLatin1Char('%')) {
         unit = "%";
         value = text.mid(0, text.size() - 1);
     } else if (text.at(text.size()-1).isLetter()) {

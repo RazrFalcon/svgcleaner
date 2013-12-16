@@ -64,18 +64,6 @@ QStringList SvgElement::attributesList() const
     return list;
 }
 
-QString SvgElement::genStyleString() const
-{
-    QString str;
-    foreach (const QString &attr, Props::styleAttributes) {
-        QString value = this->attribute(attr);
-        if (!value.isEmpty())
-            str += attr + ":" + value + ";";
-    }
-    str.chop(1);
-    return str;
-}
-
 void SvgElement::setStylesFromHash(const StringHash &hash)
 {
     foreach (const QString &attr, hash.keys())
@@ -93,6 +81,14 @@ void SvgElement::setAttribute(const QString &name, const QString &value)
 QString SvgElement::id() const
 {
     return attribute("id");
+}
+
+QString SvgElement::defIdFromAttribute(const QString &name)
+{
+    QString id = attribute(name);
+    if (!id.startsWith("url("))
+        return QString();
+    return id.mid(5, id.size()-6);
 }
 
 bool SvgElement::hasAttribute(const QString &name) const

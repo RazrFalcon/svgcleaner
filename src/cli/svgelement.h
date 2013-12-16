@@ -34,8 +34,8 @@ public:
     int childElementCount() const;
     QList<SvgElement> childElemList() const;
     QString attribute(const QString &name) const;
-    QString genStyleString() const;
     QString id() const;
+    QString defIdFromAttribute(const QString &name);
     StringMap attributesMap() const;
     QStringList attributesList() const;
     QString tagName() const;

@@ -8,6 +8,7 @@
 // TODO: remove "feBlend" element with in or in2 linked to empty object
 //       babayasin_air_hammer.svg
 // TODO: xlink:href could not contains uri with spaces, remove this elements
+// TODO: remove "symbol"
 
 Remover::Remover(XMLDocument *doc) : BaseCleaner(doc)
 {
@@ -121,7 +122,6 @@ void Remover::removeUnusedXLinks()
 }
 
 // TODO: detect not only equal, but with diff less than 1%
-// TODO: add other defs
 void Remover::removeDuplicatedDefs()
 {
     StringHash xlinkToReplace;
@@ -135,14 +135,18 @@ void Remover::removeDuplicatedDefs()
         elemStructList << es;
     }
 
+    // process gradients
     for (int i = 0; i < elemStructList.count(); ++i) {
         DefsElemStruct des1 = elemStructList.at(i);
         QString id1 = des1.attrMap.value("id");
         if (des1.tagName == "linearGradient" || des1.tagName == "radialGradient") {
             for (int j = i; j < elemStructList.count(); ++j) {
                 DefsElemStruct des2 = elemStructList.at(j);
-                if (des1.tagName == des2.tagName && des1.attrMap.value("id") != des2.attrMap.value("id")) {
-                    if ((des1.hasChildren && des2.hasChildren) || (!des1.hasChildren && !des2.hasChildren)) {
+                QString id2 = des2.attrMap.value("id");
+                if (des1.tagName == des2.tagName && id1 != id2) {
+                    if ((des1.hasChildren && des2.hasChildren)
+                        || (!des1.hasChildren && !des2.hasChildren))
+                    {
                         bool isRemove = false;
                         if (des1.tagName == "linearGradient")
                             isRemove = Tools::isAttributesEqual(des1.attrMap, des2.attrMap,
@@ -155,7 +159,6 @@ void Remover::removeDuplicatedDefs()
                                 isRemove = Tools::isGradientsEqual(des1.elem, des2.elem);
 
                             if (isRemove) {
-                                QString id2 = des2.attrMap.value("id");
                                 if (xlinkToReplace.values().contains(id2)) {
                                     for (int k = 0; k < xlinkToReplace.keys().count(); ++k) {
                                         if (xlinkToReplace.value(xlinkToReplace.keys().at(k)) == id2)
@@ -173,6 +176,37 @@ void Remover::removeDuplicatedDefs()
             }
         }
     }
+
+    // process feGaussianBlur filter
+    for (int i = 0; i < elemStructList.count(); ++i) {
+        DefsElemStruct des1 = elemStructList.at(i);
+        QString id1 = des1.attrMap.value("id");
+        if (des1.tagName == "filter") {
+            for (int j = i; j < elemStructList.count(); ++j) {
+                DefsElemStruct des2 = elemStructList.at(j);
+                QString id2 = des2.attrMap.value("id");
+                if (des1.tagName == des2.tagName && id1 != id2
+                    && des1.elem.childElementCount() == 1 && des2.elem.childElementCount() == 1)
+                {
+                    if (Tools::isAttributesEqual(des1.attrMap, des2.attrMap, Props::filter)) {
+                        SvgElement child1 = des1.elem.firstChild();
+                        SvgElement child2 = des2.elem.firstChild();
+                        if (   child1.tagName() == "feGaussianBlur"
+                            && child2.tagName() == "feGaussianBlur") {
+                            if (child1.attribute("stdDeviation")
+                                    == child2.attribute("stdDeviation")) {
+                                xlinkToReplace.insert(id2, id1);
+                                defsElement().removeChild(des2.elem);
+                                elemStructList.removeAt(j);
+                                j--;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     updateXLinks(xlinkToReplace);
 }
 
@@ -302,7 +336,7 @@ void Remover::removeElements()
             removeThisNode = true;
         else if (currNode->ToDeclaration() != 0 && !Keys::get().flag(Key::KeepProcessingInstruction))
             removeThisNode = true;
-        else if (QString(currNode->Value()).contains(QRegExp("!DOCTYPE|!ENTITY|\\]\\>"))
+        else if (QString(currNode->Value()).contains(QRegExp("(!|^)DOCTYPE|!ENTITY|\\]\\>"))
                  && !Keys::get().flag(Key::KeepProlog))
             removeThisNode = true;
 
@@ -460,51 +494,57 @@ bool Remover::isInvisibleElementsExist(const SvgElement &elem)
     return false;
 }
 
-// TODO: remove 'class' attr which has linked to empty object
-// aaha_Gear.svg
+// TODO: process 'shape-rendering' attribute
 void Remover::removeAttributes()
 {
     QList<SvgElement> list = Tools::childElemList(document());
     while (!list.isEmpty()) {
-        SvgElement currElem = list.takeFirst();
-        QStringList attrList = currElem.attributesList();
+        SvgElement elem = list.takeFirst();
+        QStringList attrList = elem.attributesList();
         if (!attrList.isEmpty()) {
             // sodipodi:type="inkscape:offset" supported only by inkscape,
             // and its creates problems in other renders
             if (!Keys::get().flag(Key::KeepInkscapeAttributes))
-                cleanAttribute(currElem, "inkscape", attrList);
+                cleanAttribute(elem, "inkscape", attrList);
 
             if (!Keys::get().flag(Key::KeepSodipodiAttributes))
-                cleanAttribute(currElem, "sodipodi", attrList);
+                cleanAttribute(elem, "sodipodi", attrList);
 
             if (!Keys::get().flag(Key::KeepIllustratorAttributes)) {
-                cleanAttribute(currElem, "i:", attrList);
-                cleanAttribute(currElem, "a:", attrList);
+                cleanAttribute(elem, "i:", attrList);
+                cleanAttribute(elem, "a:", attrList);
             }
 
             if (!Keys::get().flag(Key::KeepMSVisioAttributes))
-                cleanAttribute(currElem, "v:", attrList);
+                cleanAttribute(elem, "v:", attrList);
 
             if (!Keys::get().flag(Key::KeepCorelDrawAttributes))
-                cleanAttribute(currElem, "c:", attrList);
+                cleanAttribute(elem, "c:", attrList);
 
             if (!Keys::get().flag(Key::KeepDefaultAttributes)) {
-                if (currElem.attribute("spreadMethod") == "pad")
-                    currElem.removeAttribute("spreadMethod");
+                if (elem.attribute("spreadMethod") == "pad")
+                    elem.removeAttribute("spreadMethod");
+                if (elem.tagName() == "clipPath") {
+                    if (elem.attribute("clipPathUnits") == "userSpaceOnUse")
+                        elem.removeAttribute("clipPathUnits");
+                }
+            }
+            if (!elem.isText() && !Keys::get().flag(Key::KeepNotAppliedAttributes)) {
+                elem.removeAttribute("text-align");
             }
 
             // TODO: 'display' attr remove
 
             // remove empty attributes
-            for (const XMLAttribute *child = currElem.xmlElement()->FirstAttribute(); child;
+            for (const XMLAttribute *child = elem.xmlElement()->FirstAttribute(); child;
                  child = child->Next()) {
                 if (child->Value() == 0)
-                    currElem.xmlElement()->DeleteAttribute(child->Name());
+                    elem.xmlElement()->DeleteAttribute(child->Name());
             }
         }
 
-        if (currElem.hasChildren())
-            list << currElem.childElemList();
+        if (elem.hasChildren())
+            list << elem.childElemList();
     }
 }
 
@@ -521,11 +561,8 @@ void Remover::cleanAttribute(SvgElement &elem, const QString &startWith, QString
 void Remover::processStyleAttr(SvgElement elem)
 {
     // TODO: process svgElement() too
-    if (elem.isNull()) {
+    if (elem.isNull())
         elem = svgElement();
-        // TODO: maybe mark all used elements at start
-        m_usedElemList = Tools::usedElemList(svgElement());
-    }
 
     StringHash currHash = elem.styleHash();
     styleHashList << currHash;
@@ -683,7 +720,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash &hash)
     // remove style props which already defined in parent style
     // ignore used/linked elements and opacity
     foreach (const QString &attr, parentHash.keys()) {
-        if (attr != "opacity" && !m_usedElemList.contains(elem.id())) {
+        if (attr != "opacity" && !elem.isUsed()) {
             if (hash.contains(attr))
                 if (hash.value(attr) == parentHash.value(attr))
                     hash.remove(attr);
@@ -711,20 +748,16 @@ void Remover::removeDefaultValue(StringHash &hash, const QString &name)
     }
 }
 
-// TODO: remove "symbol"
-// TODO: apply transform from group
-//       rasor_SQL_Backup.svg
-// FIXME: merged groups has equal id
+// TODO: rewrite
 void Remover::removeGroups()
 {
     // get all 'use' links to prevent ungouping element linked to this use
-    m_usedElemList = Tools::usedElemList(svgElement());
     QList<SvgElement> nodeList = svgElement().childElemList();
     while (!nodeList.isEmpty()) {
         SvgElement currElem = nodeList.takeFirst();
         // ungroup only if: current group is not linked to any 'use',
         // not contains mask, clip-path, filter, opacity attributes
-        if (currElem.tagName() == "g" && !m_usedElemList.contains(currElem.id())
+        if (currElem.isGroup() && !currElem.isUsed()
             && !currElem.hasAttribute("mask") && !currElem.hasAttribute("clip-path")
             && !currElem.hasAttribute("opacity") && !currElem.hasAttribute("filter"))
         {
@@ -745,7 +778,7 @@ void Remover::removeGroups()
                 lastGNode = currElem;
             } else {
                 bool flag = true;
-                if (!currElem.hasAttribute("opacity") && !m_usedElemList.contains(currElem.id())
+                if (!currElem.hasAttribute("opacity") && !currElem.isUsed()
                     && currElem.styleHash() == lastGNode.styleHash() && !currElem.styleHash().isEmpty()
                     && currElem.attribute("transform") == lastGNode.attribute("transform"))
                 {
@@ -780,7 +813,7 @@ void Remover::removeGroup(SvgElement &elem)
         SvgElement currElem = nodeList.takeFirst();
         // ungroup only if: current group is not linked to any 'use',
         // not contains mask, clip-path, filter, opacity attributes
-        if (currElem.tagName() == "g" && !m_usedElemList.contains(currElem.id())
+        if (currElem.isGroup() && !currElem.isUsed()
             && !currElem.hasAttribute("mask") && !currElem.hasAttribute("clip-path")
             && !currElem.hasAttribute("opacity") && !currElem.hasAttribute("filter"))
         {

@@ -26,6 +26,21 @@ bool SvgElement::isText() const
     return Props::textElements.contains(tagName());
 }
 
+bool SvgElement::hasImportantAttrs()
+{
+    int attrCount = attributesCount();
+    if (attrCount == 0)
+        return false;
+    if (attrCount == 1 && hasAttribute("id"))
+        return false;
+    return true;
+}
+
+bool SvgElement::isUsed() const
+{
+    return hasAttribute(CleanerAttr::UsedElement);
+}
+
 bool SvgElement::isContainer() const
 {
     return Props::containers.contains(tagName());
@@ -91,9 +106,36 @@ QString SvgElement::defIdFromAttribute(const QString &name)
     return id.mid(5, id.size()-6);
 }
 
+bool SvgElement::hasLinkedDef()
+{
+    static QStringList illegalAttrList;
+    if (illegalAttrList.isEmpty())
+        illegalAttrList << "clip-path" << "mask" << "filter";
+    foreach (const QString attrName, illegalAttrList) {
+        if (hasAttribute(attrName))
+            return true;
+    }
+    static QStringList illegalStyleAttrList;
+    if (illegalStyleAttrList.isEmpty())
+        illegalStyleAttrList << "fill" << "stroke";
+    foreach (const QString attrName, illegalStyleAttrList) {
+        if (attribute(attrName).startsWith("url("))
+            return true;
+    }
+    return false;
+}
+
 bool SvgElement::hasAttribute(const QString &name) const
 {
     return hasAttribute(ToChar(name));
+}
+
+bool SvgElement::hasAttributes(const QStringList &list) const
+{
+    foreach (const QString &attrName, list)
+        if (hasAttribute(attrName))
+            return true;
+    return false;
 }
 
 bool SvgElement::hasAttribute(const char *name) const
@@ -129,6 +171,11 @@ SvgElement SvgElement::parentNode() const
     return SvgElement(m_elem->Parent()->ToElement());
 }
 
+SvgElement SvgElement::firstChild() const
+{
+    return SvgElement(m_elem->FirstChildElement());
+}
+
 void SvgElement::removeChild(const SvgElement &elem)
 {
     m_elem->DeleteChild(elem.xmlElement());
@@ -147,6 +194,16 @@ void SvgElement::appendChild(const SvgElement &elem)
 void SvgElement::setTagName(const QString &name)
 {
     m_elem->SetName(ToChar(name));
+}
+
+void SvgElement::setTransform(const QString &transform)
+{
+    if (hasAttribute("transform")) {
+        Transform ts(attribute("transform") + " " + transform);
+        setAttribute("transform", ts.simplified());
+    } else if (hasAttribute("transform")) {
+        setAttribute("transform", transform);
+    }
 }
 
 SvgElement SvgElement::insertBefore(const SvgElement &elemNew, const SvgElement &elemBefore) const

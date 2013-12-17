@@ -26,7 +26,6 @@ public:
     void removeGroups();
 
 private:
-    QSet<QString> m_usedElemList;
     QList<StringHash> styleHashList;
     StringHash parentHash;
 

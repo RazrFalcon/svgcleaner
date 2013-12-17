@@ -11,7 +11,6 @@
 
 // TODO: add support for preset file reading
 // TODO: custom xml printing
-// TODO: add render error detecting
 
 void showHelp()
 {
@@ -121,18 +120,19 @@ bool processFile(const QString &firstFile, const QString &secondFile)
     replacer.convertCDATAStyle();
     replacer.prepareDefs();
     replacer.fixWrongAttr();
+    replacer.markUsedElements();
 
     if (!Keys::get().flag(Key::KeepDefaultAttributes))
         remover.cleanSvgElementAttribute();
     if (!Keys::get().flag(Key::NoViewbox))
         replacer.convertSizeToViewbox();
+    if (!Keys::get().flag(Key::KeepUnusedDefs))
+        remover.removeUnusedDefs();
     if (!Keys::get().flag(Key::KeepDuplicatedDefs))
         remover.removeDuplicatedDefs();
     // TODO: add key
     remover.removeElements();
     remover.removeAttributes();
-    if (!Keys::get().flag(Key::KeepUnusedDefs))
-        remover.removeUnusedDefs();
     if (!Keys::get().flag(Key::KeepSinglyGradients))
         replacer.mergeGradients();
     if (!Keys::get().flag(Key::KeepUnreferencedIds))

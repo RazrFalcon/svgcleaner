@@ -25,7 +25,7 @@ SvgElement BaseCleaner::defsElement() const
 void BaseCleaner::updateXLinks(const StringHash &hash)
 {
     QStringList xlinkStyles;
-    xlinkStyles << "fill" << "stroke";
+    xlinkStyles << "fill" << "stroke" << "filter";
 
     QList<SvgElement> list = svgElement().childElemList();
     while (!list.isEmpty()) {

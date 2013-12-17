@@ -60,10 +60,7 @@ QList<qreal> Transform::mergeMatrixes(QString text)
         }
 
         TransMatrix matrix;
-        matrix(0,0) = 1;
-        matrix(1,1) = 1;
-        matrix(2,2) = 1;
-
+        matrix.setToIdentity();
         if (transformType == "matrix") {
             matrix(0,0) = points.at(0);
             matrix(0,1) = points.at(2);
@@ -209,9 +206,11 @@ QString Tools::roundNumber(qreal value, RoundType type)
         return text;
     }
     // 3.00001 -> 3
-    // TODO: finish
-//    if (text.contains(QString(".").leftJustified(precision, '0')))
-//        return QString::number(intpart);
+    if ((int)intpart != 0) {
+        const int pointPos = text.indexOf('.', 1);
+        if (text.mid(pointPos+1, precision-1).remove(QLatin1Char('0')).isEmpty())
+            return text.left(pointPos);
+    }
 
     // 0.1 -> .1
     if (text.midRef(0, 2) == QLatin1String("0."))
@@ -221,9 +220,9 @@ QString Tools::roundNumber(qreal value, RoundType type)
         text.remove(1, 1);
 
     if (text == QLatin1String("-0"))
-        text = QLatin1String("0");
+        return QLatin1String("0");
     else if (text.isEmpty())
-        text = QLatin1String("0");
+        return QLatin1String("0");
 
     return text;
 }
@@ -480,24 +479,6 @@ QVariantHash Tools::initDefaultStyleHash()
     return hash;
 }
 
-QSet<QString> Tools::usedElemList(const SvgElement &svgElem)
-{
-    Q_ASSERT(svgElem.tagName() == "svg");
-
-    QSet<QString> usedList;
-    QList<SvgElement> list = Tools::childElemList(svgElem);
-    while (!list.isEmpty()) {
-        SvgElement currElem = list.takeFirst();
-        if (currElem.tagName() == "use") {
-            if (currElem.hasAttribute("xlink:href"))
-                usedList << currElem.attribute("xlink:href").remove("#");
-        }
-        if (currElem.hasChildren())
-            list << currElem.childElemList();
-    }
-    return usedList;
-}
-
 QRectF Tools::viewBoxRect(const SvgElement &svgElem)
 {
     Q_ASSERT(svgElem.tagName() == "svg");
@@ -653,7 +634,7 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
         } else {
             value = "0";
         }
-    } else if (text.at(1) == QLatin1Char('%')) {
+    } else if (text.rightRef(1) == QLatin1String("%")) {
         unit = "%";
         value = text.mid(0, text.size() - 1);
     } else if (text.at(text.size()-1).isLetter()) {

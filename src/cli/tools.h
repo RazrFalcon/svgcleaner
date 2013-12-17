@@ -52,7 +52,6 @@ public:
     static QString trimColor(QString color);
     static void sortNodes(QList<SvgElement> &nodeList);
     static QVariantHash initDefaultStyleHash();
-    static QSet<QString> usedElemList(const SvgElement &svgElem);
     static QRectF viewBoxRect(const SvgElement &svgElem);
     static StringHash splitStyle(QString style);
     static QString removeEdgeSpaces(const QString &str);
@@ -61,7 +60,6 @@ private:
     static bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2);
 };
 
-// TODO: add percentages attr list
 namespace Props {
 static const QSet<QString> fillList = QSet<QString>() << "fill" << "fill-rule" << "fill-opacity";
 static const QSet<QString> strokeList = QSet<QString>()
@@ -96,6 +94,10 @@ static const QSet<QString> linearGradient = QSet<QString>()
 static const QSet<QString> radialGradient = QSet<QString>()
     << "gradientTransform" << "xlink:href" << "cx" << "cy" << "r" << "fx" << "fy"
     << "gradientUnits" << "spreadMethod" << "externalResourcesRequired";
+
+static const QSet<QString> filter = QSet<QString>()
+    << "gradientTransform" << "xlink:href" << "x" << "y" << "width" << "height" << "filterRes"
+    << "filterUnits" << "primitiveUnits" << "externalResourcesRequired";
 
 static const QSet<QString> maskAttributes = QSet<QString>()
     << "x" << "y" << "width" << "height"
@@ -155,6 +157,10 @@ static const QSet<QString> stopAttributes = QSet<QString>()
 
 static const QSet<QString> lengthTypes = QSet<QString>()
     << "em" << "ex" << "px" << "in" << "cm" << "mm" << "pt" << "pc";
+}
+
+namespace CleanerAttr {
+    static const QString UsedElement = "used-element";
 }
 
 #endif // TOOLS_H

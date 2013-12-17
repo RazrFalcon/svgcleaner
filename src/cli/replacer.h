@@ -24,10 +24,9 @@ public:
     void calcElemAttrCount(const QString &text);
     void groupElementsByStyles(SvgElement parentElem = SvgElement());
     void applyTransformMatrices();
+    void markUsedElements();
 
 private:
-    QSet<QString> m_usedElemList;
-
     SvgElement findLinearGradient(const QString &id);
 };
 

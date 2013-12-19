@@ -9,6 +9,7 @@
 //       babayasin_air_hammer.svg
 // TODO: xlink:href could not contains uri with spaces, remove this elements
 // TODO: remove "symbol"
+// TODO: remove 'use' elem linked to empty object
 
 Remover::Remover(XMLDocument *doc) : BaseCleaner(doc)
 {
@@ -336,7 +337,7 @@ void Remover::removeElements()
             removeThisNode = true;
         else if (currNode->ToDeclaration() != 0 && !Keys::get().flag(Key::KeepProcessingInstruction))
             removeThisNode = true;
-        else if (QString(currNode->Value()).contains(QRegExp("(!|^)DOCTYPE|!ENTITY|\\]\\>"))
+        else if (QString(currNode->Value()).contains(QRegExp("(!|^)DOCTYPE|(!|^)ENTITY|\\]\\>"))
                  && !Keys::get().flag(Key::KeepProlog))
             removeThisNode = true;
 
@@ -372,16 +373,12 @@ void Remover::removeElements()
     elemList = svgElement().childElemList();
     while (!elemList.isEmpty()) {
         SvgElement currElem = elemList.takeFirst();
-//        if (currElem.tagName() == "switch") {
-//            QStringList attrList = currElem.attributesList();
-//            if (attrList.isEmpty() || (attrList.count() == 1 && attrList.first() == "id")) {
-                // remove groups
-//                foreach (SvgElement elem, currElem.childElemList()) {
-//                    if (elem.isGroup())
-//                        currElem.removeChild(elem);
-//                }
-//                ungroupSwitch(currElem);
-//            }
+//        if (currElem.tagName() == "switch" && !currElem.hasImportantAttrs()) {
+//            SvgElement parent = currElem.parentNode();
+//            foreach (const SvgElement &childElem, currElem.childElemList())
+//                parent.insertBefore(childElem, currElem);
+//            parent.removeChild(currElem);
+//        }
         if (currElem.tagName() == "feGaussianBlur") {
             // remove "feGaussianBlur" element with "stdDeviation" value
             // lower than "--std-deviation-limit"
@@ -404,14 +401,6 @@ void Remover::removeElements()
         if (currElem.hasChildren())
             elemList << currElem.childElemList();
     }
-}
-
-void Remover::ungroupSwitch(SvgElement elem)
-{
-    SvgElement parent = elem.parentNode();
-    foreach (const SvgElement &currElem, elem.childElemList())
-        parent.insertBefore(currElem, elem);
-    parent.removeChild(elem);
 }
 
 bool Remover::isInvisibleElementsExist(const SvgElement &elem)
@@ -748,156 +737,70 @@ void Remover::removeDefaultValue(StringHash &hash, const QString &name)
     }
 }
 
-// TODO: rewrite
 void Remover::removeGroups()
 {
-    // get all 'use' links to prevent ungouping element linked to this use
-    QList<SvgElement> nodeList = svgElement().childElemList();
-    while (!nodeList.isEmpty()) {
-        SvgElement currElem = nodeList.takeFirst();
-        // ungroup only if: current group is not linked to any 'use',
-        // not contains mask, clip-path, filter, opacity attributes
-        if (currElem.isGroup() && !currElem.isUsed()
-            && !currElem.hasAttribute("mask") && !currElem.hasAttribute("clip-path")
-            && !currElem.hasAttribute("opacity") && !currElem.hasAttribute("filter"))
-        {
-            removeGroup(currElem);
-        }
-    }
+    QStringList illegalGAttrList;
+    illegalGAttrList << "mask" << "clip-path" << "opacity" << "filter";
 
-    // ungrouping is pretty brutal, so we need to fix some issues
-    // TODO: write what this part do...
-    nodeList = svgElement().childElemList();
-    QList<SvgElement> gNodeList;
-    SvgElement lastGNode;
-    while (!nodeList.isEmpty()) {
-        SvgElement currElem = nodeList.takeFirst();
-        if (currElem.isGroup()) {
-            if (lastGNode.isNull()) {
-                gNodeList << currElem;
-                lastGNode = currElem;
-            } else {
-                bool flag = true;
-                if (!currElem.hasAttribute("opacity") && !currElem.isUsed()
-                    && currElem.styleHash() == lastGNode.styleHash() && !currElem.styleHash().isEmpty()
-                    && currElem.attribute("transform") == lastGNode.attribute("transform"))
-                {
-                    gNodeList << currElem;
-                } else {
-                    flag = false;
-                }
+    QStringList ignoreAttrList;
+    ignoreAttrList << "id" << "stroke" << "stroke-width" << "fill";
 
-                if (!flag || nodeList.isEmpty()) {
-                    if (gNodeList.count() > 1)
-                        mergeGroups(gNodeList);
-                    lastGNode.clear();
-                    gNodeList.clear();
+    bool isAnyGroupRemoved = true;
+    while (isAnyGroupRemoved) {
+        isAnyGroupRemoved = false;
+        QList<SvgElement> list = svgElement().childElemList();
+        while (!list.isEmpty()) {
+            SvgElement elem = list.takeFirst();
+            SvgElement parent = elem.parentNode();
+            if (elem.isGroup() && elem.childElementCount() == 0) {
+                // remove empty group
+                parent.removeChild(elem);
+            } else if (elem.isGroup() && elem.parentNode().tagName() != "switch") {
+                if (!elem.hasImportantAttrs() && !elem.firstChild().hasAttribute("mask")) {
+                    // ungroup group without attributes
+                    foreach (SvgElement childElem, elem.childElemList())
+                        parent.insertBefore(childElem, elem);
+                    parent.removeChild(elem);
+                    isAnyGroupRemoved = true;
+                } else if (!elem.isUsed() && parent.isGroup()
+                           && !elem.hasAttributes(illegalGAttrList)) {
+                    SvgElement firstChild = elem.firstChild();
+                    if (elem.childElementCount() == 1
+                        && firstChild.tagName() != "switch")
+                    {
+                        // ungroup group with only one child
+                        parent.insertBefore(firstChild, elem);
+                        foreach (const QString &attrName, elem.attributesList()) {
+                            if (firstChild.hasAttribute(attrName) && attrName == "transform") {
+                                firstChild.setTransform(elem.attribute(attrName), true);
+                            } else if (!ignoreAttrList.contains(attrName)
+                                       || !firstChild.hasAttribute(attrName)) {
+                                firstChild.setAttribute(attrName, elem.attribute(attrName));
+                            }
+                        }
+                        parent.removeChild(elem);
+                        isAnyGroupRemoved = true;
+                    } else if (parent.childElementCount() == 1
+                               && parent.tagName() != "svg"
+                               && !parent.hasAttributes(illegalGAttrList))
+                    {
+                        QStringList childAttrList = elem.attributesList();
+                        childAttrList.removeOne("id");
+                        foreach (SvgElement childElem, elem.childElemList())
+                            parent.insertBefore(childElem, elem);
+                        foreach (const QString &attrName, childAttrList) {
+                            if (parent.hasAttribute(attrName) && attrName == "transform")
+                                parent.setTransform(elem.attribute(attrName));
+                            else if (!parent.hasAttribute(attrName))
+                                parent.setAttribute(attrName, elem.attribute(attrName));
+                        }
+                        parent.removeChild(elem);
+                        isAnyGroupRemoved = true;
+                    }
                 }
             }
-        } else {
-            lastGNode.clear();
-            gNodeList.clear();
+            if (elem.hasChildren())
+                list << elem.childElemList();
         }
-    }
-}
-
-void Remover::removeGroup(SvgElement &elem)
-{
-    SvgElement firstParentG = elem;
-    while (firstParentG.parentNode().tagName() != "svg")
-        firstParentG = firstParentG.parentNode();
-
-    SvgElement newGroupElem;
-    QList<SvgElement> nodeList = elem.childElemList();
-    while (!nodeList.isEmpty()) {
-        SvgElement currElem = nodeList.takeFirst();
-        // ungroup only if: current group is not linked to any 'use',
-        // not contains mask, clip-path, filter, opacity attributes
-        if (currElem.isGroup() && !currElem.isUsed()
-            && !currElem.hasAttribute("mask") && !currElem.hasAttribute("clip-path")
-            && !currElem.hasAttribute("opacity") && !currElem.hasAttribute("filter"))
-        {
-            // TODO: ignore current group, but process childs
-            removeGroup(currElem);
-            newGroupElem.clear();
-        } else {
-            if (newGroupElem.isNull())
-                newGroupElem = genGroup(currElem, firstParentG);
-
-            if (newGroupElem.isNull())
-                svgElement().insertBefore(currElem, firstParentG);
-            else
-                newGroupElem.appendChild(currElem);
-        }
-    }
-    elem.parentNode().removeChild(elem);
-}
-
-SvgElement Remover::genGroup(SvgElement &currElem, SvgElement &parentGroup)
-{
-    QString transformAttr;
-    QString idAttr;
-
-    // TODO: rewrite style merge algorithm
-    QList<StringHash> styles;
-    SvgElement parentElem = currElem.parentNode();
-    if (parentGroup.hasAttribute("id"))
-        idAttr = parentGroup.id();
-    while (parentElem.tagName() != "svg") {
-        if (parentElem.hasAttribute("transform"))
-            transformAttr = parentElem.attribute("transform") + " " + transformAttr;
-        StringHash hash = parentElem.styleHash();
-        if (!hash.isEmpty())
-            styles.prepend(hash);
-        parentElem = parentElem.parentNode();
-    }
-
-    // merge styles
-    StringHash newStyleHash;
-    if (!styles.isEmpty()) {
-        newStyleHash = styles.first();
-        for (int i = 1; i < styles.count(); ++i) {
-            StringHash hash = styles.at(i);
-            QStringList keys = hash.keys();
-            for (int j = 0; j < keys.count(); ++j)
-                newStyleHash.insert(keys.at(j), hash.value(keys.at(j)));
-            styles.removeAt(i);
-            i--;
-        }
-    }
-
-    if (!transformAttr.isEmpty())
-        transformAttr = Transform(transformAttr).simplified();
-
-    if (!transformAttr.isEmpty() || !newStyleHash.isEmpty()) {
-        SvgElement newGElem = SvgElement(document()->NewElement("g"));
-        if (!transformAttr.isEmpty())
-            newGElem.setAttribute("transform", transformAttr);
-        if (!newStyleHash.isEmpty())
-            newGElem.setStylesFromHash(newStyleHash);
-        if (!idAttr.isEmpty())
-            newGElem.setAttribute("id", idAttr);
-        return svgElement().insertBefore(newGElem, parentGroup);
-    }
-    return SvgElement();
-}
-
-void Remover::mergeGroups(QList<SvgElement> &gNodeList)
-{
-    SvgElement newGElem = SvgElement(document()->NewElement("g"));
-    SvgElement oldGElem = gNodeList.first();
-    newGElem = svgElement().insertBefore(newGElem, oldGElem);
-    foreach (const QString &attr, Props::styleAttributes) {
-        if (oldGElem.hasAttribute(attr)) {
-            newGElem.setAttribute(attr, oldGElem.attribute(attr));
-        }
-    }
-    newGElem.setAttribute("transform", gNodeList.first().attribute("transform"));
-    Q_ASSERT(newGElem.isNull() == false);
-    for (int i = 0; i < gNodeList.count(); ++i) {
-        SvgElement cElem = gNodeList.at(i);
-        foreach (SvgElement elem, cElem.childElemList())
-            newGElem.appendChild(elem);
-        cElem.parentNode().removeChild(cElem);
     }
 }

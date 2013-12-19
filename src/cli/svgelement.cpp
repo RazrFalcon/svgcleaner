@@ -1,3 +1,4 @@
+#include "keys.h"
 #include "tools.h"
 #include "svgelement.h"
 
@@ -31,8 +32,10 @@ bool SvgElement::hasImportantAttrs()
     int attrCount = attributesCount();
     if (attrCount == 0)
         return false;
-    if (attrCount == 1 && hasAttribute("id"))
-        return false;
+    if (!Keys::get().flag(Key::KeepUnreferencedIds)) {
+        if (attrCount == 1 && hasAttribute("id"))
+            return false;
+    }
     return true;
 }
 
@@ -196,11 +199,16 @@ void SvgElement::setTagName(const QString &name)
     m_elem->SetName(ToChar(name));
 }
 
-void SvgElement::setTransform(const QString &transform)
+void SvgElement::setTransform(const QString &transform, bool fromParent)
 {
     if (hasAttribute("transform")) {
-        Transform ts(attribute("transform") + " " + transform);
-        setAttribute("transform", ts.simplified());
+        if (fromParent) {
+            Transform ts(transform + " " + attribute("transform"));
+            setAttribute("transform", ts.simplified());
+        } else {
+            Transform ts(attribute("transform") + " " + transform);
+            setAttribute("transform", ts.simplified());
+        }
     } else if (hasAttribute("transform")) {
         setAttribute("transform", transform);
     }

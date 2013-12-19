@@ -54,7 +54,7 @@ public:
     void setAttribute(const QString &name, const QString &value);
     void setStylesFromHash(const StringHash &hash);
     void setTagName(const QString &name);
-    void setTransform(const QString &transform);
+    void setTransform(const QString &transform, bool fromParent = false);
 
     XMLElement* xmlElement() const { return m_elem; }
     bool operator==(const SvgElement &elem1) {

@@ -34,7 +34,6 @@ private:
     void removeGroup(SvgElement &elem);
     bool isInvisibleElementsExist(const SvgElement &elem);
     void cleanAttribute(SvgElement &elem, const QString &startWith, QStringList &attrList);
-    void ungroupSwitch(SvgElement elem);
     SvgElement genGroup(SvgElement &currElem, SvgElement &parentGroup);
     void mergeGroups(QList<SvgElement> &gNodeList);
 };

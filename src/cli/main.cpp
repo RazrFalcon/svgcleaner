@@ -171,6 +171,7 @@ bool processFile(const QString &firstFile, const QString &secondFile)
     QTextStream outStream(&outFile);
     outStr.replace(">\n<tspan", "><tspan");
     outStr.replace("&apos;", "'");
+//    outStr.replace("&gt;", ">");
     outStream << outStr;
     outFile.close();
 

@@ -42,13 +42,13 @@ QList<qreal> Transform::mergeMatrixes(QString text)
     for (int i = 0; i < transList.count(); ++i) {
         QString transformType = QString(transList.at(i)).remove(QRegExp("( +|)\\(.*")).toLower();
         // transform values can be separeted by: ',' , ', ', ' '
-        QStringList pointsStr = QString(transList.at(i)).remove(QRegExp(".*\\(|\\)"))
+        QStringList pointsList = QString(transList.at(i)).remove(QRegExp(".*\\(|\\)"))
                                 .split(QRegExp(",(| )| "), QString::SkipEmptyParts);
 
         QList<qreal> points;
-        for (int i = 0; i < pointsStr.count(); ++i) {
+        for (int i = 0; i < pointsList.count(); ++i) {
             bool ok = false;
-            points << pointsStr.at(i).toDouble(&ok);
+            points << pointsList.at(i).toDouble(&ok);
             Q_ASSERT(ok == true);
         }
 

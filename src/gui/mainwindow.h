@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QtCore/QSettings>
-#include <QtCore/QTime>
+#include <QtCore/QElapsedTimer>
 
 #include <QtGui/QComboBox>
 #include <QtGui/QMainWindow>
@@ -31,7 +31,7 @@ private:
     QList<CleanerThread *> cleanerList;
     QList<SVGInfo> itemList;
     QSettings *settings;
-    QTime time;
+    QElapsedTimer time;
     ToThread arguments;
 
     void createStatistics();

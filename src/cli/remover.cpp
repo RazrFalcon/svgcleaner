@@ -422,6 +422,10 @@ bool Remover::isInvisibleElementsExist(const SvgElement &elem)
 
     // TODO: ungroup flowPara with only "id" attr
     // ryanlerch_OCAL_Introduction.svg
+//    if (tagName == "flowPara") {
+//        if (!elem.hasText() && !elem.hasChildren())
+//            return true;
+//    }
 
     // remove elements with opacity="0"
     if (elem.hasAttribute("opacity")) {
@@ -521,6 +525,9 @@ void Remover::removeAttributes()
             if (!elem.isText() && !Keys::get().flag(Key::KeepNotAppliedAttributes)) {
                 elem.removeAttribute("text-align");
             }
+            if (attrList.contains("desc") && !Keys::get().flag(Key::KeepNotAppliedAttributes)) {
+                elem.removeAttribute("desc");
+            }
 
             // TODO: 'display' attr remove
 
@@ -530,6 +537,39 @@ void Remover::removeAttributes()
                 if (child->Value() == 0)
                     elem.xmlElement()->DeleteAttribute(child->Name());
             }
+        }
+
+        if (elem.hasChildren())
+            list << elem.childElemList();
+    }
+
+
+    // remove xml:space when no child has multispace text
+    list = Tools::childElemList(document());
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+
+        if (elem.hasAttribute("xml:space")) {
+            bool canRemove = true;
+            QList<XMLNode *> list2 = Tools::childNodeList(elem.xmlElement());
+            while (!list2.isEmpty()) {
+                XMLNode *elem2 = list2.takeFirst();
+                QString tagName = QLatin1String(elem2->Value());
+                if (tagName == "tspan" || tagName == "flowPara") {
+                    if (elem2->FirstChild() != 0) {
+                        if (elem2->FirstChild()->ToText() != 0) {
+                            if (QString(elem2->FirstChild()->ToText()->Value()).contains("  ")) {
+                                canRemove = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!elem2->NoChildren())
+                    list2 << Tools::childNodeList(elem2);
+            }
+            if (canRemove)
+                elem.removeAttribute("xml:space");
         }
 
         if (elem.hasChildren())

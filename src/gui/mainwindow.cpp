@@ -63,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setContextMenuPolicy(Qt::NoContextMenu);
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
+    // TODO: store last size
     resize(1000, 650);
 }
 
@@ -81,7 +82,6 @@ void MainWindow::on_actionStart_triggered()
         return;
 
     if (itemList.isEmpty() || !actionStop->isEnabled()) {
-        time = QTime::currentTime();
         time.start();
         prepareStart();
     }
@@ -160,10 +160,14 @@ void MainWindow::progress(SVGInfo info)
     else {
         inputSize  += info.inSize;
         outputSize += info.outSize;
-        if (info.compress > compressMax && info.compress < 100) compressMax = info.compress;
-        if (info.compress < compressMin && info.compress > 0)   compressMin = info.compress;
-        if (info.time > timeMax) timeMax = info.time;
-        if (info.time < timeMin) timeMin = info.time;
+        if (info.compress > compressMax && info.compress < 100)
+            compressMax = info.compress;
+        if (info.compress < compressMin && info.compress > 0)
+            compressMin = info.compress;
+        if (info.time > timeMax)
+            timeMax = info.time;
+        if (info.time < timeMin)
+            timeMin = info.time;
         timeFull += info.time;
     }
 

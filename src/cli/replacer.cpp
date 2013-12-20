@@ -13,8 +13,6 @@
 // TODO: If 'x1' = 'x2' and 'y1' = 'y2', then the area to be painted will be painted as
 //       a single color using the color and opacity of the last gradient stop.
 // TODO: merge "tspan" elements with similar styles
-// TODO: merge gradients with equal stop elem
-//       Anonymous_House_1.svg
 
 Replacer::Replacer(XMLDocument *doc) : BaseCleaner(doc)
 {
@@ -555,34 +553,34 @@ void Replacer::convertBasicShapes()
                             + QString("V %1 ").arg(y+ry)
                             + QString("A %1,%2 0 0 1 %3,%4").arg(rx).arg(ry).arg(x+rx).arg(y);
                 }
-                // TODO: finish
-            } else if (ctag == "circle") {
-                qreal x = currElem.attribute("cx").toDouble();
-                qreal y = currElem.attribute("cy").toDouble();
-                qreal r = currElem.attribute("r").toDouble();
+                // generate bigger text, than before...
+//            } else if (ctag == "circle") {
+//                qreal x = currElem.attribute("cx").toDouble();
+//                qreal y = currElem.attribute("cy").toDouble();
+//                qreal r = currElem.attribute("r").toDouble();
 
-                currElem.removeAttributes(QStringList() << "cx" << "cy" << "r");
+//                currElem.removeAttributes(QStringList() << "cx" << "cy" << "r");
 
-                qreal x1 = x + r;
-                qreal x2 = x - r;
+//                qreal x1 = x + r;
+//                qreal x2 = x - r;
 
-                dAttr =   QString("M %1,%2 ").arg(x1).arg(y)
-                        + QString("A %1,%1 0 1 0 %3,%4 ").arg(r).arg(x2).arg(y)
-                        + QString("A %1,%1 0 1 0 %3,%4").arg(r).arg(x1).arg(y);
-            } else if (ctag == "ellipse") {
-                qreal x = currElem.attribute("cx").toDouble();
-                qreal y = currElem.attribute("cy").toDouble();
-                qreal rx = currElem.attribute("rx").toDouble();
-                qreal ry = currElem.attribute("ry").toDouble();
+//                dAttr =   QString("M %1,%2 ").arg(x1).arg(y)
+//                        + QString("A %1,%1 0 1 0 %3,%4 ").arg(r).arg(x2).arg(y)
+//                        + QString("A %1,%1 0 1 0 %3,%4").arg(r).arg(x1).arg(y);
+//            } else if (ctag == "ellipse") {
+//                qreal x = currElem.attribute("cx").toDouble();
+//                qreal y = currElem.attribute("cy").toDouble();
+//                qreal rx = currElem.attribute("rx").toDouble();
+//                qreal ry = currElem.attribute("ry").toDouble();
 
-                currElem.removeAttributes(QStringList() << "cx" << "cy" << "rx" << "ry");
+//                currElem.removeAttributes(QStringList() << "cx" << "cy" << "rx" << "ry");
 
-                qreal x1 = x + rx;
-                qreal x2 = x - rx;
+//                qreal x1 = x + rx;
+//                qreal x2 = x - rx;
 
-                dAttr =   QString("M %1,%2 ").arg(x1).arg(y)
-                        + QString("A %1,%2 0 1 0 %3,%4 ").arg(rx).arg(ry).arg(x2).arg(y)
-                        + QString("A %1,%2 0 1 0 %3,%4").arg(rx).arg(ry).arg(x1).arg(y);
+//                dAttr =   QString("M %1,%2 ").arg(x1).arg(y)
+//                        + QString("A %1,%2 0 1 0 %3,%4 ").arg(rx).arg(ry).arg(x2).arg(y)
+//                        + QString("A %1,%2 0 1 0 %3,%4").arg(rx).arg(ry).arg(x1).arg(y);
             } else if (ctag == "polyline" || ctag == "polygon") {
                 QList<Segment> segmentList;
                 // TODO: smart split
@@ -695,6 +693,69 @@ void Replacer::mergeGradients()
         }
     }
     updateXLinks(xlinkHash);
+    mergeGradientsWithEqualStopElem();
+}
+
+/*
+ * This func replace several equal gradients with one
+ *
+ * Before:
+ * <linearGradient id="linearGradient001">
+ *   <stop offset="0" stop-color="white"/>
+ *   <stop offset="1" stop-color="black"/>
+ * </linearGradient>
+ * <linearGradient id="linearGradient002">
+ *   <stop offset="0" stop-color="white"/>
+ *   <stop offset="1" stop-color="black"/>
+ * </linearGradient>
+ *
+ * After:
+ * <linearGradient id="linearGradient001">
+ *   <stop offset="0" stop-color="white"/>
+ *   <stop offset="1" stop-color="black"/>
+ * </linearGradient>
+ * <linearGradient id="linearGradient002" xlink:href="#linearGradient001">
+ *
+ */
+void Replacer::mergeGradientsWithEqualStopElem()
+{
+    QList<SvgElement> list = defsElement().childElemList();
+    QList<LineGradStruct> lineGradList;
+    while (!list.isEmpty()) {
+        SvgElement currElem = list.takeFirst();
+        if ((currElem.tagName() == "linearGradient" || currElem.tagName() == "radialGradient")
+            && currElem.hasChildren()) {
+            LineGradStruct lgs;
+            lgs.elem = currElem;
+            lgs.id = currElem.id();
+            lgs.attrs = currElem.attributesMap(true);
+            foreach (SvgElement stopElem, currElem.childElemList())
+                lgs.stopAttrs << stopElem.attributesMap(true);
+            lineGradList << lgs;
+        }
+    }
+    for (int i = 0; i < lineGradList.size(); ++i) {
+        LineGradStruct lgs1 = lineGradList.at(i);
+        for (int j = i; j < lineGradList.size(); ++j) {
+            LineGradStruct lgs2 = lineGradList.at(j);
+            if (lgs1.id != lgs2.id
+                && lgs1.stopAttrs.size() == lgs2.stopAttrs.size())
+            {
+                bool stopEqual = true;
+                for (int s = 0; s < lgs1.stopAttrs.size(); ++s) {
+                    if (lgs1.stopAttrs.at(s) != lgs2.stopAttrs.at(s)) {
+                        stopEqual = false;
+                        break;
+                    }
+                }
+                if (stopEqual) {
+                    lgs2.elem.setAttribute("xlink:href", "#" + lgs1.id);
+                    foreach (SvgElement stopElem, lgs2.elem.childElemList())
+                        lgs2.elem.removeChild(stopElem);
+                }
+            }
+        }
+    }
 }
 
 SvgElement Replacer::findLinearGradient(const QString &id)
@@ -739,19 +800,26 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
 
     StringHash groupHash;
     QList<SvgElement> similarElemList;
+    QStringList additionalAttrList;
+    additionalAttrList << "text-align" << "line-height";
     QStringList ignoreAttrList;
     ignoreAttrList << "clip-path" << "mask" << "filter" << "opacity";
     QList<SvgElement> list = parentElem.childElemList();
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
-        if (currElem.isGroup())
+        if (currElem.isGroup() || currElem.tagName() == "flowRoot")
             groupElementsByStyles(currElem);
 
         if (groupHash.isEmpty()) {
             // get hash of all style attributes of element
             groupHash = currElem.styleHash();
-            if (currElem.hasAttribute("transform")
-                    && !currElem.hasLinkedDef() && !parentElem.hasLinkedDef()) {
+            foreach (const QString &attrName, additionalAttrList) {
+                if (currElem.hasAttribute(attrName))
+                    groupHash.insert(attrName, currElem.attribute(attrName));
+            }
+            if (    currElem.hasAttribute("transform")
+                && !currElem.hasLinkedDef()
+                && !parentElem.hasLinkedDef()) {
                 groupHash.insert("transform", currElem.attribute("transform"));
             }
 
@@ -790,11 +858,29 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                     lastGroupHash = groupHash;
                 if (similarElemList.size() > 1) {
                     // find or create parent group
+
+                    bool isValidFlowRoot = false;
+                    if (parentElem.tagName() == "flowRoot") {
+                        int flowParaCount = 0;
+                        foreach (SvgElement childElem, parentElem.childElemList()) {
+                            if (childElem.tagName() == "flowPara")
+                                flowParaCount++;
+                        }
+                        if (flowParaCount == similarElemList.size())
+                            isValidFlowRoot = true;
+                    }
+
+                    bool canUseParent = false;
+                    if (isValidFlowRoot)
+                        canUseParent = true;
+                    else if (parentElem.childElementCount() == similarElemList.size()) {
+                        if (parentElem.isGroup())
+                            canUseParent = true;
+                        else if (parentElem.tagName() == "svg" && !lastGroupHash.contains("transform"))
+                            canUseParent = true;
+                    }
                     SvgElement parentGElem;
-                    if ((parentElem.isGroup()
-                            || (parentElem.tagName() == "svg" && !lastGroupHash.contains("transform")))
-                        && parentElem.childElementCount() == similarElemList.size())
-                    {
+                    if (canUseParent) {
                         parentGElem = parentElem;
                     } else {
                         parentGElem = SvgElement(document()->NewElement("g"));

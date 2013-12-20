@@ -4,6 +4,13 @@
 #include "paths.h"
 #include "basecleaner.h"
 
+struct LineGradStruct {
+    SvgElement elem;
+    QString id;
+    StringMap attrs;
+    QList<StringMap> stopAttrs;
+};
+
 class Replacer : public BaseCleaner
 {
 public:
@@ -28,6 +35,7 @@ public:
 
 private:
     SvgElement findLinearGradient(const QString &id);
+    void mergeGradientsWithEqualStopElem();
 };
 
 #endif // REPLACER_H

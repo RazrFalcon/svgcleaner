@@ -27,6 +27,17 @@ bool SvgElement::isText() const
     return Props::textElements.contains(tagName());
 }
 
+bool SvgElement::hasText() const
+{
+    if (m_elem->FirstChild() != 0) {
+        if (m_elem->FirstChild()->ToText() != 0) {
+            if (m_elem->FirstChild()->ToText()->Value() != 0)
+                return true;
+        }
+    }
+    return false;
+}
+
 bool SvgElement::hasImportantAttrs()
 {
     int attrCount = attributesCount();
@@ -65,11 +76,15 @@ void SvgElement::removeAttributes(const QStringList &list)
         removeAttribute(list.at(i));
 }
 
-StringMap SvgElement::attributesMap() const
+StringMap SvgElement::attributesMap(bool ignoreId) const
 {
     StringMap map;
-    for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next())
-        map.insert(QString(child->Name()), QString(child->Value()));
+    for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next()) {
+        QString attrName = QString(child->Name());
+        if (!(attrName == "id" && ignoreId)) {
+            map.insert(attrName, QString(child->Value()));
+        }
+    }
     return map;
 }
 
@@ -93,7 +108,7 @@ void SvgElement::setAttribute(const QString &name, const QString &value)
     if (value.isEmpty())
         m_elem->DeleteAttribute(ToChar(name));
     else
-        m_elem->SetAttribute(ToChar(name), ToChar(value));
+        m_elem->SetAttribute(ToChar(name), value.toStdString().c_str());
 }
 
 QString SvgElement::id() const
@@ -130,7 +145,7 @@ bool SvgElement::hasLinkedDef()
 
 bool SvgElement::hasAttribute(const QString &name) const
 {
-    return hasAttribute(ToChar(name));
+    return (m_elem->Attribute(ToChar(name)) != 0);
 }
 
 bool SvgElement::hasAttributes(const QStringList &list) const
@@ -141,17 +156,10 @@ bool SvgElement::hasAttributes(const QStringList &list) const
     return false;
 }
 
-bool SvgElement::hasAttribute(const char *name) const
-{
-    return (m_elem->Attribute(name) != 0);
-}
-
 QString SvgElement::attribute(const QString &name) const
 {
     const char *ch = ToChar(name);
-    if (m_elem->Attribute(ch) == 0)
-        return QString();
-    return m_elem->Attribute(ch);
+    return QLatin1String(m_elem->Attribute(ch));
 }
 
 double SvgElement::doubleAttribute(const QString &name) const
@@ -164,9 +172,14 @@ void SvgElement::removeAttribute(const QString &name)
     m_elem->DeleteAttribute(ToChar(name));
 }
 
+void SvgElement::removeAttribute(const char *name)
+{
+    m_elem->DeleteAttribute(name);
+}
+
 QString SvgElement::tagName() const
 {
-    return m_elem->Name();
+    return QLatin1String(m_elem->Name());
 }
 
 SvgElement SvgElement::parentNode() const

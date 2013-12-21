@@ -38,7 +38,7 @@
     </message>
     <message>
         <source>We apologize for any bugs in advance. Please send bug reports to </source>
-        <translation>Wir bitten etwaig auftretenden Programmfehler zu entschuldigen. Bitte senden Sie uns Fehlerberichte an </translation>
+        <translation type="obsolete">Wir bitten etwaig auftretenden Programmfehler zu entschuldigen. Bitte senden Sie uns Fehlerberichte an </translation>
     </message>
     <message>
         <source>Developers:</source>
@@ -59,6 +59,10 @@
     <message>
         <source>Translators:</source>
         <translation>Übersetzer:</translation>
+    </message>
+    <message>
+        <source>Please send bug reports to </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -428,7 +432,7 @@
     </message>
     <message>
         <source>Always keep IDs that contain only letters</source>
-        <translation>behalte IDs, die nur Buchstaben enthalten immer</translation>
+        <translation type="obsolete">behalte IDs, die nur Buchstaben enthalten immer</translation>
     </message>
     <message>
         <source>Remove non-SVG attributes</source>
@@ -476,7 +480,7 @@
     </message>
     <message>
         <source>Convert lines into horizontal/vertical equivalents when possible</source>
-        <translation>wandle Linien in horizontale/vertikale Äquivalente, wenn möglich</translation>
+        <translation type="obsolete">wandle Linien in horizontale/vertikale Äquivalente, wenn möglich</translation>
     </message>
     <message>
         <source>Convert straight curves into lines when possible</source>
@@ -684,6 +688,22 @@ Overwrite?</source>
     </message>
     <message>
         <source>Compact output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove IDs that contain only letters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>skip-ids-trim</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trim the id attributes into hexadecimal format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Convert &apos;curveto&apos; segment to short one, when possible</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

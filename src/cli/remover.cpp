@@ -1,3 +1,25 @@
+/****************************************************************************
+**
+** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
+** Copyright (C) 2013 Evgeniy Reizner
+** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+**
+** This program is free software; you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation; either version 2 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License along
+** with this program; if not, write to the Free Software Foundation, Inc.,
+** 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+**
+****************************************************************************/
+
 #include "keys.h"
 #include "remover.h"
 
@@ -529,6 +551,11 @@ void Remover::removeAttributes()
                 elem.removeAttribute("desc");
             }
 
+            if (elem.tagName() == "stop") {
+                if (elem.doubleAttribute("offset") < 0.0001)
+                    elem.removeAttribute("offset");
+            }
+
             // TODO: 'display' attr remove
 
             // remove empty attributes
@@ -780,10 +807,7 @@ void Remover::removeDefaultValue(StringHash &hash, const QString &name)
 void Remover::removeGroups()
 {
     QStringList illegalGAttrList;
-    illegalGAttrList << "mask" << "clip-path" << "opacity" << "filter";
-
-    QStringList ignoreAttrList;
-    ignoreAttrList << "id" << "stroke" << "stroke-width" << "fill";
+    illegalGAttrList << "mask" << "clip-path" << "filter";
 
     bool isAnyGroupRemoved = true;
     while (isAnyGroupRemoved) {
@@ -810,30 +834,16 @@ void Remover::removeGroups()
                     {
                         // ungroup group with only one child
                         parent.insertBefore(firstChild, elem);
-                        foreach (const QString &attrName, elem.attributesList()) {
-                            if (firstChild.hasAttribute(attrName) && attrName == "transform") {
-                                firstChild.setTransform(elem.attribute(attrName), true);
-                            } else if (!ignoreAttrList.contains(attrName)
-                                       || !firstChild.hasAttribute(attrName)) {
-                                firstChild.setAttribute(attrName, elem.attribute(attrName));
-                            }
-                        }
+                        megreGroups(elem, firstChild, false);
                         parent.removeChild(elem);
                         isAnyGroupRemoved = true;
                     } else if (parent.childElementCount() == 1
                                && parent.tagName() != "svg"
                                && !parent.hasAttributes(illegalGAttrList))
                     {
-                        QStringList childAttrList = elem.attributesList();
-                        childAttrList.removeOne("id");
+                        megreGroups(elem, parent, true);
                         foreach (SvgElement childElem, elem.childElemList())
                             parent.insertBefore(childElem, elem);
-                        foreach (const QString &attrName, childAttrList) {
-                            if (parent.hasAttribute(attrName) && attrName == "transform")
-                                parent.setTransform(elem.attribute(attrName));
-                            else if (!parent.hasAttribute(attrName))
-                                parent.setAttribute(attrName, elem.attribute(attrName));
-                        }
                         parent.removeChild(elem);
                         isAnyGroupRemoved = true;
                     }
@@ -841,6 +851,29 @@ void Remover::removeGroups()
             }
             if (elem.hasChildren())
                 list << elem.childElemList();
+        }
+    }
+}
+
+void Remover::megreGroups(SvgElement parentElem, SvgElement childElem, bool isParentToChild)
+{
+    QStringList ignoreAttrList = QStringList() << "id";
+    if (!isParentToChild)
+        ignoreAttrList << "stroke" << "stroke-width" << "fill";
+
+    foreach (const QString &attrName, parentElem.attributesList()) {
+        if (childElem.hasAttribute(attrName) && attrName == "transform") {
+            childElem.setTransform(parentElem.attribute(attrName), !isParentToChild);
+        } else if (attrName == "opacity") {
+            if (parentElem.hasAttribute("opacity") && childElem.hasAttribute("opacity")) {
+                qreal newOp = parentElem.doubleAttribute("opacity")
+                              * childElem.doubleAttribute("opacity");
+                childElem.setAttribute("opacity", Tools::roundNumber(newOp));
+            } else {
+                childElem.setAttribute(attrName, parentElem.attribute(attrName));
+            }
+        } else if (!ignoreAttrList.contains(attrName) || !childElem.hasAttribute(attrName)) {
+            childElem.setAttribute(attrName, parentElem.attribute(attrName));
         }
     }
 }

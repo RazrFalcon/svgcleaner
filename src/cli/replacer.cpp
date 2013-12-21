@@ -1,3 +1,25 @@
+/****************************************************************************
+**
+** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
+** Copyright (C) 2013 Evgeniy Reizner
+** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+**
+** This program is free software; you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation; either version 2 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License along
+** with this program; if not, write to the Free Software Foundation, Inc.,
+** 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+**
+****************************************************************************/
+
 #include "replacer.h"
 #include "keys.h"
 
@@ -789,14 +811,11 @@ SvgElement Replacer::findLinearGradient(const QString &id)
  * </g>
  */
 
-// TODO: works badly on cbeau_shm_projection_of_circular_motion.svg
 void Replacer::groupElementsByStyles(SvgElement parentElem)
 {
     // first start
-    if (parentElem.isNull()) {
-
+    if (parentElem.isNull())
         parentElem = svgElement();
-    }
 
     StringHash groupHash;
     QList<SvgElement> similarElemList;
@@ -879,6 +898,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                         else if (parentElem.tagName() == "svg" && !lastGroupHash.contains("transform"))
                             canUseParent = true;
                     }
+
                     SvgElement parentGElem;
                     if (canUseParent) {
                         parentGElem = parentElem;
@@ -944,5 +964,31 @@ void Replacer::markUsedElements()
         }
         if (currElem.hasChildren())
             list << currElem.childElemList();
+    }
+}
+
+void Replacer::applyTransformToDefs()
+{
+    QList<SvgElement> list = defsElement().childElemList();
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+        if (elem.tagName() == "linearGradient") {
+            if (elem.hasAttribute("gradientTransform")) {
+                Transform gts(elem.attribute("gradientTransform"));
+                if (!gts.isMirrored() && gts.isProportionalScale()) {
+                    gts.setOldXY(elem.doubleAttribute("x1"),
+                                 elem.doubleAttribute("y1"));
+                    elem.setAttribute("x1", Tools::roundNumber(gts.newX()));
+                    elem.setAttribute("y1", Tools::roundNumber(gts.newY()));
+                    gts.setOldXY(elem.doubleAttribute("x2"),
+                                 elem.doubleAttribute("y2"));
+                    elem.setAttribute("x2", Tools::roundNumber(gts.newX()));
+                    elem.setAttribute("y2", Tools::roundNumber(gts.newY()));
+                    elem.removeAttribute("gradientTransform");
+                }
+            }
+        }
+        if (elem.hasChildren())
+            list << elem.childElemList();
     }
 }

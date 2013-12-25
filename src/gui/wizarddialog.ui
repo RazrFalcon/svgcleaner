@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>593</width>
-    <height>581</height>
+    <width>646</width>
+    <height>647</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -44,7 +44,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -691,8 +691,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>494</width>
-               <height>475</height>
+               <width>616</width>
+               <height>519</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1056,8 +1056,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>549</width>
-               <height>471</height>
+               <width>616</width>
+               <height>519</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1134,22 +1134,6 @@
                   </widget>
                  </item>
                 </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="chBoxRmNonSvgAttr">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="accessibleName">
-                 <string notr="true">remove-nonsvg-atts</string>
-                </property>
-                <property name="text">
-                 <string>Remove non-SVG attributes</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
                </widget>
               </item>
               <item>
@@ -1298,22 +1282,6 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="chBoxRmClipAttr">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="accessibleName">
-                 <string notr="true">remove-clippath-atts</string>
-                </property>
-                <property name="text">
-                 <string>Remove all unused properties from children of clipPath elements</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="checkBox_29">
                 <property name="accessibleName">
                  <string notr="true">keep-grad-coords</string>
@@ -1405,8 +1373,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>597</width>
-               <height>439</height>
+               <width>616</width>
+               <height>519</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -1551,54 +1519,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item>
-                  <widget class="QCheckBox" name="chBoxConvCToL">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="accessibleName">
-                    <string notr="true">convert-curves-lines</string>
-                   </property>
-                   <property name="text">
-                    <string>Convert straight curves into lines when possible</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="chBoxConvCToS">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="accessibleName">
-                    <string notr="true">convert-curves-cs</string>
-                   </property>
-                   <property name="text">
-                    <string>Convert cubic curve segments into shorthand equivalents when possible</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="chBoxConvQToT">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="accessibleName">
-                    <string notr="true">convert-curves-qt</string>
-                   </property>
-                   <property name="text">
-                    <string>Convert quadratic curve segments into shorthand equivalents when possible</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
                 </layout>
                </widget>
               </item>
@@ -1639,8 +1559,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>532</width>
-               <height>312</height>
+               <width>616</width>
+               <height>519</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1739,23 +1659,7 @@
                  <string notr="true">keep-transform</string>
                 </property>
                 <property name="text">
-                 <string>Merge multiply matrices into one and simplify it</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="chBoxRecalcCoord">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="accessibleName">
-                 <string notr="true">recalc-coords</string>
-                </property>
-                <property name="text">
-                 <string>Recalculate coordinates and remove transform attributes when possible</string>
+                 <string>Apply transform matrices to the elements when possible</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1960,8 +1864,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>145</width>
-               <height>25</height>
+               <width>616</width>
+               <height>519</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">
@@ -2138,7 +2042,6 @@
   <tabstop>checkBox_36</tabstop>
   <tabstop>chBoxUnrefID</tabstop>
   <tabstop>checkBox_18</tabstop>
-  <tabstop>chBoxRmNonSvgAttr</tabstop>
   <tabstop>checkBox_20</tabstop>
   <tabstop>checkBox_21</tabstop>
   <tabstop>checkBox_22</tabstop>
@@ -2148,7 +2051,6 @@
   <tabstop>checkBox_25</tabstop>
   <tabstop>checkBox_26</tabstop>
   <tabstop>checkBox_27</tabstop>
-  <tabstop>chBoxRmClipAttr</tabstop>
   <tabstop>checkBox_29</tabstop>
   <tabstop>scrollArea_5</tabstop>
   <tabstop>radioBtnKeepPaths</tabstop>
@@ -2157,9 +2059,6 @@
   <tabstop>checkBox_45</tabstop>
   <tabstop>checkBox_17</tabstop>
   <tabstop>checkBox_44</tabstop>
-  <tabstop>chBoxConvCToL</tabstop>
-  <tabstop>chBoxConvCToS</tabstop>
-  <tabstop>chBoxConvQToT</tabstop>
   <tabstop>scrollArea_3</tabstop>
   <tabstop>checkBox_30</tabstop>
   <tabstop>checkBox_31</tabstop>
@@ -2167,7 +2066,6 @@
   <tabstop>checkBox_34</tabstop>
   <tabstop>checkBox_35</tabstop>
   <tabstop>checkBox_38</tabstop>
-  <tabstop>chBoxRecalcCoord</tabstop>
   <tabstop>checkBox_40</tabstop>
   <tabstop>chBoxRoundNumbers</tabstop>
   <tabstop>spinBox</tabstop>

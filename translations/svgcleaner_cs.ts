@@ -454,42 +454,41 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1348"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1316"/>
         <source>Group elements by style properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1358"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1326"/>
         <source>skip-ids-trim</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1361"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1329"/>
         <source>Trim the id attributes into hexadecimal format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1547"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1515"/>
         <source>Convert &apos;curveto&apos; segment to short one, when possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1742"/>
         <source>Merge multiply matrices into one and simplify it</source>
-        <translation>Sloučit více matic do jedné a zjednodušit ji</translation>
+        <translation type="obsolete">Sloučit více matic do jedné a zjednodušit ji</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1987"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1891"/>
         <source>If this option is set, then output is created with only required whitespace and newlines.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1990"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1894"/>
         <source>not-compact</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1993"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1897"/>
         <source>Compact output</source>
         <translation type="unfinished"></translation>
     </message>
@@ -503,83 +502,79 @@
         <translation type="obsolete">Vždy zachovat ID obsahující pouze písmena</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1148"/>
         <source>Remove non-SVG attributes</source>
-        <translation>Odstranit vlastnosti ne-SVG</translation>
+        <translation type="obsolete">Odstranit vlastnosti ne-SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1161"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1145"/>
         <source>Remove attributes that are not applicable to elements</source>
         <translation>Odstranit vlastnosti, které se nedají použít na prvky</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1174"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1158"/>
         <source>Remove attributes with default SVG values</source>
         <translation>Odstranit vlastnosti s výchozími hodnotami SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1280"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1264"/>
         <source>Remove all stroke properties when there&apos;s no stroking</source>
         <translation>Odstranit všechny vlastnosti tahů, když nejsou žádné tahy</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1293"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1277"/>
         <source>Remove all fill properties when there&apos;s no filling</source>
         <translation>Odstranit všechny vlastnosti výplně, když nejsou žádné výplně</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1309"/>
         <source>Remove all unused properties from children of clipPath elements</source>
-        <translation>Odstranit všechny nepoužívané vlastnosti z potomků prvků clipPath</translation>
+        <translation type="obsolete">Odstranit všechny nepoužívané vlastnosti z potomků prvků clipPath</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1322"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1290"/>
         <source>Remove gradient coordinates when possible</source>
         <translation>Odstranit souřadnice přechodů, když je to možné</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1335"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1303"/>
         <source>Remove XLinks which pointed to nonexistent element</source>
         <translation>Odstranit odkazy (XLink), které ukazují na neexistující prvek</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1425"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1393"/>
         <source>Keep existing paths data</source>
         <translation>Zachovat data existujících cest</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1465"/>
-        <location filename="../src/gui/wizarddialog.ui" line="1521"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1433"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1489"/>
         <source>Remove unnecessary whitespace between commands and coordinates</source>
         <translation>Odstranit nepotřebná prázdná místa mezi příkazy a souřadnicemi</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1579"/>
         <source>Convert cubic curve segments into shorthand equivalents when possible</source>
-        <translation>Převést části kubických křivek do obdoby zkratky, když je to možné</translation>
+        <translation type="obsolete">Převést části kubických křivek do obdoby zkratky, když je to možné</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1595"/>
         <source>Convert quadratic curve segments into shorthand equivalents when possible</source>
-        <translation>Převést části kvadratických křivek do obdoby zkratky, když je to možné</translation>
+        <translation type="obsolete">Převést části kvadratických křivek do obdoby zkratky, když je to možné</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1656"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1576"/>
         <source>Convert width/height into a viewBox when possible</source>
         <translation>Převést šířku/výšku do viewBox, když je to možné</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1669"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1589"/>
         <source>Convert style properties into SVG attributes</source>
         <translation>Převést vlastnosti stylů do vlastností SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1682"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1602"/>
         <source>Convert colors to #RRGGBB format</source>
         <translation>Převést barvy do formátu #RRGGBB</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1713"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1633"/>
         <source>Convert colors to #RGB format when possible</source>
         <translation>Převést barvy do formátu #RGB, když je to možné</translation>
     </message>
@@ -589,12 +584,11 @@
         <translation>Hledat soubory SVG v podsložkách</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1758"/>
         <source>Recalculate coordinates and remove transform attributes when possible</source>
-        <translation>Přepočítat souřadnice a odstranit vlastnosti proměny, když je to možné</translation>
+        <translation type="obsolete">Přepočítat souřadnice a odstranit vlastnosti proměny, když je to možné</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1771"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1675"/>
         <source>Sort elements by name inside the defs section</source>
         <translation>Třídit prvky podle názvu v sekci vymezení</translation>
     </message>
@@ -633,17 +627,17 @@
         <translation>Pokud jejich obvyklá odchylka je méně než:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1184"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1168"/>
         <source>Remove attributes from namespaces by the following graphics editors:</source>
         <translation>Odstranit vlastnosti ze jmenných prostorů pomocí následujících grafických editorů:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1484"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1452"/>
         <source>Convert absolute paths into relative ones</source>
         <translation>Převést absolutní cesty na relativní</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1534"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1502"/>
         <source>Remove empty segments</source>
         <translation>Odstranit prázdné čáry a části křivek</translation>
     </message>
@@ -652,34 +646,38 @@
         <translation type="obsolete">Převést čáry na vodorovné/svislé obdoby, když je to možné</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1729"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1649"/>
         <source>Convert basic shapes into paths</source>
         <translation>Převést základní tvary na cesty</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1784"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1662"/>
+        <source>Apply transform matrices to the elements when possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.ui" line="1688"/>
         <source>Round numbers to a given precision</source>
         <translation>Zaokrouhlit čísla na zadanou přesnost</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1871"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1775"/>
         <source>inside transform attributes:</source>
         <translation>Uvnitř vlastností proměny:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1881"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1785"/>
         <source>inside coordinate attributes:</source>
         <translation>Uvnitř vlastností souřadnic:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1891"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1795"/>
         <source>inside other attributes:</source>
         <translation>Uvnitř jiných vlastností:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1563"/>
         <source>Convert straight curves into lines when possible</source>
-        <translation>Převést rovné křivky do čar, když je to možné</translation>
+        <translation type="obsolete">Převést rovné křivky do čar, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="468"/>
@@ -698,7 +696,7 @@
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="325"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="192"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="184"/>
         <source>filename</source>
         <translation>Název souboru</translation>
     </message>
@@ -738,149 +736,149 @@
         <translation>Uložit</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="114"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="106"/>
         <source>prefix</source>
         <translation>Předpona</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="115"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="107"/>
         <source>suffix</source>
         <translation>Přípona</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="124"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="116"/>
         <source>Presets</source>
         <translation>Přednastavení</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="125"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="117"/>
         <source>Elements</source>
         <translation>Prvky</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="126"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="118"/>
         <source>Attributes</source>
         <translation>Vlastnosti</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="128"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="120"/>
         <source>Optimization</source>
         <translation>Vyladění</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="129"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="121"/>
         <source>Output</source>
         <translation>Výstup</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="153"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="145"/>
         <source>Warning! The original files will be destroyed!</source>
         <translation>Varování! Původní soubory budou zničeny!</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="411"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="403"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Pro tento způsob ukládání musíte nastavit předponu nebo příponu.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="127"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="119"/>
         <source>Paths</source>
         <translation>Cesty</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="123"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="115"/>
         <source>Main</source>
         <translation>Hlavní</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="173"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="191"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="165"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="183"/>
         <source>For example</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="173"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="165"/>
         <source>before</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="175"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="167"/>
         <source>after</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="381"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="373"/>
         <source>Select an input folder</source>
         <translation>Vybrat vstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="394"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="386"/>
         <source>Select an output folder</source>
         <translation>Vybrat výstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="405"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="397"/>
         <source>An input folder is not selected.</source>
         <translation>Vstupní složka není vybrána.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="408"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="400"/>
         <source>An output folder is not selected.</source>
         <translation>Výstupní složka není vybrána.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="414"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="406"/>
         <source>An input folder is not exist.</source>
         <translation>Vstupní složka neexistuje.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="417"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="409"/>
         <source>An input folder did not contain any svg, svgz files.</source>
         <translation>Vstupní složka neobsahoval žádné soubory svg, svgz.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="420"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="412"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="421"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="413"/>
         <source>The &apos;svgcleaner-cli&apos; executable is not found in these folders:
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="426"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="418"/>
         <source>The &apos;7za&apos; executable is not found in these folders:
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="428"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="420"/>
         <source>You can not handle the SVGZ files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="431"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="423"/>
         <source>Selected output folder is not writable.</source>
         <translation>Vybraná výstupní složka není zapisovatelná.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="450"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="442"/>
         <source>You have to set preset name.</source>
         <translation>Musíte nastavit název přednastavení.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="459"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="451"/>
         <source>This preset already exists.
 Overwrite?</source>
         <translation>Toto přednastavení již existuje.
 Přepsat?</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="425"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="439"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="458"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="417"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="431"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="450"/>
         <source>Warning</source>
         <translation>Varování</translation>
     </message>

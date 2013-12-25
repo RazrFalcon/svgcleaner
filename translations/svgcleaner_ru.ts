@@ -380,7 +380,7 @@
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="325"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="192"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="184"/>
         <source>filename</source>
         <translation>filename</translation>
     </message>
@@ -505,27 +505,26 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1358"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1326"/>
         <source>skip-ids-trim</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1361"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1329"/>
         <source>Trim the id attributes into hexadecimal format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1547"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1515"/>
         <source>Convert &apos;curveto&apos; segment to short one, when possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1742"/>
         <source>Merge multiply matrices into one and simplify it</source>
-        <translation>Объединять матрицы трансформаций и упрощать их</translation>
+        <translation type="obsolete">Объединять матрицы трансформаций и упрощать их</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1534"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1502"/>
         <source>Remove empty segments</source>
         <translation>Удалять пустые сегменты</translation>
     </message>
@@ -579,68 +578,66 @@
         <translation type="obsolete">Оставлять идентификаторы, содержащие только буквы</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1148"/>
         <source>Remove non-SVG attributes</source>
-        <translation>Удалять не-SVG атрибуты</translation>
+        <translation type="obsolete">Удалять не-SVG атрибуты</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1161"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1145"/>
         <source>Remove attributes that are not applicable to elements</source>
         <translation>Удалять атрибуты, которые не используются элементами</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1174"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1158"/>
         <source>Remove attributes with default SVG values</source>
         <translation>Удалять атрибуты со значениями по умолчанию</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1184"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1168"/>
         <source>Remove attributes from namespaces by the following graphics editors:</source>
         <translation>Удалять атрибуты из пространств имен графических редакторов:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1280"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1264"/>
         <source>Remove all stroke properties when there&apos;s no stroking</source>
         <translation>Удалять все свойства обводки, когда она отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1293"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1277"/>
         <source>Remove all fill properties when there&apos;s no filling</source>
         <translation>Удалять все свойства заливки, когда она отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1309"/>
         <source>Remove all unused properties from children of clipPath elements</source>
-        <translation>Удалять все лишние свойства у потомков элементов clipPath</translation>
+        <translation type="obsolete">Удалять все лишние свойства у потомков элементов clipPath</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1322"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1290"/>
         <source>Remove gradient coordinates when possible</source>
         <translation>Удалять координаты градиентов, когда возможно</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1335"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1303"/>
         <source>Remove XLinks which pointed to nonexistent element</source>
         <translation>Удалять XLinks, которые указывают на несуществующие елементы</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1348"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1316"/>
         <source>Group elements by style properties</source>
         <translation>Группировать элементы с подобными стилями</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1425"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1393"/>
         <source>Keep existing paths data</source>
         <translation>Оставлять существующие данные путей</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1465"/>
-        <location filename="../src/gui/wizarddialog.ui" line="1521"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1433"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1489"/>
         <source>Remove unnecessary whitespace between commands and coordinates</source>
         <translation>Удалять лишние пробелы между командами и координатами</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1484"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1452"/>
         <source>Convert absolute paths into relative ones</source>
         <translation>Преобразовывать абсолютные пути в относительные</translation>
     </message>
@@ -649,87 +646,88 @@
         <translation type="obsolete">Преобразовывать линии в короткие гор./верт. эквиваленты</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1563"/>
         <source>Convert straight curves into lines when possible</source>
-        <translation>Преобразовывать прямые кривые в линии</translation>
+        <translation type="obsolete">Преобразовывать прямые кривые в линии</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1579"/>
         <source>Convert cubic curve segments into shorthand equivalents when possible</source>
-        <translation>Преобразовывать сегменты кубических кривых в короткие эквиваленты</translation>
+        <translation type="obsolete">Преобразовывать сегменты кубических кривых в короткие эквиваленты</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1595"/>
         <source>Convert quadratic curve segments into shorthand equivalents when possible</source>
-        <translation>Преобразовывать сегменты квадратичных кривых в короткие эквиваленты</translation>
+        <translation type="obsolete">Преобразовывать сегменты квадратичных кривых в короткие эквиваленты</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1656"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1576"/>
         <source>Convert width/height into a viewBox when possible</source>
         <translation>Преобразовывать атрибуты width и height во viewBox</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1669"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1589"/>
         <source>Convert style properties into SVG attributes</source>
         <translation>Преобразовывать свойства стилей в атрибуты SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1682"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1602"/>
         <source>Convert colors to #RRGGBB format</source>
         <translation>Преобразовывать цвета в формат #RRGGBB</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1713"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1633"/>
         <source>Convert colors to #RGB format when possible</source>
         <translation>Преобразовывать цвета в формат #RGB, когда возможно</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1729"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1649"/>
         <source>Convert basic shapes into paths</source>
         <translation>Преобразовывать основные фигуры в пути</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1758"/>
-        <source>Recalculate coordinates and remove transform attributes when possible</source>
-        <translation>Перерасчитывать координаты и удалять атрибуты трансформации</translation>
+        <location filename="../src/gui/wizarddialog.ui" line="1662"/>
+        <source>Apply transform matrices to the elements when possible</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1771"/>
+        <source>Recalculate coordinates and remove transform attributes when possible</source>
+        <translation type="obsolete">Перерасчитывать координаты и удалять атрибуты трансформации</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.ui" line="1675"/>
         <source>Sort elements by name inside the defs section</source>
         <translation>Сортировать по имени элементы из секции defs</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1784"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1688"/>
         <source>Round numbers to a given precision</source>
         <translation>Округлять числа до заданной точности</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1871"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1775"/>
         <source>inside transform attributes:</source>
         <translation>внутри атрибутов трансформации:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1881"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1785"/>
         <source>inside coordinate attributes:</source>
         <translation>внутри атрибутов координат:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1891"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1795"/>
         <source>inside other attributes:</source>
         <translation>внутри остальных атрибутов:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1987"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1891"/>
         <source>If this option is set, then output is created with only required whitespace and newlines.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1990"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1894"/>
         <source>not-compact</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="1993"/>
+        <location filename="../src/gui/wizarddialog.ui" line="1897"/>
         <source>Compact output</source>
         <translation type="unfinished"></translation>
     </message>
@@ -738,149 +736,149 @@
         <translation type="obsolete">Размер отступа в структуре данных:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="114"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="106"/>
         <source>prefix</source>
         <translation>префикс</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="115"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="107"/>
         <source>suffix</source>
         <translation>суффикс</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="123"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="115"/>
         <source>Main</source>
         <translation>Главная</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="124"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="116"/>
         <source>Presets</source>
         <translation>Пресеты</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="125"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="117"/>
         <source>Elements</source>
         <translation>Элементы</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="126"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="118"/>
         <source>Attributes</source>
         <translation>Атрибуты</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="127"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="119"/>
         <source>Paths</source>
         <translation>Пути</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="128"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="120"/>
         <source>Optimization</source>
         <translation>Оптимизация</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="129"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="121"/>
         <source>Output</source>
         <translation>Вывод</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="153"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="145"/>
         <source>Warning! The original files will be destroyed!</source>
         <translation>Внимание! Исходные файлы будут уничтожены!</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="173"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="191"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="165"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="183"/>
         <source>For example</source>
         <translation>Пример</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="173"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="165"/>
         <source>before</source>
         <translation>до</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="175"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="167"/>
         <source>after</source>
         <translation>после</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="381"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="373"/>
         <source>Select an input folder</source>
         <translation>Выберите исходную папку</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="394"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="386"/>
         <source>Select an output folder</source>
         <translation>Выберите итоговую папку</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="405"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="397"/>
         <source>An input folder is not selected.</source>
         <translation>Не выбрана исходная папка.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="408"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="400"/>
         <source>An output folder is not selected.</source>
         <translation>Не выбрана итоговая папка.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="411"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="403"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Необходимо установить префикс или суффикс.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="414"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="406"/>
         <source>An input folder is not exist.</source>
         <translation>Исходная папка не существует.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="417"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="409"/>
         <source>An input folder did not contain any svg, svgz files.</source>
         <translation>Исходная папка не содержит файлов svg и svgz.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="420"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="412"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="428"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="420"/>
         <source>You can not handle the SVGZ files.</source>
         <translation>Вы не сможете обрабатывать SVGZ файлы.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="431"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="423"/>
         <source>Selected output folder is not writable.</source>
         <translation>Выбранная итоговая папка недоступна для записи.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="425"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="439"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="458"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="417"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="431"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="450"/>
         <source>Warning</source>
         <translation>Предупреждение</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="421"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="413"/>
         <source>The &apos;svgcleaner-cli&apos; executable is not found in these folders:
 </source>
         <translation>Исполняемый файл &apos;svgcleaner-cli&apos; не найден в данных директориях:
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="426"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="418"/>
         <source>The &apos;7za&apos; executable is not found in these folders:
 </source>
         <translation>Исполняемый файл &apos;7za&apos; не найден в данных директориях:
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="450"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="442"/>
         <source>You have to set preset name.</source>
         <translation>Необходимо задать имя пресета.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="459"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="451"/>
         <source>This preset already exists.
 Overwrite?</source>
         <translation>Данный пресет уже существует. Перезаписать?</translation>

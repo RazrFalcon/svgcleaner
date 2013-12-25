@@ -37,7 +37,7 @@ LineEdit::LineEdit(QWidget *parent) :
     lbl->setObjectName("files");
     lbl->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    int padding = 4;
+    const int padding = 4;
 #ifdef Q_OS_WIN
     padding = 3;
 #endif

@@ -46,6 +46,7 @@ public:
     qreal scaleFactor() const;
     bool isProportionalScale();
     bool isMirrored();
+    bool isRotating();
 
 private:
     QList<qreal> m_points;
@@ -64,6 +65,7 @@ public:
     enum RoundType { COORDINATE, TRANSFORM, ATTRIBUTE };
     static bool isAttributesEqual(const StringMap &map1, const StringMap &map2, const QSet<QString> &attrList);
     static bool isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2);
+    static bool isZero(qreal value);
     static SvgElement svgElement(XMLDocument *doc);
     static SvgElement defsElement(XMLDocument *doc, SvgElement &svgElem);
     static QList<XMLNode *> childNodeList(XMLNode *node);

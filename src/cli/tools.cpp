@@ -87,7 +87,6 @@ QList<qreal> Transform::mergeMatrixes(QString text)
             matrix(0,0) = points.at(0);
             matrix(0,1) = points.at(2);
             matrix(0,2) = points.at(4);
-
             matrix(1,0) = points.at(1);
             matrix(1,1) = points.at(3);
             matrix(1,2) = points.at(5);
@@ -199,7 +198,7 @@ qreal Transform::scaleFactor() const
 
 bool Transform::isProportionalScale()
 {
-    return (m_xScale == m_yScale);
+    return (qAbs(m_xScale - m_yScale) < 0.0001);
 }
 
 bool Transform::isMirrored()
@@ -211,9 +210,16 @@ bool Transform::isMirrored()
     return false;
 }
 
+bool Transform::isRotating()
+{
+    return (!Tools::isZero(atan(m_points.at(1) / m_points.at(3))));
+}
+
 
 // New class
 
+// TODO: add key to round to integer when possible
+//       for example remove fraction part from big numbers
 QString Tools::roundNumber(qreal value, RoundType type)
 {
     // check is number is integer
@@ -454,7 +460,7 @@ QString Tools::replaceColorName(const QString &color)
 
 bool Tools::nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2)
 {
-    return  QString::localeAwareCompare(node1.tagName(), node2.tagName()) < 0;
+    return QString::localeAwareCompare(node1.tagName(), node2.tagName()) < 0;
 }
 
 void Tools::sortNodes(QList<SvgElement> &nodeList)
@@ -623,6 +629,11 @@ bool Tools::isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2)
         }
     }
     return true;
+}
+
+bool Tools::isZero(qreal value)
+{
+    return (qAbs(value) < 0.00001);
 }
 
 SvgElement Tools::svgElement(XMLDocument *doc)

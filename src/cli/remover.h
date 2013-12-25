@@ -36,7 +36,7 @@ struct DefsElemStruct
 class Remover : public BaseCleaner
 {
 public:
-    explicit Remover(XMLDocument *doc);
+    explicit Remover(XMLDocument *doc) : BaseCleaner(doc) {}
     void removeUnreferencedIds();
     void removeUnusedDefs();
     void removeUnusedXLinks();

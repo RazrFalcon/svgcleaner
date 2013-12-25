@@ -97,7 +97,7 @@ void showHelp()
     qDebug() << "  --skip-color-to-rrggbb   Skip converting 'rgb(255,255,255)', 'color-name' into #RRGGBB format.";
     qDebug() << "  --skip-rrggbb-to-rgb     Skip color converting from #RRGGBB into #RGB format, when possible.";
     qDebug() << "  --keep-basic-shapes      Disable converting basic shapes (rect, line, polygon, polyline) into path.";
-    qDebug() << "  --keep-transform         Skip merging and simplifying of 'transform' matrices.";
+    qDebug() << "  --keep-transform         Skip applying of transform matrices.";
     qDebug() << "  --keep-unsorted-defs     Disable element by name sorting in 'defs' element.";
     qDebug() << "  --skip-rounding-numbers  Skip rounding numbers.";
     qDebug() << "  --transfs-prec=<1..9>    Set rounding precision for transformations [default: 5].";

@@ -33,10 +33,6 @@
 // TODO: remove "symbol"
 // TODO: remove 'use' elem linked to empty object
 
-Remover::Remover(XMLDocument *doc) : BaseCleaner(doc)
-{
-}
-
 void Remover::cleanSvgElementAttribute()
 {
     bool isXlinkUsed = false;

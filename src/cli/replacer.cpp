@@ -35,10 +35,7 @@
 // TODO: If 'x1' = 'x2' and 'y1' = 'y2', then the area to be painted will be painted as
 //       a single color using the color and opacity of the last gradient stop.
 // TODO: merge "tspan" elements with similar styles
-
-Replacer::Replacer(XMLDocument *doc) : BaseCleaner(doc)
-{
-}
+// TODO: try to recalculate 'userSpaceOnUse' to 'objectBoundingBox'
 
 void Replacer::convertSizeToViewbox()
 {
@@ -69,22 +66,160 @@ void Replacer::convertSizeToViewbox()
 //       Anonymous_man_head.svg
 void Replacer::processPaths()
 {
+    QHash<QString,int> defsHash;
+    if (!Keys::get().flag(Key::KeepTransforms))
+        defsHash = calcDefsUsageCount();
+
     QList<SvgElement> list = svgElement().childElemList();
     while (!list.isEmpty()) {
-        SvgElement currElem = list.takeFirst();
+        SvgElement elem = list.takeFirst();
 
         bool removed = false;
-        if (currElem.tagName() == "path") {
-            Path().processPath(currElem);
-            if (currElem.attribute("d").isEmpty()) {
-                currElem.parentNode().removeChild(currElem);
+        if (elem.tagName() == "path") {
+            bool canApplyTransform = false;
+            if (!Keys::get().flag(Key::KeepTransforms))
+                canApplyTransform = isPathValidToTransform(elem, defsHash);
+            bool isPathApplyed = false;
+            Path().processPath(elem, canApplyTransform, &isPathApplyed);
+            if (canApplyTransform) {
+                if (isPathApplyed) {
+                    updateLinkedDefTransform(elem);
+                    elem.removeAttribute("transform");
+                }
+            }
+            if (elem.attribute("d").isEmpty()) {
+                elem.parentNode().removeChild(elem);
                 removed = true;
             }
         }
 
         if (!removed) {
-            if (currElem.hasChildren())
-                list << currElem.childElemList();
+            if (elem.hasChildren())
+                list << elem.childElemList();
+        }
+    }
+}
+
+bool Replacer::isPathValidToTransform(SvgElement &pathElem, QHash<QString,int> &defsIdHash)
+{
+    if (pathElem.hasAttribute("transform")) {
+        // non proportional transform could not be applied to path with stroke
+        bool hasStroke = false;
+        SvgElement parentElem = pathElem;
+        while (!parentElem.isNull()) {
+            if (parentElem.hasAttribute("stroke")) {
+                if (parentElem.attribute("stroke") != "none") {
+                    hasStroke = true;
+                    break;
+                }
+            }
+            parentElem = parentElem.parentNode();
+        }
+        if (hasStroke) {
+            Transform ts(pathElem.attribute("transform"));
+            if (!ts.isProportionalScale())
+                return false;
+        }
+    } else {
+        return false;
+    }
+    if (pathElem.hasAttribute("clip-path") || pathElem.hasAttribute("mask"))
+        return false;
+    if (pathElem.isUsed())
+        return false;
+    if (pathElem.hasAttribute("filter")) {
+        // we can apply transform to blur filter, but only when it's used by only this path
+        QString filterId = pathElem.defIdFromAttribute("filter");
+        if (defsIdHash.value(filterId) > 1)
+            return false;
+        if (!isBlurFilter(filterId))
+            return false;
+    }
+
+    QStringList attrList;
+    attrList << "fill" << "stroke";
+    foreach (const QString &attrName, attrList) {
+        if (pathElem.hasAttribute(attrName)) {
+            QString defId = pathElem.defIdFromAttribute(attrName);
+            if (!defId.isEmpty()) {
+                if (defsIdHash.value(defId) > 1)
+                    return false;
+            }
+            if (!defId.isEmpty()) {
+                SvgElement defElem = findDefElem(defId);
+                if (!defElem.isNull()) {
+                    if (   defElem.tagName() != "linearGradient"
+                        && defElem.tagName() != "radialGradient")
+                        return false;
+                    if (defElem.attribute("gradientUnits") != "userSpaceOnUse")
+                        return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+bool Replacer::isBlurFilter(const QString &id)
+{
+    QStringList filterAttrs;
+    filterAttrs << "x" << "y" << "width" << "height";
+    QList<SvgElement> list = defsElement().childElemList();
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+        if (elem.tagName() == "filter") {
+            if (elem.id() == id) {
+                if (elem.childElementCount() == 1) {
+                    if (elem.firstChild().tagName() == "feGaussianBlur") {
+                        // cannot apply transform to filter with not default region
+                        if (!elem.hasAttributes(filterAttrs))
+                            return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+SvgElement Replacer::findDefElem(const QString &id)
+{
+    QList<SvgElement> list = defsElement().childElemList();
+    while (!list.isEmpty()) {
+        SvgElement currElem = list.takeFirst();
+        if (Props::defsList.contains(currElem.tagName()) && currElem.id() == id)
+            return currElem;
+    }
+    return SvgElement();
+}
+
+void Replacer::updateLinkedDefTransform(SvgElement &elem)
+{
+    QStringList attrList;
+    attrList << "fill" << "stroke" << "filter";
+    foreach (const QString &attrName, attrList) {
+        QString defId = elem.defIdFromAttribute(attrName);
+        if (!defId.isEmpty()) {
+            SvgElement defElem = findDefElem(defId);
+            if (!defElem.isNull()) {
+                if (   defElem.tagName() == "linearGradient"
+                    || defElem.tagName() == "radialGradient")
+                {
+                    QString gradTs = defElem.attribute("gradientTransform");
+                    if (!gradTs.isEmpty()) {
+                        Transform ts(elem.attribute("transform") + " " + gradTs);
+                        defElem.setAttribute("gradientTransform", ts.simplified());
+                    } else {
+                        defElem.setAttribute("gradientTransform", elem.attribute("transform"));
+                    }
+                } else if (defElem.tagName() == "filter") {
+                    Transform ts(elem.attribute("transform"));
+                    SvgElement stdDevElem = defElem.firstChild();
+                    qreal oldStd = stdDevElem.doubleAttribute("stdDeviation");
+                    QString newStd = Tools::roundNumber(oldStd * ts.scaleFactor());
+                    stdDevElem.setAttribute("stdDeviation", newStd);
+                }
+            }
         }
     }
 }
@@ -324,8 +459,6 @@ void Replacer::fixWrongAttr()
     }
 }
 
-// TODO: Gradient offset values less than 0 (or less than 0%) are rounded up to 0%. Gradient offset
-//       values greater than 1 (or greater than 100%) are rounded down to 100%.
 void Replacer::finalFixes()
 {
     QList<SvgElement> list = svgElement().childElemList();
@@ -364,9 +497,13 @@ void Replacer::finalFixes()
                     currElem.removeAttribute("gradientTransform");
                 }
             } else if (currTag == "radialGradient") {
-                if (currElem.attribute("fx") == currElem.attribute("cx"))
+                qreal fx = currElem.doubleAttribute("fx");
+                qreal fy = currElem.doubleAttribute("fy");
+                qreal cx = currElem.doubleAttribute("cx");
+                qreal cy = currElem.doubleAttribute("cy");
+                if (Tools::isZero(qAbs(fx-cx)))
                     currElem.removeAttribute("fx");
-                if (currElem.attribute("fy") == currElem.attribute("cy"))
+                if (Tools::isZero(qAbs(fy-cy)))
                     currElem.removeAttribute("fy");
             }
         }
@@ -967,6 +1104,38 @@ void Replacer::markUsedElements()
     }
 }
 
+QHash<QString,int> Replacer::calcDefsUsageCount()
+{
+    QStringList attrList;
+    attrList << "fill" << "filter" << "stroke";
+    QHash<QString,int> idHash;
+    QList<SvgElement> list = svgElement().childElemList();
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+        for (int i = 0; i < attrList.size(); ++i) {
+            QString id = elem.defIdFromAttribute(attrList.at(i));
+            if (!id.isEmpty()) {
+                if (idHash.contains(id))
+                    idHash.insert(id, idHash.value(id) + 1);
+                else
+                    idHash.insert(id, 1);
+            }
+        }
+        QString xlink = elem.attribute("xlink:href");
+        if (!xlink.isEmpty()) {
+            xlink.remove(0,1);
+            if (idHash.contains(xlink))
+                idHash.insert(xlink, idHash.value(xlink) + 1);
+            else
+                idHash.insert(xlink, 1);
+        }
+
+        if (elem.hasChildren())
+            list << elem.childElemList();
+    }
+    return idHash;
+}
+
 void Replacer::applyTransformToDefs()
 {
     QList<SvgElement> list = defsElement().childElemList();
@@ -984,6 +1153,26 @@ void Replacer::applyTransformToDefs()
                                  elem.doubleAttribute("y2"));
                     elem.setAttribute("x2", Tools::roundNumber(gts.newX()));
                     elem.setAttribute("y2", Tools::roundNumber(gts.newY()));
+                    elem.removeAttribute("gradientTransform");
+                }
+            }
+        } else if (elem.tagName() == "radialGradient") {
+            if (elem.hasAttribute("gradientTransform")) {
+                Transform gts(elem.attribute("gradientTransform"));
+                if (!gts.isMirrored() && gts.isProportionalScale() && !gts.isRotating()) {
+                    gts.setOldXY(elem.doubleAttribute("fx"),
+                                 elem.doubleAttribute("fy"));
+                    if (elem.hasAttribute("fx"))
+                        elem.setAttribute("fx", Tools::roundNumber(gts.newX()));
+                    if (elem.hasAttribute("fy"))
+                        elem.setAttribute("fy", Tools::roundNumber(gts.newY()));
+                    gts.setOldXY(elem.doubleAttribute("cx"),
+                                 elem.doubleAttribute("cy"));
+                    elem.setAttribute("cx", Tools::roundNumber(gts.newX()));
+                    elem.setAttribute("cy", Tools::roundNumber(gts.newY()));
+
+                    elem.setAttribute("r", Tools::roundNumber(elem.doubleAttribute("r")
+                                                              * gts.scaleFactor()));
                     elem.removeAttribute("gradientTransform");
                 }
             }

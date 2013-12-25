@@ -36,7 +36,7 @@ struct LineGradStruct {
 class Replacer : public BaseCleaner
 {
 public:
-    explicit Replacer(XMLDocument *doc);
+    explicit Replacer(XMLDocument *doc) : BaseCleaner(doc) {}
     void convertSizeToViewbox();
     void processPaths();
     void fixWrongAttr();
@@ -53,11 +53,16 @@ public:
     void calcElemAttrCount(const QString &text);
     void groupElementsByStyles(SvgElement parentElem = SvgElement());
     void markUsedElements();
+    QHash<QString,int> calcDefsUsageCount();
     void applyTransformToDefs();
 
 private:
     SvgElement findLinearGradient(const QString &id);
     void mergeGradientsWithEqualStopElem();
+    bool isPathValidToTransform(SvgElement &pathElem, QHash<QString, int> &defsIdHash);
+    bool isBlurFilter(const QString &id);
+    SvgElement findDefElem(const QString &id);
+    void updateLinkedDefTransform(SvgElement &elem);
 };
 
 #endif // REPLACER_H

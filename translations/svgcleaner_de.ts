@@ -436,7 +436,7 @@
     </message>
     <message>
         <source>Remove non-SVG attributes</source>
-        <translation>entferne SVG-fremde Attribute</translation>
+        <translation type="obsolete">entferne SVG-fremde Attribute</translation>
     </message>
     <message>
         <source>Remove attributes that are not applicable to elements</source>
@@ -460,7 +460,7 @@
     </message>
     <message>
         <source>Remove all unused properties from children of clipPath elements</source>
-        <translation>entferne alle ungenutzten Eigenschaften von Nachkommen von Clip-Pfad-Elementen</translation>
+        <translation type="obsolete">entferne alle ungenutzten Eigenschaften von Nachkommen von Clip-Pfad-Elementen</translation>
     </message>
     <message>
         <source>Remove gradient coordinates when possible</source>
@@ -484,15 +484,15 @@
     </message>
     <message>
         <source>Convert straight curves into lines when possible</source>
-        <translation>wandle gerade Kurven in Linien, wenn möglich</translation>
+        <translation type="obsolete">wandle gerade Kurven in Linien, wenn möglich</translation>
     </message>
     <message>
         <source>Convert cubic curve segments into shorthand equivalents when possible</source>
-        <translation>wandle kubische Kurven-Segmente in kürzere Äquivalente, wenn möglich</translation>
+        <translation type="obsolete">wandle kubische Kurven-Segmente in kürzere Äquivalente, wenn möglich</translation>
     </message>
     <message>
         <source>Convert quadratic curve segments into shorthand equivalents when possible</source>
-        <translation>wandle quadradische Kurven-Segmente in kürzere Äquivalente, wenn möglich</translation>
+        <translation type="obsolete">wandle quadradische Kurven-Segmente in kürzere Äquivalente, wenn möglich</translation>
     </message>
     <message>
         <source>Convert width/height into a viewBox when possible</source>
@@ -516,7 +516,7 @@
     </message>
     <message>
         <source>Recalculate coordinates and remove transform attributes when possible</source>
-        <translation>berechne Koordinaten neu und entferne Transformations-Attribute, wenn möglich</translation>
+        <translation type="obsolete">berechne Koordinaten neu und entferne Transformations-Attribute, wenn möglich</translation>
     </message>
     <message>
         <source>Sort elements by name inside the defs section</source>
@@ -642,7 +642,7 @@ Overwrite?</source>
     </message>
     <message>
         <source>Merge multiply matrices into one and simplify it</source>
-        <translation>Führe mehrfahe Matrizen in eine zusammen udn vereinfache sie</translation>
+        <translation type="obsolete">Führe mehrfahe Matrizen in eine zusammen udn vereinfache sie</translation>
     </message>
     <message>
         <source>Group elements by style properties</source>
@@ -704,6 +704,10 @@ Overwrite?</source>
     </message>
     <message>
         <source>Convert &apos;curveto&apos; segment to short one, when possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply transform matrices to the elements when possible</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

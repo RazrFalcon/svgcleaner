@@ -41,16 +41,30 @@ namespace Command {
     static const QChar ClosePath        = 'z';
 }
 
+struct ArcStruct
+{
+    qreal x1;
+    qreal y1;
+    qreal rx;
+    qreal ry;
+    qreal angle;
+    bool large_arc_flag;
+    bool sweep_flag;
+    qreal x2;
+    qreal y2;
+    QList<qreal> recursive;
+};
+
 class Segment
 {
 public:
     Segment();
-    QStringList toStringList() const;
+    void toStringList(QStringList &list);
     QString string(qreal value) const;
-    void setTransform(const QString &text);
+    void setTransform(Transform &ts);
     void toRelative(qreal xLast, qreal yLast);
     void toAbsolute(qreal xLast, qreal yLast);
-    QList<Segment> toCurve(qreal prevX, qreal prevY);
+    QList<Segment> toCurve(qreal prevX, qreal prevY) const;
 
     QChar command;
     bool absolute;
@@ -70,22 +84,46 @@ public:
 
 private:
     bool m_isApplyRound;
+
+    QPointF rotatePoint(qreal x, qreal y, qreal rad) const;
+    QList<QPointF> arcToCurve(ArcStruct arc) const;
+};
+
+class PathParser
+{
+public:
+    explicit PathParser(const QStringRef &d);
+    QList<Segment> segmentList() const;
+
+private:
+    QList<Segment> m_segList;
+    void splitToSegments(const QStringRef &path);
+    static qreal toDouble(const QChar *&str);
+    static qreal getNum(const QChar *&str);
+    // the isDigit code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
+    // '0' is 0x30 and '9' is 0x39
+    static inline bool isDigit(ushort ch)
+    {
+        static quint16 magic = 0x3ff;
+        return ((ch >> 4) == 3) && (magic >> (ch & 15));
+    }
 };
 
 class Path
 {
 public:
     explicit Path() {}
-    void processPath(SvgElement elem);
+    void processPath(SvgElement elem, bool canApplyTransform, bool *isPathApplyed);
     QString segmentsToPath(QList<Segment> &segList);
 
 private:
-    QList<Segment> splitToSegments(const QString &path);
     void processSegments(QList<Segment> &segList);
     void segmentsToAbsolute(QList<Segment> &segList);
     void segmentsToRelative(QList<Segment> &segList);
-    QString trimPath(const QString &path);
     bool isZero(double value);
+    void calcNewStrokeWidth(SvgElement &elem, const Transform &transform);
+    bool applyTransform(SvgElement &elem, QList<Segment> &segList);
+    bool isTsPathShorter(SvgElement elem);
 };
 
 #endif // PATHS_H

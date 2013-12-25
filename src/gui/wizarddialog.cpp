@@ -89,14 +89,6 @@ void WizardDialog::loadSettings()
 
 void WizardDialog::setupGUI()
 {
-    // NOTE: not implemented
-    chBoxRmNonSvgAttr->hide();
-    chBoxRmClipAttr->hide();
-    chBoxConvCToL->hide();
-    chBoxConvCToS->hide();
-    chBoxConvQToT->hide();
-    chBoxRecalcCoord->hide();
-
     // setup type radioButtons
     connect(radioBtn1, SIGNAL(clicked()), this, SLOT(radioSelected()));
     connect(radioBtn2, SIGNAL(clicked()), this, SLOT(radioSelected()));
@@ -109,7 +101,7 @@ void WizardDialog::setupGUI()
     connect(lineEditInDir,  SIGNAL(textChanged(QString)), this, SLOT(loadFiles()));
     connect(chBoxRecursive, SIGNAL(clicked()),            this, SLOT(loadFiles()));
 
-    // Placeholder text work only on qt>4.7
+    // Placeholder text work only on qt > 4.7
 #if QT_VERSION >= 0x040700
     lineEditPrefix->setPlaceholderText(tr("prefix"));
     lineEditSuffix->setPlaceholderText(tr("suffix"));

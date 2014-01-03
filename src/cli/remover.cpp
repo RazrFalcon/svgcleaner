@@ -32,6 +32,7 @@
 // TODO: xlink:href could not contains uri with spaces, remove this elements
 // TODO: remove "symbol"
 // TODO: remove 'use' elem linked to empty object
+// TODO: remove elem from defs if it used only by one use elem
 
 void Remover::cleanSvgElementAttribute()
 {
@@ -309,7 +310,7 @@ void Remover::removeElements()
         bool removeThisNode = false;
         if (!currElem.isNull()) {
             QString currTag = currElem.tagName();
-            if (currElem.isContainer() && !currElem.hasChildren()
+            if (currElem.isContainer() && !currElem.hasChildren() && currTag != "glyph"
                 && !Keys::get().flag(Key::KeepEmptyContainer))
                 removeThisNode = true;
             else if (currTag == "metadata" && !Keys::get().flag(Key::KeepMetadata))
@@ -505,7 +506,7 @@ bool Remover::isInvisibleElementsExist(const SvgElement &elem)
     return false;
 }
 
-// TODO: process 'shape-rendering' attribute
+// TODO: process '*-rendering' attribute
 void Remover::removeAttributes()
 {
     QList<SvgElement> list = Tools::childElemList(document());
@@ -598,6 +599,8 @@ void Remover::removeAttributes()
         if (elem.hasChildren())
             list << elem.childElemList();
     }
+
+    removeNonElementAttributes();
 }
 
 void Remover::cleanAttribute(SvgElement &elem, const QString &startWith, QStringList &attrList)
@@ -607,6 +610,33 @@ void Remover::cleanAttribute(SvgElement &elem, const QString &startWith, QString
             elem.removeAttribute(attrName);
             attrList.removeOne(attrName);
         }
+    }
+}
+
+void Remover::removeNonElementAttributes()
+{
+    QSet<QString> circle;
+    circle << "transform" << "cx" << "cy" << "r" << "id";
+    circle.unite(Props::styleAttributes);
+
+    QSet<QString> ellipse;
+    ellipse << "transform" << "cx" << "cy" << "rx" << "ry" << "id";
+    ellipse.unite(Props::styleAttributes);
+
+    QList<SvgElement> elemList = svgElement().childElemList();
+    while (!elemList.isEmpty()) {
+        SvgElement elem = elemList.takeFirst();
+        QString tagName = elem.tagName();
+        if (tagName == "circle" || tagName == "ellipse") {
+            foreach (const QString &attrName, elem.attributesList()) {
+                if (!circle.contains(attrName) && tagName == "circle")
+                    elem.removeAttribute(attrName);
+                else if (!ellipse.contains(attrName) && tagName == "ellipse")
+                    elem.removeAttribute(attrName);
+            }
+        }
+        if (elem.hasChildren())
+            elemList << elem.childElemList();
     }
 }
 
@@ -732,21 +762,18 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash &hash)
         removeDefaultValue(hash, "opacity");
 
     foreach (const QString &key, hash.keys()) {
-        if (!key.contains("font")) {
-            QString value = hash.value(key);
-            QString lengthType = value.right(2);
-            if (Props::lengthTypes.contains(lengthType) && !value.contains("url"))
-            {
-                hash.insert(key, Tools::convertUnitsToPx(hash.value(key)));
-                value = hash.value(key);
-            }
+        QString value = hash.value(key);
+        QString lengthType = value.right(2);
+        if (Props::lengthTypes.contains(lengthType) && !value.contains("url")) {
+            hash.insert(key, Tools::convertUnitsToPx(hash.value(key)));
+            value = hash.value(key);
+        }
 
-            bool ok = false;
-            value.toDouble(&ok);
-            if (ok) {
-                QString number = Tools::roundNumber(value.toDouble(), Tools::ATTRIBUTE);
-                hash.insert(key, number);
-            }
+        bool ok = false;
+        value.toDouble(&ok);
+        if (ok) {
+            QString number = Tools::roundNumber(value.toDouble(), Tools::ATTRIBUTE);
+            hash.insert(key, number);
         }
     }
 

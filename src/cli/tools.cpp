@@ -141,12 +141,12 @@ QString Transform::simplified() const
     if (pt.at(0) == 1 && pt.at(1) == 0 && pt.at(2) == 0 && pt.at(3) == 1) {
         if (pt.at(5) != 0) {
             transform = QString("translate(%1 %2)")
-                        .arg(Tools::roundNumber(pt.at(4), Tools::TRANSFORM),
-                             Tools::roundNumber(pt.at(5), Tools::TRANSFORM));
+                        .arg(Tools::roundNumber(pt.at(4), Tools::COORDINATE),
+                             Tools::roundNumber(pt.at(5), Tools::COORDINATE));
 
         } else if (pt.at(4) != 0) {
             transform = QString("translate(%1)")
-                        .arg(Tools::roundNumber(pt.at(4), Tools::TRANSFORM));
+                        .arg(Tools::roundNumber(pt.at(4), Tools::COORDINATE));
         }
         if (transform == "translate(0)" || transform == "translate(0 0)")
             transform.clear();
@@ -181,8 +181,10 @@ QString Transform::simplified() const
             transform.clear();
     } else {
         transform = "matrix(";
-        for (int i = 0; i < pt.count(); ++i)
+        for (int i = 0; i < 4; ++i)
             transform += Tools::roundNumber(pt.at(i), Tools::TRANSFORM) + " ";
+        for (int i = 4; i < 6; ++i)
+            transform += Tools::roundNumber(pt.at(i), Tools::COORDINATE) + " ";
         transform.chop(1);
         transform += ")";
         if (transform == "matrix(0 0 0 0 0 0)")
@@ -194,6 +196,16 @@ QString Transform::simplified() const
 qreal Transform::scaleFactor() const
 {
     return m_xScale;
+}
+
+qreal Transform::xScale() const
+{
+    return m_xScale;
+}
+
+qreal Transform::yScale() const
+{
+    return m_yScale;
 }
 
 bool Transform::isProportionalScale()
@@ -222,12 +234,6 @@ bool Transform::isRotating()
 //       for example remove fraction part from big numbers
 QString Tools::roundNumber(qreal value, RoundType type)
 {
-    // check is number is integer
-    double fractpart, intpart;
-    fractpart = modf(value, &intpart);
-    if (qFuzzyCompare(fractpart, 0))
-        return QString::number((int)value);
-
     int precision;
     if (type == COORDINATE)
         precision = Keys::get().coordinatesPrecision();
@@ -235,6 +241,27 @@ QString Tools::roundNumber(qreal value, RoundType type)
         precision = Keys::get().attributesPrecision();
     else
         precision = Keys::get().transformPrecision();
+    return roundNumber(value, precision);
+}
+
+QString Tools::roundNumber(qreal value, int precision)
+{
+    // check is number is integer
+    double fractpart, intpart;
+    fractpart = modf(value, &intpart);
+    if (qFuzzyCompare(fractpart, 0))
+        return QString::number((int)value);
+
+    // round number when fraction part is really small
+    // when fraction part is smaller than 1% of integer part
+    // 24.2008 -> 24.2
+    // 2.01738 -> 2.02
+    // 3.004   -> 3
+    if (qAbs(fractpart/intpart*100) < 1) {
+        qreal v = pow(10, (precision-1));
+        qreal fractpart2 = qRound(fractpart * v) / v;
+        value = intpart + fractpart2;
+    }
 
     QString text = QString::number(value, 'f', precision);
 
@@ -245,13 +272,9 @@ QString Tools::roundNumber(qreal value, RoundType type)
     if (text.at(text.count()-1) == QLatin1Char('.')) {
         text.chop(1);
         // already integer
+        if (text == QLatin1String("-0"))
+            return QLatin1String("0");
         return text;
-    }
-    // 3.00001 -> 3
-    if ((int)intpart != 0) {
-        const int pointPos = text.indexOf('.', 1);
-        if (text.mid(pointPos+1, precision-1).remove(QLatin1Char('0')).isEmpty())
-            return text.left(pointPos);
     }
 
     // 0.1 -> .1
@@ -283,7 +306,6 @@ QString Tools::trimColor(QString color)
                     list.replace(i, QString::number((int)(list.at(i).toDouble()*255/100)));
             }
             color = "#";
-
             foreach (const QString &text, list)
                 color += QString::number(text.toInt(), 16).rightJustified(2, '0');
         }
@@ -294,7 +316,7 @@ QString Tools::trimColor(QString color)
     }
 
     if (!Keys::get().flag(Key::SkipRRGGBBToRGB)) {
-        if (color.contains(QRegExp("[0-9a-f]"))) {
+        if (color.startsWith('#')) {
             // try to convert #rrggbb to #rgb
             if (color.size() == 7) { // #000000
                 int inter = 0;
@@ -307,7 +329,6 @@ QString Tools::trimColor(QString color)
             }
         }
     }
-
     return color;
 }
 

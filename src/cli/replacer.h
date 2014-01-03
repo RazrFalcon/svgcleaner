@@ -44,8 +44,9 @@ public:
     void convertCDATAStyle();
     void prepareDefs();
     void splitStyleAttr();
+    void joinStyleAttr();
     void sortDefs();
-    void roundDefs();
+    void roundNumericAttributes();
     void convertBasicShapes();
     void mergeGradients();
     void finalFixes();

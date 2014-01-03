@@ -42,6 +42,7 @@ public:
     void removeUnusedXLinks();
     void removeDuplicatedDefs();
     void removeElements();
+    void removeNonElementAttributes();
     void cleanSvgElementAttribute();
     void removeAttributes();
     void processStyleAttr(SvgElement elem = SvgElement());

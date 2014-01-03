@@ -62,14 +62,14 @@ namespace Key {
     static const QString KeepUnusedXLinks = "--keep-unused-xlinks";
     static const QString SkipElemByStyleGroup = "--skip-style-group";
     static const QString SkipIdsTrim = "--skip-ids-trim";
+    static const QString JoinStyleAttributes = "--join-style-atts";
 
     static const QString KeepAbsolutePaths = "--keep-absolute-paths";
     static const QString KeepUnusedSymbolsFromPath = "--keep-unused-symbols";
-    static const QString KeepEmptySegments = "--keep-empty-segments";
+    static const QString KeepTinySegments = "--keep-tiny-segments";
     static const QString KeepOriginalCurveTo = "--keep-curveto";
 
     static const QString NoViewbox = "--no-viewbox";
-    static const QString JoinStyleAttributes = "--join-style-atts";
     static const QString SkipColorToRRGGBB = "--skip-color-to-rrggbb";
     static const QString SkipRRGGBBToRGB = "--skip-rrggbb-to-rgb";
     static const QString KeepBasicShapes = "--keep-basic-shapes";

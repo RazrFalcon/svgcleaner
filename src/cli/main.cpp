@@ -84,25 +84,26 @@ void showHelp()
     qDebug() << "  --keep-unused-xlinks     Keep XLinks which pointed to nonexistent element.";
     qDebug() << "  --skip-style-group       Group elements by style properties.";
     qDebug() << "  --skip-ids-trim          Skip trimming to the id attributes into hexadecimal format.";
+    qDebug() << "Attributes utilities:";
+    qDebug() << "  --join-style-atts        Merge style properties into 'style' attribute.";
 
     qDebug() << "Paths:";
     qDebug() << "  --keep-absolute-paths    Disable absolute to relative coordinates converting in path element.";
     qDebug() << "  --keep-unused-symbols    Keep unused symbols in 'd' attribute from 'path' element.";
-    qDebug() << "  --keep-empty-segments    Keep empty segment in path element.";
+    qDebug() << "  --keep-tiny-segments     Keep tiny or empty segments in 'path' element.";
     qDebug() << "  --keep-curveto           Disable converting 'curveto' segment to short one, when possible.";
 
     qDebug() << "Optimization:";
     qDebug() << "  --no-viewbox             Disable 'viewBox' attribute creating from 'height' and 'width' in 'svg' element.";
-    qDebug() << "  --join-style-atts        Do not convert style properties into SVG attributes.";
-    qDebug() << "  --skip-color-to-rrggbb   Skip converting 'rgb(255,255,255)', 'color-name' into #RRGGBB format.";
+    qDebug() << "  --skip-color-to-rrggbb   Skip converting 'rgb(255,255,255)' or color name into #RRGGBB format.";
     qDebug() << "  --skip-rrggbb-to-rgb     Skip color converting from #RRGGBB into #RGB format, when possible.";
     qDebug() << "  --keep-basic-shapes      Disable converting basic shapes (rect, line, polygon, polyline) into path.";
     qDebug() << "  --keep-transform         Skip applying of transform matrices.";
     qDebug() << "  --keep-unsorted-defs     Disable element by name sorting in 'defs' element.";
     qDebug() << "  --skip-rounding-numbers  Skip rounding numbers.";
-    qDebug() << "  --transfs-prec=<1..9>    Set rounding precision for transformations [default: 5].";
-    qDebug() << "  --coords-prec=<1..9>     Set rounding precision for coordinates [default: 4].";
-    qDebug() << "  --attrs-prec=<1..9>      Set rounding precision for attributes [default: 3].";
+    qDebug() << "  --transfs-prec=<1..8>    Set rounding precision for transformations [default: 5].";
+    qDebug() << "  --coords-prec=<1..8>     Set rounding precision for coordinates [default: 3].";
+    qDebug() << "  --attrs-prec=<1..8>      Set rounding precision for attributes [default: 3].";
 
     qDebug() << "Output:";
     qDebug() << "  --not-compact            Save svg with only required whitespace and newlines.";
@@ -178,8 +179,11 @@ bool processFile(const QString &firstFile, const QString &secondFile)
     if (!Keys::get().flag(Key::KeepTransforms))
         replacer.applyTransformToDefs();
     if (!Keys::get().flag(Key::SkipRoundingNumbers))
-        replacer.roundDefs();
+        replacer.roundNumericAttributes();
     replacer.finalFixes();
+
+    if (Keys::get().flag(Key::JoinStyleAttributes))
+        replacer.joinStyleAttr();
 
     // TODO: check is out file smaller than original
     QFile outFile(secondFile);

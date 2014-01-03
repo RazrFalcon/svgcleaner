@@ -25,6 +25,7 @@
 
 #include <QStringList>
 #include <QPointF>
+#include <QVector>
 
 #include "tools.h"
 
@@ -59,11 +60,10 @@ class Segment
 {
 public:
     Segment();
-    void toStringList(QStringList &list);
-    QString string(qreal value) const;
     void setTransform(Transform &ts);
     void toRelative(qreal xLast, qreal yLast);
     void toAbsolute(qreal xLast, qreal yLast);
+    void coords(QVector<qreal> &points);
     QList<Segment> toCurve(qreal prevX, qreal prevY) const;
 
     QChar command;
@@ -83,8 +83,6 @@ public:
     int sweep;
 
 private:
-    bool m_isApplyRound;
-
     QPointF rotatePoint(qreal x, qreal y, qreal rad) const;
     QList<QPointF> arcToCurve(ArcStruct arc) const;
 };
@@ -100,6 +98,7 @@ private:
     void splitToSegments(const QStringRef &path);
     static qreal toDouble(const QChar *&str);
     static qreal getNum(const QChar *&str);
+
     // the isDigit code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
     // '0' is 0x30 and '9' is 0x39
     static inline bool isDigit(ushort ch)
@@ -117,13 +116,18 @@ public:
     QString segmentsToPath(QList<Segment> &segList);
 
 private:
-    void processSegments(QList<Segment> &segList);
+    SvgElement m_elem;
+
+    void processAbsoluteSegments(QList<Segment> &segList);
+    void processRelativeSegments(QList<Segment> &segList);
     void segmentsToAbsolute(QList<Segment> &segList);
     void segmentsToRelative(QList<Segment> &segList);
     bool isZero(double value);
-    void calcNewStrokeWidth(SvgElement &elem, const Transform &transform);
-    bool applyTransform(SvgElement &elem, QList<Segment> &segList);
-    bool isTsPathShorter(SvgElement elem);
+    void calcNewStrokeWidth(const Transform &transform);
+    bool applyTransform(QList<Segment> &segList);
+    bool isTsPathShorter();
+    void fixRelative(QList<Segment> &segList);
+    QString findAttribute(const QString &attrName);
 };
 
 #endif // PATHS_H

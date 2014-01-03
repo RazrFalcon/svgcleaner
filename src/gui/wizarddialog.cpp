@@ -89,6 +89,8 @@ void WizardDialog::loadSettings()
 
 void WizardDialog::setupGUI()
 {
+    checkBox_31->hide();
+
     // setup type radioButtons
     connect(radioBtn1, SIGNAL(clicked()), this, SLOT(radioSelected()));
     connect(radioBtn2, SIGNAL(clicked()), this, SLOT(radioSelected()));

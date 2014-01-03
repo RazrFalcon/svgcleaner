@@ -44,7 +44,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -1334,6 +1334,32 @@
                </widget>
               </item>
               <item>
+               <spacer name="verticalSpacer_8">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>1</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_31">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Merge style properties into 'style' attribute</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="verticalSpacer_3">
                 <property name="accessibleName">
                  <string notr="true"/>
@@ -1496,10 +1522,10 @@
                  <item>
                   <widget class="QCheckBox" name="checkBox_17">
                    <property name="accessibleName">
-                    <string notr="true">keep-empty-segments</string>
+                    <string notr="true">keep-tiny-segments</string>
                    </property>
                    <property name="text">
-                    <string>Remove empty segments</string>
+                    <string>Remove tiny segments</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -1574,19 +1600,6 @@
                 </property>
                 <property name="text">
                  <string>Convert width/height into a viewBox when possible</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_31">
-                <property name="accessibleName">
-                 <string notr="true">join-style-atts</string>
-                </property>
-                <property name="text">
-                 <string>Convert style properties into SVG attributes</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1728,16 +1741,16 @@
                     <string notr="true">coords-prec</string>
                    </property>
                    <property name="accessibleDescription">
-                    <string notr="true">4</string>
+                    <string notr="true">3</string>
                    </property>
                    <property name="minimum">
                     <number>1</number>
                    </property>
                    <property name="maximum">
-                    <number>9</number>
+                    <number>8</number>
                    </property>
                    <property name="value">
-                    <number>4</number>
+                    <number>3</number>
                    </property>
                   </widget>
                  </item>
@@ -1759,7 +1772,7 @@
                     <number>1</number>
                    </property>
                    <property name="maximum">
-                    <number>9</number>
+                    <number>8</number>
                    </property>
                    <property name="value">
                     <number>3</number>
@@ -1814,7 +1827,7 @@
                     <number>1</number>
                    </property>
                    <property name="maximum">
-                    <number>9</number>
+                    <number>8</number>
                    </property>
                    <property name="value">
                     <number>5</number>
@@ -1864,8 +1877,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>616</width>
-               <height>519</height>
+               <width>145</width>
+               <height>25</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayoutOutput">
@@ -2061,7 +2074,6 @@
   <tabstop>checkBox_44</tabstop>
   <tabstop>scrollArea_3</tabstop>
   <tabstop>checkBox_30</tabstop>
-  <tabstop>checkBox_31</tabstop>
   <tabstop>chBoxColorRRGGBB</tabstop>
   <tabstop>checkBox_34</tabstop>
   <tabstop>checkBox_35</tabstop>

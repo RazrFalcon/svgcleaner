@@ -61,23 +61,22 @@ Keys::Keys()
     keyHash.insert(Key::KeepUnusedXLinks, false);
     keyHash.insert(Key::SkipElemByStyleGroup, false);
     keyHash.insert(Key::SkipIdsTrim, false);
+    keyHash.insert(Key::JoinStyleAttributes, false);
 
     keyHash.insert(Key::KeepAbsolutePaths, false);
     keyHash.insert(Key::KeepUnusedSymbolsFromPath, false);
-    keyHash.insert(Key::KeepEmptySegments, false);
+    keyHash.insert(Key::KeepTinySegments, false);
     keyHash.insert(Key::KeepOriginalCurveTo, false);
 
     keyHash.insert(Key::NoViewbox, false);
-    keyHash.insert(Key::JoinStyleAttributes, false);
     keyHash.insert(Key::SkipColorToRRGGBB, false);
     keyHash.insert(Key::SkipRRGGBBToRGB, false);
     keyHash.insert(Key::KeepBasicShapes, false);
     keyHash.insert(Key::KeepTransforms, false);
     keyHash.insert(Key::KeepUnsortedDefs, false);
-
     keyHash.insert(Key::SkipRoundingNumbers, false);
     keyHash.insert(Key::TransformPrecision, 5);
-    keyHash.insert(Key::CoordsPrecision, 4);
+    keyHash.insert(Key::CoordsPrecision, 3);
     keyHash.insert(Key::AttributesPrecision, 3);
 
     keyHash.insert(Key::NotCompact, false);
@@ -136,7 +135,7 @@ void Keys::parseOptions(const QStringList &list)
                 || flag == Key::AttributesPrecision
                 || flag == Key::CoordsPrecision)
             {
-                if (value.toInt() > 0 && value.toInt() <= 9) {
+                if (value.toInt() > 0 && value.toInt() <= 8) {
                     keyHash.insert(flag, value.toInt());
                     if (flag == Key::TransformPrecision)
                         m_transformPrecision = value.toInt();

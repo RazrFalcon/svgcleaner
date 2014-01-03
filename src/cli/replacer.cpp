@@ -64,6 +64,7 @@ void Replacer::convertSizeToViewbox()
 
 // TODO: remove identical paths
 //       Anonymous_man_head.svg
+//       input-keyboard-2.svg
 void Replacer::processPaths()
 {
     QHash<QString,int> defsHash;
@@ -588,7 +589,8 @@ void Replacer::sortDefs()
     }
 }
 
-void Replacer::roundDefs()
+// TODO: maybe round all viewBox width height x y attrs to integer
+void Replacer::roundNumericAttributes()
 {
     QList<SvgElement> list = svgElement().childElemList();
     while (!list.isEmpty()) {
@@ -668,78 +670,23 @@ void Replacer::convertBasicShapes()
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         QString ctag = currElem.tagName();
-        if (   ctag == "polygon" || ctag == "polyline" || ctag == "line"
-            || ctag == "rect"/* || ctag == "circle" || ctag == "ellipse"*/) {
+        if (ctag == "polygon" || ctag == "polyline" || ctag == "line" || ctag == "rect") {
             QString dAttr;
-
             if (ctag == "line") {
-                dAttr = QString("M %1,%2 %3,%4").arg(currElem.attribute("x1"), currElem.attribute("y1"),
-                                                     currElem.attribute("x2"), currElem.attribute("y2"));
+                dAttr = QString("M %1,%2 %3,%4")
+                        .arg(currElem.attribute("x1"), currElem.attribute("y1"),
+                             currElem.attribute("x2"), currElem.attribute("y2"));
                 currElem.removeAttributes(QStringList() << "x1" << "y1" << "x2" << "y2");
             } else if (ctag == "rect") {
-                if (currElem.attribute("rx").toDouble() == 0 || currElem.attribute("ry").toDouble() == 0) {
-                    qreal x1 = currElem.attribute("x").toDouble() + currElem.attribute("width").toDouble();
-                    qreal y1 = currElem.attribute("y").toDouble() + currElem.attribute("height").toDouble();
-                    qreal x = QString::number(currElem.attribute("x").toDouble(), 'f').toDouble();
-                    qreal y = QString::number(currElem.attribute("y").toDouble(), 'f').toDouble();
-                    dAttr = QString("M %1,%2 H%3 V%4 H%1 z")
-                            .arg(x).arg(y)
-                            .arg(QString::number(x1))
-                            .arg(QString::number(y1));
-
+                if (currElem.doubleAttribute("rx") == 0 || currElem.doubleAttribute("ry") == 0) {
+                    qreal x = currElem.doubleAttribute("x");
+                    qreal y = currElem.doubleAttribute("y");
+                    qreal x1 = x + currElem.doubleAttribute("width");
+                    qreal y1 = y + currElem.doubleAttribute("height");
+                    dAttr = QString("M %1,%2 H%3 V%4 H%1 z").arg(x).arg(y).arg(x1).arg(y1);
                     currElem.removeAttributes(QStringList() << "x" << "y" << "width" << "height"
                                                             << "rx" << "ry");
-
-                } else {
-                    qreal x  = currElem.attribute("x").toDouble();
-                    qreal y  = currElem.attribute("y").toDouble();
-                    qreal w  = currElem.attribute("width").toDouble();
-                    qreal h  = currElem.attribute("height").toDouble();
-                    qreal rx = currElem.attribute("rx").toDouble();
-                    qreal ry = currElem.attribute("ry").toDouble();
-                    if (rx == 0) rx = ry;
-                    if (ry == 0) ry = rx;
-
-                    currElem.removeAttributes(QStringList() << "x" << "y" << "width"
-                                                            << "height" << "rx" << "ry");
-                    dAttr =   QString("M %1,%2 ").arg(x+rx).arg(y)
-                            + QString("H %1 ").arg(x+w-rx)
-                            + QString("A %1,%2 0 0 1 %3,%4 ").arg(rx).arg(ry).arg(x+w).arg(y+ry)
-                            + QString("V %1 ").arg(y+h-ry)
-                            + QString("A %1,%2 0 0 1 %3,%4 ").arg(rx).arg(ry).arg(x+w-rx).arg(y+h)
-                            + QString("H %1 ").arg(x+rx)
-                            + QString("A %1,%2 0 0 1 %3,%4 ").arg(rx).arg(ry).arg(x).arg(y+h-ry)
-                            + QString("V %1 ").arg(y+ry)
-                            + QString("A %1,%2 0 0 1 %3,%4").arg(rx).arg(ry).arg(x+rx).arg(y);
                 }
-                // generate bigger text, than before...
-//            } else if (ctag == "circle") {
-//                qreal x = currElem.attribute("cx").toDouble();
-//                qreal y = currElem.attribute("cy").toDouble();
-//                qreal r = currElem.attribute("r").toDouble();
-
-//                currElem.removeAttributes(QStringList() << "cx" << "cy" << "r");
-
-//                qreal x1 = x + r;
-//                qreal x2 = x - r;
-
-//                dAttr =   QString("M %1,%2 ").arg(x1).arg(y)
-//                        + QString("A %1,%1 0 1 0 %3,%4 ").arg(r).arg(x2).arg(y)
-//                        + QString("A %1,%1 0 1 0 %3,%4").arg(r).arg(x1).arg(y);
-//            } else if (ctag == "ellipse") {
-//                qreal x = currElem.attribute("cx").toDouble();
-//                qreal y = currElem.attribute("cy").toDouble();
-//                qreal rx = currElem.attribute("rx").toDouble();
-//                qreal ry = currElem.attribute("ry").toDouble();
-
-//                currElem.removeAttributes(QStringList() << "cx" << "cy" << "rx" << "ry");
-
-//                qreal x1 = x + rx;
-//                qreal x2 = x - rx;
-
-//                dAttr =   QString("M %1,%2 ").arg(x1).arg(y)
-//                        + QString("A %1,%2 0 1 0 %3,%4 ").arg(rx).arg(ry).arg(x2).arg(y)
-//                        + QString("A %1,%2 0 1 0 %3,%4").arg(rx).arg(ry).arg(x1).arg(y);
             } else if (ctag == "polyline" || ctag == "polygon") {
                 QList<Segment> segmentList;
                 // TODO: smart split
@@ -782,16 +729,15 @@ void Replacer::convertBasicShapes()
 void Replacer::splitStyleAttr()
 {
     QList<SvgElement> list = Tools::childElemList(document());
-    bool flag = Keys::get().flag(Key::JoinStyleAttributes);
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
-        if (!flag || currElem.tagName().contains("feFlood")) {
+        if (!currElem.tagName().contains("feFlood")) {
             if (currElem.hasAttribute("style")) {
                 StringHash hash = Tools::splitStyle(currElem.attribute("style"));
                 foreach (const QString &key, hash.keys()) {
                     // ignore attributes like "-inkscape-font-specification"
                     // NOTE: qt render prefer property attributes instead of "style" attribute
-                    if (key.at(0) != '-'/* && !currElem.hasAttribute(key)*/)
+                    if (key.at(0) != '-')
                         currElem.setAttribute(key, hash.value(key));
                 }
                 currElem.removeAttribute("style");
@@ -800,6 +746,25 @@ void Replacer::splitStyleAttr()
 
         if (currElem.hasChildren())
             list << currElem.childElemList();
+    }
+}
+
+void Replacer::joinStyleAttr()
+{
+    QList<SvgElement> list = Tools::childElemList(document());
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+        QStringList attrs;
+        foreach (const QString &attrName, Props::styleAttributes) {
+            if (elem.hasAttribute(attrName)) {
+                attrs << attrName + ":" + elem.attribute(attrName);
+                elem.removeAttribute(attrName);
+            }
+        }
+        elem.setAttribute("style", attrs.join(";"));
+
+        if (elem.hasChildren())
+            list << elem.childElemList();
     }
 }
 

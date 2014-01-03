@@ -160,6 +160,7 @@ QString SvgElement::defIdFromAttribute(const QString &name)
 
 bool SvgElement::hasLinkedDef()
 {
+    // TODO: is filter needed?
     static QStringList illegalAttrList;
     if (illegalAttrList.isEmpty())
         illegalAttrList << "clip-path" << "mask" << "filter";

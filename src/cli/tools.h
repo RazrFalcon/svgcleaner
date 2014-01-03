@@ -44,6 +44,8 @@ public:
     qreal newY() const;
     QString simplified() const;
     qreal scaleFactor() const;
+    qreal xScale() const;
+    qreal yScale() const;
     bool isProportionalScale();
     bool isMirrored();
     bool isRotating();
@@ -74,6 +76,7 @@ public:
     static QString convertUnitsToPx(const QString &text, qreal baseValue = 0);
     static QString replaceColorName(const QString &color);
     static QString roundNumber(qreal value, RoundType type = COORDINATE);
+    static QString roundNumber(qreal value, int precision);
     static QString styleHashToString(const StringHash &hash);
     static QString trimColor(QString color);
     static void sortNodes(QList<SvgElement> &nodeList);

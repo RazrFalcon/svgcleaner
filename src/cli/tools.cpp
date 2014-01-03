@@ -60,7 +60,7 @@ QList<qreal> Transform::mergeMatrixes(QString text)
     text = Tools::removeEdgeSpaces(text);
     QStringList transList = text.split(QRegExp("\\) +"), QString::SkipEmptyParts);
 
-    QList<TransMatrix> transMatrixList;
+    QList<TransformMatrix> transMatrixList;
     for (int i = 0; i < transList.count(); ++i) {
         QString transformType = QString(transList.at(i)).remove(QRegExp("( +|)\\(.*")).toLower();
         // transform values can be separeted by: ',' , ', ', ' '
@@ -81,7 +81,7 @@ QList<qreal> Transform::mergeMatrixes(QString text)
                                  .arg(points.at(0)).arg(points.at(1)).arg(points.at(2)));
         }
 
-        TransMatrix matrix;
+        TransformMatrix matrix;
         matrix.setToIdentity();
         if (transformType == "matrix") {
             matrix(0,0) = points.at(0);
@@ -118,7 +118,7 @@ QList<qreal> Transform::mergeMatrixes(QString text)
         transMatrixList << matrix;
     }
 
-    TransMatrix newMatrix = transMatrixList.at(0);
+    TransformMatrix newMatrix = transMatrixList.at(0);
     for (int i = 1; i < transMatrixList.count(); ++i)
         newMatrix = newMatrix * transMatrixList.at(i);
 

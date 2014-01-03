@@ -364,7 +364,7 @@ void PathParser::splitToSegments(const QStringRef &path)
     const QChar *str = path.constData();
     const QChar *end = str + path.size();
     QChar prevCmd;
-    bool newCmd;
+    bool newCmd = false;
     while (str != end) {
         while (str->isSpace())
             ++str;
@@ -883,12 +883,12 @@ QString Path::segmentsToPath(QList<Segment> &segList)
     // rounding to >=4 decimal usually do not cause deformation
     bool isUseBiggerPrecisoin = false;
     const int smallPathPrecision = Keys::get().coordinatesPrecision() + 1;
-    if (Keys::get().coordinatesPrecision() < 4 && !m_elem.isNull()) {
+    if (Keys::get().coordinatesPrecision() < 4) {
         // simple check to detect path with small segments wich can be damaged after rounding
         int smallNumCount = 0;
         for (int i = 0; i < segList.size(); ++i) {
             // FIXME: work only with relative
-            if (qAbs(segList.at(i).x) < 1 || qAbs(segList.at(i).y) < 1) {
+            if (qAbs(segList.at(i).x) < 1 /*|| qAbs(segList.at(i).y) < 1*/) {
                 smallNumCount++;
                 if (smallNumCount > segList.size()/2) {
                     isUseBiggerPrecisoin = true;

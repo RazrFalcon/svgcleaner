@@ -155,12 +155,9 @@ void Keys::parseOptions(const QStringList &list)
                 keyHash.insert(flag, true);
             }
         } else {
-            qDebug() << "Error: SVG Cleaner do not support option: " + flag;
-            exit(1);
+            qFatal("Error: SVG Cleaner do not support option: %s", qPrintable(flag));
         }
-        if (isError) {
-            qDebug() << "Error: wrong value for option " + flag;
-            exit(1);
-        }
+        if (isError)
+            qFatal("Error: wrong value for option: %s", qPrintable(flag));
     }
 }

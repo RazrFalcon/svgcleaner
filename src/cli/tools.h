@@ -28,12 +28,46 @@
 #include <QStringList>
 #include <QRectF>
 #include <QtDebug>
-// TODO: remove this
-#include <QtGui/QGenericMatrix>
 
 #include "svgelement.h"
 
-typedef QGenericMatrix<3,3,qreal> TransMatrix;
+class TransformMatrix
+{
+public:
+    TransformMatrix() { setToIdentity(); }
+    void setToIdentity()
+    {
+        for (int col = 0; col < 3; ++col) {
+            for (int row = 0; row < 3; ++row) {
+                if (row == col)
+                    m[col][row] = 1.0f;
+                else
+                    m[col][row] = 0.0f;
+            }
+        }
+    }
+
+    TransformMatrix operator *(const TransformMatrix &matrix)
+    {
+        TransformMatrix result;
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 3; ++col) {
+                qreal sum(0.0f);
+                for (int j = 0; j < 3; ++j)
+                    sum += m[j][row] * matrix.m[col][j];
+                result.m[col][row] = sum;
+            }
+        }
+        return result;
+    }
+    qreal& operator()(int row, int column)
+    {
+        Q_ASSERT(row >= 0 && row < 3 && column >= 0 && column < 3);
+        return m[column][row];
+    }
+private:
+    qreal m[3][3];
+};
 
 class Transform
 {

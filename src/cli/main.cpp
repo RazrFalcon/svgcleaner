@@ -109,28 +109,24 @@ void showHelp()
     qDebug() << "  --not-compact            Save svg with only required whitespace and newlines.";
 }
 
-// TODO: remove it, too slow
-void prepareSvg(QString &str)
-{
-    str.replace("\t", " ");
-    str.replace("\n", " ");
-    str.replace("<svg:", "<");
-    str.replace("</svg:", "</");
-}
-
-bool processFile(const QString &firstFile, const QString &secondFile)
+void processFile(const QString &firstFile, const QString &secondFile)
 {
     QFile inputFile(firstFile);
     qDebug() << "The initial file size is: " + QString::number(inputFile.size());
-    if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "Error: cannot open input file.";
-        return false;
-    }
-    QTextStream inputStream(&inputFile);
-    QString svgText = inputStream.readAll();
-    prepareSvg(svgText);
     XMLDocument doc;
-    doc.Parse(svgText.toUtf8().constData());
+    doc.LoadFile(firstFile.toUtf8().constData());
+    if (Tools::svgElement(&doc).isNull()) {
+        if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            qFatal("Error: cannot open input file.");
+        QTextStream inputStream(&inputFile);
+        QString svgText = inputStream.readAll();
+        svgText.replace("<svg:", "<");
+        svgText.replace("</svg:", "</");
+        doc.Clear();
+        doc.Parse(svgText.toUtf8().constData());
+        if (Tools::svgElement(&doc).isNull())
+            qFatal("Error: invalid svg file.");
+    }
 
     Replacer replacer(&doc);
     Remover remover(&doc);
@@ -187,10 +183,8 @@ bool processFile(const QString &firstFile, const QString &secondFile)
 
     // TODO: check is out file smaller than original
     QFile outFile(secondFile);
-    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "Error: could not open out file for write.";
-        return false;
-    }
+    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
+        qFatal("Error: could not open out file for write.");
 
     XMLPrinter printer(0, !Keys::get().flag(Key::NotCompact));
     doc.Print(&printer);
@@ -199,13 +193,11 @@ bool processFile(const QString &firstFile, const QString &secondFile)
     QTextStream outStream(&outFile);
     outStr.replace(">\n<tspan", "><tspan");
     outStr.replace("&apos;", "'");
-//    outStr.replace("&gt;", ">");
     outStream << outStr;
     outFile.close();
 
     qDebug() << "The final file size is: " + QString::number(outFile.size());
     replacer.calcElemAttrCount("final");
-    return true;
 }
 
 int main(int argc, char *argv[])
@@ -230,14 +222,10 @@ int main(int argc, char *argv[])
     QString inputFile  = argList.takeFirst();
     QString outputFile = argList.takeFirst();
 
-    if (!QFile(inputFile).exists()) {
-        qDebug() << "Error: input file does not exist.";
-        return 1;
-    }
-    if (!QFileInfo(outputFile).absoluteDir().exists()) {
-        qDebug() << "Error: output folder does not exist.";
-        return 1;
-    }
+    if (!QFile(inputFile).exists())
+        qFatal("Error: input file does not exist.");
+    if (!QFileInfo(outputFile).absoluteDir().exists())
+        qFatal("Error: output folder does not exist.");
 
     Keys::get().parseOptions(argList);
     processFile(inputFile, outputFile);

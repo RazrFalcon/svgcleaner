@@ -325,6 +325,9 @@ void Replacer::convertCDATAStyle()
     StringHash classHash;
     for (int i = 0; i < styleList.count(); ++i) {
         QString text = styleList.at(i);
+        text.replace("\n", " ").replace("\t", " ");
+        if (text.isEmpty())
+            continue;
         // remove comments
         // better to use positive lookbehind, but qt4 didn't support it
         text.remove(QRegExp("[^\\*]\\/(?!\\*)"));
@@ -691,8 +694,8 @@ void Replacer::convertBasicShapes()
                 QList<Segment> segmentList;
                 // TODO: smart split
                 // orangeobject_background-ribbon.svg
-                QStringList tmpList
-                    = currElem.attribute("points").split(QRegExp(" |,"), QString::SkipEmptyParts);
+                QString tmpStr = currElem.attribute("points").remove("\t").remove("\n");
+                QStringList tmpList = tmpStr.split(QRegExp(" |,"), QString::SkipEmptyParts);
                 for (int j = 0; j < tmpList.count(); j += 2) {
                     bool ok;
                     Segment seg;

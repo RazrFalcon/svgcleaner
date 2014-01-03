@@ -10,7 +10,7 @@ If you want to translate SVG Cleaner to your native language:
        This will create new file in "translations" folder with name, that you select in "translations.pri" file.
 
     3) Open this file with "Qt Linguist" and now you can start translating.
-	
+
 Qt Linguist manual: http://developer.qt.nokia.com/doc/qt-4.8/linguist-translators.html
 
 Then you could send your translation to the our email:

@@ -28,6 +28,7 @@
 
 typedef QMap<QString, QString> StringMap;
 typedef QHash<QString, QString> StringHash;
+typedef QSet<QString> StringSet;
 
 #include "tinyxml2.h"
 
@@ -63,11 +64,13 @@ public:
     QString id() const;
     QString defIdFromAttribute(const QString &name);
     StringMap attributesMap(bool ignoreId = false) const;
+    QStringList styleAttributesList() const;
     QStringList attributesList() const;
     QString tagName() const;
+    StringMap styleMap() const;
     StringHash styleHash() const;
     SvgElement insertBefore(const SvgElement &elemNew, const SvgElement &elemBefore) const;
-    SvgElement parentNode() const;
+    SvgElement parentElement() const;
     SvgElement firstChild() const;
     void appendChild(const SvgElement &elem);
     void clear();

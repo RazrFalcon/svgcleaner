@@ -20,8 +20,8 @@
 **
 ****************************************************************************/
 
+#include "paths.h"
 #include "replacer.h"
-#include "keys.h"
 
 // TODO: remove empty spaces at end of line in text elem
 // TODO: round font size to int
@@ -89,7 +89,7 @@ void Replacer::processPaths()
                 }
             }
             if (elem.attribute("d").isEmpty()) {
-                elem.parentNode().removeChild(elem);
+                elem.parentElement().removeChild(elem);
                 removed = true;
             }
         }
@@ -114,7 +114,7 @@ bool Replacer::isPathValidToTransform(SvgElement &pathElem, QHash<QString,int> &
                     break;
                 }
             }
-            parentElem = parentElem.parentNode();
+            parentElem = parentElem.parentElement();
         }
         if (hasStroke) {
             Transform ts(pathElem.attribute("transform"));
@@ -254,7 +254,7 @@ void Replacer::convertUnits()
     // TODO: For gradientUnits="userSpaceOnUse", percentages represent values relative to the current viewport.
     //       For gradientUnits="objectBoundingBox", percentages represent values relative to the bounding box for the object.
 
-    QSet<QString> attributes = Props::digitList;
+    StringSet attributes = Props::digitList;
     QList<SvgElement> list = Tools::childElemList(document());
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
@@ -373,7 +373,7 @@ void Replacer::prepareDefs()
     QList<SvgElement> list = svgElement().childElemList();
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
-        if (currElem.parentNode() != defsElement()) {
+        if (currElem.parentElement() != defsElement()) {
             if (Props::defsList.contains(currElem.tagName()))
                 defsElement().appendChild(currElem);
             else if (currElem.hasChildren())
@@ -385,8 +385,8 @@ void Replacer::prepareDefs()
     list = svgElement().childElemList();
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
-        if (currElem.parentNode().tagName() == "defs"
-            && currElem.parentNode() != defsElement()) {
+        if (currElem.parentElement().tagName() == "defs"
+            && currElem.parentElement() != defsElement()) {
             defsElement().appendChild(currElem);
         } else if (currElem.hasChildren())
             list << currElem.childElemList();
@@ -430,9 +430,9 @@ void Replacer::fixWrongAttr()
         }
 
         if (currTag == "use") {
-            if (currElem.attribute("width").toDouble() < 0)
+            if (currElem.doubleAttribute("width") < 0)
                 currElem.setAttribute("width", "0");
-            if (currElem.attribute("height").toDouble() < 0)
+            if (currElem.doubleAttribute("height") < 0)
                 currElem.setAttribute("height", "0");
         } else if (currTag == "rect") {
             // fix wrong 'rx', 'ry' attributes in 'rect' elem
@@ -450,11 +450,11 @@ void Replacer::fixWrongAttr()
                 currElem.setAttribute("ry", currElem.attribute("rx"));
 
             // rx/ry can not be bigger then width/height
-            qreal halfWidth = currElem.attribute("width").toDouble() / 2;
-            qreal halfHeight = currElem.attribute("height").toDouble() / 2;
-            if (currElem.hasAttribute("rx") && currElem.attribute("rx").toDouble() >= halfWidth)
+            qreal halfWidth = currElem.doubleAttribute("width") / 2;
+            qreal halfHeight = currElem.doubleAttribute("height") / 2;
+            if (currElem.hasAttribute("rx") && currElem.doubleAttribute("rx") >= halfWidth)
                 currElem.setAttribute("rx", Tools::roundNumber(halfWidth));
-            if (currElem.hasAttribute("ry") && currElem.attribute("ry").toDouble() >= halfHeight)
+            if (currElem.hasAttribute("ry") && currElem.doubleAttribute("ry") >= halfHeight)
                 currElem.setAttribute("ry", Tools::roundNumber(halfHeight));
         }
 
@@ -474,7 +474,7 @@ void Replacer::finalFixes()
 
         if (!Keys::get().flag(Key::KeepNotAppliedAttributes)) {
             if (currTag == "rect") {
-                if (currElem.attribute("rx").toDouble() == currElem.attribute("ry").toDouble())
+                if (currElem.doubleAttribute("rx") == currElem.doubleAttribute("ry"))
                     currElem.removeAttribute("ry");
             } else if (currTag == "use") {
                 if (currElem.attribute("x") == "0")
@@ -515,7 +515,7 @@ void Replacer::finalFixes()
         // remove empty defs
         if (currElem.tagName() == "defs") {
             if (!currElem.hasChildren())
-                currElem.parentNode().removeChild(currElem);
+                currElem.parentElement().removeChild(currElem);
         }
 
         if (currElem.hasChildren())
@@ -916,6 +916,8 @@ SvgElement Replacer::findLinearGradient(const QString &id)
  * </g>
  */
 
+// TODO: partial transform attr group
+//       demo.svg
 void Replacer::groupElementsByStyles(SvgElement parentElem)
 {
     // first start
@@ -1030,7 +1032,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                         if (similarElem.isGroup() && !similarElem.hasImportantAttrs()) {
                             foreach (SvgElement gChildElem, similarElem.childElemList())
                                 parentGElem.appendChild(gChildElem);
-                            similarElem.parentNode().removeChild(similarElem);
+                            similarElem.parentElement().removeChild(similarElem);
                         } else {
                             parentGElem.appendChild(similarElem);
                         }
@@ -1047,7 +1049,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
 
 void Replacer::markUsedElements()
 {
-    QSet<QString> usedElemList;
+    StringSet usedElemList;
     QList<SvgElement> list = svgElement().childElemList();
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();

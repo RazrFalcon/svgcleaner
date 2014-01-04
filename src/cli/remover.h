@@ -45,15 +45,16 @@ public:
     void removeNonElementAttributes();
     void cleanSvgElementAttribute();
     void removeAttributes();
-    void processStyleAttr(SvgElement elem = SvgElement());
+    void processStyleAttributes(SvgElement elem = SvgElement());
     void removeGroups();
 
 private:
-    QList<StringHash> styleHashList;
-    StringHash parentHash;
+    QList<StringMap> styleHashList;
+    StringMap parentHash;
+    StringSet parentAttrs;
 
-    void cleanStyle(const SvgElement &elem, StringHash &hash);
-    void removeDefaultValue(StringHash &hash, const QString &name);
+    void cleanStyle(const SvgElement &elem, StringMap &hash);
+    void removeDefaultValue(StringMap &hash, const QString &name);
     bool isInvisibleElementsExist(const SvgElement &elem);
     void cleanAttribute(SvgElement &elem, const QString &startWith, QStringList &attrList);
     void megreGroups(SvgElement parentElem, SvgElement childElem, bool isParentToChild);

@@ -91,6 +91,7 @@ private:
     qreal m_xScale;
     qreal m_yScale;
 
+    QList<TransformMatrix> parseTransform(const QStringRef &text);
     QList<qreal> mergeMatrixes(QString text);
 };
 
@@ -99,7 +100,8 @@ class Tools
 public:
     explicit Tools() {}
     enum RoundType { COORDINATE, TRANSFORM, ATTRIBUTE };
-    static bool isAttributesEqual(const StringMap &map1, const StringMap &map2, const QSet<QString> &attrList);
+    static bool isAttributesEqual(const StringMap &map1, const StringMap &map2,
+                                  const StringSet &attrList);
     static bool isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2);
     static bool isZero(qreal value);
     static SvgElement svgElement(XMLDocument *doc);
@@ -118,18 +120,22 @@ public:
     static QRectF viewBoxRect(const SvgElement &svgElem);
     static StringHash splitStyle(QString style);
     static QString removeEdgeSpaces(const QString &str);
+    static qreal getNum(const QChar *&str);
+    static qreal strToDouble(const QString &str);
 
 private:
     static bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2);
+    static bool isDigit(ushort ch);
+    static qreal toDouble(const QChar *&str);
 };
 
 namespace Props {
-static const QSet<QString> fillList = QSet<QString>() << "fill" << "fill-rule" << "fill-opacity";
-static const QSet<QString> strokeList = QSet<QString>()
+static const StringSet fillList = StringSet() << "fill" << "fill-rule" << "fill-opacity";
+static const StringSet strokeList = StringSet()
     << "stroke" << "stroke-width" << "stroke-linecap" << "stroke-linejoin" << "stroke-miterlimit"
     << "stroke-dasharray" << "stroke-dashoffset" << "stroke-opacity";
 
-static const QSet<QString> styleAttributes = QSet<QString>()
+static const StringSet styleAttributes = StringSet()
     << "alignment-baseline" << "baseline-shift" << "clip" << "clip-path" << "clip-rule" << "color"
     << "color-interpolation" << "color-interpolation-filters" << "color-profile"
     << "color-rendering" << "cursor" << "direction" << "display" << "dominant-baseline"
@@ -149,44 +155,44 @@ static const QStringList linkableStyleAttributes = QStringList()
     << "marker-mid" << "marker-end";
 
 // ordered by the degree of use
-static const QSet<QString> linearGradient = QSet<QString>()
+static const StringSet linearGradient = StringSet()
     << "gradientTransform" << "xlink:href" << "x1" << "y1" << "x2" << "y2"
     << "gradientUnits" << "spreadMethod" << "externalResourcesRequired";
 
 // ordered by the degree of use
-static const QSet<QString> radialGradient = QSet<QString>()
+static const StringSet radialGradient = StringSet()
     << "gradientTransform" << "xlink:href" << "cx" << "cy" << "r" << "fx" << "fy"
     << "gradientUnits" << "spreadMethod" << "externalResourcesRequired";
 
-static const QSet<QString> filter = QSet<QString>()
+static const StringSet filter = StringSet()
     << "gradientTransform" << "xlink:href" << "x" << "y" << "width" << "height" << "filterRes"
     << "filterUnits" << "primitiveUnits" << "externalResourcesRequired";
 
-static const QSet<QString> maskAttributes = QSet<QString>()
+static const StringSet maskAttributes = StringSet()
     << "x" << "y" << "width" << "height"
     << "maskUnits" << "maskContentUnits" << "externalResourcesRequired";
 
-static const QSet<QString> digitList = QSet<QString>()
+static const StringSet digitList = StringSet()
     << "x" << "y" << "x1" << "y1" << "x2" << "y2" << "width" << "height" << "r" << "rx" << "ry"
     << "fx" << "fy" << "cx" << "cy" << "offset";
 
-static const QSet<QString> filterDigitList = QSet<QString>()
+static const StringSet filterDigitList = StringSet()
     << "stdDeviation" << "baseFrequency" << "k" << "k1" << "k2" << "k3" << "specularConstant"
     << "dx" << "dy";
 
-static const QSet<QString> defsList = QSet<QString>()
+static const StringSet defsList = StringSet()
     << "altGlyphDef" << "clipPath" << "cursor" << "filter" << "linearGradient"
     << "marker" << "mask" << "pattern" << "radialGradient"/* << "symbol"*/;
 
-static const QSet<QString> referencedElements = QSet<QString>()
+static const StringSet referencedElements = StringSet()
     << "a" << "altGlyphDef" << "clipPath" << "color-profile" << "cursor" << "filter" << "font"
     << "font-face" << "foreignObject" << "image" << "marker" << "mask" << "pattern" << "script"
     << "style" << "switch" << "text" << "view";
 
-static const QSet<QString> textElements = QSet<QString>()
+static const StringSet textElements = StringSet()
     << "text" << "tspan" << "flowRoot" << "flowPara" << "flowSpan";
 
-static const QSet<QString> textAttributes = QSet<QString>()
+static const StringSet textAttributes = StringSet()
     << "font-style" << "font-variant" << "font-weight" << "font-weight" << "font-stretch"
     << "font-size" << "font-size-adjust" << "kerning" << "letter-spacing" << "word-spacing"
     << "text-decoration" << "writing-mode" << "glyph-orientation-vertical"
@@ -195,7 +201,7 @@ static const QSet<QString> textAttributes = QSet<QString>()
 
 static const QVariantHash defaultStyleValues = Tools::initDefaultStyleHash();
 
-static const QSet<QString> svgElementList = QSet<QString>()
+static const StringSet svgElementList = StringSet()
     << "a" << "altGlyph" << "altGlyphDef" << "altGlyphItem" << "animate" << "animateColor"
     << "animateMotion" << "animateTransform" << "circle" << "clipPath" << "color-profile"
     << "cursor" << "defs" << "desc" << "ellipse" << "feBlend" << "feColorMatrix"
@@ -211,14 +217,14 @@ static const QSet<QString> svgElementList = QSet<QString>()
     << "symbol" << "text" << "textPath" << "title" << "tref" << "flowRoot" << "flowRegion"
     << "flowPara" << "flowSpan" << "tspan" << "use" << "view" << "vkern";
 
-static const QSet<QString> containers = QSet<QString>()
+static const StringSet containers = StringSet()
     << "a" << "defs" << "glyph" << "g" << "marker" /*<< "mask"*/ << "missing-glyph" /*<< "pattern"*/
     << "svg" << "switch" <<  "symbol";
 
-static const QSet<QString> stopAttributes = QSet<QString>()
+static const StringSet stopAttributes = StringSet()
     << "offset" << "stop-color" << "stop-opacity";
 
-static const QSet<QString> lengthTypes = QSet<QString>()
+static const StringSet lengthTypes = StringSet()
     << "em" << "ex" << "px" << "in" << "cm" << "mm" << "pt" << "pc";
 }
 

@@ -23,7 +23,6 @@
 #ifndef REPLACER_H
 #define REPLACER_H
 
-#include "paths.h"
 #include "basecleaner.h"
 
 struct LineGradStruct {

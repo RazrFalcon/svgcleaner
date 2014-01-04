@@ -87,27 +87,6 @@ private:
     QList<QPointF> arcToCurve(ArcStruct arc) const;
 };
 
-class PathParser
-{
-public:
-    explicit PathParser(const QStringRef &d);
-    QList<Segment> segmentList() const;
-
-private:
-    QList<Segment> m_segList;
-    void splitToSegments(const QStringRef &path);
-    static qreal toDouble(const QChar *&str);
-    static qreal getNum(const QChar *&str);
-
-    // the isDigit code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
-    // '0' is 0x30 and '9' is 0x39
-    static inline bool isDigit(ushort ch)
-    {
-        static quint16 magic = 0x3ff;
-        return ((ch >> 4) == 3) && (magic >> (ch & 15));
-    }
-};
-
 class Path
 {
 public:
@@ -118,6 +97,7 @@ public:
 private:
     SvgElement m_elem;
 
+    void splitToSegments(const QStringRef &path, QList<Segment> &segList);
     void processAbsoluteSegments(QList<Segment> &segList);
     void processRelativeSegments(QList<Segment> &segList);
     void segmentsToAbsolute(QList<Segment> &segList);

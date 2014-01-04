@@ -161,7 +161,7 @@ void processFile(const QString &firstFile, const QString &secondFile)
     if (!Keys::get().flag(Key::SkipIdsTrim))
         replacer.trimIds();
     if (!Keys::get().flag(Key::KeepDefaultAttributes))
-        remover.processStyleAttr();
+        remover.processStyleAttributes();
     if (!Keys::get().flag(Key::KeepUnsortedDefs))
         replacer.sortDefs();
     if (!Keys::get().flag(Key::KeepBasicShapes))

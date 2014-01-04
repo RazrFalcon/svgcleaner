@@ -20,7 +20,6 @@
 **
 ****************************************************************************/
 
-#include "keys.h"
 #include "remover.h"
 
 // TODO: remove equal styles in used element and it use
@@ -48,7 +47,7 @@ void Remover::cleanSvgElementAttribute()
             nodeList << currElem.childElemList();
     }
 
-    QSet<QString> ignoreAttr = Props::styleAttributes;
+    StringSet ignoreAttr = Props::styleAttributes;
     ignoreAttr << "xmlns" << "width" << "height" << "viewBox";
 
     if (Keys::get().flag(Key::KeepSvgVersion))
@@ -74,7 +73,7 @@ void Remover::cleanSvgElementAttribute()
 
 void Remover::removeUnusedDefs()
 {
-    QSet<QString> defsIdList;
+    StringSet defsIdList;
     defsIdList << "";
     while (!defsIdList.isEmpty()) {
         defsIdList.clear();
@@ -107,8 +106,8 @@ void Remover::removeUnusedDefs()
 
 void Remover::removeUnusedXLinks()
 {
-    QSet<QString> xlinkSet;
-    QSet<QString> idSet;
+    StringSet xlinkSet;
+    StringSet idSet;
     QList<SvgElement> list = svgElement().childElemList();
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
@@ -122,11 +121,8 @@ void Remover::removeUnusedXLinks()
         if (currElem.hasChildren())
             list << currElem.childElemList();
     }
-    QSet<QString>::iterator it = idSet.begin();
-    while (it != idSet.end()) {
-        xlinkSet.remove(*it);
-        ++it;
-    }
+    foreach (const QString &id, idSet)
+        xlinkSet.remove(id);
 
     list = svgElement().childElemList();
     while (!list.isEmpty()) {
@@ -233,8 +229,8 @@ void Remover::removeDuplicatedDefs()
 void Remover::removeUnreferencedIds()
 {
     // find
-    QSet<QString> m_allIdList;
-    QSet<QString> m_allLinkList;
+    StringSet m_allIdList;
+    StringSet m_allLinkList;
 
     QStringList xlinkAttrList;
     xlinkAttrList << "xlink:href" << "inkscape:path-effect" << "inkscape:perspectiveID";
@@ -342,7 +338,7 @@ void Remover::removeElements()
             } else if (currTag == "image" && !currElem.attribute("xlink:href").contains("base64"))
                 removeThisNode = true;
             else if (currElem.isReferenced() && !currElem.hasAttribute("id")
-                     && currElem.parentNode().tagName() == "defs")
+                     && currElem.parentElement().tagName() == "defs")
                 removeThisNode = true;
             else if (!Props::svgElementList.contains(currElem.tagName())
                      && !currNode->ToText() != 0
@@ -376,8 +372,8 @@ void Remover::removeElements()
                 || currElem.attributesCount() == 0)
             {
                 foreach (const SvgElement &childElem, currElem.childElemList())
-                    currElem.parentNode().insertBefore(childElem, currElem);
-                currElem.parentNode().removeChild(currElem);
+                    currElem.parentElement().insertBefore(childElem, currElem);
+                currElem.parentElement().removeChild(currElem);
                 currElem.clear();
             }
         }
@@ -403,7 +399,7 @@ void Remover::removeElements()
             // lower than "--std-deviation-limit"
             // FIXME: check for stdDeviation with transform of all linked element applied
             if (!Keys::get().flag(Key::KeepTinyGaussianBlur)) {
-                if (currElem.parentNode().childElementCount() == 1) {
+                if (currElem.parentElement().childElementCount() == 1) {
                     // 'stdDeviation' can contains not only one value
                     // we process when it contains only one value
                     QString stdDev = currElem.attribute("stdDeviation");
@@ -411,7 +407,7 @@ void Remover::removeElements()
                         bool ok = true;
                         if (stdDev.toDouble(&ok) <= stdDevLimit) {
                             Q_ASSERT(ok == true);
-                            defsElement().removeChild(currElem.parentNode());
+                            defsElement().removeChild(currElem.parentElement());
                         }
                     }
                 }
@@ -472,10 +468,10 @@ bool Remover::isInvisibleElementsExist(const SvgElement &elem)
     // A negative value is an error. A value of zero disables rendering of this element.
     if (tagName == "use") {
         if (elem.hasAttribute("width"))
-            if (elem.attribute("width").toDouble() == 0)
+            if (elem.doubleAttribute("width") == 0)
                 return true;
         if (elem.hasAttribute("height"))
-            if (elem.attribute("height").toDouble() == 0)
+            if (elem.doubleAttribute("height") == 0)
                 return true;
     }
 
@@ -541,12 +537,10 @@ void Remover::removeAttributes()
                         elem.removeAttribute("clipPathUnits");
                 }
             }
-            if (!elem.isText() && !Keys::get().flag(Key::KeepNotAppliedAttributes)) {
+            if (!elem.isText() && !Keys::get().flag(Key::KeepNotAppliedAttributes))
                 elem.removeAttribute("text-align");
-            }
-            if (attrList.contains("desc") && !Keys::get().flag(Key::KeepNotAppliedAttributes)) {
+            if (attrList.contains("desc") && !Keys::get().flag(Key::KeepNotAppliedAttributes))
                 elem.removeAttribute("desc");
-            }
 
             if (elem.tagName() == "stop") {
                 if (elem.doubleAttribute("offset") < 0.0001)
@@ -615,11 +609,11 @@ void Remover::cleanAttribute(SvgElement &elem, const QString &startWith, QString
 
 void Remover::removeNonElementAttributes()
 {
-    QSet<QString> circle;
+    StringSet circle;
     circle << "transform" << "cx" << "cy" << "r" << "id";
     circle.unite(Props::styleAttributes);
 
-    QSet<QString> ellipse;
+    StringSet ellipse;
     ellipse << "transform" << "cx" << "cy" << "rx" << "ry" << "id";
     ellipse.unite(Props::styleAttributes);
 
@@ -640,44 +634,42 @@ void Remover::removeNonElementAttributes()
     }
 }
 
-void Remover::processStyleAttr(SvgElement elem)
+void Remover::processStyleAttributes(SvgElement elem)
 {
-    // TODO: process svgElement() too
     if (elem.isNull())
         elem = svgElement();
 
-    StringHash currHash = elem.styleHash();
-    styleHashList << currHash;
-    for (int i = 0; i < currHash.count(); ++i)
-        parentHash.insert(currHash.keys().at(i), currHash.value(currHash.keys().at(i)));
+    styleHashList << elem.styleMap();
+    parentHash.unite(styleHashList.last());
+    parentAttrs = parentHash.keys().toSet();
 
-    QList<SvgElement> nodeList = elem.childElemList();
-    while (!nodeList.isEmpty()) {
-        SvgElement currElem = nodeList.takeFirst();
-        StringHash hash = currElem.styleHash();
+    QList<SvgElement> list = elem.childElemList();
+    while (!list.isEmpty()) {
+        SvgElement currElem = list.takeFirst();
+        StringMap hash = currElem.styleMap();
         cleanStyle(currElem, hash);
-        foreach (QString attr, Props::styleAttributes)
-            currElem.removeAttribute(attr);
-        if (!hash.isEmpty()) {
-            foreach (const QString &str, hash.keys())
-                currElem.setAttribute(str, hash.value(str));
+        foreach (const QString &attrName, currElem.styleAttributesList()) {
+            if (hash.contains(attrName))
+                currElem.setAttribute(attrName, hash.value(attrName));
+            else
+                currElem.removeAttribute(attrName);
+            hash.remove(attrName);
         }
+        foreach (const QString &attrName, hash.keys())
+            currElem.setAttribute(attrName, hash.value(attrName));
         if (currElem.hasChildren())
-            processStyleAttr(currElem);
+            processStyleAttributes(currElem);
     }
 
     styleHashList.removeLast();
     parentHash.clear();
-    foreach (const StringHash &hash, styleHashList) {
-        foreach (const QString &attr, hash.keys()) {
-            parentHash.insert(attr, hash.value(attr));
-        }
-    }
+    foreach (const StringMap &hash, styleHashList)
+        parentHash.unite(hash);
 }
 
 // removes default value, only if parent style did't contain same attribute
 // needed for all inherited attributes
-void Remover::cleanStyle(const SvgElement &elem, StringHash &hash)
+void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
 {
     if (!elem.isText() && !Keys::get().flag(Key::KeepNotAppliedAttributes)) {
         // remove all text based values from non text elements
@@ -686,11 +678,15 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash &hash)
                 hash.remove(attr);
         }
         hash.remove("writing-mode");
-    } else {
-        // remove default text style values
-        foreach (const QString &attr, Props::textAttributes)
-            if (!parentHash.contains(attr))
-                removeDefaultValue(hash, attr);
+    }
+
+    // remove style props which already defined in parent style
+    foreach (const QString &attr, parentHash.keys()) {
+        if (attr != "opacity" && !elem.isUsed()) {
+            if (hash.contains(attr))
+                if (hash.value(attr) == parentHash.value(attr))
+                    hash.remove(attr);
+        }
     }
 
     if (hash.contains("stroke-width"))
@@ -700,17 +696,18 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash &hash)
                      Tools::convertUnitsToPx(hash.value("stroke-dashoffset")));
 
     // remove all fill properties if fill is off
-    if (parentHash.contains("fill") && parentHash.value("fill") == "none"
+    if (parentAttrs.contains("fill") && parentHash.value("fill") == "none"
         && !Keys::get().flag(Key::KeepFillProps)) {
         if (hash.value("fill") == "none" || hash.value("fill-opacity") == "0") {
             foreach (const QString &attr, Props::fillList)
                 hash.remove(attr);
         }
     } else {
-        // remove default values
-        foreach (const QString &attr, Props::fillList)
-            if (!parentHash.contains(attr))
-                removeDefaultValue(hash, attr);
+        if (!Keys::get().flag(Key::SkipColorToRRGGBB)) {
+            QString fill = hash.value("fill");
+            if (!fill.isEmpty() && fill != "none" && !fill.startsWith("url"))
+                hash.insert("fill", Tools::trimColor(fill));
+        }
     }
 
     // remove all stroke properties if stroke is off
@@ -718,18 +715,13 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash &hash)
         || hash.value("stroke-width") == "0") && !Keys::get().flag(Key::KeepStrokeProps)) {
         foreach (const QString &attr, Props::strokeList)
             hash.remove(attr);
-
-        if (parentHash.contains("stroke"))
-            if (parentHash.value("stroke") != "none")
-                hash.insert("stroke", "none");
+        if (parentHash.value("stroke") != "none")
+            hash.insert("stroke", "none");
     } else {
-        // remove default values
-        QSet<QString> list = Props::strokeList;
-        list.remove("stroke");
-        list.remove("stroke-width");
-        foreach (const QString &attr, list) {
-            if (!parentHash.contains(attr))
-                removeDefaultValue(hash, attr);
+        QString stroke = hash.value("stroke");
+        if (!stroke.isEmpty()) {
+            if (stroke != "none" && !stroke.startsWith("url"))
+                hash.insert("stroke", Tools::trimColor(hash.value("stroke")));
         }
         // trim array
         if (hash.contains("stroke-dasharray"))
@@ -737,12 +729,8 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash &hash)
                                              .replace(", ", ","));
     }
 
-    // remove default values
-    foreach (const QString &attr, Props::defaultStyleValues.keys()) {
-        if (hash.contains(attr) && !parentHash.contains(attr)) {
-            removeDefaultValue(hash, attr);
-        }
-    }
+    if (!Keys::get().flag(Key::KeepNotAppliedAttributes))
+        hash.remove("pointer-events");
 
     // remove clip-rule if no clip-path
     if (hash.contains("clip-rule") && !hash.contains("clip-path"))
@@ -758,71 +746,59 @@ void Remover::cleanStyle(const SvgElement &elem, StringHash &hash)
     if (!Keys::get().flag(Key::KeepInkscapeAttributes))
         hash.remove("-inkscape-font-specification");
 
-    if (!parentHash.contains("opacity"))
-        removeDefaultValue(hash, "opacity");
-
-    foreach (const QString &key, hash.keys()) {
+    // convert units
+    static QStringList numericStyleList
+            = QStringList() << "fill-opacity" << "opacity" << "stop-opacity" << "stroke-miterlimit"
+                            << "stroke-opacity" << "stroke-width" << "font-size" << "kerning"
+                            << "letter-spacing" << "word-spacing" << "baseline-shift";
+    foreach (const QString &key, numericStyleList) {
         QString value = hash.value(key);
-        QString lengthType = value.right(2);
-        if (Props::lengthTypes.contains(lengthType) && !value.contains("url")) {
-            hash.insert(key, Tools::convertUnitsToPx(hash.value(key)));
-            value = hash.value(key);
-        }
-
-        bool ok = false;
-        value.toDouble(&ok);
-        if (ok) {
-            QString number = Tools::roundNumber(value.toDouble(), Tools::ATTRIBUTE);
-            hash.insert(key, number);
+        if (!value.isEmpty()) {
+            QString lengthType = value.right(2);
+            if (Props::lengthTypes.contains(lengthType) && !value.contains("url")) {
+                hash.insert(key, Tools::convertUnitsToPx(hash.value(key)));
+                value = hash.value(key);
+            }
+            bool ok = false;
+            qreal num = value.toDouble(&ok);
+            if (ok) {
+                QString number = Tools::roundNumber(num, Tools::ATTRIBUTE);
+                hash.insert(key, number);
+            }
         }
     }
+
+    // remove default values
+    QList<QString> keyList = hash.keys();
+    foreach (const QString &attrName, keyList)
+        removeDefaultValue(hash, attrName);
 
     // trim colors
     if (!Keys::get().flag(Key::SkipColorToRRGGBB)) {
-        if (hash.contains("fill"))
-            if (hash.value("fill") != "none" && !hash.value("fill").contains("url"))
-                hash.insert("fill", Tools::trimColor(hash.value("fill")));
-        if (hash.contains("stroke"))
-            if (hash.value("stroke") != "none" && !hash.value("stroke").contains("url"))
-                hash.insert("stroke", Tools::trimColor(hash.value("stroke")));
-        if (hash.contains("stop-color"))
-            hash.insert("stop-color", Tools::trimColor(hash.value("stop-color")));
-        if (hash.contains("color"))
-            hash.insert("color", Tools::trimColor(hash.value("color")));
-        if (hash.contains("flood-color"))
-            hash.insert("flood-color", Tools::trimColor(hash.value("flood-color")));
-    }
-
-    if (!parentHash.contains("stroke-width"))
-        removeDefaultValue(hash, "stroke-width");
-
-    // remove style props which already defined in parent style
-    // ignore used/linked elements and opacity
-    foreach (const QString &attr, parentHash.keys()) {
-        if (attr != "opacity" && !elem.isUsed()) {
-            if (hash.contains(attr))
-                if (hash.value(attr) == parentHash.value(attr))
-                    hash.remove(attr);
+        foreach (const QString &attrName, QStringList() << "color" << "stop-color" << "flood-color") {
+            if (hash.contains(attrName))
+                hash.insert(attrName, Tools::trimColor(hash.value(attrName)));
         }
     }
 }
 
-void Remover::removeDefaultValue(StringHash &hash, const QString &name)
+void Remover::removeDefaultValue(StringMap &hash, const QString &name)
 {
-    QVariantList list = Props::defaultStyleValues.values(name);
-    foreach (const QVariant &value, list) {
+    if (parentAttrs.contains(name))
+        return;
+
+    if (name == "fill" || name == "stop-color") {
+        static QStringList defValues = QStringList() << "#000" << "#000000" << "black";
+        if (defValues.contains(hash.value(name)))
+            hash.remove(name);
+    } else if (Props::defaultStyleValues.contains(name)) {
+        const QVariant value = Props::defaultStyleValues.value(name);
         if (value.type() == QVariant::String) {
-            if (value == hash.value(name)) {
+            if (value == hash.value(name))
                 hash.remove(name);
-                break;
-            }
         } else if (!hash.value(name).isEmpty()) {
-            bool ok = false;
-            if (hash.value(name).toDouble(&ok) == value.toDouble()) {
-                Q_ASSERT(ok == true);
+            if (Tools::strToDouble(hash.value(name)) == value.toDouble())
                 hash.remove(name);
-                break;
-            }
         }
     }
 }
@@ -838,11 +814,11 @@ void Remover::removeGroups()
         QList<SvgElement> list = svgElement().childElemList();
         while (!list.isEmpty()) {
             SvgElement elem = list.takeFirst();
-            SvgElement parent = elem.parentNode();
+            SvgElement parent = elem.parentElement();
             if (elem.isGroup() && elem.childElementCount() == 0) {
                 // remove empty group
                 parent.removeChild(elem);
-            } else if (elem.isGroup() && elem.parentNode().tagName() != "switch") {
+            } else if (elem.isGroup() && elem.parentElement().tagName() != "switch") {
                 if (!elem.hasImportantAttrs() && !elem.firstChild().hasAttribute("mask")) {
                     // ungroup group without attributes
                     foreach (SvgElement childElem, elem.childElemList())

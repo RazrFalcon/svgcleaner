@@ -352,189 +352,6 @@ void Segment::coords(QVector<qreal> &points)
 
 // New class
 
-Q_CORE_EXPORT double qstrtod(const char *s00, char const **se, bool *ok);
-
-PathParser::PathParser(const QStringRef &d)
-{
-    splitToSegments(d);
-}
-
-void PathParser::splitToSegments(const QStringRef &path)
-{
-    const QChar *str = path.constData();
-    const QChar *end = str + path.size();
-    QChar prevCmd;
-    bool newCmd = false;
-    while (str != end) {
-        while (str->isSpace())
-            ++str;
-        QChar pathElem = *str;
-        if (pathElem.isLetter()) {
-            newCmd = true;
-            if (pathElem == Command::ClosePath) {
-                Segment seg;
-                seg.command = Command::ClosePath;
-                seg.absolute = false;
-                seg.srcCmd = true;
-                m_segList << seg;
-            }
-            prevCmd = pathElem;
-            ++str;
-        } else if (prevCmd != Command::ClosePath) {
-            Segment seg;
-            seg.command = prevCmd.toLower();
-            seg.absolute = prevCmd.isUpper();
-            seg.srcCmd = newCmd;
-            newCmd = false;
-            if (   seg.command == Command::MoveTo
-                || seg.command == Command::LineTo
-                || seg.command == Command::SmoothQuadratic) {
-                seg.x = getNum(str);
-                seg.y = getNum(str);
-            } else if (seg.command == Command::HorizontalLineTo) {
-                seg.x = getNum(str);
-                seg.y = 0;
-            } else if (seg.command == Command::VerticalLineTo) {
-                seg.x = 0;
-                seg.y = getNum(str);
-            } else if (seg.command == Command::CurveTo) {
-                seg.x1 = getNum(str);
-                seg.y1 = getNum(str);
-                seg.x2 = getNum(str);
-                seg.y2 = getNum(str);
-                seg.x  = getNum(str);
-                seg.y  = getNum(str);
-            } else if (seg.command == Command::SmoothCurveTo) {
-                seg.x2 = getNum(str);
-                seg.y2 = getNum(str);
-                seg.x  = getNum(str);
-                seg.y  = getNum(str);
-            } else if (seg.command == Command::Quadratic) {
-                seg.x1 = getNum(str);
-                seg.y1 = getNum(str);
-                seg.x  = getNum(str);
-                seg.y  = getNum(str);
-            } else if (seg.command == Command::EllipticalArc) {
-                seg.rx = getNum(str);
-                seg.ry = getNum(str);
-                seg.xAxisRotation = getNum(str);
-                seg.largeArc      = getNum(str);
-                seg.sweep         = getNum(str);
-                seg.x = getNum(str);
-                seg.y = getNum(str);
-            }
-            m_segList << seg;
-        }
-    }
-    if (m_segList.size() == 1)
-        m_segList.clear();
-}
-
-// the toDouble code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
-qreal PathParser::toDouble(const QChar *&str)
-{
-    const int maxLen = 255; // technically doubles can go til 308+ but whatever
-    char temp[maxLen+1];
-    int pos = 0;
-
-    if (*str == QLatin1Char('-')) {
-        temp[pos++] = '-';
-        ++str;
-    } else if (*str == QLatin1Char('+')) {
-        ++str;
-    }
-    while (isDigit(str->unicode()) && pos < maxLen) {
-        temp[pos++] = str->toLatin1();
-        ++str;
-    }
-    if (*str == QLatin1Char('.') && pos < maxLen) {
-        temp[pos++] = '.';
-        ++str;
-    }
-    while (isDigit(str->unicode()) && pos < maxLen) {
-        temp[pos++] = str->toLatin1();
-        ++str;
-    }
-    bool exponent = false;
-    if ((*str == QLatin1Char('e') || *str == QLatin1Char('E')) && pos < maxLen) {
-        exponent = true;
-        temp[pos++] = 'e';
-        ++str;
-        if ((*str == QLatin1Char('-') || *str == QLatin1Char('+')) && pos < maxLen) {
-            temp[pos++] = str->toLatin1();
-            ++str;
-        }
-        while (isDigit(str->unicode()) && pos < maxLen) {
-            temp[pos++] = str->toLatin1();
-            ++str;
-        }
-    }
-
-    temp[pos] = '\0';
-
-    qreal val;
-    if (!exponent && pos < 10) {
-        int ival = 0;
-        const char *t = temp;
-        bool neg = false;
-        if(*t == '-') {
-            neg = true;
-            ++t;
-        }
-        while(*t && *t != '.') {
-            ival *= 10;
-            ival += (*t) - '0';
-            ++t;
-        }
-        if(*t == '.') {
-            ++t;
-            int div = 1;
-            while(*t) {
-                ival *= 10;
-                ival += (*t) - '0';
-                div *= 10;
-                ++t;
-            }
-            val = ((qreal)ival)/((qreal)div);
-        } else {
-            val = ival;
-        }
-        if (neg)
-            val = -val;
-    } else {
-#if defined(Q_WS_QWS) && !defined(Q_OS_VXWORKS)
-        if(sizeof(qreal) == sizeof(float))
-            val = strtof(temp, 0);
-        else
-#endif
-        {
-            bool ok = false;
-            val = qstrtod(temp, 0, &ok);
-        }
-    }
-    return val;
-}
-
-qreal PathParser::getNum(const QChar *&str)
-{
-    while (str->isSpace())
-        ++str;
-    qreal num = toDouble(str);
-    while (str->isSpace())
-        ++str;
-    if (*str == QLatin1Char(','))
-        ++str;
-    return num;
-}
-
-QList<Segment> PathParser::segmentList() const
-{
-    return m_segList;
-}
-
-
-// New class
-
 // TODO: try to apply simple transfrorm to simple path without converting it to curves
 // TODO: check is absolute path is smaller than relative
 void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathApplyed)
@@ -557,7 +374,8 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
             isOnlyAbsolute = true;
     }
 
-    QList<Segment> segList = PathParser(inPath.midRef(0)).segmentList();
+    QList<Segment> segList;
+    splitToSegments(inPath.midRef(0), segList);
     if (segList.isEmpty()) {
         elem.setAttribute("d", "");
         return;
@@ -596,6 +414,77 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     }
 }
 
+void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
+{
+    const QChar *str = path.constData();
+    const QChar *end = str + path.size();
+    QChar prevCmd;
+    bool newCmd = false;
+    while (str != end) {
+        while (str->isSpace())
+            ++str;
+        QChar pathElem = *str;
+        if (pathElem.isLetter()) {
+            newCmd = true;
+            if (pathElem == Command::ClosePath) {
+                Segment seg;
+                seg.command = Command::ClosePath;
+                seg.absolute = false;
+                seg.srcCmd = true;
+                segList << seg;
+            }
+            prevCmd = pathElem;
+            ++str;
+        } else if (prevCmd != Command::ClosePath) {
+            Segment seg;
+            seg.command = prevCmd.toLower();
+            seg.absolute = prevCmd.isUpper();
+            seg.srcCmd = newCmd;
+            newCmd = false;
+            if (   seg.command == Command::MoveTo
+                || seg.command == Command::LineTo
+                || seg.command == Command::SmoothQuadratic) {
+                seg.x = Tools::getNum(str);
+                seg.y = Tools::getNum(str);
+            } else if (seg.command == Command::HorizontalLineTo) {
+                seg.x = Tools::getNum(str);
+                seg.y = 0;
+            } else if (seg.command == Command::VerticalLineTo) {
+                seg.x = 0;
+                seg.y = Tools::getNum(str);
+            } else if (seg.command == Command::CurveTo) {
+                seg.x1 = Tools::getNum(str);
+                seg.y1 = Tools::getNum(str);
+                seg.x2 = Tools::getNum(str);
+                seg.y2 = Tools::getNum(str);
+                seg.x  = Tools::getNum(str);
+                seg.y  = Tools::getNum(str);
+            } else if (seg.command == Command::SmoothCurveTo) {
+                seg.x2 = Tools::getNum(str);
+                seg.y2 = Tools::getNum(str);
+                seg.x  = Tools::getNum(str);
+                seg.y  = Tools::getNum(str);
+            } else if (seg.command == Command::Quadratic) {
+                seg.x1 = Tools::getNum(str);
+                seg.y1 = Tools::getNum(str);
+                seg.x  = Tools::getNum(str);
+                seg.y  = Tools::getNum(str);
+            } else if (seg.command == Command::EllipticalArc) {
+                seg.rx = Tools::getNum(str);
+                seg.ry = Tools::getNum(str);
+                seg.xAxisRotation = Tools::getNum(str);
+                seg.largeArc      = Tools::getNum(str);
+                seg.sweep         = Tools::getNum(str);
+                seg.x = Tools::getNum(str);
+                seg.y = Tools::getNum(str);
+            }
+            segList << seg;
+        }
+    }
+    if (segList.size() == 1)
+        segList.clear();
+}
+
 void Path::calcNewStrokeWidth(const Transform &transform)
 {
     SvgElement parentElem = m_elem;
@@ -609,7 +498,7 @@ void Path::calcNewStrokeWidth(const Transform &transform)
             hasParentStrokeWidth = true;
             break;
         }
-        parentElem = parentElem.parentNode();
+        parentElem = parentElem.parentElement();
     }
     if (!hasParentStrokeWidth) {
         m_elem.setAttribute("stroke-width-new", Tools::roundNumber(transform.scaleFactor(),
@@ -724,7 +613,7 @@ QString Path::findAttribute(const QString &attrName)
     while (!parent.isNull()) {
         if (parent.hasAttribute(attrName))
             return parent.attribute(attrName);
-        parent = parent.parentNode();
+        parent = parent.parentElement();
     }
     return "";
 }
@@ -740,8 +629,11 @@ void Path::processAbsoluteSegments(QList<Segment> &segList)
             for (int i = 1; i < segList.size(); ++i) {
                 Segment prevSeg = segList.at(i-1);
                 if (segList.at(i).command == Command::ClosePath) {
-                    if (isZero(prevM.x() - prevSeg.x) && isZero(prevM.y() - prevSeg.y))
+                    if (isZero(prevM.x() - prevSeg.x) && isZero(prevM.y() - prevSeg.y)
+                        /*&& !isZero(segList.first().x - prevSeg.x)
+                        && !isZero(segList.first().y - prevSeg.y)*/) {
                         segList.removeAt(i--);
+                    }
                     if (i != segList.size()-1)
                         prevM = QPointF(segList.at(i+1).x, segList.at(i+1).y);
                 }

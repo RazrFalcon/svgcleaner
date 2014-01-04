@@ -122,12 +122,24 @@ StringMap SvgElement::attributesMap(bool ignoreId) const
     return map;
 }
 
+QStringList SvgElement::styleAttributesList() const
+{
+    QStringList list;
+    list.reserve(attributesCount());
+    for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next()) {
+        QString attrName = QLatin1String(child->Name());
+        if (Props::styleAttributes.contains(attrName))
+           list << attrName;
+    }
+    return list;
+}
+
 QStringList SvgElement::attributesList() const
 {
     QStringList list;
     list.reserve(attributesCount());
     for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next())
-        list << QString(child->Name());
+        list << QLatin1String(child->Name());
     return list;
 }
 
@@ -217,7 +229,7 @@ QString SvgElement::tagName() const
     return QLatin1String(m_elem->Name());
 }
 
-SvgElement SvgElement::parentNode() const
+SvgElement SvgElement::parentElement() const
 {
     return SvgElement(m_elem->Parent()->ToElement());
 }
@@ -268,6 +280,16 @@ SvgElement SvgElement::insertBefore(const SvgElement &elemNew, const SvgElement 
     if (refElem == 0)
         return SvgElement(m_elem->InsertFirstChild(elemNew.xmlElement())->ToElement());
     return SvgElement(m_elem->InsertAfterChild(refElem, elemNew.xmlElement())->ToElement());
+}
+
+StringMap SvgElement::styleMap() const
+{
+    StringMap hash;
+    for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next()) {
+        if (Props::styleAttributes.contains(child->Name()))
+            hash.insert(child->Name(), child->Value());
+    }
+    return hash;
 }
 
 StringHash SvgElement::styleHash() const

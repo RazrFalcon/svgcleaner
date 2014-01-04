@@ -23,6 +23,7 @@
 #ifndef BASECLEANER_H
 #define BASECLEANER_H
 
+#include "keys.h"
 #include "tools.h"
 
 class BaseCleaner

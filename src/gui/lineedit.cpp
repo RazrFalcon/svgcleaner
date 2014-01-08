@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -54,11 +53,6 @@ void LineEdit::initStyleOption(QStyleOptionFrameV2 *option) const
     option->midLineWidth = 0;
     option->state |= QStyle::State_Sunken;
     option->features = QStyleOptionFrameV2::None;
-}
-
-LineEdit::~LineEdit()
-{
-    delete lbl;
 }
 
 void LineEdit::setValue(const int &value)

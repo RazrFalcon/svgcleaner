@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -20,67 +19,47 @@
 **
 ****************************************************************************/
 
-#include <QtCore/QFileInfo>
-#include <QtGui/QApplication>
 #include <QtCore/QTime>
+#include <QtCore/QStringList>
+
+#include <QtGui/QApplication>
 
 #include "someutils.h"
 
-SomeUtils::SomeUtils(QObject *parent) :
-    QObject(parent)
+QString SomeUtils::prepareSize(const quint32 bytes)
 {
-}
-
-QString SomeUtils::prepareSize(const float bytes)
-{
-    float size = bytes;
+    qreal size = bytes;
     int i = 0;
     while (size > 1024 && i < 2) {
-        size = size/1024;
+        size = size / 1024.0;
         i++;
     }
-    QStringList list;
-    list << tr("B") << tr("KiB") << tr("MiB");
-
-    return QString::number(size, 'f', 1)+list.at(i);
+    static QStringList list = QStringList() << QObject::tr("B") << QObject::tr("KiB")
+                                            << QObject::tr("MiB");
+    return QString::number(size, 'f', 1) + list.at(i);
 }
 
-QString SomeUtils::prepareTime(const float ms)
+QString SomeUtils::prepareTime(const quint64 ms)
 {
-    QTime dt = QTime::fromString("0", "z");
-    dt = dt.addMSecs(ms);
+    QTime t(0, 0);
+    t = t.addMSecs(ms);
     QString timeStr;
-    timeStr = QString(tr("%1h %2m %3s %4ms")).arg(dt.toString("hh"))
-                                             .arg(dt.toString("mm"))
-                                             .arg(dt.toString("ss"))
-                                             .arg(dt.toString("zzz"));
-    return timeStr.remove(QRegExp("^(00. )*"));
+    if (t.hour() != 0)
+        timeStr += t.toString("hh") + "h";
+    if (!timeStr.isEmpty() || t.minute() != 0)
+        timeStr += " " + t.toString("mm") + "m";
+    if (!timeStr.isEmpty() || t.second() != 0)
+        timeStr += " " + t.toString("ss") + "s";
+    timeStr += " " + t.toString("zzz") + "ms";
+    return timeStr;
 }
 
-QString SomeUtils::findBinFile(const QString &name)
+QString SomeUtils::zipPath()
 {
-    QStringList names;
-    names << name << name + ".exe";
-    foreach (const QString &name, names) {
-        // next to GUI
-        if (QFile("./" + name).exists())
-            return "./" + name;
-        // MacOS package
-        if (QFile(QApplication::applicationDirPath() + "/" + name).exists())
-            return QApplication::applicationDirPath() + "/" + name;
-        // Linux default install
-        if (QFile("/usr/bin/" + name).exists())
-            return "/usr/bin/" + name;
-    }
-    return "";
-}
-
-QString SomeUtils::genSearchFolderList()
-{
-    QString paths;
-    paths += QApplication::applicationDirPath() + "/\n";
 #ifdef Q_OS_LINUX
-    paths += "/usr/bin/\n";
+    static QString path = "/usr/bin/7za";
+#else
+    static QString path = QApplication::applicationDirPath() + "/7za";
 #endif
-    return paths;
+    return path;
 }

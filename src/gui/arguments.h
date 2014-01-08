@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -23,18 +22,17 @@
 #ifndef ARGUMENTS_H
 #define ARGUMENTS_H
 
-#include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 
 struct ToThread
 {
-    QStringList inputFiles;
-    QStringList outputFiles;
+    QString inputFile;
+    QString outputFile;
     QStringList args;
     QString compressLevel;
-    QString cliPath;
-    QString zipPath;
+    bool compress;
+    bool decompress;
 };
 
 struct SVGInfo
@@ -46,7 +44,7 @@ struct SVGInfo
     int elemInitial;
     int inSize;
     int outSize;
-    int time;
+    quint32 time;
     QString errString;
     QString inPath;
     QString outPath;

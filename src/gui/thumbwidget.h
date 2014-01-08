@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -33,7 +32,7 @@ class ThumbWidget : public QWidget, private Ui::ThumbWidget
     Q_OBJECT
 
 public:
-    ThumbWidget(const SVGInfo &info, bool compare = false, QWidget *parent = 0);
+    explicit ThumbWidget(const SVGInfo &info, bool compare = false, QWidget *parent = 0);
     void refill(const SVGInfo &info, bool compare = false);
 };
 #endif // THUMBWIDGET_H

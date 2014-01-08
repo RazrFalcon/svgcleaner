@@ -44,14 +44,327 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>0</number>
         </property>
-        <widget class="QWidget" name="page">
+        <widget class="QWidget" name="pageMain">
          <layout class="QGridLayout" name="gridLayout_4">
           <property name="horizontalSpacing">
            <number>6</number>
           </property>
-          <item row="10" column="0">
+          <item row="3" column="0">
+           <widget class="QFrame" name="frameInDir">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="lineWidth">
+             <number>0</number>
+            </property>
+            <property name="midLineWidth">
+             <number>0</number>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_11">
+             <property name="horizontalSpacing">
+              <number>6</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>0</number>
+             </property>
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item row="1" column="1">
+              <widget class="LineEdit" name="lineEditInDir">
+               <property name="inputMask">
+                <string/>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2" colspan="2">
+              <widget class="QToolButton" name="btnOpenInDir">
+               <property name="toolTip">
+                <string>Open an input folder</string>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>22</width>
+                 <height>22</height>
+                </size>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="lblInFolder">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Input folder:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QFrame" name="frameOutDir">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="lineWidth">
+             <number>0</number>
+            </property>
+            <property name="midLineWidth">
+             <number>0</number>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_10">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <property name="spacing">
+              <number>6</number>
+             </property>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="lineEditOutDir"/>
+             </item>
+             <item row="1" column="2">
+              <widget class="QToolButton" name="btnOpenOutDir">
+               <property name="toolTip">
+                <string>Open an output folder</string>
+               </property>
+               <property name="text">
+                <string notr="true">...</string>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>22</width>
+                 <height>22</height>
+                </size>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Output folder:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QFrame" name="frameRename">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <property name="lineWidth">
+             <number>0</number>
+            </property>
+            <property name="midLineWidth">
+             <number>0</number>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_9">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <property name="spacing">
+              <number>6</number>
+             </property>
+             <item row="3" column="0">
+              <widget class="QLineEdit" name="lineEditPrefix">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="3">
+              <widget class="QLabel" name="label_7">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string notr="true">.svg</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QLineEdit" name="lineEditSuffix">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLabel" name="lblFileName">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>filename</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0" colspan="4">
+              <widget class="QLabel" name="lblExample">
+               <property name="text">
+                <string>For example: </string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0" colspan="4">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Set prefix and/or suffix:</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Open files from the input folder and:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QWidget" name="widget" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QRadioButton" name="radioBtn1">
+               <property name="accessibleName">
+                <string notr="true">1</string>
+               </property>
+               <property name="text">
+                <string>save cleaned files into the output folder</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radioBtn2">
+               <property name="accessibleName">
+                <string notr="true">2</string>
+               </property>
+               <property name="text">
+                <string>save cleaned files into the current folder</string>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radioBtn3">
+               <property name="accessibleName">
+                <string notr="true">3</string>
+               </property>
+               <property name="text">
+                <string>overwrite original files</string>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="11" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
              <widget class="QGroupBox" name="gBoxCompress">
@@ -237,307 +550,7 @@
             </item>
            </layout>
           </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Open files from the input folder and:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QFrame" name="frameRename">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="lineWidth">
-             <number>0</number>
-            </property>
-            <property name="midLineWidth">
-             <number>0</number>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_9">
-             <property name="margin">
-              <number>0</number>
-             </property>
-             <property name="spacing">
-              <number>6</number>
-             </property>
-             <item row="3" column="0">
-              <widget class="QLineEdit" name="lineEditPrefix">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="3">
-              <widget class="QLabel" name="label_7">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string notr="true">.svg</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="2">
-              <widget class="QLineEdit" name="lineEditSuffix">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QLabel" name="lblFileName">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>filename</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0" colspan="4">
-              <widget class="QLabel" name="lblExample">
-               <property name="text">
-                <string>For example: </string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0" colspan="4">
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>Set prefix and/or suffix:</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QWidget" name="widget" native="true">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <property name="margin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QRadioButton" name="radioBtn1">
-               <property name="accessibleName">
-                <string notr="true">1</string>
-               </property>
-               <property name="text">
-                <string>save cleaned files into the output folder</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="radioBtn2">
-               <property name="accessibleName">
-                <string notr="true">2</string>
-               </property>
-               <property name="text">
-                <string>save cleaned files into the current folder</string>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="radioBtn3">
-               <property name="accessibleName">
-                <string notr="true">3</string>
-               </property>
-               <property name="text">
-                <string>overwrite original files</string>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QFrame" name="frameInDir">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="lineWidth">
-             <number>0</number>
-            </property>
-            <property name="midLineWidth">
-             <number>0</number>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_11">
-             <property name="horizontalSpacing">
-              <number>6</number>
-             </property>
-             <property name="verticalSpacing">
-              <number>0</number>
-             </property>
-             <property name="margin">
-              <number>0</number>
-             </property>
-             <item row="1" column="1">
-              <widget class="LineEdit" name="lineEditInDir">
-               <property name="inputMask">
-                <string/>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2" colspan="2">
-              <widget class="QToolButton" name="btnOpenInDir">
-               <property name="toolTip">
-                <string>Open an input folder</string>
-               </property>
-               <property name="text">
-                <string notr="true">...</string>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>22</width>
-                 <height>22</height>
-                </size>
-               </property>
-               <property name="autoRaise">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="lblInFolder">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Input folder:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QFrame" name="frameOutDir">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="lineWidth">
-             <number>0</number>
-            </property>
-            <property name="midLineWidth">
-             <number>0</number>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_10">
-             <property name="margin">
-              <number>0</number>
-             </property>
-             <property name="spacing">
-              <number>6</number>
-             </property>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEditOutDir"/>
-             </item>
-             <item row="1" column="2">
-              <widget class="QToolButton" name="btnOpenOutDir">
-               <property name="toolTip">
-                <string>Open an output folder</string>
-               </property>
-               <property name="text">
-                <string notr="true">...</string>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>22</width>
-                 <height>22</height>
-                </size>
-               </property>
-               <property name="autoRaise">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_4">
-               <property name="text">
-                <string>Output folder:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="7" column="0">
+          <item row="6" column="0">
            <widget class="QCheckBox" name="chBoxRecursive">
             <property name="minimumSize">
              <size>
@@ -553,1367 +566,48 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="0">
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="6" column="0">
-           <widget class="QLabel" name="lblOverwrite">
-            <property name="text">
-             <string notr="true">Warning! The original files will be destroyed!</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="page_2">
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Select a preset:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0" colspan="3">
-           <widget class="QWidget" name="widgetPreset" native="true">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_7">
-             <property name="margin">
-              <number>0</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
+          <item row="8" column="0" rowspan="3">
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_15">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Preset:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="cmbBoxPreset">
+              <item>
                <property name="text">
-                <string>Enter preset name:</string>
+                <string>Basic</string>
                </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QPushButton" name="btnSavePreset">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
+              </item>
+              <item>
                <property name="text">
-                <string>Save</string>
+                <string>Complete</string>
                </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="linePresetName">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
+              </item>
+              <item>
+               <property name="text">
+                <string>Extreme</string>
                </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="btnRemovePreset">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Remove</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QComboBox" name="cmbBoxPreset">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="3">
-           <widget class="QTextBrowser" name="textPresetInfo"/>
-          </item>
-          <item row="1" column="0" colspan="3">
-           <widget class="QLabel" name="label_16">
-            <property name="text">
-             <string>Preset description:</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="page_3">
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QScrollArea" name="scrollArea">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="widgetResizable">
-             <bool>true</bool>
-            </property>
-            <widget class="QWidget" name="scrollAreaWidgetContents">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>616</width>
-               <height>519</height>
-              </rect>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_4">
-              <property name="margin">
-               <number>0</number>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="2">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Info:</string>
               </property>
-              <item>
-               <widget class="QCheckBox" name="checkBox">
-                <property name="accessibleName">
-                 <string notr="true">keep-prolog</string>
-                </property>
-                <property name="text">
-                 <string>Remove prolog</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_2">
-                <property name="accessibleName">
-                 <string notr="true">keep-comments</string>
-                </property>
-                <property name="text">
-                 <string>Remove comments</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_16">
-                <property name="accessibleName">
-                 <string notr="true">keep-proc-instr</string>
-                </property>
-                <property name="text">
-                 <string>Remove processing instruction</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_3">
-                <property name="accessibleName">
-                 <string notr="true">keep-unused-defs</string>
-                </property>
-                <property name="text">
-                 <string>Remove unused definitions</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_4">
-                <property name="accessibleName">
-                 <string notr="true">keep-nonsvg-elts</string>
-                </property>
-                <property name="text">
-                 <string>Remove non-SVG elements</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_5">
-                <property name="accessibleName">
-                 <string notr="true">keep-metadata-elts</string>
-                </property>
-                <property name="text">
-                 <string>Remove metadata elements</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_12">
-                <property name="text">
-                 <string>Remove elements from namespaces by the following graphics editors:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widgetNSElem" native="true">
-                <property name="accessibleName">
-                 <string notr="true">parent</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_15">
-                 <property name="leftMargin">
-                  <number>30</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_6">
-                   <property name="accessibleName">
-                    <string notr="true">keep-inkscape-elts</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">Inkscape</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_7">
-                   <property name="accessibleName">
-                    <string notr="true">keep-sodipodi-elts</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">Sodipodi</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_8">
-                   <property name="accessibleName">
-                    <string notr="true">keep-ai-elts</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">Adobe Illustrator</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_41">
-                   <property name="accessibleName">
-                    <string notr="true">keep-cdr-elts</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">CorelDRAW</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_9">
-                   <property name="accessibleName">
-                    <string notr="true">keep-msvisio-elts</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">Microsoft Visio</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_10">
-                <property name="accessibleName">
-                 <string notr="true">keep-invisible-elts</string>
-                </property>
-                <property name="text">
-                 <string>Remove invisible elements</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_12">
-                <property name="accessibleName">
-                 <string notr="true">keep-empty-conts</string>
-                </property>
-                <property name="text">
-                 <string>Remove empty container elements</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_11">
-                <property name="accessibleName">
-                 <string notr="true">keep-groups</string>
-                </property>
-                <property name="text">
-                 <string>Collapse groups when possible</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_14">
-                <property name="accessibleName">
-                 <string notr="true">keep-dupl-defs</string>
-                </property>
-                <property name="text">
-                 <string>Remove duplicated definitions</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_15">
-                <property name="accessibleName">
-                 <string notr="true">keep-singly-grads</string>
-                </property>
-                <property name="text">
-                 <string>Remove gradients that are only referenced by one other gradient</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="chBoxGaussianBlur">
-                <property name="accessibleName">
-                 <string notr="true">keep-gaussian-blur</string>
-                </property>
-                <property name="text">
-                 <string>Remove Gaussian blur filters</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widgetStdDev" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="accessibleName">
-                 <string notr="true">parent</string>
-                </property>
-                <layout class="QHBoxLayout" name="horizontalLayout">
-                 <property name="leftMargin">
-                  <number>30</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_8">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="accessibleName">
-                    <string notr="true">std-dev</string>
-                   </property>
-                   <property name="text">
-                    <string>if their standard deviation is less than:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="doubleSpinBox">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="accessibleName">
-                    <string notr="true">std-dev</string>
-                   </property>
-                   <property name="accessibleDescription">
-                    <string notr="true">0.10</string>
-                   </property>
-                   <property name="minimum">
-                    <double>0.010000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>0.500000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.010000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>0.100000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="page_5">
-         <layout class="QVBoxLayout" name="verticalLayout_5">
-          <item>
-           <widget class="QScrollArea" name="scrollArea_2">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="widgetResizable">
-             <bool>true</bool>
-            </property>
-            <widget class="QWidget" name="scrollAreaWidgetContents_2">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>616</width>
-               <height>519</height>
-              </rect>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_8">
-              <property name="margin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QCheckBox" name="checkBox_36">
-                <property name="accessibleName">
-                 <string notr="true">keep-version</string>
-                </property>
-                <property name="text">
-                 <string>Remove the SVG language version</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="chBoxUnrefID">
-                <property name="accessibleName">
-                 <string notr="true">keep-unref-ids</string>
-                </property>
-                <property name="text">
-                 <string>Remove unreferenced IDs</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widgetProtectID" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="accessibleName">
-                 <string notr="true">parent</string>
-                </property>
-                <layout class="QHBoxLayout" name="horizontalLayout_2">
-                 <property name="leftMargin">
-                  <number>30</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_18">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="accessibleName">
-                    <string notr="true">keep-named-ids</string>
-                   </property>
-                   <property name="text">
-                    <string>Remove IDs that contain only letters</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_20">
-                <property name="accessibleName">
-                 <string notr="true">keep-notappl-atts</string>
-                </property>
-                <property name="text">
-                 <string>Remove attributes that are not applicable to elements</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_21">
-                <property name="accessibleName">
-                 <string notr="true">keep-default-atts</string>
-                </property>
-                <property name="text">
-                 <string>Remove attributes with default SVG values</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_14">
-                <property name="text">
-                 <string>Remove attributes from namespaces by the following graphics editors:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widgetNSAttr" native="true">
-                <property name="accessibleName">
-                 <string notr="true">parent</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_16">
-                 <property name="leftMargin">
-                  <number>30</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_22">
-                   <property name="accessibleName">
-                    <string notr="true">keep-inkscape-atts</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">Inkscape</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_23">
-                   <property name="accessibleName">
-                    <string notr="true">keep-sodipodi-atts</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">Sodipodi</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_24">
-                   <property name="accessibleName">
-                    <string notr="true">keep-ai-atts</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">Adobe Illustrator</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_46">
-                   <property name="accessibleName">
-                    <string notr="true">keep-cdr-atts</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">CorelDRAW</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_25">
-                   <property name="accessibleName">
-                    <string notr="true">keep-msvisio-atts</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">Microsoft Visio</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_26">
-                <property name="accessibleName">
-                 <string notr="true">keep-stroke-props</string>
-                </property>
-                <property name="text">
-                 <string>Remove all stroke properties when there's no stroking</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_27">
-                <property name="accessibleName">
-                 <string notr="true">keep-fill-props</string>
-                </property>
-                <property name="text">
-                 <string>Remove all fill properties when there's no filling</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_29">
-                <property name="accessibleName">
-                 <string notr="true">keep-grad-coords</string>
-                </property>
-                <property name="text">
-                 <string>Remove gradient coordinates when possible</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_19">
-                <property name="accessibleName">
-                 <string notr="true">keep-unused-xlinks</string>
-                </property>
-                <property name="text">
-                 <string>Remove XLinks which pointed to nonexistent element</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="chBoxGroupByStyle">
-                <property name="accessibleName">
-                 <string notr="true">skip-style-group</string>
-                </property>
-                <property name="text">
-                 <string>Group elements by style properties</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_32">
-                <property name="accessibleName">
-                 <string>skip-ids-trim</string>
-                </property>
-                <property name="text">
-                 <string>Trim the id attributes into hexadecimal format</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_8">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>1</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_31">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Merge style properties into 'style' attribute</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_3">
-                <property name="accessibleName">
-                 <string notr="true"/>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="page_7">
-         <layout class="QVBoxLayout" name="verticalLayout_11">
-          <item>
-           <widget class="QScrollArea" name="scrollArea_5">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="widgetResizable">
-             <bool>true</bool>
-            </property>
-            <widget class="QWidget" name="scrollAreaWidgetContents_5">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>616</width>
-               <height>519</height>
-              </rect>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_12">
-              <property name="margin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QRadioButton" name="radioBtnKeepPaths">
-                <property name="accessibleName">
-                 <string notr="true">keep-abs-paths</string>
-                </property>
-                <property name="accessibleDescription">
-                 <string notr="true">convert-abs-paths=yes</string>
-                </property>
-                <property name="text">
-                 <string>Keep existing paths data</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widgetKeepPaths" native="true">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="accessibleName">
-                 <string notr="true">parent</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_13">
-                 <property name="leftMargin">
-                  <number>30</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_13">
-                   <property name="accessibleName">
-                    <string notr="true">keep-unused-symbols</string>
-                   </property>
-                   <property name="text">
-                    <string>Remove unnecessary whitespace between commands and coordinates</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="radioBtnConvertPaths">
-                <property name="accessibleName">
-                 <string notr="true"/>
-                </property>
-                <property name="accessibleDescription">
-                 <string notr="true"/>
-                </property>
-                <property name="text">
-                 <string>Convert absolute paths into relative ones</string>
-                </property>
-                <property name="checked">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widgetConvertPaths" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="accessibleName">
-                 <string notr="true">parent</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_14">
-                 <property name="leftMargin">
-                  <number>30</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_45">
-                   <property name="accessibleName">
-                    <string notr="true">keep-unused-symbols</string>
-                   </property>
-                   <property name="text">
-                    <string>Remove unnecessary whitespace between commands and coordinates</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_17">
-                   <property name="accessibleName">
-                    <string notr="true">keep-tiny-segments</string>
-                   </property>
-                   <property name="text">
-                    <string>Remove tiny segments</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_44">
-                   <property name="accessibleName">
-                    <string notr="true">keep-curveto</string>
-                   </property>
-                   <property name="text">
-                    <string>Convert 'curveto' segment to short one, when possible</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_6">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="page_4">
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QScrollArea" name="scrollArea_3">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="widgetResizable">
-             <bool>true</bool>
-            </property>
-            <widget class="QWidget" name="scrollAreaWidgetContents_3">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>616</width>
-               <height>519</height>
-              </rect>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_9">
-              <property name="margin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="QCheckBox" name="checkBox_30">
-                <property name="accessibleName">
-                 <string notr="true">no-viewbox</string>
-                </property>
-                <property name="text">
-                 <string>Convert width/height into a viewBox when possible</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="chBoxColorRRGGBB">
-                <property name="accessibleName">
-                 <string notr="true">skip-color-to-rrggbb</string>
-                </property>
-                <property name="text">
-                 <string>Convert colors to #RRGGBB format</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widgetColorRGB" native="true">
-                <property name="accessibleName">
-                 <string notr="true">parent</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_10">
-                 <property name="leftMargin">
-                  <number>30</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="checkBox_34">
-                   <property name="accessibleName">
-                    <string notr="true">skip-rrggbb-to-rgb</string>
-                   </property>
-                   <property name="text">
-                    <string>Convert colors to #RGB format when possible</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_35">
-                <property name="accessibleName">
-                 <string notr="true">keep-basic-shapes</string>
-                </property>
-                <property name="text">
-                 <string>Convert basic shapes into paths</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_38">
-                <property name="accessibleName">
-                 <string notr="true">keep-transform</string>
-                </property>
-                <property name="text">
-                 <string>Apply transform matrices to the elements when possible</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_40">
-                <property name="accessibleName">
-                 <string notr="true">keep-unsorted-defs</string>
-                </property>
-                <property name="text">
-                 <string>Sort elements by name inside the defs section</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="chBoxRoundNumbers">
-                <property name="accessibleName">
-                 <string notr="true">skip-rounding-numbers</string>
-                </property>
-                <property name="text">
-                 <string>Round numbers to a given precision</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widgetRoundNumbers" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="accessibleName">
-                 <string notr="true">parent</string>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_3">
-                 <property name="leftMargin">
-                  <number>30</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item row="1" column="1">
-                  <widget class="QSpinBox" name="spinBox_2">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="accessibleName">
-                    <string notr="true">coords-prec</string>
-                   </property>
-                   <property name="accessibleDescription">
-                    <string notr="true">3</string>
-                   </property>
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>8</number>
-                   </property>
-                   <property name="value">
-                    <number>3</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QSpinBox" name="spinBox_3">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="accessibleName">
-                    <string notr="true">attrs-prec</string>
-                   </property>
-                   <property name="accessibleDescription">
-                    <string notr="true">3</string>
-                   </property>
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>8</number>
-                   </property>
-                   <property name="value">
-                    <number>3</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_9">
-                   <property name="accessibleName">
-                    <string notr="true">transfs-prec</string>
-                   </property>
-                   <property name="text">
-                    <string>inside transform attributes:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_10">
-                   <property name="accessibleName">
-                    <string notr="true">coords-prec</string>
-                   </property>
-                   <property name="text">
-                    <string>inside coordinate attributes:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_11">
-                   <property name="accessibleName">
-                    <string notr="true">attrs-prec</string>
-                   </property>
-                   <property name="text">
-                    <string>inside other attributes:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QSpinBox" name="spinBox">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="accessibleName">
-                    <string notr="true">transfs-prec</string>
-                   </property>
-                   <property name="accessibleDescription">
-                    <string notr="true">5</string>
-                   </property>
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>8</number>
-                   </property>
-                   <property name="value">
-                    <number>5</number>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_4">
-                <property name="accessibleName">
-                 <string notr="true"/>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="page_6">
-         <layout class="QVBoxLayout" name="verticalLayout_7">
-          <item>
-           <widget class="QScrollArea" name="scrollArea_4">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="widgetResizable">
-             <bool>true</bool>
-            </property>
-            <widget class="QWidget" name="scrollAreaWidgetContents_4">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>145</width>
-               <height>25</height>
-              </rect>
-             </property>
-             <layout class="QGridLayout" name="gridLayoutOutput">
-              <property name="margin">
-               <number>0</number>
-              </property>
-              <item row="1" column="0" rowspan="2" colspan="2">
-               <spacer name="verticalSpacer_5">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="0" column="0">
-               <widget class="QCheckBox" name="checkBox_28">
-                <property name="toolTip">
-                 <string>If this option is set, then output is created with only required whitespace and newlines.</string>
-                </property>
-                <property name="accessibleName">
-                 <string>not-compact</string>
-                </property>
-                <property name="text">
-                 <string>Compact output</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </widget>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -2028,225 +722,8 @@
   <tabstop>gBoxThreads</tabstop>
   <tabstop>spinBoxThreads</tabstop>
   <tabstop>buttonBox</tabstop>
-  <tabstop>cmbBoxPreset</tabstop>
-  <tabstop>btnRemovePreset</tabstop>
-  <tabstop>textPresetInfo</tabstop>
-  <tabstop>linePresetName</tabstop>
-  <tabstop>btnSavePreset</tabstop>
-  <tabstop>scrollArea</tabstop>
-  <tabstop>checkBox</tabstop>
-  <tabstop>checkBox_2</tabstop>
-  <tabstop>checkBox_3</tabstop>
-  <tabstop>checkBox_4</tabstop>
-  <tabstop>checkBox_5</tabstop>
-  <tabstop>checkBox_6</tabstop>
-  <tabstop>checkBox_7</tabstop>
-  <tabstop>checkBox_8</tabstop>
-  <tabstop>checkBox_41</tabstop>
-  <tabstop>checkBox_9</tabstop>
-  <tabstop>checkBox_10</tabstop>
-  <tabstop>checkBox_12</tabstop>
-  <tabstop>checkBox_11</tabstop>
-  <tabstop>checkBox_14</tabstop>
-  <tabstop>checkBox_15</tabstop>
-  <tabstop>chBoxGaussianBlur</tabstop>
-  <tabstop>doubleSpinBox</tabstop>
-  <tabstop>scrollArea_2</tabstop>
-  <tabstop>checkBox_36</tabstop>
-  <tabstop>chBoxUnrefID</tabstop>
-  <tabstop>checkBox_18</tabstop>
-  <tabstop>checkBox_20</tabstop>
-  <tabstop>checkBox_21</tabstop>
-  <tabstop>checkBox_22</tabstop>
-  <tabstop>checkBox_23</tabstop>
-  <tabstop>checkBox_24</tabstop>
-  <tabstop>checkBox_46</tabstop>
-  <tabstop>checkBox_25</tabstop>
-  <tabstop>checkBox_26</tabstop>
-  <tabstop>checkBox_27</tabstop>
-  <tabstop>checkBox_29</tabstop>
-  <tabstop>scrollArea_5</tabstop>
-  <tabstop>radioBtnKeepPaths</tabstop>
-  <tabstop>checkBox_13</tabstop>
-  <tabstop>radioBtnConvertPaths</tabstop>
-  <tabstop>checkBox_45</tabstop>
-  <tabstop>checkBox_17</tabstop>
-  <tabstop>checkBox_44</tabstop>
-  <tabstop>scrollArea_3</tabstop>
-  <tabstop>checkBox_30</tabstop>
-  <tabstop>chBoxColorRRGGBB</tabstop>
-  <tabstop>checkBox_34</tabstop>
-  <tabstop>checkBox_35</tabstop>
-  <tabstop>checkBox_38</tabstop>
-  <tabstop>checkBox_40</tabstop>
-  <tabstop>chBoxRoundNumbers</tabstop>
-  <tabstop>spinBox</tabstop>
-  <tabstop>spinBox_2</tabstop>
-  <tabstop>spinBox_3</tabstop>
   <tabstop>listWidget</tabstop>
-  <tabstop>scrollArea_4</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>chBoxRoundNumbers</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetRoundNumbers</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>353</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>304</x>
-     <y>426</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chBoxGaussianBlur</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetStdDev</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>503</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>316</x>
-     <y>531</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chBoxUnrefID</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetProtectID</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>153</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>316</x>
-     <y>178</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chBoxColorRRGGBB</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetColorRGB</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>304</x>
-     <y>168</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>304</x>
-     <y>193</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioBtnKeepPaths</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetKeepPaths</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>304</x>
-     <y>93</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>304</x>
-     <y>118</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioBtnConvertPaths</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetConvertPaths</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>304</x>
-     <y>143</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>304</x>
-     <y>218</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chBoxRoundNumbers</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetRoundNumbers</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>262</x>
-     <y>343</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>262</x>
-     <y>397</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chBoxGaussianBlur</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetStdDev</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>296</x>
-     <y>493</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>296</x>
-     <y>519</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chBoxUnrefID</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetProtectID</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>296</x>
-     <y>143</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>296</x>
-     <y>168</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chBoxColorRRGGBB</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetColorRGB</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>262</x>
-     <y>168</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>262</x>
-     <y>193</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

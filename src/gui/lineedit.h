@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -34,7 +33,6 @@ class LineEdit : public QLineEdit
 public:
     explicit LineEdit(QWidget *parent = 0);
     void showLoading(bool value);
-    ~LineEdit();
 
 private:
     QLabel *lbl;

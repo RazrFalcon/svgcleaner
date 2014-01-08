@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -27,92 +26,107 @@
 
 #include <QtDebug>
 
-#include "keys.h"
 #include "remover.h"
 #include "replacer.h"
 
-// TODO: add support for preset file reading
 // TODO: custom xml printing
+
+void printLine(const QString &key, const QString &desc = QString())
+{
+    if (desc.isEmpty())
+        qDebug("  %s %s", qPrintable(key.leftJustified(35, ' ')),
+               qPrintable(Keys.description(key)));
+    else
+        qDebug("  %s %s", qPrintable(key.leftJustified(35, ' ')), qPrintable(desc));
+}
+
+void showPresetInfo(const QString &presetName)
+{
+    QStringList list;
+    if (presetName.endsWith(Preset::Basic)) {
+        Keys.setPreset(Preset::Basic);
+        list = Keys.basicPresetKeys();
+    } else if (presetName.endsWith(Preset::Complete)) {
+        Keys.setPreset(Preset::Complete);
+        list = Keys.completePresetKeys();
+    } else if (presetName.endsWith(Preset::Extreme)) {
+        Keys.setPreset(Preset::Extreme);
+        list = Keys.extremePresetKeys();
+    }
+    foreach (const QString &key, list) {
+        if (key == Key::TransformPrecision || key == Key::AttributesPrecision
+            || key == Key::CoordsPrecision) {
+            qDebug() << key + "=" + QString::number(Keys.intNumber(key));
+        } else if (key == Key::RemoveTinyGaussianBlur) {
+            qDebug() << key + "=" + QString::number(Keys.doubleNumber(key));
+        } else {
+            qDebug() << key;
+        }
+    }
+}
 
 void showHelp()
 {
+    Keys.prepareDescription();
+
     qDebug() << "SVG Cleaner could help you to clean up your SVG files from unnecessary data.";
     qDebug() << "";
     qDebug() << "Usage:";
-    qDebug() << "  svgcleaner-cli <in-file> <out-file> [--option]";
+    qDebug() << "  svgcleaner-cli <in-file> <out-file> [--preset=] [--options]";
+    qDebug() << "Show options included in preset:";
+    qDebug() << "  svgcleaner-cli --info --preset=";
     qDebug() << "";
-    qDebug() << "By default, all options are on, and you can only disable it.";
+    qDebug() << "Presets:";
+    printLine("--preset basic", "Basic cleaning");
+    printLine("--preset complete", "Complete cleaning");
+    printLine("--preset extreme", "Extreme cleaning");
+    qDebug() << "";
     qDebug() << "Options:";
-    qDebug() << "  -h --help                Show this text.";
-    qDebug() << "  -v --version             Show version.";
+    qDebug() << "";
+    printLine("-h --help", "Show this text");
+    printLine("-v --version", "Show version");
+    qDebug() << "";
 
     qDebug() << "Elements:";
-    qDebug() << "  --keep-prolog            Disable xml prolog removing.";
-    qDebug() << "  --keep-comments          Disable xml comments removing.";
-    qDebug() << "  --keep-proc-instr        Disable xml processing instruction removing.";
-    qDebug() << "  --keep-unused-defs       Disable removing of unused 'defs'.";
-    qDebug() << "  --keep-nonsvg-elts       Keep all non svg elements.";
-    qDebug() << "  --keep-metadata-elts     Keep metadata elements.";
-    qDebug() << "  --keep-inkscape-elts     Keep Inkscape elements.";
-    qDebug() << "  --keep-sodipodi-elts     Keep sodipodi elements.";
-    qDebug() << "  --keep-ai-elts           Keep Adobe Illustrator elements.";
-    qDebug() << "  --keep-cdr-elts          Keep CorelDRAW elements.";
-    qDebug() << "  --keep-msvisio-elts      Keep MS Visio elements.";
-    qDebug() << "  --keep-invisible-elts    Keep invisible elements.";
-    qDebug() << "  --keep-empty-conts       Disable removing of empty container elements.";
-    qDebug() << "  --keep-groups            Disable group collapsing, when possible.";
-    qDebug() << "  --keep-dupl-defs         Disable removing of duplicated defining content in 'defs' element.";
-    qDebug() << "  --keep-singly-grads      Do not merge 'linearGradient' into 'radialGradient',\n"
-                "                           when 'linearGradient' linked only to one 'radialGradient'.";
-    qDebug() << "  --keep-gaussian-blur     Disable removing 'feGaussianBlur' filters with 'stdDeviation' lower then '--std-dev'.";
-    qDebug() << "  --std-dev=<0.01..0.5>    Set minimum value for 'stdDeviation' in 'feGaussianBlur' element [default: 0.1].";
-
+    foreach (const QString &key, Keys.elementsKeys()) {
+        if (key == Key::RemoveTinyGaussianBlur)
+            printLine(key + "=<0..1.0>",
+                    Keys.description(key) + QString(" [default: %1]").arg(Keys.doubleNumber(key)));
+        else
+            printLine(key);
+    }
+    qDebug() << "";
     qDebug() << "Attributes:";
-    qDebug() << "  --keep-version           Keep SVG version number.";
-    qDebug() << "  --keep-unref-ids         Disable removing of unreferenced id's.";
-    qDebug() << "  --keep-named-ids         Disable removing of unreferenced id's which contains only letters.";
-    qDebug() << "  --keep-notappl-atts      Keep not applied attributes, like 'font-size' for 'rect' element.";
-    qDebug() << "  --keep-default-atts      Skip removing attributes with default values.";
-    qDebug() << "  --keep-inkscape-atts     Keep Inkscape attributes.";
-    qDebug() << "  --keep-sodipodi-atts     Keep sodipodi attributes.";
-    qDebug() << "  --keep-ai-atts           Keep Adobe Illustrator attributes.";
-    qDebug() << "  --keep-cdr-atts          Keep CorelDRAW attributes.";
-    qDebug() << "  --keep-msvisio-atts      Keep MS Visio attributes.";
-    qDebug() << "  --keep-stroke-props      Keep stroke properties when no stroking.";
-    qDebug() << "  --keep-fill-props        Keep fill properties when no filling.";
-    qDebug() << "  --keep-grad-coords       Disable removing of unneeded gradient attributes.";
-    qDebug() << "  --keep-unused-xlinks     Keep XLinks which pointed to nonexistent element.";
-    qDebug() << "  --skip-style-group       Group elements by style properties.";
-    qDebug() << "  --skip-ids-trim          Skip trimming to the id attributes into hexadecimal format.";
-    qDebug() << "Attributes utilities:";
-    qDebug() << "  --join-style-atts        Merge style properties into 'style' attribute.";
-
+    foreach (const QString &key, Keys.attributesKeys())
+        printLine(key);
+    qDebug() << "Additional:";
+    foreach (const QString &key, Keys.attributesUtilsKeys())
+        printLine(key);
+    qDebug() << "";
     qDebug() << "Paths:";
-    qDebug() << "  --keep-absolute-paths    Disable absolute to relative coordinates converting in path element.";
-    qDebug() << "  --keep-unused-symbols    Keep unused symbols in 'd' attribute from 'path' element.";
-    qDebug() << "  --keep-tiny-segments     Keep tiny or empty segments in 'path' element.";
-    qDebug() << "  --keep-curveto           Disable converting 'curveto' segment to short one, when possible.";
-
-    qDebug() << "Optimization:";
-    qDebug() << "  --no-viewbox             Disable 'viewBox' attribute creating from 'height' and 'width' in 'svg' element.";
-    qDebug() << "  --skip-color-to-rrggbb   Skip converting 'rgb(255,255,255)' or color name into #RRGGBB format.";
-    qDebug() << "  --skip-rrggbb-to-rgb     Skip color converting from #RRGGBB into #RGB format, when possible.";
-    qDebug() << "  --keep-basic-shapes      Disable converting basic shapes (rect, line, polygon, polyline) into path.";
-    qDebug() << "  --keep-transform         Skip applying of transform matrices.";
-    qDebug() << "  --keep-unsorted-defs     Disable element by name sorting in 'defs' element.";
-    qDebug() << "  --skip-rounding-numbers  Skip rounding numbers.";
-    qDebug() << "  --transfs-prec=<1..8>    Set rounding precision for transformations [default: 5].";
-    qDebug() << "  --coords-prec=<1..8>     Set rounding precision for coordinates [default: 3].";
-    qDebug() << "  --attrs-prec=<1..8>      Set rounding precision for attributes [default: 3].";
-
-    qDebug() << "Output:";
-    qDebug() << "  --not-compact            Save svg with only required whitespace and newlines.";
+    foreach (const QString &key, Keys.pathsKeys())
+        printLine(key, Keys.description(key));
+    qDebug() << "";
+    qDebug() << "Optimizations:";
+    foreach (const QString &key, Keys.optimizationsKeys()) {
+        if (key == Key::TransformPrecision || key == Key::AttributesPrecision
+            || key == Key::CoordsPrecision) {
+            printLine(key + "=<1..8>",
+                    Keys.description(key) + QString(" [default: %1]").arg(Keys.doubleNumber(key)));
+        } else
+            printLine(key);
+    }
+    qDebug() << "Additional:";
+    foreach (const QString &key, Keys.optimizationsUtilsKeys())
+        printLine(key);
 }
 
 void processFile(const QString &firstFile, const QString &secondFile)
 {
     QFile inputFile(firstFile);
-    qDebug() << "The initial file size is: " + QString::number(inputFile.size());
+    if (!Keys.flag(Key::ShortOutput))
+        qDebug("The initial file size is: %u", (int)inputFile.size());
+
     XMLDocument doc;
     doc.LoadFile(firstFile.toUtf8().constData());
     if (Tools::svgElement(&doc).isNull()) {
@@ -136,57 +150,57 @@ void processFile(const QString &firstFile, const QString &secondFile)
     // mandatory fixes used to simplify subsequent functions
     replacer.splitStyleAttr();
     replacer.convertUnits();
+    // TODO: add key
     replacer.convertCDATAStyle();
     replacer.prepareDefs();
     replacer.fixWrongAttr();
     replacer.markUsedElements();
 
-    if (!Keys::get().flag(Key::KeepDefaultAttributes))
+    if (Keys.flag(Key::RemoveDefaultAttributes))
         remover.cleanSvgElementAttribute();
-    if (!Keys::get().flag(Key::NoViewbox))
+    if (Keys.flag(Key::CreateViewbox))
         replacer.convertSizeToViewbox();
-    if (!Keys::get().flag(Key::KeepUnusedDefs))
+    if (Keys.flag(Key::RemoveUnusedDefs))
         remover.removeUnusedDefs();
-    if (!Keys::get().flag(Key::KeepDuplicatedDefs))
+    if (Keys.flag(Key::RemoveDuplicatedDefs))
         remover.removeDuplicatedDefs();
     // TODO: add key
     remover.removeElements();
     remover.removeAttributes();
-    if (!Keys::get().flag(Key::KeepSinglyGradients))
+    if (Keys.flag(Key::MergeGradients))
         replacer.mergeGradients();
-    if (!Keys::get().flag(Key::KeepUnreferencedIds))
+    if (Keys.flag(Key::RemoveUnreferencedIds))
         remover.removeUnreferencedIds();
-    if (!Keys::get().flag(Key::KeepUnusedXLinks))
+    if (Keys.flag(Key::RemoveUnusedXLinks))
         remover.removeUnusedXLinks();
-    if (!Keys::get().flag(Key::SkipIdsTrim))
+    if (Keys.flag(Key::TrimIds))
         replacer.trimIds();
-    if (!Keys::get().flag(Key::KeepDefaultAttributes))
+    if (Keys.flag(Key::RemoveDefaultAttributes))
         remover.processStyleAttributes();
-    if (!Keys::get().flag(Key::KeepUnsortedDefs))
-        replacer.sortDefs();
-    if (!Keys::get().flag(Key::KeepBasicShapes))
+    if (Keys.flag(Key::ConvertBasicShapes))
         replacer.convertBasicShapes();
-    if (!Keys::get().flag(Key::KeepGroups))
+    if (Keys.flag(Key::UngroupGroups))
         remover.removeGroups();
-    if (!Keys::get().flag(Key::KeepAbsolutePaths))
-        replacer.processPaths();
-    if (!Keys::get().flag(Key::SkipElemByStyleGroup))
+    replacer.processPaths();
+    if (Keys.flag(Key::GroupElemByStyle))
         replacer.groupElementsByStyles();
-    if (!Keys::get().flag(Key::KeepTransforms))
+    // TODO: split to separate keys: for defs and paths
+    if (Keys.flag(Key::ApplyTransforms))
         replacer.applyTransformToDefs();
-    if (!Keys::get().flag(Key::SkipRoundingNumbers))
-        replacer.roundNumericAttributes();
+    replacer.roundNumericAttributes();
     replacer.finalFixes();
 
-    if (Keys::get().flag(Key::JoinStyleAttributes))
+    if (Keys.flag(Key::JoinStyleAttributes))
         replacer.joinStyleAttr();
+    if (Keys.flag(Key::SortDefs))
+        replacer.sortDefs();
 
     // TODO: check is out file smaller than original
     QFile outFile(secondFile);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
         qFatal("Error: could not open out file for write.");
 
-    XMLPrinter printer(0, !Keys::get().flag(Key::NotCompact));
+    XMLPrinter printer(0, Keys.flag(Key::CompactOutput));
     doc.Print(&printer);
     QString outStr = QString::fromUtf8(printer.CStr());
 
@@ -196,7 +210,9 @@ void processFile(const QString &firstFile, const QString &secondFile)
     outStream << outStr;
     outFile.close();
 
-    qDebug() << "The final file size is: " + QString::number(outFile.size());
+    if (!Keys.flag(Key::ShortOutput))
+        qDebug("The final file size is: %u", (int)outFile.size());
+
     replacer.calcElemAttrCount("final");
 }
 
@@ -213,9 +229,13 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    if (argList.contains("-h") || argList.contains("--help")
-        || argList.isEmpty() || argList.count() == 1) {
+    if (argList.contains("-h") || argList.contains("--help") || argList.size() < 2) {
         showHelp();
+        return 0;
+    }
+
+    if (argList.contains("--info") && argList.size() == 2) {
+        showPresetInfo(argList.at(1));
         return 0;
     }
 
@@ -227,7 +247,7 @@ int main(int argc, char *argv[])
     if (!QFileInfo(outputFile).absoluteDir().exists())
         qFatal("Error: output folder does not exist.");
 
-    Keys::get().parseOptions(argList);
+    Keys.parseOptions(argList);
     processFile(inputFile, outputFile);
 
     return 0;

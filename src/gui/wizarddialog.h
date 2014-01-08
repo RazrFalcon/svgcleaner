@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -24,13 +23,9 @@
 #define WIZARDDIALOG_H
 
 #include <QtGui/QDialog>
-
-#include <QtCore/QFileInfoList>
-#include <QtCore/QSettings>
-#include <QtCore/QThread>
+#include <QtCore>
 
 #include "arguments.h"
-#include "filefinder.h"
 #include "ui_wizarddialog.h"
 
 class WizardDialog : public QDialog, private Ui::WizardDialog
@@ -39,51 +34,52 @@ class WizardDialog : public QDialog, private Ui::WizardDialog
 
 public:
     explicit WizardDialog(QWidget *parent = 0);
-    ~WizardDialog();
-    ToThread threadArguments();
+    virtual ~WizardDialog();
+    QList<ToThread> threadData();
 
 signals:
     void start(QString, bool);
 
 private:
-    QFileInfoList fileList;
-    QFileInfoList presets;
-    QSettings *settings;
-    FileFinder *fileSearch;
-    QThread *searchThread;
+    QFileInfoList m_fileList;
+    QFutureWatcher<QFileInfoList> *m_folderWatcher;
+    static bool m_isRecursive;
+    static bool m_isStopScan;
+    QList<QWidget *> m_pageList;
 
+private:
     bool checkForWarnings();
-    bool isDefault(QWidget *w);
     QString compressValue();
     QString findLabel(const QString &accessibleName);
-    QString settingPath();
-    QStringList argsLine();
-    QStringList getInFiles();
-    QStringList genOutFiles();
+    QStringList argsList();
     void createWarning(const QString &text);
-    void loadPresets();
     void loadSettings();
     void resetFields();
     void resetToDefault();
     void saveSettings();
-    void setupGUI();
-    void setupToolTips();
+    void initGUI();
+    void initElementsPage();
+    void initAttributesPage();
+    void initPathsPage();
+    void initOptimizationPage();
     void deleteThreads();
+    QVBoxLayout* addPage();
+    void addUtilsLabel(QVBoxLayout *layout);
+    static QFileInfoList searchForFiles(const QString &startDir, bool recursive);
+    static QFileInfoList scanFolder(const QString &dirPath);
 
 private slots:
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);
     void createExample();
     void loadFiles();
-    void loadFinished(QFileInfoList list);
     void on_btnOpenInDir_clicked();
     void on_btnOpenOutDir_clicked();
-    void on_btnRemovePreset_clicked();
-    void on_btnSavePreset_clicked();
     void on_buttonBox_clicked(QAbstractButton *button);
-    void on_cmbBoxPreset_currentIndexChanged(const QString &text);
-    void on_linePresetName_textChanged(const QString &text);
-    void radioSelected();
-    void setPreset(const QString &preset);
+    void on_cmbBoxPreset_currentIndexChanged(const QString &presetName);
+    void onRadioSelected();
+    void onFolderScaned(int value);
+    void onFolderScanFinished();
+    void on_chBoxRecursive_toggled(bool checked);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

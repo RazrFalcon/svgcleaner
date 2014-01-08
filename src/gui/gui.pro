@@ -2,41 +2,47 @@ QT       += core gui svg
 TEMPLATE  = app
 DESTDIR   = ../../bin
 TARGET      = SVGCleaner
-unix:TARGET = svgcleaner-gui
-mac:TARGET  = SVGCleaner
+unix:!mac:TARGET = svgcleaner-gui
 
-SOURCES  += main.cpp \
-            thumbwidget.cpp \
-            mainwindow.cpp \
-            cleanerthread.cpp \
-            someutils.cpp \
-            itemwidget.cpp \
-            aboutdialog.cpp \
-            lineedit.cpp \
-            wizarddialog.cpp \
-            iconswidget.cpp \
-            filefinder.cpp
-		
-HEADERS  += thumbwidget.h \
-            mainwindow.h \
-            cleanerthread.h \
-            arguments.h \
-            someutils.h \
-            itemwidget.h \
-            aboutdialog.h \
-            lineedit.h \
-            wizarddialog.h \
-            iconswidget.h \
-            filefinder.h
+DEFINES *= QT_USE_QSTRINGBUILDER
 
-FORMS    += thumbwidget.ui \
-            mainwindow.ui \
-            aboutdialog.ui \
-            wizarddialog.ui
+SOURCES += \
+    main.cpp \
+    aboutdialog.cpp \
+    cleaner.cpp \
+    iconswidget.cpp \
+    lineedit.cpp \
+    mainwindow.cpp \
+    settings.cpp \
+    someutils.cpp \
+    thumbwidget.cpp \
+    wizarddialog.cpp \
+    ../cli/keys.cpp \
+    spinbox.cpp
+
+HEADERS += \
+    aboutdialog.h \
+    arguments.h \
+    cleaner.h \
+    iconswidget.h \
+    lineedit.h \
+    mainwindow.h \
+    settings.h \
+    someutils.h \
+    thumbwidget.h \
+    wizarddialog.h \
+    ../cli/keys.h \
+    spinbox.h
+
+FORMS += \
+    aboutdialog.ui \
+    mainwindow.ui \
+    thumbwidget.ui \
+    wizarddialog.ui
 
 RESOURCES   += ../../icons/icons.qrc
 CODECFORSRC  = UTF-8
-windows:RC_FILE = ../../icons/icon.rc
+win32:RC_FILE = ../../icons/icon.rc
 mac:ICON        = ../../icons/svgcleaner.icns
 
 include(../../translations/translations.pri)

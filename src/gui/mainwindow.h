@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -23,15 +22,25 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtCore/QSettings>
-#include <QtCore/QElapsedTimer>
+#include <QtCore>
 
 #include <QtGui/QComboBox>
 #include <QtGui/QMainWindow>
 
 #include "arguments.h"
-#include "cleanerthread.h"
 #include "ui_mainwindow.h"
+
+struct ProcessData {
+    quint32 timeFull;
+    quint32 pos;
+    float compressMax;
+    float compressMin;
+    quint32 inputSize;
+    quint32 outputSize;
+    quint32 timeMax;
+    quint32 timeMin;
+    quint32 crashed;
+};
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -41,39 +50,31 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 
 private:
-    float compressMax;
-    float compressMin;
-    float timeFull;
-    float inputSize;
-    float outputSize;
-    int position;
-    int timeMax;
-    int timeMin;
+    ProcessData m_data;
     QComboBox *cmbSort;
-    QList<CleanerThread *> cleanerList;
     QList<SVGInfo> itemList;
-    QSettings *settings;
-    QElapsedTimer time;
-    ToThread arguments;
+    QElapsedTimer totalTime;
+    QList<ToThread> arguments;
+    QFutureWatcher<SVGInfo> *m_cleaningWatcher;
+    static int m_sortType;
 
     void createStatistics();
-    void deleteThreads();
     void enableButtons(bool value);
     void removeThumbs();
-    void startNext();
+    static bool customSort(const SVGInfo &s1, const SVGInfo &s2);
 
 private slots:
-    void cleaningFinished();
     void on_actionCompareView_triggered();
     void on_actionInfo_triggered();
     void on_actionPause_triggered();
     void on_actionStart_triggered();
     void on_actionStop_triggered();
     void on_actionWizard_triggered();
-    void on_itemScroll_valueChanged(int value);
+    void on_itemsScroll_valueChanged(int value);
     void prepareStart();
-    void progress(SVGInfo);
     void sortingChanged(int value);
+    void onFileCleaned(int value);
+    void onFinished();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -27,8 +26,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
 {
     setupUi(this);
     lblTitle->setText("SVG Cleaner " + QApplication::applicationVersion());
-    tabWidget->setCurrentIndex(0); // show always first tab
-
+    tabWidget->setCurrentIndex(0); // always show first tab
     fillAbout();
     fillAuthors();
 }
@@ -47,7 +45,7 @@ void AboutDialog::fillAbout()
                       "the final rendering;<br />"
                       "- making those elements and attributes in use more compact.") + "<br />");
 
-    textAbout->append(tr("Images cleaned by SVG Cleaner are typically 10-60 percent smaller "
+    textAbout->append(tr("Images cleaned by SVG Cleaner are typically 40-60 percent smaller "
                       "than the original ones.") + "<br />");
 
     textAbout->append(tr("Important! The internal image viewer in SVG Cleaner uses the QtSvg module "
@@ -76,7 +74,7 @@ void AboutDialog::fillAuthors()
     textAuthors->append("");
     textAuthors->append(tr("Translators:"));
     textAuthors->append("Czech - Pavel Fric " + genLink("pavelfric@seznam.cz"));
-    textAuthors->append("German - Seb Adler " + genLink("seb.adler.bln@googlemail.com"));
+    textAuthors->append("German - Seb Adler " + genLink("seb.adler.bln@gmail.com"));
 }
 
 QString AboutDialog::genLink(const QString &link)

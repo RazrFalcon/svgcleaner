@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -26,17 +25,14 @@
 
 #include "tools.h"
 #include "paths.h"
-#include "keys.h"
+
+#define Keys Keys::get()
 
 // http://www.w3.org/TR/SVG/paths.html
 
 // TODO: add path approximation
-// fjudy2001_02_cleaned
-// warszawianka_Betel.svg
-
-Segment::Segment()
-{
-}
+//       fjudy2001_02.svg
+//       warszawianka_Betel.svg
 
 void Segment::setTransform(Transform &ts)
 {
@@ -197,6 +193,7 @@ QList<QPointF> Segment::arcToCurve(ArcStruct arc) const
     return list;
 }
 
+// TODO: add s, q, t segmetns
 QList<Segment> Segment::toCurve(qreal prevX, qreal prevY) const
 {
     QList<Segment> segList;
@@ -310,50 +307,30 @@ void Segment::toRelative(qreal xLast, qreal yLast)
 
 void Segment::coords(QVector<qreal> &points)
 {
+    points.reserve(7);
     if (command == Command::CurveTo)
-    {
-        points.reserve(6);
         points << x1 << y1 << x2 << y2 << x << y;
-    }
     else if (  command == Command::MoveTo
             || command == Command::LineTo
             || command == Command::SmoothQuadratic)
-    {
-        points.reserve(2);
         points << x << y;
-    }
     else if (command == Command::HorizontalLineTo)
-    {
-        points.reserve(1);
         points << x;
-    }
     else if (command == Command::VerticalLineTo)
-    {
-        points.reserve(1);
         points << y;
-    }
     else if (command == Command::SmoothCurveTo)
-    {
-        points.reserve(4);
         points << x2 << y2 << x << y;
-    }
     else if (command == Command::Quadratic)
-    {
-        points.reserve(4);
         points << x1 << y1 << x << y;
-    }
     else if (command == Command::EllipticalArc)
-    {
-        points.reserve(7);
         points << rx << ry << xAxisRotation << largeArc << sweep << x << y;
-    }
 }
 
 
 // New class
 
+// TODO: add support to save default segment absolute value
 // TODO: try to apply simple transfrorm to simple path without converting it to curves
-// TODO: check is absolute path is smaller than relative
 void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathApplyed)
 {
     const QString inPath = elem.attribute("d");
@@ -364,9 +341,8 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     }
     m_elem = elem;
 
-    // TODO: path like 'M x,y A rx,ry 0 1 1 x,y', where x and y of both segments are identical
+    // path like 'M x,y A rx,ry 0 1 1 x,y', where x and y of both segments are similar
     // can't be converted to relative coordinates
-    // some kind of bug
     bool isOnlyAbsolute = false;
     if (inPath.contains("A")) {
         QString tmpStr = QString(inPath).remove(QRegExp("[^a-AZ-z]"));
@@ -386,7 +362,7 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     processAbsoluteSegments(segList);
     if (canApplyTransform && !isOnlyAbsolute)
         canApplyTransform = applyTransform(segList);
-    if (!isOnlyAbsolute) {
+    if (!isOnlyAbsolute && Keys.flag(Key::ConvertToRelative)) {
         segmentsToRelative(segList);
         processRelativeSegments(segList);
     }
@@ -620,7 +596,7 @@ QString Path::findAttribute(const QString &attrName)
 
 void Path::processAbsoluteSegments(QList<Segment> &segList)
 {
-    if (!Keys::get().flag(Key::KeepUnusedSymbolsFromPath)) {
+    if (Keys.flag(Key::RemoveUnneededSymbols)) {
         // remove 'z' command if start point equal to last
         // except 'stroke-linejoin' is not default, because it causes render error
         QString strokeLinejoin = findAttribute("stroke-linejoin");
@@ -641,9 +617,9 @@ void Path::processAbsoluteSegments(QList<Segment> &segList)
         }
     }
 
-    if (!Keys::get().flag(Key::KeepTinySegments)) {
+    if (Keys.flag(Key::RemoveTinySegments)) {
         // remove tiny segments
-        static qreal minValue = 1 / pow(10, Keys::get().coordinatesPrecision());
+        static qreal minValue = 1 / pow(10, Keys.coordinatesPrecision());
         for (int i = 0; i < segList.count()-1; ++i) {
             Segment seg = segList.at(i);
             Segment nextSeg = segList.at(i+1);
@@ -659,9 +635,10 @@ void Path::processAbsoluteSegments(QList<Segment> &segList)
 }
 
 // TODO: add other commands conv
+// TODO: rewrite to absolute
 void Path::processRelativeSegments(QList<Segment> &segList)
 {
-    if (!Keys::get().flag(Key::KeepTinySegments)) {
+    if (Keys.flag(Key::RemoveTinySegments)) {
         for (int i = 0; i < segList.count(); ++i) {
             Segment seg = segList.at(i);
             const QString cmd = seg.command;
@@ -710,7 +687,7 @@ void Path::processRelativeSegments(QList<Segment> &segList)
     }
 
     QList<Segment> newSegList;
-    if (!Keys::get().flag(Key::KeepOriginalCurveTo)) {
+    if (Keys.flag(Key::ConvertCurves)) {
         for (int i = 0; i < segList.count(); ++i) {
             Segment seg = segList.at(i);
             QString currCmd = seg.command;
@@ -774,8 +751,8 @@ QString Path::segmentsToPath(QList<Segment> &segList)
 
     // rounding to >=4 decimal usually do not cause deformation
     bool isUseBiggerPrecisoin = false;
-    const int smallPathPrecision = Keys::get().coordinatesPrecision() + 1;
-    if (Keys::get().coordinatesPrecision() < 4) {
+    const int smallPathPrecision = Keys.coordinatesPrecision() + 1;
+    if (Keys.coordinatesPrecision() < 4) {
         // simple check to detect path with small segments wich can be damaged after rounding
         int smallNumCount = 0;
         for (int i = 0; i < segList.size(); ++i) {
@@ -793,8 +770,7 @@ QString Path::segmentsToPath(QList<Segment> &segList)
     QString outPath;
     QChar prevCom;
     bool isPrevComAbs = false;
-    bool isTrim = !Keys::get().flag(Key::KeepUnusedSymbolsFromPath);
-    bool isApplyRound = !Keys::get().flag(Key::SkipRoundingNumbers);
+    bool isTrim = Keys.flag(Key::RemoveUnneededSymbols);
     QString prevPos;
     for (int i = 0; i < segList.count(); ++i) {
         Segment segment = segList.at(i);
@@ -823,7 +799,7 @@ QString Path::segmentsToPath(QList<Segment> &segList)
             // m 30     to  m30
             // 10,-30   to  10-30
             // 15.1,.5  to  15.1.5
-            bool round = isApplyRound;
+            bool round = true;
             if (i+1 < segList.size() && round) {
                 if ((cmd == Command::MoveTo || cmd == Command::EllipticalArc)
                     && segList.at(i+1).command == Command::EllipticalArc)
@@ -858,12 +834,10 @@ QString Path::segmentsToPath(QList<Segment> &segList)
                 prevPos = currPos;
             }
         } else {
-            for (int j = 0; j < points.size(); ++j) {
-                if (isApplyRound)
-                    outPath += Tools::roundNumber(points.at(j));
-                else
-                    outPath += QString::number(points.at(j));
-            }
+            QStringList list;
+            for (int j = 0; j < points.size(); ++j)
+                list << Tools::roundNumber(points.at(j));
+            outPath += list.join(" ");
             if (cmd != Command::ClosePath)
                 outPath += " ";
         }

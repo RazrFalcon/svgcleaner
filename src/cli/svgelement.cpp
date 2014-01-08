@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -20,7 +19,6 @@
 **
 ****************************************************************************/
 
-#include "keys.h"
 #include "tools.h"
 #include "svgelement.h"
 
@@ -65,7 +63,7 @@ bool SvgElement::hasImportantAttrs()
     int attrCount = attributesCount();
     if (attrCount == 0)
         return false;
-    if (!Keys::get().flag(Key::KeepUnreferencedIds)) {
+    if (Keys::get().flag(Key::RemoveUnreferencedIds)) {
         if (attrCount == 1 && hasAttribute("id"))
             return false;
     }

@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -24,72 +23,21 @@
 
 #include "keys.h"
 
-Keys::Keys()
+using namespace Key;
+
+Keys::Keys(QObject *parent) : QObject(parent)
 {
-    keyHash.insert(Key::KeepProlog, false);
-    keyHash.insert(Key::KeepComments, false);
-    keyHash.insert(Key::KeepProcessingInstruction, false);
-    keyHash.insert(Key::KeepUnusedDefs, false);
-    keyHash.insert(Key::KeepNonSvgElements, false);
-    keyHash.insert(Key::KeepMetadata, false);
-    keyHash.insert(Key::KeepInkscapeElements, false);
-    keyHash.insert(Key::KeepSodipodiElements, false);
-    keyHash.insert(Key::KeepIllustratorElements, false);
-    keyHash.insert(Key::KeepCorelDrawElements, false);
-    keyHash.insert(Key::KeepMSVisioElements, false);
-    keyHash.insert(Key::KeepInvisibleElements, false);
-    keyHash.insert(Key::KeepEmptyContainer, false);
-    keyHash.insert(Key::KeepGroups, false);
-    keyHash.insert(Key::KeepDuplicatedDefs, false);
-    keyHash.insert(Key::KeepSinglyGradients, false);
-    keyHash.insert(Key::KeepTinyGaussianBlur, false);
-    keyHash.insert(Key::StdDeviation, 0.1);
-
-    keyHash.insert(Key::KeepSvgVersion, false);
-    keyHash.insert(Key::KeepUnreferencedIds, false);
-    keyHash.insert(Key::KeepNamedIds, false);
-    keyHash.insert(Key::KeepNotAppliedAttributes, false);
-    keyHash.insert(Key::KeepDefaultAttributes, false);
-    keyHash.insert(Key::KeepInkscapeAttributes, false);
-    keyHash.insert(Key::KeepSodipodiAttributes, false);
-    keyHash.insert(Key::KeepIllustratorAttributes, false);
-    keyHash.insert(Key::KeepCorelDrawAttributes, false);
-    keyHash.insert(Key::KeepMSVisioAttributes, false);
-    keyHash.insert(Key::KeepStrokeProps, false);
-    keyHash.insert(Key::KeepFillProps, false);
-    keyHash.insert(Key::KeepGradientCoordinates, false);
-    keyHash.insert(Key::KeepUnusedXLinks, false);
-    keyHash.insert(Key::SkipElemByStyleGroup, false);
-    keyHash.insert(Key::SkipIdsTrim, false);
-    keyHash.insert(Key::JoinStyleAttributes, false);
-
-    keyHash.insert(Key::KeepAbsolutePaths, false);
-    keyHash.insert(Key::KeepUnusedSymbolsFromPath, false);
-    keyHash.insert(Key::KeepTinySegments, false);
-    keyHash.insert(Key::KeepOriginalCurveTo, false);
-
-    keyHash.insert(Key::NoViewbox, false);
-    keyHash.insert(Key::SkipColorToRRGGBB, false);
-    keyHash.insert(Key::SkipRRGGBBToRGB, false);
-    keyHash.insert(Key::KeepBasicShapes, false);
-    keyHash.insert(Key::KeepTransforms, false);
-    keyHash.insert(Key::KeepUnsortedDefs, false);
-    keyHash.insert(Key::SkipRoundingNumbers, false);
-    keyHash.insert(Key::TransformPrecision, 5);
-    keyHash.insert(Key::CoordsPrecision, 3);
-    keyHash.insert(Key::AttributesPrecision, 3);
-
-    keyHash.insert(Key::NotCompact, false);
+    setPreset(Preset::Complete);
 }
 
 bool Keys::flag(const QString &key) const
 {
-    return keyHash.value(key).toBool();
+    return hash.value(key).toBool();
 }
 
 int Keys::intNumber(const QString &key) const
 {
-    return keyHash.value(key).toInt();
+    return hash.value(key).toInt();
 }
 
 int Keys::coordinatesPrecision() const
@@ -109,16 +57,37 @@ int Keys::transformPrecision() const
 
 double Keys::doubleNumber(const QString &key) const
 {
-    return keyHash.value(key).toDouble();
+    return hash.value(key).toDouble();
 }
 
-void Keys::parseOptions(const QStringList &list)
+void Keys::parseOptions(QStringList &list)
 {
-    m_transformPrecision = intNumber(Key::TransformPrecision);
-    m_attributesPrecision = intNumber(Key::AttributesPrecision);
+    if (list.isEmpty()) {
+        m_transformPrecision   = intNumber(Key::TransformPrecision);
+        m_attributesPrecision  = intNumber(Key::AttributesPrecision);
+        m_coordinatesPrecision = intNumber(Key::CoordsPrecision);
+        return;
+    }
+
+    if (list.first().startsWith("--preset")) {
+        QString preset = list.takeFirst();
+        preset.remove("--preset=");
+        if (preset == Preset::Complete)
+            setPreset(Preset::Complete);
+        else if (preset == Preset::Basic)
+            setPreset(Preset::Basic);
+        else if (preset == Preset::Extreme)
+            setPreset(Preset::Extreme);
+    }
+
+    m_transformPrecision   = intNumber(Key::TransformPrecision);
+    m_attributesPrecision  = intNumber(Key::AttributesPrecision);
     m_coordinatesPrecision = intNumber(Key::CoordsPrecision);
 
-    QStringList keys = keyHash.keys();
+    if (list.isEmpty())
+        return;
+
+    QStringList keys = hash.keys();
     foreach (QString flag, list) {
         bool isError = false;
         QString value;
@@ -136,7 +105,7 @@ void Keys::parseOptions(const QStringList &list)
                 || flag == Key::CoordsPrecision)
             {
                 if (value.toInt() > 0 && value.toInt() <= 8) {
-                    keyHash.insert(flag, value.toInt());
+                    hash.insert(flag, value.toInt());
                     if (flag == Key::TransformPrecision)
                         m_transformPrecision = value.toInt();
                     else if (flag == Key::AttributesPrecision)
@@ -146,18 +115,286 @@ void Keys::parseOptions(const QStringList &list)
                 } else {
                     isError = true;
                 }
-            } else if (flag == Key::StdDeviation) {
-                if (value.toDouble() >= 0.01 && value.toDouble() <= 0.5)
-                    keyHash.insert(flag, value.toDouble());
+            } else if (flag == Key::RemoveTinyGaussianBlur) {
+                if (value.toDouble() >= 0.01 && value.toDouble() <= 1.0)
+                    hash.insert(flag, value.toDouble());
                 else
                     isError = true;
             } else {
-                keyHash.insert(flag, true);
+                hash.insert(flag, true);
             }
         } else {
-            qFatal("Error: SVG Cleaner do not support option: %s", qPrintable(flag));
+            qFatal("Error: SVG Cleaner does not support option: %s", qPrintable(flag));
         }
         if (isError)
             qFatal("Error: wrong value for option: %s", qPrintable(flag));
+    }
+}
+
+void Keys::prepareDescription()
+{
+    descHash.insert(RemoveProlog,
+                    tr("Remove xml prolog"));
+    descHash.insert(RemoveComments,
+                    tr("Remove xml comments"));
+    descHash.insert(RemoveProcInstruction,
+                    tr("Remove xml processing instruction"));
+    descHash.insert(RemoveUnusedDefs,
+                    tr("Remove unused elements in 'defs' element"));
+    descHash.insert(RemoveNonSvgElements,
+                    tr("Remove non svg elements"));
+    descHash.insert(RemoveMetadata,
+                    tr("Remove metadata elements"));
+    descHash.insert(RemoveInkscapeElements,
+                    tr("Remove Inkscape namespaced elements"));
+    descHash.insert(RemoveSodipodiElements,
+                    tr("Remove SodiPodi namespaced elements"));
+    descHash.insert(RemoveAdobeElements,
+                    tr("Remove Adobe Illustrator namespaced elements"));
+    descHash.insert(RemoveCorelDrawElements,
+                    tr("Remove CorelDRAW namespaced elements"));
+    descHash.insert(RemoveMSVisioElements,
+                    tr("Remove MS Visio namespaced elements"));
+    descHash.insert(RemoveInvisibleElements,
+                    tr("Remove invisible elements"));
+    descHash.insert(RemoveEmptyContainers,
+                    tr("Remove empty containers elements"));
+    descHash.insert(UngroupGroups,
+                    tr("Ungroup 'group' elements, when possible"));
+    descHash.insert(RemoveDuplicatedDefs,
+                    tr("Remove duplicate elements in 'defs' element"));
+    descHash.insert(MergeGradients,
+                    tr("Merge 'linearGradient' into 'radialGradient', when possible"));
+    descHash.insert(RemoveTinyGaussianBlur,
+                    tr("Remove Gaussian blur filters with deviation lower than:"));
+
+    descHash.insert(RemoveSvgVersion,
+                    tr("Remove SVG version"));
+    descHash.insert(RemoveUnreferencedIds,
+                    tr("Remove unreferenced id's"));
+    descHash.insert(KeepNamedIds,
+                    tr("Keep unreferenced id's which contains only letters"));
+    descHash.insert(RemoveNotAppliedAttributes,
+                    tr("Remove not applied attributes, like 'font-size' for 'rect' element"));
+    descHash.insert(RemoveDefaultAttributes,
+                    tr("Remove attributes with default values"));
+    descHash.insert(RemoveInkscapeAttributes,
+                    tr("Remove Inkscape namespaced attributes"));
+    descHash.insert(RemoveSodipodiAttributes,
+                    tr("Remove SodiPodi namespaced attributes"));
+    descHash.insert(RemoveAdobeAttributes,
+                    tr("Remove Adobe Illustrator namespaced attributes"));
+    descHash.insert(RemoveCorelDrawAttributes,
+                    tr("Remove CorelDRAW namespaced attributes"));
+    descHash.insert(RemoveMSVisioAttributes,
+                    tr("Remove MS Visio namespaced attributes"));
+    descHash.insert(RemoveStrokeProps,
+                    tr("Remove stroke properties when no stroking"));
+    descHash.insert(RemoveFillProps,
+                    tr("Remove fill properties when no filling"));
+    descHash.insert(RemoveGradientCoordinates,
+                    tr("Remove unneeded gradient attributes"));
+    descHash.insert(RemoveUnusedXLinks,
+                    tr("Remove XLinks which pointed to nonexistent elements"));
+    descHash.insert(GroupElemByStyle,
+                    tr("Group elements by style properties"));
+    descHash.insert(TrimIds,
+                    tr("Trim 'id' attributes into hexadecimal format"));
+    descHash.insert(JoinStyleAttributes,
+                    tr("Merge style properties into 'style' attribute"));
+
+    descHash.insert(ConvertToRelative,
+                    tr("Convert absolute coordinates into relative ones"));
+    descHash.insert(RemoveUnneededSymbols,
+                    tr("Remove unneeded symbols in 'd' attribute"));
+    descHash.insert(RemoveTinySegments,
+                    tr("Remove tiny or empty segments"));
+    descHash.insert(ConvertCurves,
+                    tr("Convert cubic Bezier curves to shorthand, when possible"));
+
+    descHash.insert(CreateViewbox,
+                    tr("Convert 'height' and 'width' attributes into 'viewBox' attribute"));
+    descHash.insert(ConvertColorToRRGGBB,
+                    tr("Convert colors into #RRGGBB format"));
+    descHash.insert(ConvertRRGGBBToRGB,
+                    tr("Convert #RRGGBB colors into #RGB format, when possible"));
+    descHash.insert(ConvertBasicShapes,
+                    tr("Convert polygon, polyline, line, rect into paths"));
+    descHash.insert(ApplyTransforms,
+                    tr("Apply transform matrices"));
+    descHash.insert(TransformPrecision,
+                    tr("Set rounding precision for transformations"));
+    descHash.insert(CoordsPrecision,
+                    tr("Set rounding precision for coordinates"));
+    descHash.insert(AttributesPrecision,
+                    tr("Set rounding precision for attributes"));
+    descHash.insert(CompactOutput,
+                    tr("Save svg with only required whitespace and newlines"));
+    descHash.insert(SortDefs,
+                    tr("Sort elements by name in 'defs' element"));
+}
+
+QString Keys::description(const QString &key)
+{
+    return descHash.value(key);
+}
+
+QStringList Keys::elementsKeys()
+{
+    static QStringList list = QStringList()
+        << RemoveProlog
+        << RemoveComments
+        << RemoveProcInstruction
+        << RemoveUnusedDefs
+        << RemoveNonSvgElements
+        << RemoveMetadata
+        << RemoveInkscapeElements
+        << RemoveSodipodiElements
+        << RemoveAdobeElements
+        << RemoveCorelDrawElements
+        << RemoveMSVisioElements
+        << RemoveInvisibleElements
+        << RemoveEmptyContainers
+        << UngroupGroups
+        << RemoveDuplicatedDefs
+        << MergeGradients
+        << RemoveTinyGaussianBlur;
+    return list;
+}
+
+QStringList Keys::attributesKeys()
+{
+    static QStringList list = QStringList()
+        << RemoveSvgVersion
+        << RemoveUnreferencedIds
+        << RemoveNotAppliedAttributes
+        << RemoveDefaultAttributes
+        << RemoveInkscapeAttributes
+        << RemoveSodipodiAttributes
+        << RemoveAdobeAttributes
+        << RemoveCorelDrawAttributes
+        << RemoveMSVisioAttributes
+        << RemoveStrokeProps
+        << RemoveFillProps
+        << RemoveGradientCoordinates
+        << RemoveUnusedXLinks
+        << GroupElemByStyle
+        << TrimIds;
+    return list;
+}
+
+QStringList Keys::attributesUtilsKeys()
+{
+    static QStringList list = QStringList()
+        << JoinStyleAttributes
+        << KeepNamedIds;
+    return list;
+}
+
+QStringList Keys::pathsKeys()
+{
+    static QStringList list = QStringList()
+        << ConvertToRelative
+        << RemoveUnneededSymbols
+        << RemoveTinySegments
+        << ConvertCurves;
+    return list;
+}
+
+QStringList Keys::optimizationsKeys()
+{
+    static QStringList list = QStringList()
+        << CreateViewbox
+        << ConvertColorToRRGGBB
+        << ConvertRRGGBBToRGB
+        << ConvertBasicShapes
+        << ApplyTransforms
+        << CompactOutput
+        << TransformPrecision
+        << CoordsPrecision
+        << AttributesPrecision;
+    return list;
+}
+
+QStringList Keys::optimizationsUtilsKeys()
+{
+    static QStringList list = QStringList() << SortDefs;
+    return list;
+}
+
+QStringList Keys::basicPresetKeys()
+{
+    static QStringList list = QStringList()
+        << RemoveComments
+        << RemoveNonSvgElements
+        << RemoveEmptyContainers
+        << RemoveDuplicatedDefs
+        << RemoveNotAppliedAttributes
+        << RemoveDefaultAttributes
+        << RemoveUnusedXLinks
+        << RemoveTinySegments
+        << ConvertColorToRRGGBB;
+    return list;
+}
+
+QStringList Keys::completePresetKeys()
+{
+    static QStringList list = QStringList()
+        << elementsKeys()
+        << attributesKeys()
+        << pathsKeys()
+        << optimizationsKeys();
+    return list;
+}
+
+QStringList Keys::extremePresetKeys()
+{
+    static QStringList list = QStringList()
+        << completePresetKeys();
+    return list;
+}
+
+void Keys::setPreset(const QString &name)
+{
+    // set default
+    static QStringList allKeys = QStringList()
+        << elementsKeys()
+        << attributesKeys()
+        << attributesUtilsKeys()
+        << pathsKeys()
+        << optimizationsKeys()
+        << optimizationsUtilsKeys()
+        << ShortOutput;
+    foreach (const QString &key, allKeys)
+        hash.insert(key, false);
+    hash.insert(RemoveTinyGaussianBlur, 0.0);
+    hash.insert(TransformPrecision, 8);
+    hash.insert(CoordsPrecision, 8);
+    hash.insert(AttributesPrecision, 8);
+
+
+    if (name == Preset::Basic) {
+        foreach (const QString &key, basicPresetKeys())
+            hash.insert(key, true);
+        hash.insert(RemoveTinyGaussianBlur, 0.0);
+        hash.insert(TransformPrecision, 8);
+        hash.insert(CoordsPrecision, 6);
+        hash.insert(AttributesPrecision, 6);
+    } else if (name == Preset::Complete) {
+        foreach (const QString &key, completePresetKeys())
+            hash.insert(key, true);
+        hash.insert(RemoveTinyGaussianBlur, 0.1);
+        hash.insert(TransformPrecision, 5);
+        hash.insert(CoordsPrecision, 3);
+        hash.insert(AttributesPrecision, 3);
+    } else if (name == Preset::Extreme) {
+        foreach (const QString &key, extremePresetKeys())
+            hash.insert(key, true);
+        hash.insert(RemoveTinyGaussianBlur, 0.2);
+        hash.insert(TransformPrecision, 3);
+        hash.insert(CoordsPrecision, 1);
+        hash.insert(AttributesPrecision, 1);
+    } else {
+        qDebug("Error: wrong preset name");
     }
 }

@@ -1,8 +1,8 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
+
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -20,36 +20,20 @@
 **
 ****************************************************************************/
 
-#include <QtCore/QDir>
+#ifndef CLEANER_H
+#define CLEANER_H
 
-#include "filefinder.h"
+#include "arguments.h"
 
-FileFinder::FileFinder(QObject *parent) :
-    QObject(parent)
+class Cleaner
 {
-}
+public:
+    explicit Cleaner() {}
+    static SVGInfo cleanFile(const ToThread &data);
 
-void FileFinder::startSearch(const QString &startDir, bool recursive)
-{
-    stop = false;
-    QFileInfoList list = searchForFiles(startDir, recursive);
-    emit finished(list);
-}
+private:
+    static void unzip(const ToThread &data);
+    static void zip(const ToThread &data);
+};
 
-QFileInfoList FileFinder::searchForFiles(const QString &startDir, bool recursive)
-{
-    QDir dir(startDir);
-    QFileInfoList list;
-    foreach (QString file, dir.entryList(QStringList() << "*.svg" << "*.svgz",  QDir::Files))
-        list += QFileInfo(startDir + "/" + file);
-    if (recursive && !stop) {
-        foreach (QString subdir, dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot))
-            list += searchForFiles(startDir + "/" + subdir, recursive);
-    }
-    return list;
-}
-
-void FileFinder::stopSearch()
-{
-    stop = true;
-}
+#endif // CLEANER_H

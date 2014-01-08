@@ -13,11 +13,6 @@ unix {
     logo.path           = $$PREFIX/share/icons/hicolor/scalable/apps
     logo.files         += icons/svgcleaner.svg
 
-    presets.path        = $$PREFIX/share/svgcleaner/presets
-    presets.files      += presets/Soft.preset \
-                          presets/Normal.preset \
-                          presets/Optimal.preset
-
     translations.path   = $$PREFIX/share/svgcleaner/translations
     translations.files += bin/svgcleaner_cs.qm \
                           bin/svgcleaner_ru.qm \

@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -20,83 +19,88 @@
 **
 ****************************************************************************/
 
-#include <QtCore/QProcess>
-#include <QtCore/QTextStream>
-
 #include <QtGui/QCloseEvent>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
+#include <QtGui/QScrollArea>
 #include <QtGui/QScrollBar>
 #include <QtGui/QWheelEvent>
 
-#include <QtDebug>
+#include "../cli/keys.h"
 
-#include "itemwidget.h"
+#include "spinbox.h"
 #include "someutils.h"
 #include "wizarddialog.h"
 
 // TODO: rewrite presets
-// TODO: save last options automaticly
+// TODO: save last options automatically
 // TODO: save as svg when src is svgz
+// TODO: add one file processing support
+// TODO: add Advanced chbox
+
+bool WizardDialog::m_isRecursive = true;
+bool WizardDialog::m_isStopScan  = false;
 
 WizardDialog::WizardDialog(QWidget *parent) :
     QDialog(parent)
 {
+    Keys::get().prepareDescription();
     setupUi(this);
+    initGUI();
     loadSettings();
-    setupGUI();
-    setupToolTips();
     adjustSize();
 }
 
 WizardDialog::~WizardDialog()
 {
-    delete settings;
-    deleteThreads();
-    delete fileSearch;
+    m_isStopScan = true;
+    m_folderWatcher->cancel();
+    delete m_folderWatcher;
 }
 
 void WizardDialog::loadSettings()
 {
-    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,
-                             "svgcleaner", "config");
+    Settings settings;
 
-    chBoxRecursive->setChecked(settings->value("Wizard/Recursive").toBool());
-    lineEditInDir->setText(settings->value("Wizard/LastInDir").toString());
-    lineEditOutDir->setText(settings->value("Wizard/LastOutDir", QDir::homePath()).toString());
-    lineEditPrefix->setText(settings->value("Wizard/Prefix").toString());
-    lineEditSuffix->setText(settings->value("Wizard/Suffix", "_cleaned").toString());
+    chBoxRecursive->setChecked(settings.flag(SettingKey::Wizard::RecursiveScan));
+    lineEditInDir->setText(settings.string(SettingKey::Wizard::LastInDir));
+    lineEditOutDir->setText(settings.string(SettingKey::Wizard::LastOutDir, QDir::homePath()));
+    lineEditPrefix->setText(settings.string(SettingKey::Wizard::Prefix));
+    lineEditSuffix->setText(settings.string(SettingKey::Wizard::Suffix, "_cleaned"));
 
-    gBoxCompress->setChecked(settings->value("Wizard/Compress", true).toBool());
-    cmbBoxCompress->setCurrentIndex(settings->value("Wizard/CompressLevel",4).toInt());
-    if (settings->value("Wizard/CompressType",true).toBool())
+    gBoxCompress->setChecked(settings.flag(SettingKey::Wizard::Compress));
+    cmbBoxCompress->setCurrentIndex(settings.integer(SettingKey::Wizard::CompressLevel,
+                                                     cmbBoxCompress->count()-1));
+    if (settings.flag(SettingKey::Wizard::CompressType))
         rBtnSaveSuffix->setChecked(true);
     else
         rBtnCompressAll->setChecked(true);
 
-    loadPresets();
-    int presetNum = settings->value("Wizard/Preset", 0).toInt();
-    if (presetNum > cmbBoxPreset->count() || presetNum < 0)
-        presetNum = 0;
+    int presetNum = settings.integer(SettingKey::Wizard::Preset,
+                                     cmbBoxPreset->findText(tr("Complete")));
+    cmbBoxPreset->setCurrentIndex(-1);
     cmbBoxPreset->setCurrentIndex(presetNum);
 
-    // threading
-    spinBoxThreads->setValue(settings->value("Wizard/ThreadCount",
-                                             QThread::idealThreadCount()).toInt());
+    spinBoxThreads->setValue(settings.integer(SettingKey::Wizard::ThreadsCount,
+                                             QThread::idealThreadCount()));
     spinBoxThreads->setMaximum(QThread::idealThreadCount());
-    gBoxThreads->setChecked(settings->value("Wizard/ThreadingEnabled", true).toBool());
+    gBoxThreads->setChecked(settings.flag(SettingKey::Wizard::ThreadingEnabled));
 }
 
-void WizardDialog::setupGUI()
+void WizardDialog::initGUI()
 {
-    checkBox_31->hide();
+    initElementsPage();
+    initAttributesPage();
+    initPathsPage();
+    initOptimizationPage();
 
     // setup type radioButtons
-    connect(radioBtn1, SIGNAL(clicked()), this, SLOT(radioSelected()));
-    connect(radioBtn2, SIGNAL(clicked()), this, SLOT(radioSelected()));
-    connect(radioBtn3, SIGNAL(clicked()), this, SLOT(radioSelected()));
-    QString str("radioBtn");
-    str.append(settings->value("Wizard/Type", "1").toString()); // FIXME: change name
+    connect(radioBtn1, SIGNAL(clicked()), this, SLOT(onRadioSelected()));
+    connect(radioBtn2, SIGNAL(clicked()), this, SLOT(onRadioSelected()));
+    connect(radioBtn3, SIGNAL(clicked()), this, SLOT(onRadioSelected()));
+    QString str = "radioBtn";
+    Settings settings;
+    str.append(settings.string(SettingKey::Wizard::SaveMode, "1"));
     QRadioButton *rbtn = findChild<QRadioButton *>(str);
     rbtn->click();
 
@@ -115,15 +119,13 @@ void WizardDialog::setupGUI()
     // list of all pages in wizard
     QStringList pageList;
     pageList << tr("Main")
-             << tr("Presets")
              << tr("Elements")
              << tr("Attributes")
              << tr("Paths")
-             << tr("Optimization")
-             << tr("Output");
+             << tr("Optimizations");
     QStringList pageListNotTr;
-    pageListNotTr << "main" << "presets" << "elements" << "attributes" << "paths"
-                  << "optimization" << "output";
+    pageListNotTr << "main" << "elements" << "attributes" << "paths"
+                  << "optimizations";
     // create icons for pages in "tabbar", which is QListWidget
 #ifdef Q_OS_MAC
     int baseIconSize = 70;
@@ -132,19 +134,18 @@ void WizardDialog::setupGUI()
 #endif
     for (int i = 0; i < pageList.count(); ++i) {
         QListWidgetItem *item = new QListWidgetItem(listWidget);
-        ItemWidget *w = new ItemWidget(pageListNotTr.at(i));
+        QLabel *lblIcon = new QLabel(this);
+        lblIcon->setPixmap(QIcon(":/" + pageListNotTr.at(i) + ".svgz").pixmap(46, 46));
+        lblIcon->setAlignment(Qt::AlignCenter);
         item->setToolTip(pageList.at(i));
         item->setSizeHint(QSize(baseIconSize, baseIconSize));
-        listWidget->setItemWidget(item, w);
+        listWidget->setItemWidget(item, lblIcon);
     }
-    listWidget->setFixedWidth(baseIconSize*listWidget->count()+5);
+    listWidget->setFixedWidth(baseIconSize*listWidget->count() + 5);
     connect(listWidget, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
-                            this, SLOT(changePage(QListWidgetItem*, QListWidgetItem*)));
+            this,       SLOT(changePage(QListWidgetItem*, QListWidgetItem*)));
     listWidget->setCurrentRow(0);
     listWidget->installEventFilter(this);
-
-    lblOverwrite->setText("<span style=\"color:#ff0000;\">"+
-                          tr("Warning! The original files will be destroyed!")+"</span>");
 
     // setup icons
     btnOpenInDir->setIcon( QIcon(":/open.svgz"));
@@ -152,54 +153,121 @@ void WizardDialog::setupGUI()
     setWindowIcon(QIcon(":/svgcleaner.svgz"));
     listWidget->setFocus();
 
-    searchThread = new QThread(this);
-    fileSearch = new FileFinder();
-    qRegisterMetaType<QFileInfoList>("QFileInfoList");
-    connect(fileSearch, SIGNAL(finished(QFileInfoList)), this, SLOT(loadFinished(QFileInfoList)));
-    connect(this, SIGNAL(start(QString, bool)), fileSearch, SLOT(startSearch(QString, bool)));
-    fileSearch->moveToThread(searchThread);
-    searchThread->start();
+    m_folderWatcher = new QFutureWatcher<QFileInfoList>(this);
+    connect(m_folderWatcher, SIGNAL(resultReadyAt(int)), SLOT(onFolderScaned(int)));
+    connect(m_folderWatcher, SIGNAL(finished()), SLOT(onFolderScanFinished()));
     loadFiles();
 }
 
-void WizardDialog::setupToolTips()
+QVBoxLayout* WizardDialog::addPage()
 {
-    chBoxGroupByStyle->setToolTip(tr("For example") + ":\n\n(" + tr("before") + ")\n"
-        "<path style=\"fill:#fff\" d=\"...\"/>\n<path style=\"fill:#fff\" d=\"...\"/>\n"
-        "<path style=\"fill:#fff\" d=\"...\"/>\n\n(" + tr("after") + ")\n"
-        "<g style=\"fill:#fff\">\n  <path d=\"...\"/>\n  <path d=\"...\"/>"
-        "\n  <path d=\"...\"/>\n</g>");
+    QScrollArea *area = new QScrollArea(this);
+    area->setWidgetResizable(true);
+    area->setFrameShape(QFrame::NoFrame);
+
+    QWidget *w = new QWidget(this);
+    QVBoxLayout *lay = new QVBoxLayout(w);
+
+    m_pageList << w;
+    area->setWidget(w);
+    stackedWidget->addWidget(area);
+    return lay;
 }
 
-void WizardDialog::radioSelected()
+void WizardDialog::addUtilsLabel(QVBoxLayout *layout)
+{
+    // TODO: add info button
+    QLabel *lblUtils = new QLabel(tr("Additional:"), this);
+    layout->addSpacing(40);
+    layout->addWidget(lblUtils);
+}
+
+void WizardDialog::initElementsPage()
+{
+    QVBoxLayout* lay = addPage();
+    foreach (const QString &key, Keys::get().elementsKeys()) {
+        if (key != Key::RemoveTinyGaussianBlur) {
+            QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
+            chBox->setProperty("key", key);
+            lay->addWidget(chBox);
+        } else {
+            SpinBox *spinBox = new SpinBox(true, this);
+            spinBox->setRange(0.0, 1.0);
+            spinBox->setStep(0.01);
+            spinBox->setText(Keys::get().description(key));
+            spinBox->setProperty("key", key);
+            lay->addWidget(spinBox);
+        }
+    }
+    lay->addStretch();
+}
+
+void WizardDialog::initAttributesPage()
+{
+    QVBoxLayout* lay = addPage();
+    foreach (const QString &key, Keys::get().attributesKeys()) {
+        QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
+        chBox->setProperty("key", key);
+        lay->addWidget(chBox);
+    }
+    addUtilsLabel(lay);
+    foreach (const QString &key, Keys::get().attributesUtilsKeys()) {
+        QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
+        chBox->setProperty("key", key);
+        lay->addWidget(chBox);
+    }
+    lay->addStretch();
+}
+
+void WizardDialog::initPathsPage()
+{
+    QVBoxLayout* lay = addPage();
+    foreach (const QString &key, Keys::get().pathsKeys()) {
+        QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
+        chBox->setProperty("key", key);
+        lay->addWidget(chBox);
+    }
+    lay->addStretch();
+}
+
+void WizardDialog::initOptimizationPage()
+{
+    QVBoxLayout* lay = addPage();
+    foreach (const QString &key, Keys::get().optimizationsKeys()) {
+        if (key != Key::TransformPrecision && key != Key::CoordsPrecision && key != Key::AttributesPrecision) {
+            QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
+            chBox->setProperty("key", key);
+            lay->addWidget(chBox);
+        } else {
+            SpinBox *spinBox = new SpinBox(false, this);
+            spinBox->setRange(0, 8);
+            spinBox->setText(Keys::get().description(key));
+            spinBox->setProperty("key", key);
+            lay->addWidget(spinBox);
+        }
+    }
+    addUtilsLabel(lay);
+    foreach (const QString &key, Keys::get().optimizationsUtilsKeys()) {
+        QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
+        chBox->setProperty("key", key);
+        lay->addWidget(chBox);
+    }
+    lay->addStretch();
+}
+
+void WizardDialog::onRadioSelected()
 {
     frameOutDir->setVisible(radioBtn1->isChecked());
     frameRename->setVisible(radioBtn2->isChecked());
-    lblOverwrite->setVisible(radioBtn3->isChecked());
     QRadioButton *rBtn = static_cast<QRadioButton *>(sender());
-    settings->setValue("Wizard/Type", rBtn->accessibleName());
+    Settings settings;
+    settings.setValue(SettingKey::Wizard::SaveMode, rBtn->accessibleName());
 }
 
 void WizardDialog::createExample()
 {
     lblExample->setText(tr("For example") + ": " + lineEditPrefix->text()
                         + tr("filename" ) + lineEditSuffix->text() + ".svg");
-}
-
-void WizardDialog::loadPresets()
-{
-    cmbBoxPreset->clear();
-    cmbBoxPreset->addItem("Complete");
-    presets.clear();
-    presets += QDir("presets").entryInfoList(QStringList("*.preset"));
-    presets += QDir("/usr/share/svgcleaner/presets/")
-               .entryInfoList(QStringList("*.preset")); // Linux only. On Windows return nothing.
-    presets += QDir(settingPath() + "/presets/")
-               .entryInfoList(QStringList("*.preset"));
-    presets += QDir("../SVGCleaner/presets/")
-               .entryInfoList(QStringList("*.preset")); // Qt Creator shadow build
-    for (int i = 0; i < presets.count(); ++i)
-        cmbBoxPreset->addItem(presets.at(i).baseName());
 }
 
 void WizardDialog::loadFiles()
@@ -209,14 +277,40 @@ void WizardDialog::loadFiles()
         return;
     }
     lineEditInDir->showLoading(true);
-    fileSearch->stopSearch();
-    emit start(lineEditInDir->text(), chBoxRecursive->isChecked());
+    m_isStopScan = true;
+    m_folderWatcher->cancel();
+    m_folderWatcher->waitForFinished();
+    m_isStopScan = false;
+    m_folderWatcher->setFuture(QtConcurrent::mapped(QStringList(lineEditInDir->text()),
+                                                    &WizardDialog::scanFolder));
 }
 
-void WizardDialog::loadFinished(QFileInfoList list)
+QFileInfoList WizardDialog::searchForFiles(const QString &startDir, bool recursive)
 {
-    fileList = list;
-    lineEditInDir->setValue(fileList.count());
+    QDir dir(startDir);
+    QFileInfoList list;
+    foreach (QString file, dir.entryList(QStringList() << "*.svg" << "*.svgz",  QDir::Files))
+        list += QFileInfo(startDir + "/" + file);
+    if (recursive && !m_isStopScan) {
+        foreach (QString subdir, dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot))
+            list += searchForFiles(startDir + "/" + subdir, recursive);
+    }
+    return list;
+}
+
+QFileInfoList WizardDialog::scanFolder(const QString &dirPath)
+{
+    return searchForFiles(dirPath, m_isRecursive);
+}
+
+void WizardDialog::onFolderScaned(int value)
+{
+    m_fileList = m_folderWatcher->resultAt(value);
+}
+
+void WizardDialog::onFolderScanFinished()
+{
+    lineEditInDir->setValue(m_fileList.size());
     lineEditInDir->showLoading(false);
 }
 
@@ -230,113 +324,84 @@ void WizardDialog::changePage(QListWidgetItem *current, QListWidgetItem *previou
 
 void WizardDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
-    if (buttonBox->standardButton(button) == QDialogButtonBox::Ok) {
+    QDialogButtonBox::StandardButton btn = buttonBox->standardButton(button);
+    if (btn == QDialogButtonBox::Ok) {
         if (checkForWarnings()) {
             saveSettings();
-            done(QDialog::Accepted);
+            accept();
         }
-    } else if (buttonBox->standardButton(button) == QDialogButtonBox::Cancel) {
-        close();
-    } else if (buttonBox->standardButton(button) == QDialogButtonBox::Reset) {
+    } else if (btn == QDialogButtonBox::Cancel) {
+        reject();
+    } else if (btn == QDialogButtonBox::Reset) {
         resetFields();
     }
 }
 
-ToThread WizardDialog::threadArguments()
+QList<ToThread> WizardDialog::threadData()
 {
-    ToThread threadArgs;
-    threadArgs.args          = argsLine();
-    threadArgs.inputFiles    = getInFiles();
-    threadArgs.outputFiles   = genOutFiles();
-    threadArgs.compressLevel = compressValue();
-    threadArgs.cliPath       = SomeUtils::findBinFile("svgcleaner-cli");
-    threadArgs.zipPath       = SomeUtils::findBinFile("7za");
-    return threadArgs;
+    QList<ToThread> list;
+    QString compressLevel = compressValue();
+    QStringList args = argsList();
+
+    foreach (QFileInfo file, m_fileList) {
+        ToThread tth;
+        tth.inputFile = file.absoluteFilePath();
+        tth.decompress = tth.inputFile.endsWith("svgz");
+        if (radioBtn1->isChecked()) {
+            QString path =   QDir(lineEditOutDir->text()).absolutePath()
+                           + QString(file.absoluteFilePath())
+                             .remove(QDir(lineEditInDir->text()).absolutePath());
+            if (path.endsWith("svgz"))
+                path.chop(1);
+            tth.outputFile = path;
+        } else if (radioBtn2->isChecked()) {
+            tth.outputFile =   file.absolutePath() + QDir::separator() + lineEditPrefix->text()
+                             + file.baseName() + lineEditSuffix->text() + ".svg";
+        } else if (radioBtn3->isChecked()) {
+            tth.outputFile = tth.inputFile;
+            if (tth.outputFile.endsWith("svgz"))
+                tth.outputFile.chop(1);
+        }
+        tth.compress = false;
+        if (rBtnSaveSuffix->isChecked()) {
+            if (file.suffix().toLower() == "svgz")
+                tth.compress = true;
+        } else if (rBtnCompressAll->isChecked()) {
+            tth.compress = true;
+        }
+        tth.args          = args;
+        tth.compressLevel = compressLevel;
+        list << tth;
+    }
+    return list;
 }
 
-QStringList WizardDialog::argsLine()
+QStringList WizardDialog::argsList()
 {
     QStringList tmpList;
-    // 2 - page number
-    for (int i = 2; i < stackedWidget->count(); ++i) {
-        foreach(QWidget *w, stackedWidget->widget(i)->findChildren<QWidget *>()) {
-            QString name = w->accessibleName();
-            if (!name.isEmpty()) {
-                // TODO: maybe add '--' to definition in gui
-                if (w->inherits("QCheckBox") && !qobject_cast<QCheckBox *>(w)->isChecked())
-                    tmpList.append("--" + name);
-                else if (w->inherits("QRadioButton") && !isDefault(w))
-                    tmpList.append("--" + name);
-                else if (w->inherits("QComboBox") && !isDefault(w))
-                    tmpList.append("--" + name + "="+qobject_cast<QComboBox *>(w)->currentText());
-                else if (w->inherits("QSpinBox") && !isDefault(w))
-                    tmpList.append("--" + name + "="
-                                   + QString::number(qobject_cast<QSpinBox *>(w)->value()));
-                else if (w->inherits("QDoubleSpinBox") && !isDefault(w))
-                    tmpList.append("--" + name + "="
-                                   + QString::number(qobject_cast<QDoubleSpinBox *>(w)->value()));
+    if (cmbBoxPreset->currentText() == tr("Basic"))
+        tmpList << "--preset=" + Preset::Basic;
+    else if (cmbBoxPreset->currentText() == tr("Complete"))
+        tmpList << "--preset=" + Preset::Complete;
+    else if (cmbBoxPreset->currentText() == tr("Extreme"))
+        tmpList << "--preset=" + Preset::Extreme;
+
+    foreach (QWidget *page, m_pageList) {
+        foreach(QWidget *w, page->findChildren<QWidget *>()) {
+            QString key = w->property("key").toString();
+            if (!key.isEmpty()) {
+                if (w->inherits("QCheckBox")) {
+                    if (Keys::get().flag(key) != qobject_cast<QCheckBox *>(w)->isChecked())
+                        tmpList << key;
+                } else if (w->inherits("SpinBox")) {
+                    qreal value = qobject_cast<SpinBox *>(w)->value();
+                    if (Keys::get().doubleNumber(key) != value)
+                        tmpList << key + "=" + QString::number(value);
+                }
             }
         }
     }
     return tmpList;
-}
-
-bool WizardDialog::isDefault(QWidget *w)
-{
-    QString description = w->accessibleDescription();
-    QString className = QString(w->metaObject()->className());
-    bool flag = true;
-
-    if      ("QComboBox" == className
-             && description.toInt() != qobject_cast<QComboBox *>(w)->currentIndex())
-        flag = false;
-    else if ("QRadioButton" == className
-             && description != qobject_cast<QRadioButton *>(w)->accessibleName()) {
-        if (qobject_cast<QRadioButton *>(w)->isChecked())
-            flag = false;
-    } else if ("QSpinBox" == className
-             && description.toInt() != qobject_cast<QSpinBox *>(w)->value())
-        flag = false;
-    else if ("QDoubleSpinBox" == className
-             && description.toDouble() != qobject_cast<QDoubleSpinBox *>(w)->value())
-        flag = false;
-
-    return flag;
-}
-
-QStringList WizardDialog::getInFiles()
-{
-    QStringList list;
-    foreach (QFileInfo file, fileList)
-        list.append(file.absoluteFilePath());
-    list.sort();
-    return list;
-}
-
-QStringList WizardDialog::genOutFiles()
-{
-    QStringList list;
-    if (radioBtn1->isChecked()) {
-        foreach (QFileInfo file, fileList) {
-            list.append(QDir(lineEditOutDir->text()).absolutePath()
-                        +QString(file.absoluteFilePath())
-                        .remove(QDir(lineEditInDir->text()).absolutePath()));
-        }
-    } else if (radioBtn2->isChecked()) {
-        foreach (QFileInfo file, fileList)
-            list.append(file.absolutePath()+QDir::separator()+lineEditPrefix->text()
-                       +file.baseName()+lineEditSuffix->text()+"."+file.suffix());
-    } else if (radioBtn3->isChecked()) {
-        list = getInFiles();
-    }
-
-    if (!gBoxCompress->isChecked())
-        list.replaceInStrings(QRegExp("svgz$"), "svg");
-    else if (rBtnCompressAll->isChecked())
-        list.replaceInStrings(QRegExp("svg$"), "svgz");
-    list.sort();
-
-    return list;
 }
 
 QString WizardDialog::compressValue()
@@ -407,19 +472,15 @@ bool WizardDialog::checkForWarnings()
     } else if (!QDir(lineEditInDir->text()).exists()) {
         createWarning(tr("An input folder is not exist."));
         check = false;
-    } else if (fileList.isEmpty()) {
+    } else if (m_fileList.isEmpty()) {
         createWarning(tr("An input folder did not contain any svg, svgz files."));
         check = false;
-    } else if (SomeUtils::findBinFile("svgcleaner-cli").isEmpty()) {
-        QMessageBox::critical(this, tr("Error"),
-                        tr("The 'svgcleaner-cli' executable is not found in these folders:\n")
-                        + SomeUtils::genSearchFolderList());
+    } else if (!QFile("./svgcleaner-cli").exists()) {
+        createWarning(tr("The 'svgcleaner-cli' executable is not found."));
         check = false;
-    } else if (SomeUtils::findBinFile("7za").isEmpty()) {
-        QMessageBox::warning(this, tr("Warning"),
-                        tr("The '7za' executable is not found in these folders:\n")
-                        + SomeUtils::genSearchFolderList() + "\n\n"
-                        + tr("You can not handle the SVGZ files."));
+    } else if (!QFile(SomeUtils::zipPath()).exists()) {
+        createWarning(tr("The '7za' executable is not found.\n\n"
+                                  "You will not be able to clean the SVGZ files."));
     } else if (QFileInfo(lineEditOutDir->text()).isDir()
                && !QFileInfo(lineEditOutDir->text()).isWritable()) {
         createWarning(tr("Selected output folder is not writable."));
@@ -433,160 +494,31 @@ void WizardDialog::createWarning(const QString &text)
     QMessageBox::warning(this, tr("Warning"), text, QMessageBox::Ok);
 }
 
-void WizardDialog::on_linePresetName_textChanged(const QString &text)
+void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &presetName)
 {
-    btnSavePreset->setEnabled(!text.isEmpty());
-}
+    if (presetName == tr("Basic"))
+        Keys::get().setPreset(Preset::Basic);
+    else if (presetName == tr("Complete"))
+        Keys::get().setPreset(Preset::Complete);
+    else if (presetName == tr("Extreme"))
+        Keys::get().setPreset(Preset::Extreme);
 
-void WizardDialog::on_btnSavePreset_clicked()
-{
-    if (linePresetName->text().isEmpty()) {
-        createWarning(tr("You have to set preset name."));
-        return;
-    }
-
-    // generate path
-    QString path = settingPath() + "/presets/";
-    // overwrite old preset?
-    if (QFile(path+linePresetName->text()+".preset").exists()) {
-        int ansver = QMessageBox::warning(this, tr("Warning"),
-                                          tr("This preset already exists.\nOverwrite?"),
-                                          QMessageBox::Yes | QMessageBox::No);
-        if (ansver == QMessageBox::No)
-            return;
-    }
-    QDir().mkpath(path);
-    path += linePresetName->text()+".preset";
-
-    // write to file
-    QFile inputFile(path);
-    inputFile.open(QFile::WriteOnly);
-    QTextStream textStream(&inputFile);
-
-    for (int i = 2; i < stackedWidget->count(); ++i) {
-    foreach(QWidget *w, stackedWidget->widget(i)->findChildren<QWidget *>()) {
-        QString name = w->accessibleName();
-        if (!name.isEmpty() && w->isEnabled()) {
-            if (w->inherits("QCheckBox") && !qobject_cast<QCheckBox *>(w)->isChecked())
-                textStream << name+"=no"+"\n";
-            else if (w->inherits("QRadioButton") && !isDefault(w))
-                textStream << name+"\n";
-            else if (w->inherits("QComboBox") && !isDefault(w))
-                textStream << name+"="
-                              +QString::number(qobject_cast<QComboBox *>(w)->currentIndex())+"\n";
-            else if (w->inherits("QSpinBox") && !isDefault(w))
-                textStream << name+"="+QString::number(qobject_cast<QSpinBox *>(w)->value())+"\n";
-            else if (w->inherits("QDoubleSpinBox") && !isDefault(w))
-                textStream << name+"="
-                              +QString::number(qobject_cast<QDoubleSpinBox *>(w)->value())+"\n";
+    foreach (QWidget *page, m_pageList) {
+        foreach(QWidget *w, page->findChildren<QWidget *>()) {
+            QString key = w->property("key").toString();
+            if (!key.isEmpty()) {
+                if (w->inherits("QCheckBox") && w->isEnabled())
+                    qobject_cast<QCheckBox *>(w)->setChecked(Keys::get().flag(key));
+                else if (w->inherits("SpinBox"))
+                    qobject_cast<SpinBox *>(w)->setValue(Keys::get().doubleNumber(key));
+            }
         }
     }
-    }
-    inputFile.close();
-    linePresetName->clear();
-    loadPresets();
-}
-
-void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &text)
-{
-    setPreset(text);
-
-    QString path = settingPath() + "/presets/";
-    QFile file(path+cmbBoxPreset->currentText() + ".preset");
-    btnRemovePreset->setVisible(file.exists());
-}
-
-void WizardDialog::setPreset(const QString &preset)
-{
-    QFile inputFile;
-    for (int i = 0; i < presets.count(); ++i) {
-        if (presets.at(i).baseName() == preset)
-            inputFile.setFileName(presets.at(i).absoluteFilePath());
-    }
-
-    QMap<QString, QString> argMap;
-    QString args;
-    if (inputFile.exists() && inputFile.open(QFile::ReadOnly)) {
-        QTextStream textStream(&inputFile);
-        foreach (QString name, textStream.readAll().split("\n")) {
-            args += QString(name).remove(QRegExp("=.*")) +"|";
-            argMap.insert(QString(name).remove(QRegExp("=.*")),
-                          QString(name).remove(QRegExp(".*=")));
-        }
-    } else {
-        args = "convert-abs-paths=yes";
-        argMap.insert("convert-abs-paths", "yes");
-    }
-    QRegExp rx(args.remove(QRegExp("\\|*$")));
-
-    if (args.contains("convert-abs-paths=yes"))
-        radioBtnConvertPaths->toggle();
-
-    textPresetInfo->clear();
-    for (int i = 2; i < stackedWidget->count(); ++i) {
-        foreach(QWidget *w, stackedWidget->widget(i)->findChildren<QWidget *>()) {
-            QString name = w->accessibleName().remove(QRegExp("=.*"));
-            QString line;
-            if (w->parentWidget()->accessibleName() == "parent") // need for spacing
-                line += "    ";
-            if (w->inherits("QCheckBox") && w->isEnabled())
-            {
-                qobject_cast<QCheckBox *>(w)->setChecked(!name.contains(rx));
-                if (!name.contains(rx))
-                    line += qobject_cast<QCheckBox *>(w)->text();
-            }
-            else if (w->inherits("QRadioButton"))
-            {
-                if (w->accessibleName() == name+"="+argMap.value(name)) {
-                    qobject_cast<QRadioButton *>(w)->toggle();
-                    line += qobject_cast<QRadioButton *>(w)->text();
-                }
-            }
-            else if (w->inherits("QComboBox"))
-            {
-                if (name.contains(rx))
-                    qobject_cast<QComboBox *>(w)->setCurrentIndex(argMap.value(name).toInt());
-                else
-                {
-                    qobject_cast<QComboBox *>(w)->setCurrentIndex(
-                                              w->accessibleDescription().toInt());
-                    line += findLabel(name)+" "+qobject_cast<QComboBox *>(w)->currentText();
-                }
-            }
-            else if (w->inherits("QSpinBox"))
-            {
-                if (name.contains(rx))
-                    qobject_cast<QSpinBox *>(w)->setValue(argMap.value(name).toInt());
-                else
-                {
-                    qobject_cast<QSpinBox *>(w)->setValue(
-                                             w->accessibleDescription().toInt());
-                    line += findLabel(name)+" "
-                            + QString::number(w->accessibleDescription().toInt());
-                }
-            }
-            else if (w->inherits("QDoubleSpinBox"))
-            {
-                if (name.contains(rx))
-                    qobject_cast<QDoubleSpinBox *>(w)->setValue(argMap.value(name).toDouble());
-                else
-                {
-                    qobject_cast<QDoubleSpinBox *>(w)->setValue(
-                                                   w->accessibleDescription().toDouble());
-                    line += findLabel(name)+" "
-                            + QString::number(w->accessibleDescription().toDouble());
-                }
-            }
-            if (!QString(line).remove(" ").isEmpty() && w->isEnabled())
-                textPresetInfo->append(line);
-        }
-    }
-    textPresetInfo->verticalScrollBar()->setValue(0);
 }
 
 QString WizardDialog::findLabel(const QString &accessibleName)
 {
-    for (int i = 2; i < stackedWidget->count(); ++i) {
+    for (int i = 1; i < stackedWidget->count(); ++i) {
         foreach(QLabel *lbl, stackedWidget->widget(i)->findChildren<QLabel *>()) {
             if (lbl->accessibleName() == accessibleName)
                 return lbl->text();
@@ -595,27 +527,20 @@ QString WizardDialog::findLabel(const QString &accessibleName)
     return QString();
 }
 
-void WizardDialog::on_btnRemovePreset_clicked()
-{
-    QString path = settingPath() + "/presets/";
-    QFile file(path + cmbBoxPreset->currentText() + ".preset");
-    file.remove();
-    cmbBoxPreset->removeItem(cmbBoxPreset->currentIndex());
-}
-
 void WizardDialog::saveSettings()
 {
-    settings->setValue("Wizard/LastInDir",        lineEditInDir->text());
-    settings->setValue("Wizard/LastOutDir",       lineEditOutDir->text());
-    settings->setValue("Wizard/Prefix",           lineEditPrefix->text());
-    settings->setValue("Wizard/Suffix",           lineEditSuffix->text());
-    settings->setValue("Wizard/Recursive",        chBoxRecursive->isChecked());
-    settings->setValue("Wizard/Compress",         gBoxCompress->isChecked());
-    settings->setValue("Wizard/ThreadingEnabled", gBoxThreads->isChecked());
-    settings->setValue("Wizard/CompressType",     rBtnSaveSuffix->isChecked());
-    settings->setValue("Wizard/Preset",           cmbBoxPreset->currentIndex());
-    settings->setValue("Wizard/CompressLevel",    cmbBoxCompress->currentIndex());
-    settings->setValue("Wizard/ThreadCount",      spinBoxThreads->value());
+    Settings settings;
+    settings.setValue(SettingKey::Wizard::LastInDir,        lineEditInDir->text());
+    settings.setValue(SettingKey::Wizard::LastOutDir,       lineEditOutDir->text());
+    settings.setValue(SettingKey::Wizard::Prefix,           lineEditPrefix->text());
+    settings.setValue(SettingKey::Wizard::Suffix,           lineEditSuffix->text());
+    settings.setValue(SettingKey::Wizard::RecursiveScan,    chBoxRecursive->isChecked());
+    settings.setValue(SettingKey::Wizard::Compress,         gBoxCompress->isChecked());
+    settings.setValue(SettingKey::Wizard::ThreadingEnabled, gBoxThreads->isChecked());
+    settings.setValue(SettingKey::Wizard::CompressType,     rBtnSaveSuffix->isChecked());
+    settings.setValue(SettingKey::Wizard::Preset,           cmbBoxPreset->currentIndex());
+    settings.setValue(SettingKey::Wizard::CompressLevel,    cmbBoxCompress->currentIndex());
+    settings.setValue(SettingKey::Wizard::ThreadsCount,     spinBoxThreads->value());
 }
 
 bool WizardDialog::eventFilter(QObject *obj, QEvent *event)
@@ -632,19 +557,10 @@ bool WizardDialog::eventFilter(QObject *obj, QEvent *event)
             return true;
         }
     }
-    return false;
+    return QDialog::eventFilter(obj, event);
 }
 
-void WizardDialog::deleteThreads()
+void WizardDialog::on_chBoxRecursive_toggled(bool checked)
 {
-    // stops fileSearch loop
-    fileSearch->stopSearch();
-    searchThread->quit();
-    searchThread->wait();
-    searchThread->deleteLater();
-}
-
-QString WizardDialog::settingPath()
-{
-    return QFileInfo(settings->fileName()).absolutePath();
+    m_isRecursive = checked;
 }

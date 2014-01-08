@@ -1,6 +1,0 @@
-keep-singly-grads
-keep-gaussian-blur
-keep-version
-keep-grad-coords
-no-viewbox
-keep-basic-shapes

@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -23,18 +22,14 @@
 #ifndef SOMEUTILS_H
 #define SOMEUTILS_H
 
-#include <QtCore/QObject>
-#include <QtCore/QStringList>
+#include "settings.h"
 
-class SomeUtils : public QObject
+class SomeUtils
 {
-    Q_OBJECT
-
 public:
-    explicit SomeUtils(QObject *parent = 0);
-    static QString findBinFile(const QString &name);
-    static QString prepareSize(const float bytes);
-    static QString prepareTime(const float ms);
-    static QString genSearchFolderList();
+    explicit SomeUtils() {}
+    static QString zipPath();
+    static QString prepareSize(const quint32 bytes);
+    static QString prepareTime(const quint64 ms);
 };
 #endif // SOMEUTILS_H

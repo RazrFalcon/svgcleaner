@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -23,8 +22,9 @@
 #ifndef BASECLEANER_H
 #define BASECLEANER_H
 
-#include "keys.h"
 #include "tools.h"
+
+#define Keys Keys::get()
 
 class BaseCleaner
 {

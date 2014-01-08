@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -33,6 +32,7 @@
 // TODO: remove 'use' elem linked to empty object
 // TODO: remove elem from defs if it used only by one use elem
 
+// TODO: do not remove xmlns attr of editor app when removing is disabled
 void Remover::cleanSvgElementAttribute()
 {
     bool isXlinkUsed = false;
@@ -50,7 +50,7 @@ void Remover::cleanSvgElementAttribute()
     StringSet ignoreAttr = Props::styleAttributes;
     ignoreAttr << "xmlns" << "width" << "height" << "viewBox";
 
-    if (Keys::get().flag(Key::KeepSvgVersion))
+    if (Keys.flag(Key::RemoveSvgVersion))
         ignoreAttr << "version";
     if (isXlinkUsed)
         ignoreAttr << "xmlns:xlink";
@@ -84,17 +84,17 @@ void Remover::removeUnusedDefs()
 
         QList<SvgElement> list = svgElement().childElemList();
         while (!list.isEmpty()) {
-            SvgElement currElem = list.takeFirst();
-            if (currElem.hasAttribute("xlink:href"))
-                defsIdList.remove(currElem.attribute("xlink:href").remove("#"));
+            SvgElement elem = list.takeFirst();
+            if (elem.hasAttribute("xlink:href"))
+                defsIdList.remove(elem.attribute("xlink:href").remove("#"));
             foreach (const QString &attrName, Props::linkableStyleAttributes) {
-                if (currElem.hasAttribute(attrName)) {
-                    QString url = currElem.attribute(attrName);
+                if (elem.hasAttribute(attrName)) {
+                    QString url = elem.attribute(attrName);
                     defsIdList.remove(url.mid(5, url.size()-6));
                 }
             }
-            if (currElem.hasChildren())
-                list << currElem.childElemList();
+            if (elem.hasChildren())
+                list << elem.childElemList();
         }
 
         foreach (const SvgElement &elem, defsElement().childElemList()) {
@@ -110,30 +110,30 @@ void Remover::removeUnusedXLinks()
     StringSet idSet;
     QList<SvgElement> list = svgElement().childElemList();
     while (!list.isEmpty()) {
-        SvgElement currElem = list.takeFirst();
-        if (currElem.hasAttribute("xlink:href")) {
-            if (!currElem.attribute("xlink:href").contains("base64"))
-                xlinkSet << currElem.attribute("xlink:href").remove("#");
+        SvgElement elem = list.takeFirst();
+        if (elem.hasAttribute("xlink:href")) {
+            if (!elem.attribute("xlink:href").contains("base64"))
+                xlinkSet << elem.attribute("xlink:href").remove("#");
         }
-        if (currElem.hasAttribute("id"))
-            idSet << currElem.id();
+        if (elem.hasAttribute("id"))
+            idSet << elem.id();
 
-        if (currElem.hasChildren())
-            list << currElem.childElemList();
+        if (elem.hasChildren())
+            list << elem.childElemList();
     }
     foreach (const QString &id, idSet)
         xlinkSet.remove(id);
 
     list = svgElement().childElemList();
     while (!list.isEmpty()) {
-        SvgElement currElem = list.takeFirst();
-        if (currElem.hasAttribute("xlink:href")) {
-            if (xlinkSet.contains(currElem.attribute("xlink:href").remove("#"))) {
-                currElem.removeAttribute("xlink:href");
+        SvgElement elem = list.takeFirst();
+        if (elem.hasAttribute("xlink:href")) {
+            if (xlinkSet.contains(elem.attribute("xlink:href").remove("#"))) {
+                elem.removeAttribute("xlink:href");
             }
         }
-        if (currElem.hasChildren())
-            list << currElem.childElemList();
+        if (elem.hasChildren())
+            list << elem.childElemList();
     }
 }
 
@@ -269,7 +269,7 @@ void Remover::removeUnreferencedIds()
     foreach (const QString &text, m_allLinkList)
         m_allIdList.remove(text);
 
-    if (Keys::get().flag(Key::KeepNamedIds)) {
+    if (Keys.flag(Key::KeepNamedIds)) {
         // skip id's whithout digits
         foreach (const QString &text, m_allIdList) {
             if (!text.contains(QRegExp("\\d")))
@@ -294,6 +294,7 @@ void Remover::removeUnreferencedIds()
 }
 
 // TODO: should be in 'while', while no elem is removed
+// TODO: add sketch:* elem removing
 void Remover::removeElements()
 {
     // have to use XMLNode insted of SvgElement, because after converting to element
@@ -307,20 +308,20 @@ void Remover::removeElements()
         if (!currElem.isNull()) {
             QString currTag = currElem.tagName();
             if (currElem.isContainer() && !currElem.hasChildren() && currTag != "glyph"
-                && !Keys::get().flag(Key::KeepEmptyContainer))
+                && Keys.flag(Key::RemoveEmptyContainers))
                 removeThisNode = true;
-            else if (currTag == "metadata" && !Keys::get().flag(Key::KeepMetadata))
+            else if (currTag == "metadata" && Keys.flag(Key::RemoveMetadata))
                 removeThisNode = true;
-            else if (currTag.contains("sodipodi") && !Keys::get().flag(Key::KeepSodipodiElements))
+            else if (currTag.contains("sodipodi") && Keys.flag(Key::RemoveSodipodiElements))
                 removeThisNode = true;
-            else if (currTag.contains("inkscape") && !Keys::get().flag(Key::KeepInkscapeElements)
+            else if (currTag.contains("inkscape") && Keys.flag(Key::RemoveInkscapeElements)
                      && currTag != "inkscape:path-effect")
                 removeThisNode = true;
-            else if (currTag.startsWith("a:") && !Keys::get().flag(Key::KeepIllustratorElements))
+            else if (currTag.startsWith("a:") && Keys.flag(Key::RemoveAdobeElements))
                 removeThisNode = true;
-            else if (currTag.startsWith("v:") && !Keys::get().flag(Key::KeepMSVisioElements))
+            else if (currTag.startsWith("v:") && Keys.flag(Key::RemoveMSVisioElements))
                 removeThisNode = true;
-            else if (currTag.startsWith("c:") && !Keys::get().flag(Key::KeepCorelDrawElements))
+            else if (currTag.startsWith("c:") && Keys.flag(Key::RemoveCorelDrawElements))
                 removeThisNode = true;
             else if (currTag == "foreignObject")
                 removeThisNode = true;
@@ -342,18 +343,18 @@ void Remover::removeElements()
                 removeThisNode = true;
             else if (!Props::svgElementList.contains(currElem.tagName())
                      && !currNode->ToText() != 0
-                     && !Keys::get().flag(Key::KeepNonSvgElements)) {
+                     && Keys.flag(Key::RemoveNonSvgElements)) {
                 removeThisNode = true;
-            } else if (isInvisibleElementsExist(currElem) && !Keys::get().flag(Key::KeepInvisibleElements))
+            } else if (isInvisibleElementsExist(currElem) && Keys.flag(Key::RemoveInvisibleElements))
                 removeThisNode = true;
         }
 
-        if (currNode->ToComment() != 0 && !Keys::get().flag(Key::KeepComments))
+        if (currNode->ToComment() != 0 && Keys.flag(Key::RemoveComments))
             removeThisNode = true;
-        else if (currNode->ToDeclaration() != 0 && !Keys::get().flag(Key::KeepProcessingInstruction))
+        else if (currNode->ToDeclaration() != 0 && Keys.flag(Key::RemoveProcInstruction))
             removeThisNode = true;
         else if (QString(currNode->Value()).contains(QRegExp("(!|^)DOCTYPE|(!|^)ENTITY|\\]\\>"))
-                 && !Keys::get().flag(Key::KeepProlog))
+                 && Keys.flag(Key::RemoveProlog))
             removeThisNode = true;
 
         if (removeThisNode)
@@ -384,7 +385,7 @@ void Remover::removeElements()
 
     // distributions-pentubuntu.svg
     // FIXME: switch style attr have to be cleaned before it, and other attr have to be removed
-    qreal stdDevLimit = Keys::get().doubleNumber(Key::StdDeviation);
+    qreal stdDevLimit = Keys.doubleNumber(Key::RemoveTinyGaussianBlur);
     elemList = svgElement().childElemList();
     while (!elemList.isEmpty()) {
         SvgElement currElem = elemList.takeFirst();
@@ -398,7 +399,7 @@ void Remover::removeElements()
             // remove "feGaussianBlur" element with "stdDeviation" value
             // lower than "--std-deviation-limit"
             // FIXME: check for stdDeviation with transform of all linked element applied
-            if (!Keys::get().flag(Key::KeepTinyGaussianBlur)) {
+            if (stdDevLimit != 0.0) {
                 if (currElem.parentElement().childElementCount() == 1) {
                     // 'stdDeviation' can contains not only one value
                     // we process when it contains only one value
@@ -512,24 +513,24 @@ void Remover::removeAttributes()
         if (!attrList.isEmpty()) {
             // sodipodi:type="inkscape:offset" supported only by inkscape,
             // and its creates problems in other renders
-            if (!Keys::get().flag(Key::KeepInkscapeAttributes))
+            if (Keys.flag(Key::RemoveInkscapeAttributes))
                 cleanAttribute(elem, "inkscape", attrList);
 
-            if (!Keys::get().flag(Key::KeepSodipodiAttributes))
+            if (Keys.flag(Key::RemoveSodipodiAttributes))
                 cleanAttribute(elem, "sodipodi", attrList);
 
-            if (!Keys::get().flag(Key::KeepIllustratorAttributes)) {
+            if (Keys.flag(Key::RemoveAdobeAttributes)) {
                 cleanAttribute(elem, "i:", attrList);
                 cleanAttribute(elem, "a:", attrList);
             }
 
-            if (!Keys::get().flag(Key::KeepMSVisioAttributes))
+            if (Keys.flag(Key::RemoveMSVisioAttributes))
                 cleanAttribute(elem, "v:", attrList);
 
-            if (!Keys::get().flag(Key::KeepCorelDrawAttributes))
+            if (Keys.flag(Key::RemoveCorelDrawAttributes))
                 cleanAttribute(elem, "c:", attrList);
 
-            if (!Keys::get().flag(Key::KeepDefaultAttributes)) {
+            if (Keys.flag(Key::RemoveDefaultAttributes)) {
                 if (elem.attribute("spreadMethod") == "pad")
                     elem.removeAttribute("spreadMethod");
                 if (elem.tagName() == "clipPath") {
@@ -537,9 +538,9 @@ void Remover::removeAttributes()
                         elem.removeAttribute("clipPathUnits");
                 }
             }
-            if (!elem.isText() && !Keys::get().flag(Key::KeepNotAppliedAttributes))
+            if (!elem.isText() && Keys.flag(Key::RemoveNotAppliedAttributes))
                 elem.removeAttribute("text-align");
-            if (attrList.contains("desc") && !Keys::get().flag(Key::KeepNotAppliedAttributes))
+            if (attrList.contains("desc") && Keys.flag(Key::RemoveNotAppliedAttributes))
                 elem.removeAttribute("desc");
 
             if (elem.tagName() == "stop") {
@@ -671,7 +672,7 @@ void Remover::processStyleAttributes(SvgElement elem)
 // needed for all inherited attributes
 void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
 {
-    if (!elem.isText() && !Keys::get().flag(Key::KeepNotAppliedAttributes)) {
+    if (!elem.isText() && Keys.flag(Key::RemoveNotAppliedAttributes)) {
         // remove all text based values from non text elements
         foreach (const QString &attr, hash.keys()) {
             if (attr.contains("font") || attr.contains("text"))
@@ -697,13 +698,13 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
 
     // remove all fill properties if fill is off
     if (parentAttrs.contains("fill") && parentHash.value("fill") == "none"
-        && !Keys::get().flag(Key::KeepFillProps)) {
-        if (hash.value("fill") == "none" || hash.value("fill-opacity") == "0") {
+            && Keys.flag(Key::RemoveFillProps)
+            && (hash.value("fill") == "none" || hash.value("fill-opacity") == "0"))
+    {
             foreach (const QString &attr, Props::fillList)
                 hash.remove(attr);
-        }
     } else {
-        if (!Keys::get().flag(Key::SkipColorToRRGGBB)) {
+        if (Keys.flag(Key::ConvertColorToRRGGBB) || Keys.flag(Key::ConvertRRGGBBToRGB)) {
             QString fill = hash.value("fill");
             if (!fill.isEmpty() && fill != "none" && !fill.startsWith("url"))
                 hash.insert("fill", Tools::trimColor(fill));
@@ -712,7 +713,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
 
     // remove all stroke properties if stroke is off
     if (  (hash.value("stroke") == "none" || hash.value("stroke-opacity") == "0"
-        || hash.value("stroke-width") == "0") && !Keys::get().flag(Key::KeepStrokeProps)) {
+        || hash.value("stroke-width") == "0") && Keys.flag(Key::RemoveStrokeProps)) {
         foreach (const QString &attr, Props::strokeList)
             hash.remove(attr);
         if (parentHash.value("stroke") != "none")
@@ -729,7 +730,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
                                              .replace(", ", ","));
     }
 
-    if (!Keys::get().flag(Key::KeepNotAppliedAttributes))
+    if (Keys.flag(Key::RemoveNotAppliedAttributes))
         hash.remove("pointer-events");
 
     // remove clip-rule if no clip-path
@@ -743,7 +744,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
     if (elem.tagName() != "svg" && elem.tagName() != "pattern" && elem.tagName() != "marker")
         hash.remove("overflow");
 
-    if (!Keys::get().flag(Key::KeepInkscapeAttributes))
+    if (Keys.flag(Key::RemoveInkscapeAttributes))
         hash.remove("-inkscape-font-specification");
 
     // convert units
@@ -774,7 +775,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
         removeDefaultValue(hash, attrName);
 
     // trim colors
-    if (!Keys::get().flag(Key::SkipColorToRRGGBB)) {
+    if (Keys.flag(Key::ConvertColorToRRGGBB)) {
         foreach (const QString &attrName, QStringList() << "color" << "stop-color" << "flood-color") {
             if (hash.contains(attrName))
                 hash.insert(attrName, Tools::trimColor(hash.value(attrName)));

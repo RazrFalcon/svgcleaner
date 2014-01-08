@@ -10,7 +10,7 @@ unix {
     }
 }
 
-TR_PATH=../../translations
+TR_PATH = ../../translations
 
 TRANSLATIONS += $$TR_PATH/svgcleaner_cs.ts \
                 $$TR_PATH/svgcleaner_ru.ts \

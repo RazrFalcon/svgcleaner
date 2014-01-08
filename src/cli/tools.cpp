@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -22,7 +21,6 @@
 
 #include <cmath>
 
-#include "keys.h"
 #include "tools.h"
 
 // http://www.w3.org/TR/SVG/coords.html#EstablishingANewUserSpace
@@ -62,6 +60,8 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
     const QChar *end = str + text.size();
     while (str != end) {
         while (str->isSpace())
+            ++str;
+        while (*str == ',')
             ++str;
 
         QString transformType;
@@ -115,6 +115,8 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
         while (*str != QLatin1Char(')'))
             ++str;
         if (*str == QLatin1Char(')'))
+            ++str;
+        while (str->isSpace())
             ++str;
     }
     return list;
@@ -303,7 +305,7 @@ QString Tools::trimColor(QString color)
     color = color.toLower();
 
     // convert 'rgb (255, 255, 255)' to #RRGGBB
-    if (!Keys::get().flag(Key::SkipColorToRRGGBB)) {
+    if (Keys::get().flag(Key::ConvertColorToRRGGBB)) {
         if (color.contains(QLatin1String("rgb"))) {
             const QChar *str = color.constData();
             const QChar *end = str + color.size();
@@ -339,7 +341,7 @@ QString Tools::trimColor(QString color)
             color = replaceColorName(color);
     }
 
-    if (!Keys::get().flag(Key::SkipRRGGBBToRGB)) {
+    if (Keys::get().flag(Key::ConvertRRGGBBToRGB)) {
         if (color.startsWith(QLatin1Char('#'))) {
             // try to convert #rrggbb to #rgb
             if (color.size() == 7) { // #000000

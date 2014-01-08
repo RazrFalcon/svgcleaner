@@ -1,8 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2013 Evgeniy Reizner
-** Copyright (C) 2012 Andrey Bayrak, Evgeniy Reizner
+** Copyright (C) 2012-2014 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -68,7 +67,7 @@ void Replacer::convertSizeToViewbox()
 void Replacer::processPaths()
 {
     QHash<QString,int> defsHash;
-    if (!Keys::get().flag(Key::KeepTransforms))
+    if (Keys.flag(Key::ApplyTransforms))
         defsHash = calcDefsUsageCount();
 
     QList<SvgElement> list = svgElement().childElemList();
@@ -78,7 +77,7 @@ void Replacer::processPaths()
         bool removed = false;
         if (elem.tagName() == "path") {
             bool canApplyTransform = false;
-            if (!Keys::get().flag(Key::KeepTransforms))
+            if (Keys.flag(Key::ApplyTransforms))
                 canApplyTransform = isPathValidToTransform(elem, defsHash);
             bool isPathApplyed = false;
             Path().processPath(elem, canApplyTransform, &isPathApplyed);
@@ -254,6 +253,7 @@ void Replacer::convertUnits()
     // TODO: For gradientUnits="userSpaceOnUse", percentages represent values relative to the current viewport.
     //       For gradientUnits="objectBoundingBox", percentages represent values relative to the bounding box for the object.
 
+    // TODO: process 'offset' attr with %
     StringSet attributes = Props::digitList;
     QList<SvgElement> list = Tools::childElemList(document());
     while (!list.isEmpty()) {
@@ -273,7 +273,7 @@ void Replacer::convertUnits()
                                                                   .remove(QRegExp(" .*")));
 
                 QString value = currElem.attribute(attrList.at(j));
-                // didn't understand how to convert r="40%" like attributes
+                // TODO: process gradients attrs
                 if (value.contains("%")
                     && currTag != "radialGradient" && currTag != "linearGradient") {
                     if (attrList.at(j).contains("x"))
@@ -472,7 +472,7 @@ void Replacer::finalFixes()
 
         currElem.removeAttribute(CleanerAttr::UsedElement);
 
-        if (!Keys::get().flag(Key::KeepNotAppliedAttributes)) {
+        if (Keys.flag(Key::RemoveNotAppliedAttributes)) {
             if (currTag == "rect") {
                 if (currElem.doubleAttribute("rx") == currElem.doubleAttribute("ry"))
                     currElem.removeAttribute("ry");
@@ -484,7 +484,7 @@ void Replacer::finalFixes()
             }
         }
 
-        if (!Keys::get().flag(Key::KeepGradientCoordinates)) {
+        if (Keys.flag(Key::RemoveGradientCoordinates)) {
             if (currTag == "linearGradient"
                 && (currElem.hasAttribute("x2") || currElem.hasAttribute("y2"))) {
                 if (currElem.attribute("x1") == currElem.attribute("x2")) {
@@ -523,6 +523,7 @@ void Replacer::finalFixes()
     }
 }
 
+// TODO: use latin alphabet insted of hex
 void Replacer::trimIds()
 {
     int pos = 0;
@@ -566,8 +567,8 @@ void Replacer::trimIds()
 
 void Replacer::calcElemAttrCount(const QString &text)
 {
-    int elemCount = 0;
-    int attrCount = 0;
+    quint32 elemCount = 0;
+    quint32 attrCount = 0;
     QList<SvgElement> list = Tools::childElemList(document());
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
@@ -576,8 +577,13 @@ void Replacer::calcElemAttrCount(const QString &text)
         if (currElem.hasChildren())
             list << currElem.childElemList();
     }
-    qDebug() << "The " + text + " number of elements is: " + QString::number(elemCount);
-    qDebug() << "The " + text + " number of attributes is: " + QString::number(attrCount);
+    if (!Keys.flag(Key::ShortOutput)) {
+        qDebug("The %s number of elements is: %u",   qPrintable(text), elemCount);
+        qDebug("The %s number of attributes is: %u", qPrintable(text), attrCount);
+    } else {
+        qDebug("%u", elemCount);
+        qDebug("%u", attrCount);
+    }
 }
 
 // TODO: sort with linking order
@@ -634,7 +640,7 @@ void Replacer::roundNumericAttributes()
                 }
             }
         }
-        if (!Keys::get().flag(Key::KeepTransforms)) {
+        if (Keys.flag(Key::ApplyTransforms)) {
             if (attrList.contains("gradientTransform")) {
                 Transform ts(currElem.attribute("gradientTransform"));
                 QString transform = ts.simplified();
@@ -844,6 +850,7 @@ void Replacer::mergeGradients()
  * <linearGradient id="linearGradient002" xlink:href="#linearGradient001">
  *
  */
+// FIXME: broke applications-graphics.svg
 void Replacer::mergeGradientsWithEqualStopElem()
 {
     QList<SvgElement> list = defsElement().childElemList();

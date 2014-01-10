@@ -69,15 +69,17 @@ void Keys::parseOptions(QStringList &list)
         return;
     }
 
-    if (list.first().startsWith("--preset")) {
+    if (list.first().startsWith(QLatin1String("--preset"))) {
         QString preset = list.takeFirst();
-        preset.remove("--preset=");
+        preset.remove(QLatin1String("--preset="));
         if (preset == Preset::Complete)
             setPreset(Preset::Complete);
         else if (preset == Preset::Basic)
             setPreset(Preset::Basic);
         else if (preset == Preset::Extreme)
             setPreset(Preset::Extreme);
+        else if (preset == Preset::Custom)
+            setPreset(Preset::Custom);
     }
 
     m_transformPrecision   = intNumber(Key::TransformPrecision);
@@ -87,19 +89,20 @@ void Keys::parseOptions(QStringList &list)
     if (list.isEmpty())
         return;
 
-    QStringList keys = hash.keys();
     foreach (QString flag, list) {
         bool isError = false;
         QString value;
-        if (flag.contains("=")) {
-            QStringList tmpList = flag.split("=");
+        if (flag.contains(QLatin1Char('='))) {
+            QStringList tmpList = flag.split(QLatin1Char('='));
             Q_ASSERT(tmpList.count() == 2);
             flag  = tmpList.first();
             value = tmpList.last();
-            if (!value.contains(QRegExp("[0-9\\.\\-]")))
+            bool ok = false;
+            value.toDouble(&ok);
+            if (!ok)
                 isError = true;
         }
-        if (keys.contains(flag) && !isError) {
+        if (allKeys().indexOf(flag) != -1 && !isError) {
             if (   flag == Key::TransformPrecision
                 || flag == Key::AttributesPrecision
                 || flag == Key::CoordsPrecision)
@@ -116,7 +119,7 @@ void Keys::parseOptions(QStringList &list)
                     isError = true;
                 }
             } else if (flag == Key::RemoveTinyGaussianBlur) {
-                if (value.toDouble() >= 0.01 && value.toDouble() <= 1.0)
+                if (value.toDouble() >= 0 && value.toDouble() <= 1.0)
                     hash.insert(flag, value.toDouble());
                 else
                     isError = true;
@@ -192,8 +195,6 @@ void Keys::prepareDescription()
                     tr("Remove stroke properties when no stroking"));
     descHash.insert(RemoveFillProps,
                     tr("Remove fill properties when no filling"));
-    descHash.insert(RemoveGradientCoordinates,
-                    tr("Remove unneeded gradient attributes"));
     descHash.insert(RemoveUnusedXLinks,
                     tr("Remove XLinks which pointed to nonexistent elements"));
     descHash.insert(GroupElemByStyle,
@@ -202,6 +203,8 @@ void Keys::prepareDescription()
                     tr("Trim 'id' attributes into hexadecimal format"));
     descHash.insert(JoinStyleAttributes,
                     tr("Merge style properties into 'style' attribute"));
+    descHash.insert(ApplyTransformsToDefs,
+                    tr("Apply transform matrices to gradients, when possible"));
 
     descHash.insert(ConvertToRelative,
                     tr("Convert absolute coordinates into relative ones"));
@@ -209,8 +212,10 @@ void Keys::prepareDescription()
                     tr("Remove unneeded symbols in 'd' attribute"));
     descHash.insert(RemoveTinySegments,
                     tr("Remove tiny or empty segments"));
-    descHash.insert(ConvertCurves,
-                    tr("Convert cubic Bezier curves to shorthand, when possible"));
+    descHash.insert(ConvertSegments,
+                    tr("Convert segments into shorter equivalent, when possible"));
+    descHash.insert(ApplyTransformsToPaths,
+                    tr("Apply transform matrices, when possible"));
 
     descHash.insert(CreateViewbox,
                     tr("Convert 'height' and 'width' attributes into 'viewBox' attribute"));
@@ -220,8 +225,6 @@ void Keys::prepareDescription()
                     tr("Convert #RRGGBB colors into #RGB format, when possible"));
     descHash.insert(ConvertBasicShapes,
                     tr("Convert polygon, polyline, line, rect into paths"));
-    descHash.insert(ApplyTransforms,
-                    tr("Apply transform matrices"));
     descHash.insert(TransformPrecision,
                     tr("Set rounding precision for transformations"));
     descHash.insert(CoordsPrecision,
@@ -276,10 +279,10 @@ QStringList Keys::attributesKeys()
         << RemoveMSVisioAttributes
         << RemoveStrokeProps
         << RemoveFillProps
-        << RemoveGradientCoordinates
         << RemoveUnusedXLinks
         << GroupElemByStyle
-        << TrimIds;
+        << TrimIds
+        << ApplyTransformsToDefs;
     return list;
 }
 
@@ -297,7 +300,8 @@ QStringList Keys::pathsKeys()
         << ConvertToRelative
         << RemoveUnneededSymbols
         << RemoveTinySegments
-        << ConvertCurves;
+        << ConvertSegments
+        << ApplyTransformsToPaths;
     return list;
 }
 
@@ -308,7 +312,7 @@ QStringList Keys::optimizationsKeys()
         << ConvertColorToRRGGBB
         << ConvertRRGGBBToRGB
         << ConvertBasicShapes
-        << ApplyTransforms
+        << ApplyTransformsToDefs
         << CompactOutput
         << TransformPrecision
         << CoordsPrecision
@@ -342,7 +346,10 @@ QStringList Keys::completePresetKeys()
     static QStringList list = QStringList()
         << elementsKeys()
         << attributesKeys()
-        << pathsKeys()
+        << ConvertToRelative
+        << RemoveUnneededSymbols
+        << RemoveTinySegments
+        << ConvertSegments
         << optimizationsKeys();
     return list;
 }
@@ -354,9 +361,8 @@ QStringList Keys::extremePresetKeys()
     return list;
 }
 
-void Keys::setPreset(const QString &name)
+QStringList &Keys::allKeys()
 {
-    // set default
     static QStringList allKeys = QStringList()
         << elementsKeys()
         << attributesKeys()
@@ -365,7 +371,13 @@ void Keys::setPreset(const QString &name)
         << optimizationsKeys()
         << optimizationsUtilsKeys()
         << ShortOutput;
-    foreach (const QString &key, allKeys)
+    return allKeys;
+}
+
+void Keys::setPreset(const QString &name)
+{
+    // set default
+    foreach (const QString &key, allKeys())
         hash.insert(key, false);
     hash.insert(RemoveTinyGaussianBlur, 0.0);
     hash.insert(TransformPrecision, 8);
@@ -390,11 +402,14 @@ void Keys::setPreset(const QString &name)
     } else if (name == Preset::Extreme) {
         foreach (const QString &key, extremePresetKeys())
             hash.insert(key, true);
+        hash.insert(ApplyTransformsToPaths, true);
         hash.insert(RemoveTinyGaussianBlur, 0.2);
         hash.insert(TransformPrecision, 3);
         hash.insert(CoordsPrecision, 1);
         hash.insert(AttributesPrecision, 1);
+    } else if (name == Preset::Custom) {
+        // nothing
     } else {
-        qDebug("Error: wrong preset name");
+        qFatal("Error: wrong preset name");
     }
 }

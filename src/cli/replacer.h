@@ -54,14 +54,14 @@ public:
     void markUsedElements();
     QHash<QString,int> calcDefsUsageCount();
     void applyTransformToDefs();
+    void mergeGradientsWithEqualStopElem();
 
 private:
     SvgElement findLinearGradient(const QString &id);
-    void mergeGradientsWithEqualStopElem();
     bool isPathValidToTransform(SvgElement &pathElem, QHash<QString, int> &defsIdHash);
     bool isBlurFilter(const QString &id);
-    SvgElement findDefElem(const QString &id);
     void updateLinkedDefTransform(SvgElement &elem);
+    static void plusOne(QList<int> &list, int offset = 0);
 };
 
 #endif // REPLACER_H

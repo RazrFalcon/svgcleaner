@@ -48,7 +48,7 @@ SVGInfo Cleaner::cleanFile(const ToThread &data)
     QElapsedTimer cleaningTime;
     cleaningTime.start();
     proc.start("./svgcleaner-cli", args);
-    proc.waitForFinished(300000);
+    proc.waitForFinished(300000); // 5min
     info.time = cleaningTime.elapsed();
     QString output = proc.readAllStandardError();
 

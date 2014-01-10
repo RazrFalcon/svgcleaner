@@ -27,7 +27,6 @@
 // TODO: remove "tspan" without attributes
 // TODO: remove "feBlend" element with in or in2 linked to empty object
 //       babayasin_air_hammer.svg
-// TODO: xlink:href could not contains uri with spaces, remove this elements
 // TODO: remove "symbol"
 // TODO: remove 'use' elem linked to empty object
 // TODO: remove elem from defs if it used only by one use elem
@@ -50,7 +49,7 @@ void Remover::cleanSvgElementAttribute()
     StringSet ignoreAttr = Props::styleAttributes;
     ignoreAttr << "xmlns" << "width" << "height" << "viewBox";
 
-    if (Keys.flag(Key::RemoveSvgVersion))
+    if (!Keys.flag(Key::RemoveSvgVersion))
         ignoreAttr << "version";
     if (isXlinkUsed)
         ignoreAttr << "xmlns:xlink";
@@ -74,23 +73,23 @@ void Remover::cleanSvgElementAttribute()
 void Remover::removeUnusedDefs()
 {
     StringSet defsIdList;
-    defsIdList << "";
-    while (!defsIdList.isEmpty()) {
-        defsIdList.clear();
+    foreach (const SvgElement &elem, defsElement().childElemList())
+        if (elem.tagName() != QLatin1String("clipPath"))
+            defsIdList << elem.id();
 
-        foreach (const SvgElement &elem, defsElement().childElemList())
-            if (elem.tagName() != "clipPath")
-                defsIdList << elem.id();
-
+    StringSet currDefsIdList = defsIdList;
+    while (!currDefsIdList.isEmpty()) {
+        currDefsIdList = defsIdList;
         QList<SvgElement> list = svgElement().childElemList();
         while (!list.isEmpty()) {
             SvgElement elem = list.takeFirst();
             if (elem.hasAttribute("xlink:href"))
-                defsIdList.remove(elem.attribute("xlink:href").remove("#"));
-            foreach (const QString &attrName, Props::linkableStyleAttributes) {
+                currDefsIdList.remove(elem.attribute("xlink:href").remove(0,1));
+            foreach (const char* attrName, Props::linkableStyleAttributes) {
                 if (elem.hasAttribute(attrName)) {
                     QString url = elem.attribute(attrName);
-                    defsIdList.remove(url.mid(5, url.size()-6));
+                    if (url.startsWith(QLatin1String("url(")))
+                        currDefsIdList.remove(url.mid(5, url.size()-6));
                 }
             }
             if (elem.hasChildren())
@@ -98,22 +97,35 @@ void Remover::removeUnusedDefs()
         }
 
         foreach (const SvgElement &elem, defsElement().childElemList()) {
-            if (defsIdList.contains(elem.id()))
+            if (currDefsIdList.contains(elem.id())) {
+                defsIdList.remove(elem.id());
                 defsElement().removeChild(elem);
+            }
         }
     }
 }
 
 void Remover::removeUnusedXLinks()
 {
+    CharList xlinkStyles;
+    xlinkStyles << "fill" << "stroke" << "filter" << "clip-path" << "xlink:href";
+
     StringSet xlinkSet;
     StringSet idSet;
     QList<SvgElement> list = svgElement().childElemList();
     while (!list.isEmpty()) {
         SvgElement elem = list.takeFirst();
-        if (elem.hasAttribute("xlink:href")) {
-            if (!elem.attribute("xlink:href").contains("base64"))
-                xlinkSet << elem.attribute("xlink:href").remove("#");
+        foreach (const char *attrName, xlinkStyles) {
+            if (elem.hasAttribute(attrName)) {
+                if (QString(attrName) == "xlink:href") {
+                    if (!elem.attribute("xlink:href").contains("base64"))
+                        xlinkSet << elem.attribute("xlink:href").remove(0,1);
+                } else {
+                    QString url = elem.attribute(attrName);
+                    if (url.startsWith(QLatin1String("url(")))
+                        xlinkSet << url.mid(5, url.size()-6);
+                }
+            }
         }
         if (elem.hasAttribute("id"))
             idSet << elem.id();
@@ -124,12 +136,22 @@ void Remover::removeUnusedXLinks()
     foreach (const QString &id, idSet)
         xlinkSet.remove(id);
 
+
     list = svgElement().childElemList();
     while (!list.isEmpty()) {
         SvgElement elem = list.takeFirst();
-        if (elem.hasAttribute("xlink:href")) {
-            if (xlinkSet.contains(elem.attribute("xlink:href").remove("#"))) {
-                elem.removeAttribute("xlink:href");
+        foreach (const QString &attrName, xlinkStyles) {
+            if (elem.hasAttribute(attrName)) {
+                if (attrName == "xlink:href") {
+                    if (xlinkSet.contains(elem.attribute("xlink:href").remove(0,1)))
+                        elem.removeAttribute(attrName);
+                } else {
+                    QString url = elem.attribute(attrName);
+                    if (url.startsWith(QLatin1String("url("))) {
+                        if (xlinkSet.contains(url.mid(5, url.size()-6)))
+                            elem.removeAttribute(attrName);
+                    }
+                }
             }
         }
         if (elem.hasChildren())
@@ -138,6 +160,7 @@ void Remover::removeUnusedXLinks()
 }
 
 // TODO: detect not only equal, but with diff less than 1%
+// TODO: refract this func
 void Remover::removeDuplicatedDefs()
 {
     StringHash xlinkToReplace;
@@ -147,33 +170,122 @@ void Remover::removeDuplicatedDefs()
     QList<DefsElemStruct> elemStructList;
     for (int i = 0; i < defsList.count(); ++i) {
         SvgElement elem = defsList.at(i);
-        DefsElemStruct es = { elem, elem.tagName(), elem.hasChildren(), elem.attributesMap() };
-        elemStructList << es;
+        QString tagName = elem.tagName();
+
+        if (tagName == "linearGradient" || tagName == "radialGradient"
+                || tagName == "filter" || tagName == "clipPath") {
+            StringMap map = elem.attributesMap(true);
+
+            // prepare attributes
+            if (tagName == "linearGradient") {
+                if (   !map.contains("x1") && Tools::isZero(elem.doubleAttribute("x2"))
+                    && !map.contains("y1") && !map.contains("y2")) {
+                    map.remove("gradientTransform");
+                }
+                if (map.contains("gradientTransform")) {
+                    Transform gts(map.value("gradientTransform"));
+                    if (!gts.isMirrored() && gts.isProportionalScale()) {
+                        gts.setOldXY(map.value("x1").toDouble(),
+                                     map.value("y1").toDouble());
+                        map.insert("x1", Tools::roundNumber(gts.newX()));
+                        map.insert("y1", Tools::roundNumber(gts.newY()));
+                        gts.setOldXY(map.value("x2").toDouble(),
+                                     map.value("y2").toDouble());
+                        map.insert("x2", Tools::roundNumber(gts.newX()));
+                        map.insert("y2", Tools::roundNumber(gts.newY()));
+                        map.remove("gradientTransform");
+                    } else {
+                        map.insert("gradientTransform", gts.simplified());
+                    }
+                }
+                if (map.contains("x2") || map.contains("y2")) {
+                    if (Tools::isZero(map.value("x1").toDouble() - map.value("x2").toDouble())) {
+                        map.remove("x1");
+                        map.insert("x2", "0");
+                    }
+                    if (Tools::isZero(map.value("y1").toDouble() - map.value("y2").toDouble())) {
+                        map.remove("y1");
+                        map.remove("y2");
+                    }
+                }
+            } else if (tagName == "radialGradient") {
+                if (map.contains("gradientTransform")) {
+                    Transform gts(elem.attribute("gradientTransform"));
+                    if (!gts.isMirrored() && gts.isProportionalScale() && !gts.isRotating()) {
+                        gts.setOldXY(map.value("fx").toDouble(),
+                                     map.value("fy").toDouble());
+                        if (map.contains("fx"))
+                            map.insert("fx", Tools::roundNumber(gts.newX()));
+                        if (map.contains("fy"))
+                            map.insert("fy", Tools::roundNumber(gts.newY()));
+                        gts.setOldXY(map.value("cx").toDouble(),
+                                     map.value("cy").toDouble());
+                        map.insert("cx", Tools::roundNumber(gts.newX()));
+                        map.insert("cy", Tools::roundNumber(gts.newY()));
+
+                        map.insert("r", Tools::roundNumber(map.value("r").toDouble()
+                                                                  * gts.scaleFactor()));
+                        map.remove("gradientTransform");
+                    } else {
+                        map.insert("gradientTransform", gts.simplified());
+                    }
+                }
+                qreal fx = map.value("fx").toDouble();
+                qreal fy = map.value("fy").toDouble();
+                qreal cx = map.value("cx").toDouble();
+                qreal cy = map.value("cy").toDouble();
+                if (Tools::isZero(qAbs(fx-cx)))
+                    map.remove("fx");
+                if (Tools::isZero(qAbs(fy-cy)))
+                    map.remove("fy");
+            }
+
+            QList<StringMap> stopAttrs;
+            foreach (SvgElement stopElem, elem.childElemList())
+                stopAttrs << stopElem.attributesMap(true);
+
+            QStringList tmpList;
+            if (tagName == "filter") {
+                tmpList.reserve(Props::filter.size());
+                foreach (const QString &attrName, Props::filter) {
+                    if (map.contains(attrName))
+                        tmpList << map.value(attrName);
+                }
+            } else if (tagName == "linearGradient") {
+                tmpList.reserve(Props::linearGradient.size());
+                foreach (const QString &attrName, Props::linearGradient) {
+                    if (map.contains(attrName))
+                        tmpList << map.value(attrName);
+                }
+            } else if (tagName == "radialGradient") {
+                tmpList.reserve(Props::radialGradient.size());
+                foreach (const QString &attrName, Props::radialGradient) {
+                    if (map.contains(attrName))
+                        tmpList << map.value(attrName);
+                }
+            }
+
+            DefsElemStruct es = { elem, tagName, elem.hasChildren(), map, tmpList, elem.id() };
+            elemStructList << es;
+        }
     }
 
     // process gradients
     for (int i = 0; i < elemStructList.count(); ++i) {
         DefsElemStruct des1 = elemStructList.at(i);
-        QString id1 = des1.attrMap.value("id");
-        if (des1.tagName == "linearGradient" || des1.tagName == "radialGradient") {
+        QString id1 = des1.id;
+        if (des1.tagName == QLatin1String("linearGradient") || des1.tagName == "radialGradient") {
             for (int j = i; j < elemStructList.count(); ++j) {
                 DefsElemStruct des2 = elemStructList.at(j);
-                QString id2 = des2.attrMap.value("id");
+                QString id2 = des2.id;
                 if (des1.tagName == des2.tagName && id1 != id2) {
                     if ((des1.hasChildren && des2.hasChildren)
                         || (!des1.hasChildren && !des2.hasChildren))
                     {
-                        bool isRemove = false;
-                        if (des1.tagName == "linearGradient")
-                            isRemove = Tools::isAttributesEqual(des1.attrMap, des2.attrMap,
-                                                            Props::linearGradient);
-                        else if (des1.tagName == "radialGradient")
-                            isRemove = Tools::isAttributesEqual(des1.attrMap, des2.attrMap,
-                                                            Props::radialGradient);
-                        if (isRemove) {
+                        if (des1.attrList == des2.attrList) {
+                            bool isRemove = true;
                             if (des1.hasChildren && des2.hasChildren)
                                 isRemove = Tools::isGradientsEqual(des1.elem, des2.elem);
-
                             if (isRemove) {
                                 if (xlinkToReplace.values().contains(id2)) {
                                     for (int k = 0; k < xlinkToReplace.keys().count(); ++k) {
@@ -184,37 +296,72 @@ void Remover::removeDuplicatedDefs()
                                 xlinkToReplace.insert(id2, id1);
                                 defsElement().removeChild(des2.elem);
                                 elemStructList.removeAt(j);
+                                for (int e = 0; e < elemStructList.size(); ++e) {
+                                    if (elemStructList.at(e).attrMap.value("xlink:href").mid(1) == id2)
+                                        elemStructList[e].attrMap.insert("xlink:href", "#" + id1);
+                                }
                                 j--;
                             }
                         }
                     }
                 }
             }
-        }
-    }
-
-    // process feGaussianBlur filter
-    for (int i = 0; i < elemStructList.count(); ++i) {
-        DefsElemStruct des1 = elemStructList.at(i);
-        QString id1 = des1.attrMap.value("id");
-        if (des1.tagName == "filter") {
+        } else if (des1.tagName == "filter") {
+            // process feGaussianBlur filter
             for (int j = i; j < elemStructList.count(); ++j) {
                 DefsElemStruct des2 = elemStructList.at(j);
-                QString id2 = des2.attrMap.value("id");
+                QString id2 = des2.id;
                 if (des1.tagName == des2.tagName && id1 != id2
                     && des1.elem.childElementCount() == 1 && des2.elem.childElementCount() == 1)
                 {
-                    if (Tools::isAttributesEqual(des1.attrMap, des2.attrMap, Props::filter)) {
+                    if (des1.attrList == des2.attrList) {
                         SvgElement child1 = des1.elem.firstChild();
                         SvgElement child2 = des2.elem.firstChild();
                         if (   child1.tagName() == "feGaussianBlur"
                             && child2.tagName() == "feGaussianBlur") {
                             if (child1.attribute("stdDeviation")
-                                    == child2.attribute("stdDeviation")) {
+                                    == child2.attribute("stdDeviation"))
+                            {
                                 xlinkToReplace.insert(id2, id1);
                                 defsElement().removeChild(des2.elem);
                                 elemStructList.removeAt(j);
                                 j--;
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (des1.tagName == "clipPath") {
+            // process clipPath
+            for (int j = i; j < elemStructList.count(); ++j) {
+                DefsElemStruct des2 = elemStructList.at(j);
+                QString id2 = des2.id;
+                if (des1.tagName == des2.tagName && id1 != id2
+                    && des1.elem.childElementCount() == 1 && des2.elem.childElementCount() == 1)
+                {
+                    SvgElement child1 = des1.elem.firstChild();
+                    SvgElement child2 = des2.elem.firstChild();
+                    if (child1.tagName() == child2.tagName()
+                        && child1.tagName() == "path"
+                        && child1.attribute("d") == child2.attribute("d"))
+                    {
+                        if (child1.attribute("transform") == child2.attribute("transform")) {
+                            xlinkToReplace.insert(id2, id1);
+                            defsElement().removeChild(des2.elem);
+                            elemStructList.removeAt(j);
+                            j--;
+                        } else {
+                            child2.setTagName("use");
+                            child2.removeAttribute("d");
+                            child2.setAttribute("xlink:href", "#" + child1.attribute("id"));
+                            child1.setAttribute(CleanerAttr::UsedElement, "1");
+                            if (child1.parentElement().tagName() == "clipPath") {
+                                SvgElement newUse(document()->NewElement("use"));
+                                newUse.setAttribute("xlink:href", "#" + child1.attribute("id"));
+                                newUse.setAttribute("transform", child1.attribute("transform"));
+                                child1.removeAttribute("transform");
+                                des1.elem.insertBefore(newUse, child1);
+                                defsElement().insertBefore(child1, des1.elem);
                             }
                         }
                     }
@@ -235,7 +382,7 @@ void Remover::removeUnreferencedIds()
     QStringList xlinkAttrList;
     xlinkAttrList << "xlink:href" << "inkscape:path-effect" << "inkscape:perspectiveID";
 
-    QStringList urlAttrList = Props::linkableStyleAttributes;
+    CharList urlAttrList = Props::linkableStyleAttributes;
 
     QList<SvgElement> list = svgElement().childElemList();
     while (!list.isEmpty()) {
@@ -243,21 +390,21 @@ void Remover::removeUnreferencedIds()
         QStringList attrList = elem.attributesList();
 
         // collect all id's
-        if (attrList.contains("id"))
+        if (attrList.indexOf("id") != -1)
             m_allIdList << elem.id();
 
-        for (int i = 0; i < xlinkAttrList.count(); ++i) {
-            if (attrList.contains(xlinkAttrList.at(i)))
-                m_allLinkList << elem.attribute(xlinkAttrList.at(i)).remove("#");
+        foreach (const QString &attr, xlinkAttrList) {
+            if (attrList.indexOf(attr) != -1)
+                m_allLinkList << elem.attribute(attr).remove(0,1);
         }
 
-        for (int i = 0; i < urlAttrList.count(); ++i) {
-            QString attr = urlAttrList.at(i);
-            if (attrList.contains(attr)) {
+        foreach (const QString &attr, urlAttrList) {
+            if (attrList.indexOf(attr) != -1) {
                 QString attrValue = elem.attribute(attr);
-                if (attrValue.contains("url"))
+                if (attrValue.contains("url")) {
                     attrValue = attrValue.mid(5, attrValue.size()-6);
                     m_allLinkList << attrValue;
+                }
             }
         }
 
@@ -293,75 +440,82 @@ void Remover::removeUnreferencedIds()
     }
 }
 
-// TODO: should be in 'while', while no elem is removed
 // TODO: add sketch:* elem removing
 void Remover::removeElements()
 {
-    // have to use XMLNode insted of SvgElement, because after converting to element
-    // detecting and removing of "comment" or "processing instruction" is impossible
-    QList<XMLNode *> nodeList = Tools::childNodeList(document());
-    while (!nodeList.isEmpty()) {
-        XMLNode *currNode = nodeList.takeFirst();
-        SvgElement currElem = SvgElement(currNode->ToElement());
+    bool isAnyRemoved = true;
+    while (isAnyRemoved) {
+        isAnyRemoved = false;
 
-        bool removeThisNode = false;
-        if (!currElem.isNull()) {
-            QString currTag = currElem.tagName();
-            if (currElem.isContainer() && !currElem.hasChildren() && currTag != "glyph"
-                && Keys.flag(Key::RemoveEmptyContainers))
-                removeThisNode = true;
-            else if (currTag == "metadata" && Keys.flag(Key::RemoveMetadata))
-                removeThisNode = true;
-            else if (currTag.contains("sodipodi") && Keys.flag(Key::RemoveSodipodiElements))
-                removeThisNode = true;
-            else if (currTag.contains("inkscape") && Keys.flag(Key::RemoveInkscapeElements)
-                     && currTag != "inkscape:path-effect")
-                removeThisNode = true;
-            else if (currTag.startsWith("a:") && Keys.flag(Key::RemoveAdobeElements))
-                removeThisNode = true;
-            else if (currTag.startsWith("v:") && Keys.flag(Key::RemoveMSVisioElements))
-                removeThisNode = true;
-            else if (currTag.startsWith("c:") && Keys.flag(Key::RemoveCorelDrawElements))
-                removeThisNode = true;
-            else if (currTag == "foreignObject")
-                removeThisNode = true;
-            else if (currTag == "title")
-                removeThisNode = true;
-            else if (currTag == "desc")
-                removeThisNode = true;
-            else if (currTag == "script")
-                removeThisNode = true;
-            else if (currTag == "defs" && !currElem.hasChildren())
-                removeThisNode = true;
-            else if (currTag == "linearGradient" || currTag == "radialGradient") {
-                if (!currElem.hasChildren() && !currElem.hasAttribute("xlink:href"))
+        // have to use XMLNode insted of SvgElement, because after converting to element
+        // detecting and removing of "comment" or "processing instruction" is impossible
+        QList<XMLNode *> nodeList = Tools::childNodeList(document());
+        while (!nodeList.isEmpty()) {
+            XMLNode *currNode = nodeList.takeFirst();
+            SvgElement currElem = SvgElement(currNode->ToElement());
+
+            bool removeThisNode = false;
+            if (!currElem.isNull()) {
+                QString currTag = currElem.tagName();
+                if (currElem.isContainer() && !currElem.hasChildren() && currTag != "glyph"
+                    && Keys.flag(Key::RemoveEmptyContainers))
                     removeThisNode = true;
-            } else if (currTag == "image" && !currElem.attribute("xlink:href").contains("base64"))
+                else if (currTag == "metadata" && Keys.flag(Key::RemoveMetadata))
+                    removeThisNode = true;
+                else if (currTag.contains("sodipodi") && Keys.flag(Key::RemoveSodipodiElements))
+                    removeThisNode = true;
+                else if (currTag.contains("inkscape") && Keys.flag(Key::RemoveInkscapeElements)
+                         && currTag != "inkscape:path-effect")
+                    removeThisNode = true;
+                else if (currTag.startsWith("a:") && Keys.flag(Key::RemoveAdobeElements))
+                    removeThisNode = true;
+                else if (currTag.startsWith("v:") && Keys.flag(Key::RemoveMSVisioElements))
+                    removeThisNode = true;
+                else if (currTag.startsWith("c:") && Keys.flag(Key::RemoveCorelDrawElements))
+                    removeThisNode = true;
+                else if (currTag == "foreignObject" && Keys.flag(Key::RemoveInvisibleElements))
+                    removeThisNode = true;
+                else if (!Props::svgElementList.contains(currElem.tagName())
+                         && !currNode->ToText() != 0
+                         && Keys.flag(Key::RemoveNonSvgElements)) {
+                    removeThisNode = true;
+                }
+                if (Keys.flag(Key::RemoveInvisibleElements)) {
+                    if (currTag == "title")
+                        removeThisNode = true;
+                    else if (currTag == "desc")
+                        removeThisNode = true;
+                    else if (currTag == "script")
+                        removeThisNode = true;
+                    else if (currTag == "linearGradient" || currTag == "radialGradient") {
+                        if (!currElem.hasChildren() && !currElem.hasAttribute("xlink:href"))
+                            removeThisNode = true;
+                    } else if (currTag == "image" && !currElem.attribute("xlink:href").contains("base64"))
+                        removeThisNode = true;
+                    else if (currElem.isReferenced() && !currElem.hasAttribute("id")
+                             && currElem.parentElement().tagName() == "defs")
+                        removeThisNode = true;
+                    else if (isElementInvisible(currElem))
+                        removeThisNode = true;
+                }
+            }
+
+            if (currNode->ToComment() != 0 && Keys.flag(Key::RemoveComments))
                 removeThisNode = true;
-            else if (currElem.isReferenced() && !currElem.hasAttribute("id")
-                     && currElem.parentElement().tagName() == "defs")
+            else if (currNode->ToDeclaration() != 0 && Keys.flag(Key::RemoveProcInstruction))
                 removeThisNode = true;
-            else if (!Props::svgElementList.contains(currElem.tagName())
-                     && !currNode->ToText() != 0
-                     && Keys.flag(Key::RemoveNonSvgElements)) {
+            else if (QString(currNode->Value()).contains(QRegExp("(!|^)DOCTYPE|(!|^)ENTITY|\\]\\>"))
+                     && Keys.flag(Key::RemoveProlog))
                 removeThisNode = true;
-            } else if (isInvisibleElementsExist(currElem) && Keys.flag(Key::RemoveInvisibleElements))
-                removeThisNode = true;
+
+            if (removeThisNode) {
+                currNode->Parent()->DeleteChild(currNode);
+                isAnyRemoved = true;
+            }
+
+            if (!currNode->NoChildren())
+                nodeList << Tools::childNodeList(currNode);
         }
-
-        if (currNode->ToComment() != 0 && Keys.flag(Key::RemoveComments))
-            removeThisNode = true;
-        else if (currNode->ToDeclaration() != 0 && Keys.flag(Key::RemoveProcInstruction))
-            removeThisNode = true;
-        else if (QString(currNode->Value()).contains(QRegExp("(!|^)DOCTYPE|(!|^)ENTITY|\\]\\>"))
-                 && Keys.flag(Key::RemoveProlog))
-            removeThisNode = true;
-
-        if (removeThisNode)
-            currNode->Parent()->DeleteChild(currNode);
-
-        if (!currNode->NoChildren())
-            nodeList << Tools::childNodeList(currNode);
     }
 
     // ungroup "a" element
@@ -419,7 +573,57 @@ void Remover::removeElements()
     }
 }
 
-bool Remover::isInvisibleElementsExist(const SvgElement &elem)
+void Remover::removeElementsFinal()
+{
+    if (!Keys.flag(Key::RemoveInvisibleElements))
+        return;
+
+    QList<SvgElement> list = Tools::childElemList(document());
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+        if (isElementInvisible2(elem))
+            elem.parentElement().removeChild(elem);
+        if (elem.hasChildren())
+            list << elem.childElemList();
+    }
+}
+
+bool Remover::isElementInvisible2(SvgElement &elem)
+{
+    // if 'fill' or 'stroke' linked to non existing define - set attribute value to 'none'
+    if (elem.isGroup())
+        return false;
+
+    SvgElement parent = elem.parentElement();
+    bool hasWrongParent = false;
+    while (!parent.isNull()) {
+        if (parent.isTagName("defs") || parent.isTagName("switch")) {
+            hasWrongParent = true;
+            break;
+        }
+        parent = parent.parentElement();
+    }
+    if (!hasWrongParent) {
+        // elements with no 'fill' and 'stroke' are invisible
+        if (    findAttribute(elem, "fill") == "none"
+            && (findAttribute(elem, "stroke") == "none" || findAttribute(elem, "stroke").isEmpty())
+            && !elem.isUsed()) {
+            if (elem.hasAttribute("filter")) {
+                SvgElement filterElem = findDefElem(elem.defIdFromAttribute("filter"));
+                if (filterElem.childElementCount() == 1) {
+                    if (filterElem.firstChild().tagName() == "feGaussianBlur") {
+                        return true;
+                    }
+                }
+            } else {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Remover::isElementInvisible(SvgElement &elem)
 {
     QString tagName = elem.tagName();
     //remove elements "rect", "pattern" and "image" with height or width <= 0
@@ -442,6 +646,9 @@ bool Remover::isInvisibleElementsExist(const SvgElement &elem)
 //        if (!elem.hasText() && !elem.hasChildren())
 //            return true;
 //    }
+
+    if (isElementInvisible2(elem))
+        return true;
 
     // remove elements with opacity="0"
     if (elem.hasAttribute("opacity")) {
@@ -538,10 +745,50 @@ void Remover::removeAttributes()
                         elem.removeAttribute("clipPathUnits");
                 }
             }
-            if (!elem.isText() && Keys.flag(Key::RemoveNotAppliedAttributes))
-                elem.removeAttribute("text-align");
-            if (attrList.contains("desc") && Keys.flag(Key::RemoveNotAppliedAttributes))
-                elem.removeAttribute("desc");
+            if (Keys.flag(Key::RemoveNotAppliedAttributes)) {
+                if (!elem.isText())
+                    elem.removeAttribute("text-align");
+                if (attrList.contains("desc"))
+                    elem.removeAttribute("desc");
+                // xlink:href could not contains uri with spaces
+                if (attrList.contains("xlink:href")) {
+                    QString xlink = elem.attribute("xlink:href");
+                    if (xlink.indexOf(' ') != -1 && !xlink.startsWith("data:")) {
+                        qDebug() << elem.attribute("xlink:href");
+                        elem.removeAttribute("xlink:href");
+                    }
+                }
+
+                // path inside clipPath needs to contains only d attribute
+                // TODO: remove all style props from path used only in clipPath or mask
+                if (elem.tagName() == "path" || elem.tagName() == "use") {
+                    QString parentTag = elem.parentElement().tagName();
+                    if (parentTag == "clipPath"/* || parentTag == "defs"*/) {
+                        foreach (const QString &attrName, elem.attributesList()) {
+                            bool removeAttr = true;
+                            if (attrName == "d" || attrName == "transform" || attrName == "id")
+                                removeAttr = false;
+                            if (elem.tagName() == "use" && attrName == "xlink:href")
+                                removeAttr = false;
+                            if (removeAttr)
+                                elem.removeAttribute(attrName);
+                        }
+                    }
+                }
+
+                static CharList strokeAndFill = CharList() << "fill" << "stroke";
+                foreach (const char *attrName, strokeAndFill) {
+                    if (attrList.contains(attrName)) {
+                        QString url = elem.attribute(attrName);
+                        if (url.startsWith("url(")) {
+                            SvgElement defElem = findDefElem(url.mid(5, url.size()-6));
+                            if (defElem.isNull()) {
+                                elem.setAttribute(attrName, "none");
+                            }
+                        }
+                    }
+                }
+            }
 
             if (elem.tagName() == "stop") {
                 if (elem.doubleAttribute("offset") < 0.0001)
@@ -733,9 +980,20 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
     if (Keys.flag(Key::RemoveNotAppliedAttributes))
         hash.remove("pointer-events");
 
-    // remove clip-rule if no clip-path
-    if (hash.contains("clip-rule") && !hash.contains("clip-path"))
-        hash.remove("clip-rule");
+    // remove clip-rule if elem not inside clipPath
+    if (hash.contains("clip-rule")) {
+        bool isElemInsideClipPath = false;
+        SvgElement parent = elem.parentElement();
+        while (!parent.isNull()) {
+            if (parent.tagName() == "clipPath") {
+                isElemInsideClipPath = true;
+                break;
+            }
+            parent = parent.parentElement();
+        }
+        if (!isElemInsideClipPath)
+            hash.remove("clip-rule");
+    }
 
     // 'enable-background' is only applicable to container elements
     if (!elem.isContainer())

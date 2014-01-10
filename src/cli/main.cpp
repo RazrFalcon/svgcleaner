@@ -160,21 +160,22 @@ void processFile(const QString &firstFile, const QString &secondFile)
         remover.cleanSvgElementAttribute();
     if (Keys.flag(Key::CreateViewbox))
         replacer.convertSizeToViewbox();
+
     if (Keys.flag(Key::RemoveUnusedDefs))
         remover.removeUnusedDefs();
     if (Keys.flag(Key::RemoveDuplicatedDefs))
         remover.removeDuplicatedDefs();
-    // TODO: add key
+    if (Keys.flag(Key::MergeGradients)) {
+        replacer.mergeGradients();
+        replacer.mergeGradientsWithEqualStopElem();
+    }
     remover.removeElements();
     remover.removeAttributes();
-    if (Keys.flag(Key::MergeGradients))
-        replacer.mergeGradients();
+    remover.removeElementsFinal();
     if (Keys.flag(Key::RemoveUnreferencedIds))
         remover.removeUnreferencedIds();
     if (Keys.flag(Key::RemoveUnusedXLinks))
         remover.removeUnusedXLinks();
-    if (Keys.flag(Key::TrimIds))
-        replacer.trimIds();
     if (Keys.flag(Key::RemoveDefaultAttributes))
         remover.processStyleAttributes();
     if (Keys.flag(Key::ConvertBasicShapes))
@@ -184,9 +185,10 @@ void processFile(const QString &firstFile, const QString &secondFile)
     replacer.processPaths();
     if (Keys.flag(Key::GroupElemByStyle))
         replacer.groupElementsByStyles();
-    // TODO: split to separate keys: for defs and paths
-    if (Keys.flag(Key::ApplyTransforms))
+    if (Keys.flag(Key::ApplyTransformsToDefs))
         replacer.applyTransformToDefs();
+    if (Keys.flag(Key::TrimIds))
+        replacer.trimIds();
     replacer.roundNumericAttributes();
     replacer.finalFixes();
 

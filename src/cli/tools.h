@@ -99,8 +99,6 @@ class Tools
 public:
     explicit Tools() {}
     enum RoundType { COORDINATE, TRANSFORM, ATTRIBUTE };
-    static bool isAttributesEqual(const StringMap &map1, const StringMap &map2,
-                                  const StringSet &attrList);
     static bool isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2);
     static bool isZero(qreal value);
     static SvgElement svgElement(XMLDocument *doc);
@@ -149,21 +147,19 @@ static const StringSet styleAttributes = StringSet()
     << "stroke-opacity" << "stroke-width" << "text-anchor" << "text-decoration" << "text-rendering"
     << "unicode-bidi" << "visibility" << "word-spacing" << "writing-mode";
 
-static const QStringList linkableStyleAttributes = QStringList()
+static const CharList linkableStyleAttributes = CharList()
     << "clip-path" << "fill" << "mask" << "filter" << "stroke" << "marker-start"
     << "marker-mid" << "marker-end";
 
-// ordered by the degree of use
-static const StringSet linearGradient = StringSet()
+static const QStringList linearGradient = QStringList()
     << "gradientTransform" << "xlink:href" << "x1" << "y1" << "x2" << "y2"
     << "gradientUnits" << "spreadMethod" << "externalResourcesRequired";
 
-// ordered by the degree of use
-static const StringSet radialGradient = StringSet()
+static const QStringList radialGradient = QStringList()
     << "gradientTransform" << "xlink:href" << "cx" << "cy" << "r" << "fx" << "fy"
     << "gradientUnits" << "spreadMethod" << "externalResourcesRequired";
 
-static const StringSet filter = StringSet()
+static const QStringList filter = QStringList()
     << "gradientTransform" << "xlink:href" << "x" << "y" << "width" << "height" << "filterRes"
     << "filterUnits" << "primitiveUnits" << "externalResourcesRequired";
 

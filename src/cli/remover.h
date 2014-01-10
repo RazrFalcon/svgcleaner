@@ -30,6 +30,8 @@ struct DefsElemStruct
     QString tagName;
     bool hasChildren;
     StringMap attrMap;
+    QStringList attrList;
+    QString id;
 };
 
 class Remover : public BaseCleaner
@@ -41,6 +43,7 @@ public:
     void removeUnusedXLinks();
     void removeDuplicatedDefs();
     void removeElements();
+    void removeElementsFinal();
     void removeNonElementAttributes();
     void cleanSvgElementAttribute();
     void removeAttributes();
@@ -54,7 +57,8 @@ private:
 
     void cleanStyle(const SvgElement &elem, StringMap &hash);
     void removeDefaultValue(StringMap &hash, const QString &name);
-    bool isInvisibleElementsExist(const SvgElement &elem);
+    bool isElementInvisible(SvgElement &elem);
+    bool isElementInvisible2(SvgElement &elem);
     void cleanAttribute(SvgElement &elem, const QString &startWith, QStringList &attrList);
     void megreGroups(SvgElement parentElem, SvgElement childElem, bool isParentToChild);
 };

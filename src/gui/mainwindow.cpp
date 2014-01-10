@@ -364,8 +364,15 @@ void MainWindow::resizeEvent(QResizeEvent *)
     itemsScroll->setMaximum(itemList.count()-itemLayout->count()+1);
 }
 
-void MainWindow::closeEvent(QCloseEvent *)
+void MainWindow::closeEvent(QCloseEvent *event)
 {
-    // TODO: add ask before close
-    m_cleaningWatcher->cancel();
+    if (m_cleaningWatcher->isRunning()) {
+        int ans = QMessageBox::question(this, "SVG Cleaner",
+                                    tr("Cleaning is not finished.\nDid you really want to exit?"),
+                                    QMessageBox::Yes | QMessageBox::No);
+        if (ans == QMessageBox::Yes)
+            m_cleaningWatcher->cancel();
+        else
+            event->ignore();
+    }
 }

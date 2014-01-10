@@ -79,10 +79,32 @@ void WizardDialog::loadSettings()
     int presetNum = settings.integer(SettingKey::Wizard::Preset,
                                      cmbBoxPreset->findText(tr("Complete")));
     cmbBoxPreset->setCurrentIndex(-1);
+    if (presetNum == -1)
+        presetNum = 1;
     cmbBoxPreset->setCurrentIndex(presetNum);
 
+    QStringList keyList = settings.value(SettingKey::Wizard::LastKeys).toStringList();
+    if (!keyList.isEmpty()) {
+        foreach (QWidget *page, m_pageList) {
+            foreach(QWidget *w, page->findChildren<QWidget *>()) {
+                QString key = w->property("key").toString();
+                if (!key.isEmpty() && !keyList.filter(key).isEmpty()) {
+                    if (w->inherits("QCheckBox")) {
+                        qobject_cast<QCheckBox *>(w)->setChecked(true);
+                        keyList.removeOne(key);
+                    }
+                    else if (w->inherits("SpinBox")) {
+                        QString ckey = keyList.filter(key).first();
+                        ckey.remove(key).remove("=");
+                        qobject_cast<SpinBox *>(w)->setValue(ckey.toDouble());
+                    }
+                }
+            }
+        }
+    }
+
     spinBoxThreads->setValue(settings.integer(SettingKey::Wizard::ThreadsCount,
-                                             QThread::idealThreadCount()));
+                                              QThread::idealThreadCount()));
     spinBoxThreads->setMaximum(QThread::idealThreadCount());
     gBoxThreads->setChecked(settings.flag(SettingKey::Wizard::ThreadingEnabled));
 }
@@ -270,6 +292,30 @@ void WizardDialog::createExample()
                         + tr("filename" ) + lineEditSuffix->text() + ".svg");
 }
 
+void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &presetName)
+{
+    if (presetName == tr("Basic"))
+        Keys::get().setPreset(Preset::Basic);
+    else if (presetName == tr("Complete"))
+        Keys::get().setPreset(Preset::Complete);
+    else if (presetName == tr("Extreme"))
+        Keys::get().setPreset(Preset::Extreme);
+    else if (presetName == tr("Custom"))
+        Keys::get().setPreset(Preset::Custom);
+
+    foreach (QWidget *page, m_pageList) {
+        foreach(QWidget *w, page->findChildren<QWidget *>()) {
+            QString key = w->property("key").toString();
+            if (!key.isEmpty()) {
+                if (w->inherits("QCheckBox"))
+                    qobject_cast<QCheckBox *>(w)->setChecked(Keys::get().flag(key));
+                else if (w->inherits("SpinBox"))
+                    qobject_cast<SpinBox *>(w)->setValue(Keys::get().doubleNumber(key));
+            }
+        }
+    }
+}
+
 void WizardDialog::loadFiles()
 {
     if (!QFile(lineEditInDir->text()).exists()) {
@@ -385,19 +431,49 @@ QStringList WizardDialog::argsList()
         tmpList << "--preset=" + Preset::Complete;
     else if (cmbBoxPreset->currentText() == tr("Extreme"))
         tmpList << "--preset=" + Preset::Extreme;
+    else if (cmbBoxPreset->currentText() == tr("Custom"))
+        tmpList << "--preset=" + Preset::Custom;
 
+    bool isCustom = false;
+    QList<QWidget *> allWidgets;
     foreach (QWidget *page, m_pageList) {
         foreach(QWidget *w, page->findChildren<QWidget *>()) {
             QString key = w->property("key").toString();
             if (!key.isEmpty()) {
-                if (w->inherits("QCheckBox")) {
-                    if (Keys::get().flag(key) != qobject_cast<QCheckBox *>(w)->isChecked())
-                        tmpList << key;
-                } else if (w->inherits("SpinBox")) {
-                    qreal value = qobject_cast<SpinBox *>(w)->value();
-                    if (Keys::get().doubleNumber(key) != value)
-                        tmpList << key + "=" + QString::number(value);
-                }
+                allWidgets << w;
+            }
+        }
+    }
+    foreach (QWidget *w, allWidgets) {
+        if (w->inherits("QCheckBox")) {
+            bool isChecked = qobject_cast<QCheckBox *>(w)->isChecked();
+            QString key = w->property("key").toString();
+            if (Keys::get().flag(key) != isChecked && !isChecked)
+                isCustom = true;
+        }
+    }
+    if (isCustom) {
+        tmpList.replace(0, "--preset=" + Preset::Custom);
+        foreach (QWidget *w, allWidgets) {
+            if (w->inherits("QCheckBox")) {
+                if (qobject_cast<QCheckBox *>(w)->isChecked())
+                    tmpList << w->property("key").toString();
+            } else if (w->inherits("SpinBox")) {
+                qreal value = qobject_cast<SpinBox *>(w)->value();
+                tmpList << w->property("key").toString() + "=" + QString::number(value);
+            }
+        }
+    } else {
+        foreach (QWidget *w, allWidgets) {
+            QString key = w->property("key").toString();
+            if (w->inherits("QCheckBox")) {
+                bool isChecked = qobject_cast<QCheckBox *>(w)->isChecked();
+                if (Keys::get().flag(key) != isChecked && isChecked)
+                    tmpList << key;
+            } else if (w->inherits("SpinBox")) {
+                qreal value = qobject_cast<SpinBox *>(w)->value();
+                if (Keys::get().doubleNumber(key) != value)
+                    tmpList << key + "=" + QString::number(value);
             }
         }
     }
@@ -475,7 +551,11 @@ bool WizardDialog::checkForWarnings()
     } else if (m_fileList.isEmpty()) {
         createWarning(tr("An input folder did not contain any svg, svgz files."));
         check = false;
+#ifdef Q_OS_WIN
+    } else if (!QFile("./svgcleaner-cli.exe").exists()) {
+#else
     } else if (!QFile("./svgcleaner-cli").exists()) {
+#endif
         createWarning(tr("The 'svgcleaner-cli' executable is not found."));
         check = false;
     } else if (!QFile(SomeUtils::zipPath()).exists()) {
@@ -492,28 +572,6 @@ bool WizardDialog::checkForWarnings()
 void WizardDialog::createWarning(const QString &text)
 {
     QMessageBox::warning(this, tr("Warning"), text, QMessageBox::Ok);
-}
-
-void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &presetName)
-{
-    if (presetName == tr("Basic"))
-        Keys::get().setPreset(Preset::Basic);
-    else if (presetName == tr("Complete"))
-        Keys::get().setPreset(Preset::Complete);
-    else if (presetName == tr("Extreme"))
-        Keys::get().setPreset(Preset::Extreme);
-
-    foreach (QWidget *page, m_pageList) {
-        foreach(QWidget *w, page->findChildren<QWidget *>()) {
-            QString key = w->property("key").toString();
-            if (!key.isEmpty()) {
-                if (w->inherits("QCheckBox") && w->isEnabled())
-                    qobject_cast<QCheckBox *>(w)->setChecked(Keys::get().flag(key));
-                else if (w->inherits("SpinBox"))
-                    qobject_cast<SpinBox *>(w)->setValue(Keys::get().doubleNumber(key));
-            }
-        }
-    }
 }
 
 QString WizardDialog::findLabel(const QString &accessibleName)
@@ -541,6 +599,11 @@ void WizardDialog::saveSettings()
     settings.setValue(SettingKey::Wizard::Preset,           cmbBoxPreset->currentIndex());
     settings.setValue(SettingKey::Wizard::CompressLevel,    cmbBoxCompress->currentIndex());
     settings.setValue(SettingKey::Wizard::ThreadsCount,     spinBoxThreads->value());
+    QStringList list = argsList();
+    if (list.first().contains(Preset::Custom))
+        settings.setValue(SettingKey::Wizard::Preset, cmbBoxPreset->findText(tr("Custom")));
+    list.removeFirst();
+    settings.setValue(SettingKey::Wizard::LastKeys, list);
 }
 
 bool WizardDialog::eventFilter(QObject *obj, QEvent *event)

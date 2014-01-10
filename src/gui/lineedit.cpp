@@ -36,9 +36,10 @@ LineEdit::LineEdit(QWidget *parent) :
     lbl->setObjectName("files");
     lbl->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    const int padding = 4;
 #ifdef Q_OS_WIN
-    padding = 3;
+    const int padding = 3;
+#else
+    const int padding = 4;
 #endif
     lbl->setStyleSheet(QString("QLabel#files {border: none; padding-top: %1px; padding-left: 1px;"
                                "background-color: rgba(0, 0, 0, 0); color: %2;}")

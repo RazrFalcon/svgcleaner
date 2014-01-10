@@ -22,6 +22,7 @@
 #include "tools.h"
 #include "svgelement.h"
 
+
 SvgElement::SvgElement()
 {
     m_elem = 0;
@@ -171,14 +172,14 @@ QString SvgElement::defIdFromAttribute(const QString &name)
 bool SvgElement::hasLinkedDef()
 {
     // TODO: is filter needed?
-    static QStringList illegalAttrList;
+    static CharList illegalAttrList;
     if (illegalAttrList.isEmpty())
         illegalAttrList << "clip-path" << "mask" << "filter";
     foreach (const QString attrName, illegalAttrList) {
         if (hasAttribute(attrName))
             return true;
     }
-    static QStringList illegalStyleAttrList;
+    static CharList illegalStyleAttrList;
     if (illegalStyleAttrList.isEmpty())
         illegalStyleAttrList << "fill" << "stroke";
     foreach (const QString attrName, illegalStyleAttrList) {
@@ -191,6 +192,11 @@ bool SvgElement::hasLinkedDef()
 bool SvgElement::hasAttribute(const QString &name) const
 {
     return (m_elem->Attribute(ToChar(name)) != 0);
+}
+
+bool SvgElement::hasAttribute(const char *name) const
+{
+    return (m_elem->Attribute(name) != 0);
 }
 
 bool SvgElement::hasAttributes(const QStringList &list) const
@@ -207,6 +213,11 @@ QString SvgElement::attribute(const QString &name) const
     return QLatin1String(m_elem->Attribute(ch));
 }
 
+QString SvgElement::attribute(const char *name) const
+{
+    return QLatin1String(m_elem->Attribute(name));
+}
+
 double SvgElement::doubleAttribute(const QString &name) const
 {
     return m_elem->DoubleAttribute(ToChar(name));
@@ -220,6 +231,16 @@ void SvgElement::removeAttribute(const QString &name)
 void SvgElement::removeAttribute(const char *name)
 {
     m_elem->DeleteAttribute(name);
+}
+
+bool SvgElement::isTagName(const char *tagName) const
+{
+    return !strcmp(m_elem->Name(), tagName);
+}
+
+const char* SvgElement::tagNameChar() const
+{
+    return m_elem->Name();
 }
 
 QString SvgElement::tagName() const

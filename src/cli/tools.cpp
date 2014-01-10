@@ -715,6 +715,7 @@ QList<SvgElement> Tools::childElemList(XMLDocument *doc)
     return list;
 }
 
+// TODO: maybe use inline for insted of creating additional list
 QList<SvgElement> Tools::childElemList(const SvgElement &node)
 {
     QList<SvgElement> list;
@@ -759,16 +760,6 @@ QString Tools::styleHashToString(const StringHash &hash)
     return outStr;
 }
 
-bool Tools::isAttributesEqual(const StringMap &map1, const StringMap &map2,
-                              const StringSet &attrList)
-{
-    foreach (const QString &attr, attrList) {
-        if (map1.value(attr) != map2.value(attr))
-            return false;
-    }
-    return true;
-}
-
 bool Tools::isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2)
 {
     if (elem1.childElementCount() != elem2.childElementCount())
@@ -794,7 +785,8 @@ bool Tools::isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2)
 
 bool Tools::isZero(qreal value)
 {
-    return (qAbs(value) < 0.00001);
+    static qreal minValue = 1 / pow(10, Keys::get().coordinatesPrecision());
+    return (qAbs(value) < minValue);
 }
 
 SvgElement Tools::svgElement(XMLDocument *doc)

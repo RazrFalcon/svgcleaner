@@ -45,8 +45,8 @@ SvgElement BaseCleaner::defsElement() const
 
 void BaseCleaner::updateXLinks(const StringHash &hash)
 {
-    QStringList xlinkStyles;
-    xlinkStyles << "fill" << "stroke" << "filter";
+    CharList xlinkStyles;
+    xlinkStyles << "fill" << "stroke" << "filter" << "clip-path";
 
     QList<SvgElement> list = svgElement().childElemList();
     while (!list.isEmpty()) {
@@ -80,4 +80,37 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
         if (currElem.hasChildren())
             list << currElem.childElemList();
     }
+}
+
+SvgElement BaseCleaner::findDefElem(const QString &id)
+{
+    for (XMLElement *child = defsElement().xmlElement()->FirstChildElement(); child;
+         child = child->NextSiblingElement()) {
+        if (child->Attribute("id") != 0)
+            if (!strcmp(child->Attribute("id"), id.toLatin1()))
+                return SvgElement(child);
+    }
+    return SvgElement();
+}
+
+bool BaseCleaner::hasParent(const SvgElement &elem, const QString &tagName)
+{
+    SvgElement parent = elem.parentElement();
+    while (!parent.isNull()) {
+        if (parent.tagName() == tagName)
+            return true;
+        parent = parent.parentElement();
+    }
+    return false;
+}
+
+QString BaseCleaner::findAttribute(const SvgElement &elem, const char *attrName)
+{
+    SvgElement parent = elem;
+    while (!parent.isNull()) {
+        if (parent.hasAttribute(attrName))
+            return parent.attribute(attrName);
+        parent = parent.parentElement();
+    }
+    return "";
 }

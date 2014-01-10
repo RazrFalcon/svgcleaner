@@ -30,11 +30,14 @@
 typedef QMap<QString, QString> StringMap;
 typedef QHash<QString, QString> StringHash;
 typedef QSet<QString> StringSet;
+typedef QSet<const char *> CharSet;
+typedef QList<const char *> CharList;
 
 namespace Preset {
     static const QString Basic    = "basic";
     static const QString Complete = "complete";
     static const QString Extreme  = "extreme";
+    static const QString Custom   = "custom";
 }
 
 namespace Key {
@@ -69,22 +72,22 @@ namespace Key {
     static const QString RemoveMSVisioAttributes     = "--remove-msvisio-atts";
     static const QString RemoveStrokeProps           = "--remove-stroke-props";
     static const QString RemoveFillProps             = "--remove-fill-props";
-    static const QString RemoveGradientCoordinates   = "--remove-gradient-coords";
     static const QString RemoveUnusedXLinks          = "--remove-unused-xlinks";
     static const QString GroupElemByStyle            = "--group-elements-by-styles";
     static const QString JoinStyleAttributes         = "--join-style-atts";
+    static const QString ApplyTransformsToDefs       = "--apply-transforms-to-defs";
     // TODO: remove bitmaps, as utility
 
     static const QString ConvertToRelative           = "--convert-to-relative";
     static const QString RemoveUnneededSymbols       = "--remove-unneeded-symbols";
     static const QString RemoveTinySegments          = "--remove-tiny-segments";
-    static const QString ConvertCurves               = "--convert-curves";
+    static const QString ConvertSegments             = "--convert-segments";
+    static const QString ApplyTransformsToPaths      = "--apply-transforms-to-paths";
 
     static const QString CreateViewbox               = "--create-viewbox";
     static const QString ConvertColorToRRGGBB        = "--colors-to-rrggbb";
     static const QString ConvertRRGGBBToRGB          = "--rrggbb-to-rgb";
-    static const QString ConvertBasicShapes          = "--convert-basic-shapes";
-    static const QString ApplyTransforms             = "--apply-transforms";
+    static const QString ConvertBasicShapes          = "--convert-basic-shapes";    
     static const QString TransformPrecision          = "--transform-precision";
     static const QString CoordsPrecision             = "--coordinates-precision";
     static const QString AttributesPrecision         = "--attributes-precision";
@@ -124,6 +127,7 @@ public:
     QStringList completePresetKeys();
     QStringList extremePresetKeys();
     void setPreset(const QString &name);
+    QStringList& allKeys();
 
 private:
     QVariantHash hash;

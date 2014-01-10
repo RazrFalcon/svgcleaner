@@ -39,6 +39,7 @@ public:
     SvgElement(XMLElement *elem);
 
     bool hasAttribute(const QString &name) const;
+    bool hasAttribute(const char *name) const;
     bool hasAttributes(const QStringList &list) const;
     bool hasChildren() const;
     bool hasLinkedDef();
@@ -56,11 +57,14 @@ public:
     int childElementCount() const;
     QList<SvgElement> childElemList() const;
     QString attribute(const QString &name) const;
+    QString attribute(const char *name) const;
     QString id() const;
     QString defIdFromAttribute(const QString &name);
     StringMap attributesMap(bool ignoreId = false) const;
     QStringList styleAttributesList() const;
     QStringList attributesList() const;
+    bool isTagName(const char *tagName) const;
+    const char* tagNameChar() const;
     QString tagName() const;
     StringMap styleMap() const;
     StringHash styleHash() const;

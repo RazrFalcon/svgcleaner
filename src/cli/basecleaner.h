@@ -35,6 +35,9 @@ public:
     SvgElement svgElement() const;
     SvgElement defsElement() const;
     void updateXLinks(const StringHash &hash);
+    SvgElement findDefElem(const QString &id);
+    bool hasParent(const SvgElement &elem, const QString &tagName);
+    QString findAttribute(const SvgElement &elem, const char *attrName);
 
 private:
     XMLDocument *m_doc;

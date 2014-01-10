@@ -61,7 +61,6 @@ public:
     Segment() {}
     void setTransform(Transform &ts);
     void toRelative(qreal xLast, qreal yLast);
-    void toAbsolute(qreal xLast, qreal yLast);
     void coords(QVector<qreal> &points);
     QList<Segment> toCurve(qreal prevX, qreal prevY) const;
 
@@ -97,9 +96,7 @@ private:
     SvgElement m_elem;
 
     void splitToSegments(const QStringRef &path, QList<Segment> &segList);
-    void processAbsoluteSegments(QList<Segment> &segList);
-    void processRelativeSegments(QList<Segment> &segList);
-    void segmentsToAbsolute(QList<Segment> &segList);
+    void processSegments(QList<Segment> &segList);
     void segmentsToRelative(QList<Segment> &segList);
     bool isZero(double value);
     void calcNewStrokeWidth(const Transform &transform);

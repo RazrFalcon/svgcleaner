@@ -20,6 +20,7 @@ namespace SettingKey {
         static const QString Preset = "Wizard/Preset";
         static const QString ThreadingEnabled = "Wizard/ThreadingEnabled";
         static const QString ThreadsCount = "Wizard/ThreadCount";
+        static const QString LastKeys = "Wizard/LastKeys";
     }
 }
 

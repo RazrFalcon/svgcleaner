@@ -47,7 +47,7 @@ public:
     void removeNonElementAttributes();
     void cleanSvgElementAttribute();
     void removeAttributes();
-    void processStyleAttributes(SvgElement elem = SvgElement());
+    void cleanPresentationAttributes(SvgElement elem = SvgElement());
     void removeGroups();
 
 private:
@@ -59,8 +59,8 @@ private:
     void removeDefaultValue(StringMap &hash, const QString &name);
     bool isElementInvisible(SvgElement &elem);
     bool isElementInvisible2(SvgElement &elem);
-    void cleanAttribute(SvgElement &elem, const QString &startWith, QStringList &attrList);
     void megreGroups(SvgElement parentElem, SvgElement childElem, bool isParentToChild);
+    bool isDoctype(const QString &str);
 };
 
 #endif // REMOVER_H

@@ -64,8 +64,7 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
             }
         }
         if (currElem.hasAttribute("xlink:href")) {
-            QString value = currElem.attribute("xlink:href");
-            value.remove(0,1); // #
+            QString value = currElem.xlinkId();
             QString elemId = currElem.id();
             foreach (const QString &key, hash.keys()) {
                 if (value == key) {
@@ -82,7 +81,7 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
     }
 }
 
-SvgElement BaseCleaner::findDefElem(const QString &id)
+SvgElement BaseCleaner::findDefElement(const QString &id)
 {
     for (XMLElement *child = defsElement().xmlElement()->FirstChildElement(); child;
          child = child->NextSiblingElement()) {
@@ -91,6 +90,27 @@ SvgElement BaseCleaner::findDefElem(const QString &id)
                 return SvgElement(child);
     }
     return SvgElement();
+}
+
+SvgElement BaseCleaner::findElement(const QString &id, XMLElement *parent)
+{
+    if (!parent)
+        parent = svgElement().xmlElement();
+    SvgElement elem;
+    for (XMLElement *child = parent->FirstChildElement(); child;
+         child = child->NextSiblingElement()) {
+        if (child->Attribute("id") != 0)
+            if (!strcmp(child->Attribute("id"), id.toLatin1())) {
+                elem = SvgElement(child);
+                break;
+            }
+        if (!child->NoChildren()) {
+            elem = findElement(id, child);
+            if (!elem.isNull())
+                break;
+        }
+    }
+    return elem;
 }
 
 bool BaseCleaner::hasParent(const SvgElement &elem, const QString &tagName)

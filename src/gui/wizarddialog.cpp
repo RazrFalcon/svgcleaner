@@ -32,11 +32,8 @@
 #include "someutils.h"
 #include "wizarddialog.h"
 
-// TODO: rewrite presets
-// TODO: save last options automatically
 // TODO: save as svg when src is svgz
 // TODO: add one file processing support
-// TODO: add Advanced chbox
 
 bool WizardDialog::m_isRecursive = true;
 bool WizardDialog::m_isStopScan  = false;
@@ -126,8 +123,8 @@ void WizardDialog::initGUI()
     QRadioButton *rbtn = findChild<QRadioButton *>(str);
     rbtn->click();
 
-    connect(lineEditInDir,  SIGNAL(textChanged(QString)), this, SLOT(loadFiles()));
-    connect(chBoxRecursive, SIGNAL(clicked()),            this, SLOT(loadFiles()));
+    connect(lineEditInDir,  SIGNAL(textChanged(QString)), this, SLOT(loadFileList()));
+    connect(chBoxRecursive, SIGNAL(clicked()),            this, SLOT(loadFileList()));
 
     // Placeholder text work only on qt > 4.7
 #if QT_VERSION >= 0x040700
@@ -178,7 +175,7 @@ void WizardDialog::initGUI()
     m_folderWatcher = new QFutureWatcher<QFileInfoList>(this);
     connect(m_folderWatcher, SIGNAL(resultReadyAt(int)), SLOT(onFolderScaned(int)));
     connect(m_folderWatcher, SIGNAL(finished()), SLOT(onFolderScanFinished()));
-    loadFiles();
+    loadFileList();
 }
 
 QVBoxLayout* WizardDialog::addPage()
@@ -256,7 +253,9 @@ void WizardDialog::initOptimizationPage()
 {
     QVBoxLayout* lay = addPage();
     foreach (const QString &key, Keys::get().optimizationsKeys()) {
-        if (key != Key::TransformPrecision && key != Key::CoordsPrecision && key != Key::AttributesPrecision) {
+        if (   key != Key::TransformPrecision
+            && key != Key::CoordsPrecision
+            && key != Key::AttributesPrecision) {
             QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
             chBox->setProperty("key", key);
             lay->addWidget(chBox);
@@ -316,7 +315,7 @@ void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &presetName
     }
 }
 
-void WizardDialog::loadFiles()
+void WizardDialog::loadFileList()
 {
     if (!QFile(lineEditInDir->text()).exists()) {
         lineEditInDir->setValue(0);
@@ -387,7 +386,8 @@ QList<ToThread> WizardDialog::threadData()
 {
     QList<ToThread> list;
     QString compressLevel = compressValue();
-    QStringList args = argsList();
+    bool ok = false;
+    QStringList args = argsList(&ok);
 
     foreach (QFileInfo file, m_fileList) {
         ToThread tth;
@@ -422,19 +422,10 @@ QList<ToThread> WizardDialog::threadData()
     return list;
 }
 
-QStringList WizardDialog::argsList()
+QStringList WizardDialog::argsList(bool *isCustom)
 {
     QStringList tmpList;
-    if (cmbBoxPreset->currentText() == tr("Basic"))
-        tmpList << "--preset=" + Preset::Basic;
-    else if (cmbBoxPreset->currentText() == tr("Complete"))
-        tmpList << "--preset=" + Preset::Complete;
-    else if (cmbBoxPreset->currentText() == tr("Extreme"))
-        tmpList << "--preset=" + Preset::Extreme;
-    else if (cmbBoxPreset->currentText() == tr("Custom"))
-        tmpList << "--preset=" + Preset::Custom;
 
-    bool isCustom = false;
     QList<QWidget *> allWidgets;
     foreach (QWidget *page, m_pageList) {
         foreach(QWidget *w, page->findChildren<QWidget *>()) {
@@ -444,16 +435,22 @@ QStringList WizardDialog::argsList()
             }
         }
     }
-    foreach (QWidget *w, allWidgets) {
-        if (w->inherits("QCheckBox")) {
-            bool isChecked = qobject_cast<QCheckBox *>(w)->isChecked();
+
+    if (isCustom) {
+        *isCustom = false;
+        foreach (QWidget *w, allWidgets) {
             QString key = w->property("key").toString();
-            if (Keys::get().flag(key) != isChecked && !isChecked)
-                isCustom = true;
+            if (w->inherits("QCheckBox")) {
+                bool isChecked = qobject_cast<QCheckBox *>(w)->isChecked();
+                if (Keys::get().flag(key) != isChecked)
+                    *isCustom = true;
+            } else if (w->inherits("SpinBox")) {
+                if (Keys::get().doubleNumber(key) != qobject_cast<SpinBox *>(w)->value())
+                    *isCustom = true;
+            }
         }
     }
-    if (isCustom) {
-        tmpList.replace(0, "--preset=" + Preset::Custom);
+    if (*isCustom) {
         foreach (QWidget *w, allWidgets) {
             if (w->inherits("QCheckBox")) {
                 if (qobject_cast<QCheckBox *>(w)->isChecked())
@@ -464,6 +461,12 @@ QStringList WizardDialog::argsList()
             }
         }
     } else {
+        if (cmbBoxPreset->currentText() == tr("Basic"))
+            tmpList << "--preset=" + Preset::Basic;
+        else if (cmbBoxPreset->currentText() == tr("Complete"))
+            tmpList << "--preset=" + Preset::Complete;
+        else if (cmbBoxPreset->currentText() == tr("Extreme"))
+            tmpList << "--preset=" + Preset::Extreme;
         foreach (QWidget *w, allWidgets) {
             QString key = w->property("key").toString();
             if (w->inherits("QCheckBox")) {
@@ -599,10 +602,12 @@ void WizardDialog::saveSettings()
     settings.setValue(SettingKey::Wizard::Preset,           cmbBoxPreset->currentIndex());
     settings.setValue(SettingKey::Wizard::CompressLevel,    cmbBoxCompress->currentIndex());
     settings.setValue(SettingKey::Wizard::ThreadsCount,     spinBoxThreads->value());
-    QStringList list = argsList();
-    if (list.first().contains(Preset::Custom))
+    bool isCustom = false;
+    QStringList list = argsList(&isCustom);
+    if (isCustom)
         settings.setValue(SettingKey::Wizard::Preset, cmbBoxPreset->findText(tr("Custom")));
-    list.removeFirst();
+    else
+        list.clear();
     settings.setValue(SettingKey::Wizard::LastKeys, list);
 }
 

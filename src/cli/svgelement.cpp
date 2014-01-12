@@ -127,7 +127,7 @@ QStringList SvgElement::styleAttributesList() const
     list.reserve(attributesCount());
     for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next()) {
         QString attrName = QLatin1String(child->Name());
-        if (Props::styleAttributes.contains(attrName))
+        if (Props::presentationAttributes.contains(attrName))
            list << attrName;
     }
     return list;
@@ -167,6 +167,11 @@ QString SvgElement::defIdFromAttribute(const QString &name)
     if (!id.startsWith("url("))
         return QString();
     return id.mid(5, id.size()-6);
+}
+
+QString SvgElement::xlinkId()
+{
+    return attribute("xlink:href").remove(0,1);
 }
 
 bool SvgElement::hasLinkedDef()
@@ -305,7 +310,7 @@ StringMap SvgElement::styleMap() const
 {
     StringMap hash;
     for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next()) {
-        if (Props::styleAttributes.contains(child->Name()))
+        if (Props::presentationAttributes.contains(child->Name()))
             hash.insert(child->Name(), child->Value());
     }
     return hash;
@@ -315,7 +320,7 @@ StringHash SvgElement::styleHash() const
 {
     StringHash hash;
     for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next()) {
-        if (Props::styleAttributes.contains(child->Name()))
+        if (Props::presentationAttributes.contains(child->Name()))
             hash.insert(child->Name(), child->Value());
     }
     return hash;

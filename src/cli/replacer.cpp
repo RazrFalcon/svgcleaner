@@ -65,6 +65,10 @@ void Replacer::convertSizeToViewbox()
 //       Anonymous_man_head.svg
 //       input-keyboard-2.svg
 //       applications-graphics.svg
+// TODO: join paths with only style different
+//       Anonymous_Chesspiece_-_bishop.svg
+// TODO: replace paths with use, when paths has only first segment different
+//       Anonymous_Flag_of_South_Korea.svg
 void Replacer::processPaths()
 {
     QHash<QString,int> defsHash;
@@ -147,7 +151,7 @@ bool Replacer::isPathValidToTransform(SvgElement &pathElem, QHash<QString,int> &
                     return false;
             }
             if (!defId.isEmpty()) {
-                SvgElement defElem = findDefElem(defId);
+                SvgElement defElem = findDefElement(defId);
                 if (!defElem.isNull()) {
                     if (   defElem.tagName() != "linearGradient"
                         && defElem.tagName() != "radialGradient")
@@ -190,7 +194,7 @@ void Replacer::updateLinkedDefTransform(SvgElement &elem)
     foreach (const QString &attrName, attrList) {
         QString defId = elem.defIdFromAttribute(attrName);
         if (!defId.isEmpty()) {
-            SvgElement defElem = findDefElem(defId);
+            SvgElement defElem = findDefElement(defId);
             if (!defElem.isNull()) {
                 if (   defElem.tagName() == "linearGradient"
                     || defElem.tagName() == "radialGradient")
@@ -336,7 +340,7 @@ void Replacer::convertCDATAStyle()
         SvgElement currElem = list.takeFirst();
         if (currElem.hasAttribute("class")) {
             StringHash newHash;
-            QStringList classList = currElem.attribute("class").split(QRegExp(" +"));
+            QStringList classList = currElem.attribute("class").split(" ", QString::SkipEmptyParts);
             for (int i = 0; i < classList.count(); ++i) {
                 if (classHash.contains(classList.at(i))) {
                     StringHash tempHash = Tools::splitStyle(classHash.value(classList.at(i)));
@@ -470,14 +474,22 @@ void Replacer::finalFixes()
         elem.removeAttribute(CleanerAttr::UsedElement);
 
         if (Keys.flag(Key::RemoveNotAppliedAttributes)) {
+            // TODO: add other elements
             if (tagName == "rect") {
                 if (elem.doubleAttribute("rx") == elem.doubleAttribute("ry"))
                     elem.removeAttribute("ry");
-            } else if (tagName == "use") {
+            }
+            else if (tagName == "use") {
                 if (elem.attribute("x") == "0")
                     elem.removeAttribute("x");
                 if (elem.attribute("y") == "0")
                     elem.removeAttribute("y");
+            }
+            else if (tagName == "circle") {
+                if (elem.attribute("cx") == "0")
+                    elem.removeAttribute("cx");
+                if (elem.attribute("cy") == "0")
+                    elem.removeAttribute("cy");
             }
 
             if (tagName == "linearGradient"
@@ -581,9 +593,8 @@ void Replacer::trimIds()
             }
         }
         if (currElem.hasAttribute("xlink:href")) {
-            QString value = currElem.attribute("xlink:href");
-            if (value.left(5) != QLatin1String("data:")) {
-                const QString id = value.mid(1);
+            QString id = currElem.xlinkId();
+            if (!id.startsWith(QLatin1String("data:"))) {
                 currElem.setAttribute("xlink:href", QString("#" + idHash.value(id)));
             }
         }
@@ -725,20 +736,16 @@ void Replacer::convertBasicShapes()
                 }
             } else if (ctag == "polyline" || ctag == "polygon") {
                 QList<Segment> segmentList;
-                // TODO: smart split
-                // orangeobject_background-ribbon.svg
-                QString tmpStr = currElem.attribute("points").remove("\t").remove("\n");
-                QStringList tmpList = tmpStr.split(QRegExp(" |,"), QString::SkipEmptyParts);
-                for (int j = 0; j < tmpList.count(); j += 2) {
-                    bool ok;
+                QString path = currElem.attribute("points").remove("\t").remove("\n");
+                const QChar *str = path.constData();
+                const QChar *end = str + path.size();
+                while (str != end) {
                     Segment seg;
                     seg.command = Command::MoveTo;
                     seg.absolute = true;
                     seg.srcCmd = false;
-                    seg.x = tmpList.at(j).toDouble(&ok);
-                    Q_ASSERT(ok == true);
-                    seg.y = tmpList.at(j+1).toDouble(&ok);
-                    Q_ASSERT(ok == true);
+                    seg.x = Tools::getNum(str);
+                    seg.y = Tools::getNum(str);
                     segmentList.append(seg);
                 }
                 if (ctag == "polygon") {
@@ -791,7 +798,7 @@ void Replacer::joinStyleAttr()
     while (!list.isEmpty()) {
         SvgElement elem = list.takeFirst();
         QStringList attrs;
-        foreach (const QString &attrName, Props::styleAttributes) {
+        foreach (const QString &attrName, Props::presentationAttributes) {
             if (elem.hasAttribute(attrName)) {
                 attrs << attrName + ":" + elem.attribute(attrName);
                 elem.removeAttribute(attrName);
@@ -814,7 +821,7 @@ void Replacer::mergeGradients()
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if (currElem.hasAttribute("xlink:href"))
-            linkList << currElem.attribute("xlink:href").remove(0,1);
+            linkList << currElem.xlinkId();
 
     }
     list = svgElement().childElemList();
@@ -838,7 +845,7 @@ void Replacer::mergeGradients()
         SvgElement currElem = list.takeFirst();
         if ((currElem.tagName() == "radialGradient" || currElem.tagName() == "linearGradient")
                 && currElem.hasAttribute("xlink:href") && !currElem.hasChildren()) {
-            QString currLink = currElem.attribute("xlink:href").remove(0,1);
+            QString currLink = currElem.xlinkId();
             if (linkList.count(currLink) == 1) {
                 SvgElement lineGradElem = findLinearGradient(currLink);
                 if (!lineGradElem.isNull()) {
@@ -950,6 +957,8 @@ SvgElement Replacer::findLinearGradient(const QString &id)
 
 // TODO: partial transform attr group
 //       demo.svg
+// TODO: group non successively used attributes
+//       Anonymous_City_flag_of_Gijon_Asturies_Spain.svg
 void Replacer::groupElementsByStyles(SvgElement parentElem)
 {
     // first start
@@ -959,13 +968,13 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
     StringHash groupHash;
     QList<SvgElement> similarElemList;
     QStringList additionalAttrList;
-    additionalAttrList << "text-align" << "line-height";
+    additionalAttrList << "text-align" << "line-height" << "font";
     QStringList ignoreAttrList;
     ignoreAttrList << "clip-path" << "mask" << "filter" << "opacity";
     QList<SvgElement> list = parentElem.childElemList();
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
-        if (currElem.isGroup() || currElem.tagName() == "flowRoot")
+        if (currElem.isGroup() || currElem.isTagName("flowRoot"))
             groupElementsByStyles(currElem);
 
         if (groupHash.isEmpty()) {
@@ -989,7 +998,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
             if (!groupHash.isEmpty())
                 similarElemList << currElem;
             // elem linked to 'use' have to store style properties only in elem, not in group
-            if (currElem.isUsed() || currElem.tagName() == "use") {
+            if (currElem.isUsed() || currElem.isTagName("use")) {
                 groupHash.clear();
                 similarElemList.clear();
             }
@@ -1002,7 +1011,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                 else if (currElem.attribute(attrName) != groupHash.value(attrName))
                     groupHash.remove(attrName);
             }
-            if (currElem.isUsed() || currElem.tagName() == "use") {
+            if (currElem.isUsed() || currElem.isTagName("use")) {
                 groupHash.clear();
                 similarElemList.clear();
             }
@@ -1018,10 +1027,10 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                     // find or create parent group
 
                     bool isValidFlowRoot = false;
-                    if (parentElem.tagName() == "flowRoot") {
+                    if (parentElem.isTagName("flowRoot")) {
                         int flowParaCount = 0;
                         foreach (SvgElement childElem, parentElem.childElemList()) {
-                            if (childElem.tagName() == "flowPara")
+                            if (childElem.isTagName("flowPara"))
                                 flowParaCount++;
                         }
                         if (flowParaCount == similarElemList.size())
@@ -1034,7 +1043,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                     else if (parentElem.childElementCount() == similarElemList.size()) {
                         if (parentElem.isGroup())
                             canUseParent = true;
-                        else if (parentElem.tagName() == "svg" && !lastGroupHash.contains("transform"))
+                        else if (parentElem.isTagName("svg") && !lastGroupHash.contains("transform"))
                             canUseParent = true;
                     }
 
@@ -1087,7 +1096,7 @@ void Replacer::markUsedElements()
         SvgElement currElem = list.takeFirst();
         if (currElem.tagName() == "use" || currElem.tagName() == "textPath") {
             if (currElem.hasAttribute("xlink:href"))
-                usedElemList << currElem.attribute("xlink:href").remove(0,1);
+                usedElemList << currElem.xlinkId();
         }
         if (currElem.hasChildren())
             list << currElem.childElemList();
@@ -1123,9 +1132,8 @@ QHash<QString,int> Replacer::calcDefsUsageCount()
                     idHash.insert(id, 1);
             }
         }
-        QString xlink = elem.attribute("xlink:href");
+        QString xlink = elem.xlinkId();
         if (!xlink.isEmpty()) {
-            xlink.remove(0,1);
             if (idHash.contains(xlink))
                 idHash.insert(xlink, idHash.value(xlink) + 1);
             else

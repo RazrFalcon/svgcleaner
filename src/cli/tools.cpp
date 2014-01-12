@@ -20,223 +20,13 @@
 ****************************************************************************/
 
 #include <cmath>
+#include <qnumeric.h>
 
 #include "tools.h"
 
-// http://www.w3.org/TR/SVG/coords.html#EstablishingANewUserSpace
-Transform::Transform(const QString &text)
-{
-    Q_ASSERT(text.isEmpty() == false);
-    if (text.isEmpty())
-        return;
-    m_points = mergeMatrixes(text);
-
-    // calculate
-    m_xScale = sqrt(pow(m_points.at(0), 2) + pow(m_points.at(2), 2));
-    m_yScale = sqrt(pow(m_points.at(1), 2) + pow(m_points.at(3), 2));
-}
-
-void Transform::setOldXY(qreal prevX, qreal prevY)
-{
-    // NOTE: must be set
-    m_baseX = prevX;
-    m_baseY = prevY;
-}
-
-qreal Transform::newX() const
-{
-    return m_points.at(0)*m_baseX + m_points.at(2)*m_baseY + m_points.at(4);
-}
-
-qreal Transform::newY() const
-{
-    return m_points.at(1)*m_baseX + m_points.at(3)*m_baseY + m_points.at(5);
-}
-
-QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
-{
-    QList<TransformMatrix> list;
-    const QChar *str = text.constData();
-    const QChar *end = str + text.size();
-    while (str != end) {
-        while (str->isSpace())
-            ++str;
-        while (*str == ',')
-            ++str;
-
-        QString transformType;
-        while (*str != QLatin1Char('(')) {
-            if (*str != QLatin1Char(' '))
-                transformType += *str;
-            ++str;
-        }
-        ++str;
-
-        TransformMatrix matrix;
-        if (transformType == QLatin1String("matrix")) {
-            matrix(0,0) = Tools::getNum(str);
-            matrix(1,0) = Tools::getNum(str);
-            matrix(0,1) = Tools::getNum(str);
-            matrix(1,1) = Tools::getNum(str);
-            matrix(0,2) = Tools::getNum(str);
-            matrix(1,2) = Tools::getNum(str);
-        } else if (transformType == QLatin1String("translate")) {
-            matrix(0,2) = Tools::getNum(str);
-            while (str->isSpace())
-                ++str;
-            if (*str != QLatin1Char(')'))
-                matrix(1,2) = Tools::getNum(str);
-            else
-                matrix(1,2) = 0;
-        } else if (transformType == QLatin1String("scale")) {
-            matrix(0,0) = Tools::getNum(str);
-            while (str->isSpace())
-                ++str;
-            if (*str != QLatin1Char(')'))
-                matrix(1,1) = Tools::getNum(str);
-            else
-                matrix(1,1) = matrix(0,0);
-        } else if (transformType == QLatin1String("rotate")) {
-            qreal val = Tools::getNum(str);
-            matrix(0,0) = cos((val/180)*M_PI);
-            matrix(1,0) = sin((val/180)*M_PI);
-
-            matrix(0,1) = -sin((val/180)*M_PI);
-            matrix(1,1) = cos((val/180)*M_PI);
-        } else if (transformType == QLatin1String("skewX")) {
-            matrix(0,1) = tan(Tools::getNum(str));
-        } else if (transformType == QLatin1String("skewY")) {
-            matrix(1,0) = tan(Tools::getNum(str));
-        } else {
-            qFatal("Error: wrong transform matrix: %s", qPrintable(text.toString()));
-        }
-        list << matrix;
-
-        while (*str != QLatin1Char(')'))
-            ++str;
-        if (*str == QLatin1Char(')'))
-            ++str;
-        while (str->isSpace())
-            ++str;
-    }
-    return list;
-}
-
-QList<qreal> Transform::mergeMatrixes(QString text)
-{
-    QList<TransformMatrix> transMatrixList = parseTransform(text.midRef(0));
-
-    TransformMatrix newMatrix = transMatrixList.at(0);
-    for (int i = 1; i < transMatrixList.count(); ++i)
-        newMatrix = newMatrix * transMatrixList.at(i);
-
-    QList<qreal> pointList;
-    pointList.reserve(6);
-    pointList << newMatrix(0,0) << newMatrix(1,0) << newMatrix(0,1)
-              << newMatrix(1,1) << newMatrix(0,2) << newMatrix(1,2);
-    return pointList;
-}
-
-QString Transform::simplified() const
-{
-    if (m_points.isEmpty())
-        return "";
-
-    QString transform;
-    QList<qreal> pt = m_points;
-
-    // [1 0 0 1 tx ty] = translate
-    if (pt.at(0) == 1 && pt.at(1) == 0 && pt.at(2) == 0 && pt.at(3) == 1) {
-        if (pt.at(5) != 0) {
-            transform = QString("translate(%1 %2)")
-                        .arg(Tools::roundNumber(pt.at(4), Tools::COORDINATE),
-                             Tools::roundNumber(pt.at(5), Tools::COORDINATE));
-
-        } else if (pt.at(4) != 0) {
-            transform = QString("translate(%1)")
-                        .arg(Tools::roundNumber(pt.at(4), Tools::COORDINATE));
-        }
-        if (transform == "translate(0)" || transform == "translate(0 0)")
-            transform.clear();
-    } // [sx 0 0 sy 0 0] = scale
-    else if (pt.at(1) == 0 && pt.at(2) == 0 && pt.at(4) == 0 && pt.at(5) == 0) {
-        if (pt.at(0) != pt.at(3)) {
-            transform = QString("scale(%1 %2)")
-                        .arg(Tools::roundNumber(pt.at(0), Tools::TRANSFORM),
-                             Tools::roundNumber(pt.at(3), Tools::TRANSFORM));
-        } else {
-            transform = QString("scale(%1)")
-                        .arg(Tools::roundNumber(pt.at(0), Tools::TRANSFORM));
-        }
-    } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
-    else if (pt.at(0) == pt.at(3) && pt.at(1) > 0 && pt.at(2) < 0
-             && pt.at(4) == 0 && pt.at(5) == 0) {
-        transform = QString("rotate(%1)")
-                    .arg(Tools::roundNumber(acos(pt.at(0))*(180/M_PI), Tools::TRANSFORM));
-        if (transform == "rotate(0)")
-            transform.clear();
-    } // [1 0 tan(a) 1 0 0] = skewX
-    else if (pt.at(0) == 1 && pt.at(1) == 0 && pt.at(3) == 1 && pt.at(4) == 0 && pt.at(5) == 0) {
-        transform = QString("skewX(%1)")
-                    .arg(Tools::roundNumber(atan(pt.at(2))*(180/M_PI), Tools::TRANSFORM));
-        if (transform == "skewX(0)")
-            transform.clear();
-    } // [1 tan(a) 0 1 0 0] = skewY
-    else if (pt.at(0) == 1 && pt.at(2) == 0 && pt.at(3) == 1 && pt.at(4) == 0 && pt.at(5) == 0) {
-        transform = QString("skewY(%1)")
-                    .arg(Tools::roundNumber(atan(pt.at(1))*(180/M_PI), Tools::TRANSFORM));
-        if (transform == "skewY(0)")
-            transform.clear();
-    } else {
-        transform = "matrix(";
-        for (int i = 0; i < 4; ++i)
-            transform += Tools::roundNumber(pt.at(i), Tools::TRANSFORM) + " ";
-        for (int i = 4; i < 6; ++i)
-            transform += Tools::roundNumber(pt.at(i), Tools::COORDINATE) + " ";
-        transform.chop(1);
-        transform += ")";
-        if (transform == "matrix(0 0 0 0 0 0)")
-            transform.clear();
-    }
-    return transform;
-}
-
-qreal Transform::scaleFactor() const
-{
-    return m_xScale;
-}
-
-qreal Transform::xScale() const
-{
-    return m_xScale;
-}
-
-qreal Transform::yScale() const
-{
-    return m_yScale;
-}
-
-bool Transform::isProportionalScale()
-{
-    return (qAbs(m_xScale - m_yScale) < 0.0001);
-}
-
-bool Transform::isMirrored()
-{
-    if (m_points.at(0) < 0)
-        return true;
-    else if (m_points.at(2) < 0)
-        return true;
-    return false;
-}
-
-bool Transform::isRotating()
-{
-    return (!Tools::isZero(atan(m_points.at(1) / m_points.at(3))));
-}
-
-
-// New class
+Q_CORE_EXPORT double qstrtod(const char *s00, char const **se, bool *ok);
+Q_CORE_EXPORT char *qdtoa(double d, int mode, int ndigits, int *decpt,
+                        int *sign, char **rve, char **digits_str);
 
 // TODO: add key to round to integer when possible
 //       for example remove fraction part from big numbers
@@ -265,39 +55,157 @@ QString Tools::roundNumber(qreal value, int precision)
     // 24.2008 -> 24.2
     // 2.01738 -> 2.02
     // 3.004   -> 3
-    if (qAbs(fractpart/intpart*100) < 1) {
+    if (qAbs(fractpart/intpart*100) < 1.1f) {
         qreal v = pow(10, (precision-1));
         qreal fractpart2 = qRound(fractpart * v) / v;
         value = intpart + fractpart2;
     }
+    return doubleToStr(value, precision);
+}
 
-    QString text = QString::number(value, 'f', precision);
+QString Tools::doubleToStr(qreal value, int precision)
+{
+    QString num_str;
+    bool negative = false;
+    if (qIsInf(value)) {
+        num_str = QString::fromLatin1("inf");
+    } else if (qIsNaN(value)) {
+        num_str = QString::fromLatin1("nan");
+    } else {
+        int decpt, sign;
+        int pr = precision;
+        char *rve = 0;
+        char *buff = 0;
+        num_str = QLatin1String(qdtoa(value, 3, pr, &decpt, &sign, &rve, &buff));
+        if (buff != 0)
+            free(buff);
+        if (decpt < 0) {
+            for (int i = 0; i < -decpt; ++i)
+                num_str.prepend(QLatin1Char('0'));
+            decpt = 0;
+        }
+        else if (decpt > num_str.length()) {
+            for (int i = num_str.length(); i < decpt; ++i)
+                num_str.append(QLatin1Char('0'));
+        }
+        if (decpt < num_str.length())
+            num_str.insert(decpt, '.');
+        negative = sign != 0;
+        if (negative && !(num_str.size() == 1 && num_str.at(0) == QLatin1Char('0')))
+            num_str.prepend(QLatin1Char('-'));
+    }
+    return num_str;
+}
 
-    // 1.100 -> 1.1
-    while (text.at(text.count()-1) == QLatin1Char('0'))
-        text.chop(1);
-    // 1. -> 1
-    if (text.at(text.count()-1) == QLatin1Char('.')) {
-        text.chop(1);
-        // already integer
-        if (text == QLatin1String("-0"))
-            return QLatin1String("0");
-        return text;
+qreal Tools::getNum(const QChar *&str)
+{
+    while (str->isSpace())
+        ++str;
+    qreal num = toDouble(str);
+    while (str->isSpace())
+        ++str;
+    if (*str == QLatin1Char(','))
+        ++str;
+    return num;
+}
+
+qreal Tools::strToDouble(const QString &str)
+{
+    const QChar *ch = str.constData();
+    return toDouble(ch);
+}
+
+// the isDigit code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
+// '0' is 0x30 and '9' is 0x39
+bool Tools::isDigit(ushort ch)
+{
+    static quint16 magic = 0x3ff;
+    return ((ch >> 4) == 3) && (magic >> (ch & 15));
+}
+
+// the toDouble code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
+qreal Tools::toDouble(const QChar *&str)
+{
+    const int maxLen = 255; // technically doubles can go til 308+ but whatever
+    char temp[maxLen+1];
+    int pos = 0;
+
+    if (*str == QLatin1Char('-')) {
+        temp[pos++] = '-';
+        ++str;
+    } else if (*str == QLatin1Char('+')) {
+        ++str;
+    }
+    while (isDigit(str->unicode()) && pos < maxLen) {
+        temp[pos++] = str->toLatin1();
+        ++str;
+    }
+    if (*str == QLatin1Char('.') && pos < maxLen) {
+        temp[pos++] = '.';
+        ++str;
+    }
+    while (isDigit(str->unicode()) && pos < maxLen) {
+        temp[pos++] = str->toLatin1();
+        ++str;
+    }
+    bool exponent = false;
+    if ((*str == QLatin1Char('e') || *str == QLatin1Char('E')) && pos < maxLen) {
+        exponent = true;
+        temp[pos++] = 'e';
+        ++str;
+        if ((*str == QLatin1Char('-') || *str == QLatin1Char('+')) && pos < maxLen) {
+            temp[pos++] = str->toLatin1();
+            ++str;
+        }
+        while (isDigit(str->unicode()) && pos < maxLen) {
+            temp[pos++] = str->toLatin1();
+            ++str;
+        }
     }
 
-    // 0.1 -> .1
-    if (text.midRef(0, 2) == QLatin1String("0."))
-        text.remove(0, 1);
-    // -0.1 -> -.1
-    else if (text.midRef(0, 3) == QLatin1String("-0."))
-        text.remove(1, 1);
+    temp[pos] = '\0';
 
-    if (text == QLatin1String("-0"))
-        return QLatin1String("0");
-    else if (text.isEmpty())
-        return QLatin1String("0");
-
-    return text;
+    qreal val;
+    if (!exponent && pos < 10) {
+        int ival = 0;
+        const char *t = temp;
+        bool neg = false;
+        if(*t == '-') {
+            neg = true;
+            ++t;
+        }
+        while(*t && *t != '.') {
+            ival *= 10;
+            ival += (*t) - '0';
+            ++t;
+        }
+        if(*t == '.') {
+            ++t;
+            int div = 1;
+            while(*t) {
+                ival *= 10;
+                ival += (*t) - '0';
+                div *= 10;
+                ++t;
+            }
+            val = ((qreal)ival)/((qreal)div);
+        } else {
+            val = ival;
+        }
+        if (neg)
+            val = -val;
+    } else {
+#if defined(Q_WS_QWS) && !defined(Q_OS_VXWORKS)
+        if(sizeof(qreal) == sizeof(float))
+            val = strtof(temp, 0);
+        else
+#endif
+        {
+            bool ok = false;
+            val = qstrtod(temp, 0, &ok);
+        }
+    }
+    return val;
 }
 
 QString Tools::trimColor(QString color)
@@ -361,6 +269,8 @@ QString Tools::trimColor(QString color)
 QString Tools::replaceColorName(const QString &color)
 {
     static QHash<QString, QString> colors;
+    if (!colors.isEmpty())
+        return colors.value(color);
     colors.insert("aliceblue", "#f0f8ff");
     colors.insert("antiquewhite", "#faebd7");
     colors.insert("aqua", "#00ffff");
@@ -501,126 +411,12 @@ QString Tools::replaceColorName(const QString &color)
     colors.insert("whitesmoke", "#f5f5f5");
     colors.insert("yellow", "#ffff00");
     colors.insert("yellowgreen", "#9acd32");
-
     return colors.value(color);
 }
 
 bool Tools::nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2)
 {
     return QString::localeAwareCompare(node1.tagName(), node2.tagName()) < 0;
-}
-
-qreal Tools::getNum(const QChar *&str)
-{
-    while (str->isSpace())
-        ++str;
-    qreal num = toDouble(str);
-    while (str->isSpace())
-        ++str;
-    if (*str == QLatin1Char(','))
-        ++str;
-    return num;
-}
-
-qreal Tools::strToDouble(const QString &str)
-{
-    const QChar *ch = str.constData();
-    return toDouble(ch);
-}
-
-// the isDigit code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
-// '0' is 0x30 and '9' is 0x39
-bool Tools::isDigit(ushort ch)
-{
-    static quint16 magic = 0x3ff;
-    return ((ch >> 4) == 3) && (magic >> (ch & 15));
-}
-
-Q_CORE_EXPORT double qstrtod(const char *s00, char const **se, bool *ok);
-
-// the toDouble code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
-qreal Tools::toDouble(const QChar *&str)
-{
-    const int maxLen = 255; // technically doubles can go til 308+ but whatever
-    char temp[maxLen+1];
-    int pos = 0;
-
-    if (*str == QLatin1Char('-')) {
-        temp[pos++] = '-';
-        ++str;
-    } else if (*str == QLatin1Char('+')) {
-        ++str;
-    }
-    while (isDigit(str->unicode()) && pos < maxLen) {
-        temp[pos++] = str->toLatin1();
-        ++str;
-    }
-    if (*str == QLatin1Char('.') && pos < maxLen) {
-        temp[pos++] = '.';
-        ++str;
-    }
-    while (isDigit(str->unicode()) && pos < maxLen) {
-        temp[pos++] = str->toLatin1();
-        ++str;
-    }
-    bool exponent = false;
-    if ((*str == QLatin1Char('e') || *str == QLatin1Char('E')) && pos < maxLen) {
-        exponent = true;
-        temp[pos++] = 'e';
-        ++str;
-        if ((*str == QLatin1Char('-') || *str == QLatin1Char('+')) && pos < maxLen) {
-            temp[pos++] = str->toLatin1();
-            ++str;
-        }
-        while (isDigit(str->unicode()) && pos < maxLen) {
-            temp[pos++] = str->toLatin1();
-            ++str;
-        }
-    }
-
-    temp[pos] = '\0';
-
-    qreal val;
-    if (!exponent && pos < 10) {
-        int ival = 0;
-        const char *t = temp;
-        bool neg = false;
-        if(*t == '-') {
-            neg = true;
-            ++t;
-        }
-        while(*t && *t != '.') {
-            ival *= 10;
-            ival += (*t) - '0';
-            ++t;
-        }
-        if(*t == '.') {
-            ++t;
-            int div = 1;
-            while(*t) {
-                ival *= 10;
-                ival += (*t) - '0';
-                div *= 10;
-                ++t;
-            }
-            val = ((qreal)ival)/((qreal)div);
-        } else {
-            val = ival;
-        }
-        if (neg)
-            val = -val;
-    } else {
-#if defined(Q_WS_QWS) && !defined(Q_OS_VXWORKS)
-        if(sizeof(qreal) == sizeof(float))
-            val = strtof(temp, 0);
-        else
-#endif
-        {
-            bool ok = false;
-            val = qstrtod(temp, 0, &ok);
-        }
-    }
-    return val;
 }
 
 void Tools::sortNodes(QList<SvgElement> &nodeList)
@@ -657,10 +453,10 @@ QVariantHash Tools::initDefaultStyleHash()
     hash.insert("glyph-orientation-vertical", "auto");
     hash.insert("kerning", "auto");
     hash.insert("letter-spacing", "normal");
-    hash.insert("marker-end", "none");
-    hash.insert("marker-mid", "none");
-    hash.insert("marker", "none");
     hash.insert("marker-start", "none");
+    hash.insert("marker-mid", "none");
+    hash.insert("marker-end", "none");
+//    hash.insert("marker", "none");
     hash.insert("mask", "none");
     hash.insert("opacity", 1.0);
     hash.insert("overflow", "visible");
@@ -749,15 +545,6 @@ StringHash Tools::splitStyle(QString style)
             hash.insert(removeEdgeSpaces(attr.mid(0, pos)), removeEdgeSpaces(attr.mid(pos+1)));
     }
     return hash;
-}
-
-QString Tools::styleHashToString(const StringHash &hash)
-{
-    QString outStr;
-    foreach (const QString &key, hash.keys())
-        outStr += key + ":" + hash.value(key) + ";";
-    outStr.chop(1);
-    return outStr;
 }
 
 bool Tools::isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2)

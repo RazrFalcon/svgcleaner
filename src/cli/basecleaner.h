@@ -22,6 +22,7 @@
 #ifndef BASECLEANER_H
 #define BASECLEANER_H
 
+#include "transform.h"
 #include "tools.h"
 
 #define Keys Keys::get()
@@ -35,7 +36,8 @@ public:
     SvgElement svgElement() const;
     SvgElement defsElement() const;
     void updateXLinks(const StringHash &hash);
-    SvgElement findDefElem(const QString &id);
+    SvgElement findDefElement(const QString &id);
+    SvgElement findElement(const QString &id, XMLElement *parent = 0);
     bool hasParent(const SvgElement &elem, const QString &tagName);
     QString findAttribute(const SvgElement &elem, const char *attrName);
 

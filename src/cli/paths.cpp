@@ -23,6 +23,7 @@
 
 #include <cmath>
 
+#include "transform.h"
 #include "tools.h"
 #include "paths.h"
 
@@ -237,8 +238,6 @@ QList<Segment> Segment::toCurve(qreal prevX, qreal prevY) const
 
 void Segment::toRelative(qreal xLast, qreal yLast)
 {
-    if (!absolute)
-        return;
     x = x - xLast;
     y = y - yLast;
     if (command == Command::CurveTo) {
@@ -267,8 +266,8 @@ void Segment::coords(QVector<qreal> &points)
         points << x << y;
     else if (command == Command::HorizontalLineTo)
             points << x;
-        else if (command == Command::VerticalLineTo)
-            points << y;
+    else if (command == Command::VerticalLineTo)
+        points << y;
     else if (command == Command::SmoothCurveTo)
         points << x2 << y2 << x << y;
     else if (command == Command::Quadratic)
@@ -281,7 +280,6 @@ void Segment::coords(QVector<qreal> &points)
 // New class
 
 // TODO: add support to save default segment absolute value
-// TODO: try to apply simple transfrorm to simple path without converting it to curves
 void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathApplyed)
 {
     const QString inPath = elem.attribute("d");
@@ -292,27 +290,28 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     }
     m_elem = elem;
 
+    QList<Segment> segList;
+    splitToSegments(inPath.midRef(0), segList);
+
+    if (segList.isEmpty()) {
+        if (Keys.flag(Key::RemoveInvisibleElements))
+            elem.setAttribute("d", "");
+        return;
+    }
+
     // path like 'M x,y A rx,ry 0 1 1 x,y', where x and y of both segments are similar
     // can't be converted to relative coordinates
     bool isOnlyAbsolute = false;
-    if (inPath.contains("A")) {
-        QString tmpStr = QString(inPath).remove(QRegExp("[^a-AZ-z]"));
-        if (tmpStr.contains("MA"))
-            isOnlyAbsolute = true;
-    }
-
-    QList<Segment> segList;
-    splitToSegments(inPath.midRef(0), segList);
-    if (segList.isEmpty()) {
-        elem.setAttribute("d", "");
-        return;
-    }
+    if (segList.at(1).command == Command::EllipticalArc)
+        isOnlyAbsolute = true;
 
     processSegments(segList);
     if (canApplyTransform && !isOnlyAbsolute)
         canApplyTransform = applyTransform(segList);
     if (!isOnlyAbsolute && Keys.flag(Key::ConvertToRelative))
         segmentsToRelative(segList);
+    else
+        segmentsToDefaultRelative(segList);
 
     // merge segments to path
     QString outPath = segmentsToPath(segList);
@@ -370,7 +369,6 @@ void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
                 offsetX = prevX;
                 offsetY = prevY;
             }
-            seg.absolute = true;
             seg.srcCmd = newCmd;
             newCmd = false;
             if (   seg.command == Command::MoveTo
@@ -497,15 +495,24 @@ void Path::segmentsToRelative(QList<Segment> &segList)
     for (int i = 0; i < segList.count(); ++i) {
         Segment segment = segList.at(i);
         if (segment.command != Command::ClosePath) {
-            if (segment.absolute) {
+            segList[i].toRelative(lastX, lastY);
+            lastX = segment.x;
+            lastY = segment.y;
+        }
+    }
+}
+
+void Path::segmentsToDefaultRelative(QList<Segment> &segList)
+{
+    qreal lastX = 0;
+    qreal lastY = 0;
+    for (int i = 0; i < segList.count(); ++i) {
+        Segment segment = segList.at(i);
+        if (segment.command != Command::ClosePath) {
+            if (!segment.absolute)
                 segList[i].toRelative(lastX, lastY);
-                segment = segList.at(i);
-                lastX += segment.x;
-                lastY += segment.y;
-            } else {
-                lastX = segment.x;
-                lastY = segment.y;
-            }
+            lastX = segment.x;
+            lastY = segment.y;
         }
     }
 }
@@ -523,13 +530,15 @@ QString Path::findAttribute(const QString &attrName)
     return "";
 }
 
+// TODO: replace l to m, when prev cmd is m
 void Path::processSegments(QList<Segment> &segList)
 {
+    // TODO: test it
     if (Keys.flag(Key::RemoveUnneededSymbols)) {
         // remove 'z' command if start point equal to last
         // except 'stroke-linejoin' is not default, because it causes render error
-        QString strokeLinejoin = findAttribute("stroke-linejoin");
-        if (strokeLinejoin.isEmpty() || strokeLinejoin == "miter") {
+        QString stroke = findAttribute("stroke");
+        if (stroke.isEmpty() || stroke == "none") {
             QPointF prevM(segList.first().x, segList.first().y);
             for (int i = 1; i < segList.size(); ++i) {
                 Segment prevSeg = segList.at(i-1);
@@ -569,8 +578,10 @@ void Path::processSegments(QList<Segment> &segList)
             const QChar cmd = seg.command;
             if (cmd == Command::MoveTo) {
                 // removing MoveTo from path with blur filter change render
-                if (isZero(seg.x - prevSeg.x) && isZero(seg.y - prevSeg.y)
+                if ((isZero(seg.x - prevSeg.x) && isZero(seg.y - prevSeg.y))
                         && findAttribute("filter").isEmpty()) {
+                    segList.removeAt(i--);
+                } else if (i == segList.size()-1 && prevSeg.command != Command::MoveTo) {
                     segList.removeAt(i--);
                 }
             }
@@ -595,6 +606,11 @@ void Path::processSegments(QList<Segment> &segList)
             else if (cmd == Command::Quadratic) {
                 if (   isZero(seg.x1 - prevSeg.x1) && isZero(seg.y1 - prevSeg.y1)
                     && isZero(seg.x - prevSeg.x)   && isZero(seg.y - prevSeg.y))
+                    segList.removeAt(i--);
+            }
+            else if (cmd == Command::ClosePath) {
+                // remove paths like mz
+                if (i == segList.size()-1 && i == 1)
                     segList.removeAt(i--);
             }
         }
@@ -664,6 +680,7 @@ QString Path::segmentsToPath(QList<Segment> &segList)
     if (segList.size() == 1 || segList.isEmpty())
         return "";
 
+    // TODO: rewrite to bounding box
     // rounding to >=4 decimal usually do not cause deformation
     bool isUseBiggerPrecision = false;
     const int smallPathPrecision = Keys.coordinatesPrecision() + 1;
@@ -671,12 +688,13 @@ QString Path::segmentsToPath(QList<Segment> &segList)
         // simple check to detect path with small segments wich can be damaged after rounding
         int smallNumCount = 0;
         for (int i = 0; i < segList.size(); ++i) {
-            // FIXME: work only with relative
-            if (qAbs(segList.at(i).x) < 1 /*|| qAbs(segList.at(i).y) < 1*/) {
-                smallNumCount++;
-                if (smallNumCount > segList.size()/2) {
-                    isUseBiggerPrecision = true;
-                    break;
+            if (segList.at(i).command != Command::ClosePath) {
+                if (qAbs(segList.at(i).x) < 1 /*|| qAbs(segList.at(i).y) < 1*/) {
+                    smallNumCount++;
+                    if (smallNumCount > segList.size()/2) {
+                        isUseBiggerPrecision = true;
+                        break;
+                    }
                 }
             }
         }
@@ -693,10 +711,12 @@ QString Path::segmentsToPath(QList<Segment> &segList)
         // check is previous command is the same as next
         // TODO: save commands when RemoveUnneededSymbols is false
         bool writeCmd = true;
-        if (cmd == prevCom && !prevCom.isNull()) {
-            if (segment.absolute == isPrevComAbs
-                && !(segment.srcCmd && cmd == Command::MoveTo))
-                writeCmd = false;
+        if (isTrim) {
+            if (cmd == prevCom && !prevCom.isNull()) {
+                if (segment.absolute == isPrevComAbs
+                    && !(segment.srcCmd && cmd == Command::MoveTo))
+                    writeCmd = false;
+            }
         }
 
         if (writeCmd) {

@@ -62,12 +62,10 @@ double Keys::doubleNumber(const QString &key) const
 
 void Keys::parseOptions(QStringList &list)
 {
-    if (list.isEmpty()) {
-        m_transformPrecision   = intNumber(Key::TransformPrecision);
-        m_attributesPrecision  = intNumber(Key::AttributesPrecision);
-        m_coordinatesPrecision = intNumber(Key::CoordsPrecision);
-        return;
-    }
+    m_transformPrecision   = intNumber(Key::TransformPrecision);
+    m_attributesPrecision  = intNumber(Key::AttributesPrecision);
+    m_coordinatesPrecision = intNumber(Key::CoordsPrecision);
+
 
     if (list.first().startsWith(QLatin1String("--preset"))) {
         QString preset = list.takeFirst();
@@ -78,13 +76,9 @@ void Keys::parseOptions(QStringList &list)
             setPreset(Preset::Basic);
         else if (preset == Preset::Extreme)
             setPreset(Preset::Extreme);
-        else if (preset == Preset::Custom)
-            setPreset(Preset::Custom);
+    } else {
+        setPreset(Preset::Custom);
     }
-
-    m_transformPrecision   = intNumber(Key::TransformPrecision);
-    m_attributesPrecision  = intNumber(Key::AttributesPrecision);
-    m_coordinatesPrecision = intNumber(Key::CoordsPrecision);
 
     if (list.isEmpty())
         return;
@@ -158,6 +152,8 @@ void Keys::prepareDescription()
                     tr("Remove CorelDRAW namespaced elements"));
     descHash.insert(RemoveMSVisioElements,
                     tr("Remove MS Visio namespaced elements"));
+    descHash.insert(RemoveSketchElements,
+                    tr("Remove Sketch namespaced elements"));
     descHash.insert(RemoveInvisibleElements,
                     tr("Remove invisible elements"));
     descHash.insert(RemoveEmptyContainers,
@@ -175,6 +171,8 @@ void Keys::prepareDescription()
                     tr("Remove SVG version"));
     descHash.insert(RemoveUnreferencedIds,
                     tr("Remove unreferenced id's"));
+    descHash.insert(TrimIds,
+                    tr("Trim 'id' attributes"));
     descHash.insert(KeepNamedIds,
                     tr("Keep unreferenced id's which contains only letters"));
     descHash.insert(RemoveNotAppliedAttributes,
@@ -191,6 +189,8 @@ void Keys::prepareDescription()
                     tr("Remove CorelDRAW namespaced attributes"));
     descHash.insert(RemoveMSVisioAttributes,
                     tr("Remove MS Visio namespaced attributes"));
+    descHash.insert(RemoveSketchAttributes,
+                    tr("Remove Sketch namespaced attributes"));
     descHash.insert(RemoveStrokeProps,
                     tr("Remove stroke properties when no stroking"));
     descHash.insert(RemoveFillProps,
@@ -199,8 +199,6 @@ void Keys::prepareDescription()
                     tr("Remove XLinks which pointed to nonexistent elements"));
     descHash.insert(GroupElemByStyle,
                     tr("Group elements by style properties"));
-    descHash.insert(TrimIds,
-                    tr("Trim 'id' attributes into hexadecimal format"));
     descHash.insert(JoinStyleAttributes,
                     tr("Merge style properties into 'style' attribute"));
     descHash.insert(ApplyTransformsToDefs,
@@ -256,6 +254,7 @@ QStringList Keys::elementsKeys()
         << RemoveAdobeElements
         << RemoveCorelDrawElements
         << RemoveMSVisioElements
+        << RemoveSketchElements
         << RemoveInvisibleElements
         << RemoveEmptyContainers
         << UngroupGroups
@@ -270,6 +269,7 @@ QStringList Keys::attributesKeys()
     static QStringList list = QStringList()
         << RemoveSvgVersion
         << RemoveUnreferencedIds
+        << TrimIds
         << RemoveNotAppliedAttributes
         << RemoveDefaultAttributes
         << RemoveInkscapeAttributes
@@ -277,11 +277,11 @@ QStringList Keys::attributesKeys()
         << RemoveAdobeAttributes
         << RemoveCorelDrawAttributes
         << RemoveMSVisioAttributes
+        << RemoveSketchAttributes
         << RemoveStrokeProps
         << RemoveFillProps
         << RemoveUnusedXLinks
         << GroupElemByStyle
-        << TrimIds
         << ApplyTransformsToDefs;
     return list;
 }
@@ -383,7 +383,6 @@ void Keys::setPreset(const QString &name)
     hash.insert(TransformPrecision, 8);
     hash.insert(CoordsPrecision, 8);
     hash.insert(AttributesPrecision, 8);
-
 
     if (name == Preset::Basic) {
         foreach (const QString &key, basicPresetKeys())

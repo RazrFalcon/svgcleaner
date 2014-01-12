@@ -156,8 +156,7 @@ void processFile(const QString &firstFile, const QString &secondFile)
     replacer.fixWrongAttr();
     replacer.markUsedElements();
 
-    if (Keys.flag(Key::RemoveDefaultAttributes))
-        remover.cleanSvgElementAttribute();
+    remover.cleanSvgElementAttribute();
     if (Keys.flag(Key::CreateViewbox))
         replacer.convertSizeToViewbox();
 
@@ -176,8 +175,7 @@ void processFile(const QString &firstFile, const QString &secondFile)
         remover.removeUnreferencedIds();
     if (Keys.flag(Key::RemoveUnusedXLinks))
         remover.removeUnusedXLinks();
-    if (Keys.flag(Key::RemoveDefaultAttributes))
-        remover.processStyleAttributes();
+    remover.cleanPresentationAttributes();
     if (Keys.flag(Key::ConvertBasicShapes))
         replacer.convertBasicShapes();
     if (Keys.flag(Key::UngroupGroups))
@@ -207,6 +205,7 @@ void processFile(const QString &firstFile, const QString &secondFile)
     QString outStr = QString::fromUtf8(printer.CStr());
 
     QTextStream outStream(&outFile);
+    // TODO: get rid of this lines
     outStr.replace(">\n<tspan", "><tspan");
     outStr.replace("&apos;", "'");
     outStream << outStr;

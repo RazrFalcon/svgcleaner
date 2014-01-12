@@ -37,9 +37,6 @@ public:
     virtual ~WizardDialog();
     QList<ToThread> threadData();
 
-signals:
-    void start(QString, bool);
-
 private:
     QFileInfoList m_fileList;
     QFutureWatcher<QFileInfoList> *m_folderWatcher;
@@ -51,7 +48,7 @@ private:
     bool checkForWarnings();
     QString compressValue();
     QString findLabel(const QString &accessibleName);
-    QStringList argsList();
+    QStringList argsList(bool *isCustom);
     void createWarning(const QString &text);
     void loadSettings();
     void resetFields();
@@ -71,7 +68,7 @@ private:
 private slots:
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);
     void createExample();
-    void loadFiles();
+    void loadFileList();
     void on_btnOpenInDir_clicked();
     void on_btnOpenOutDir_clicked();
     void on_buttonBox_clicked(QAbstractButton *button);

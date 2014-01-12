@@ -24,6 +24,7 @@
 
 #include <QStringList>
 
+#include "transform.h"
 #include "keys.h"
 #include "tinyxml2.h"
 
@@ -60,6 +61,7 @@ public:
     QString attribute(const char *name) const;
     QString id() const;
     QString defIdFromAttribute(const QString &name);
+    QString xlinkId();
     StringMap attributesMap(bool ignoreId = false) const;
     QStringList styleAttributesList() const;
     QStringList attributesList() const;

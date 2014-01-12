@@ -65,6 +65,7 @@ public:
     QList<Segment> toCurve(qreal prevX, qreal prevY) const;
 
     QChar command;
+    // store original value
     bool absolute;
     // is this command defined in source path
     bool srcCmd;
@@ -98,6 +99,7 @@ private:
     void splitToSegments(const QStringRef &path, QList<Segment> &segList);
     void processSegments(QList<Segment> &segList);
     void segmentsToRelative(QList<Segment> &segList);
+    void segmentsToDefaultRelative(QList<Segment> &segList);
     bool isZero(double value);
     void calcNewStrokeWidth(const Transform &transform);
     bool applyTransform(QList<Segment> &segList);

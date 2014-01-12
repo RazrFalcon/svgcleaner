@@ -52,6 +52,7 @@ namespace Key {
     static const QString RemoveAdobeElements         = "--remove-ai-elts";
     static const QString RemoveCorelDrawElements     = "--remove-corel-elts";
     static const QString RemoveMSVisioElements       = "--remove-msvisio-elts";
+    static const QString RemoveSketchElements        = "--remove-sketch-elts";
     static const QString RemoveInvisibleElements     = "--remove-invisible-elts";
     static const QString RemoveEmptyContainers       = "--remove-empty-containers";
     static const QString RemoveTinyGaussianBlur      = "--remove-gaussian-blur";
@@ -70,6 +71,7 @@ namespace Key {
     static const QString RemoveAdobeAttributes       = "--remove-ai-atts";
     static const QString RemoveCorelDrawAttributes   = "--remove-corel-atts";
     static const QString RemoveMSVisioAttributes     = "--remove-msvisio-atts";
+    static const QString RemoveSketchAttributes      = "--remove-sketch-atts";
     static const QString RemoveStrokeProps           = "--remove-stroke-props";
     static const QString RemoveFillProps             = "--remove-fill-props";
     static const QString RemoveUnusedXLinks          = "--remove-unused-xlinks";

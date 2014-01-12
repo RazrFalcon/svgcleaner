@@ -17,7 +17,8 @@ SOURCES += \
     replacer.cpp \
     svgelement.cpp \
     tinyxml2.cpp \
-    tools.cpp
+    tools.cpp \
+    transform.cpp
 
 HEADERS += \
     basecleaner.h \
@@ -27,4 +28,5 @@ HEADERS += \
     replacer.h \
     svgelement.h \
     tinyxml2.h \
-    tools.h
+    tools.h \
+    transform.h

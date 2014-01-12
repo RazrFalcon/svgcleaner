@@ -22,77 +22,11 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
-// TODO: remove regex as much as possible
-#include <QRegExp>
 #include <QStringList>
 #include <QRectF>
 #include <QtDebug>
 
 #include "svgelement.h"
-
-class TransformMatrix
-{
-public:
-    TransformMatrix() { setToIdentity(); }
-    void setToIdentity()
-    {
-        for (int col = 0; col < 3; ++col) {
-            for (int row = 0; row < 3; ++row) {
-                if (row == col)
-                    m[col][row] = 1.0f;
-                else
-                    m[col][row] = 0.0f;
-            }
-        }
-    }
-
-    TransformMatrix operator *(const TransformMatrix &matrix)
-    {
-        TransformMatrix result;
-        for (int row = 0; row < 3; ++row) {
-            for (int col = 0; col < 3; ++col) {
-                qreal sum(0.0f);
-                for (int j = 0; j < 3; ++j)
-                    sum += m[j][row] * matrix.m[col][j];
-                result.m[col][row] = sum;
-            }
-        }
-        return result;
-    }
-    qreal& operator()(int row, int column)
-    {
-        Q_ASSERT(row >= 0 && row < 3 && column >= 0 && column < 3);
-        return m[column][row];
-    }
-private:
-    qreal m[3][3];
-};
-
-class Transform
-{
-public:
-    explicit Transform(const QString &text);
-    void setOldXY(qreal prevX, qreal prevY);
-    qreal newX() const;
-    qreal newY() const;
-    QString simplified() const;
-    qreal scaleFactor() const;
-    qreal xScale() const;
-    qreal yScale() const;
-    bool isProportionalScale();
-    bool isMirrored();
-    bool isRotating();
-
-private:
-    QList<qreal> m_points;
-    qreal m_baseX;
-    qreal m_baseY;
-    qreal m_xScale;
-    qreal m_yScale;
-
-    QList<TransformMatrix> parseTransform(const QStringRef &text);
-    QList<qreal> mergeMatrixes(QString text);
-};
 
 class Tools
 {
@@ -107,10 +41,8 @@ public:
     static QList<SvgElement> childElemList(const SvgElement &node);
     static QList<SvgElement> childElemList(XMLDocument *doc);
     static QString convertUnitsToPx(const QString &text, qreal baseValue = 0);
-    static QString replaceColorName(const QString &color);
     static QString roundNumber(qreal value, RoundType type = COORDINATE);
     static QString roundNumber(qreal value, int precision);
-    static QString styleHashToString(const StringHash &hash);
     static QString trimColor(QString color);
     static void sortNodes(QList<SvgElement> &nodeList);
     static QVariantHash initDefaultStyleHash();
@@ -121,9 +53,11 @@ public:
     static qreal strToDouble(const QString &str);
 
 private:
+    static QString doubleToStr(qreal value, int precision = 6);
     static bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2);
     static bool isDigit(ushort ch);
     static qreal toDouble(const QChar *&str);
+    static QString replaceColorName(const QString &color);
 };
 
 namespace Props {
@@ -132,20 +66,20 @@ static const StringSet strokeList = StringSet()
     << "stroke" << "stroke-width" << "stroke-linecap" << "stroke-linejoin" << "stroke-miterlimit"
     << "stroke-dasharray" << "stroke-dashoffset" << "stroke-opacity";
 
-static const StringSet styleAttributes = StringSet()
-    << "alignment-baseline" << "baseline-shift" << "clip" << "clip-path" << "clip-rule" << "color"
-    << "color-interpolation" << "color-interpolation-filters" << "color-profile"
-    << "color-rendering" << "cursor" << "direction" << "display" << "dominant-baseline"
-    << "enable-background" << "fill" << "fill-opacity" << "fill-rule" << "filter" << "flood-color"
-    << "flood-opacity" << "font" << "font-family" << "font-size" << "font-size-adjust"
-    << "font-stretch" << "font-style" << "font-variant" << "font-weight"
-    << "glyph-orientation-horizontal" << "glyph-orientation-vertical" << "image-rendering"
-    << "kerning" << "letter-spacing" /*<< "lighting-color"*/ << "marker" << "marker-end"
-    << "marker-mid" << "marker-start" << "mask" << "opacity" << "overflow" << "pointer-events"
-    << "shape-rendering" << "stop-color" << "stop-opacity" << "stroke" << "stroke-dasharray"
-    << "stroke-dashoffset" << "stroke-linecap" << "stroke-linejoin" << "stroke-miterlimit"
-    << "stroke-opacity" << "stroke-width" << "text-anchor" << "text-decoration" << "text-rendering"
-    << "unicode-bidi" << "visibility" << "word-spacing" << "writing-mode";
+static const StringSet presentationAttributes = StringSet()
+    << "alignment-baseline" << "baseline-shift" << "clip-path" << "clip-rule" << "clip"
+    << "color-interpolation-filters" << "color-interpolation" << "color-profile"
+    << "color-rendering" << "color" << "cursor" << "direction" << "display" << "dominant-baseline"
+    << "enable-background" << "fill-opacity" << "fill-rule" << "fill" << "filter" << "flood-color"
+    << "flood-opacity" << "font-family" << "font-size-adjust" << "font-size" << "font-stretch"
+    << "font-style" << "font-variant" << "font-weight" << "glyph-orientation-horizontal"
+    << "glyph-orientation-vertical" << "image-rendering" << "kerning" << "letter-spacing"
+    << "lighting-color" << "marker-end" << "marker-mid" << "marker-start" << "mask" << "opacity"
+    << "overflow" << "pointer-events" << "shape-rendering" << "stop-color" << "stop-opacity"
+    << "stroke-dasharray" << "stroke-dashoffset" << "stroke-linecap" << "stroke-linejoin"
+    << "stroke-miterlimit" << "stroke-opacity" << "stroke-width" << "stroke" << "text-anchor"
+    << "text-decoration" << "text-rendering" << "unicode-bidi" << "visibility" << "word-spacing"
+    << "writing-mode";
 
 static const CharList linkableStyleAttributes = CharList()
     << "clip-path" << "fill" << "mask" << "filter" << "stroke" << "marker-start"

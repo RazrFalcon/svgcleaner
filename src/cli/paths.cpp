@@ -703,7 +703,7 @@ QString Path::segmentsToPath(QList<Segment> &segList)
     QString outPath;
     QChar prevCom;
     bool isPrevComAbs = false;
-    bool isTrim = Keys.flag(Key::RemoveUnneededSymbols);
+    const bool isTrim = Keys.flag(Key::RemoveUnneededSymbols);
     QString prevPos;
     for (int i = 0; i < segList.count(); ++i) {
         Segment segment = segList.at(i);
@@ -756,7 +756,7 @@ QString Path::segmentsToPath(QList<Segment> &segList)
                 bool useSep = false;
                 if (cmd == Command::EllipticalArc)
                     useSep = true;
-                else if (!prevPos.contains('.') && currPos.startsWith('.'))
+                else if (!prevPos.contains('.') && currPos.startsWith(QLatin1Char('.')))
                     useSep = true;
                 else if (currPos.at(0).isDigit())
                     useSep = true;

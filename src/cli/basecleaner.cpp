@@ -54,7 +54,7 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
         for (int i = 0; i < xlinkStyles.size(); ++i) {
             if (currElem.hasAttribute(xlinkStyles.at(i))) {
                 QString attrValue = currElem.attribute(xlinkStyles.at(i));
-                if (attrValue.startsWith("url")) {
+                if (attrValue.startsWith(QL1S("url"))) {
                     QString url = attrValue.mid(5, attrValue.size()-6);
                     if (hash.contains(url)) {
                         currElem.setAttribute(xlinkStyles.at(i),

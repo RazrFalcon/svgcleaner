@@ -77,7 +77,7 @@ bool SvgElement::hasLinkedStyle()
     if (illegalStyleAttrList.isEmpty())
         illegalStyleAttrList << "fill" << "stroke";
     foreach (const QString attrName, illegalStyleAttrList) {
-        if (attribute(attrName).startsWith("url("))
+        if (attribute(attrName).startsWith(QL1S("url(")))
             return true;
     }
     return false;
@@ -126,7 +126,7 @@ QStringList SvgElement::styleAttributesList() const
     QStringList list;
     list.reserve(attributesCount());
     for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next()) {
-        QString attrName = QLatin1String(child->Name());
+        QString attrName = QL1S(child->Name());
         if (Props::presentationAttributes.contains(attrName))
            list << attrName;
     }
@@ -138,7 +138,18 @@ QStringList SvgElement::attributesList() const
     QStringList list;
     list.reserve(attributesCount());
     for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next())
-        list << QLatin1String(child->Name());
+        list << QL1S(child->Name());
+    return list;
+}
+
+QStringList SvgElement::attributesListBySet(const StringSet &set) const
+{
+    QStringList list;
+    for (const XMLAttribute *child = m_elem->FirstAttribute(); child; child = child->Next()) {
+        QString str = QL1S(child->Name());
+        if (set.contains(str))
+            list << str;
+    }
     return list;
 }
 
@@ -153,7 +164,15 @@ void SvgElement::setAttribute(const QString &name, const QString &value)
     if (value.isEmpty())
         m_elem->DeleteAttribute(ToChar(name));
     else
-        m_elem->SetAttribute(ToChar(name), value.toStdString().c_str());
+        m_elem->SetAttribute(ToChar(name), ToChar(value).constData());
+}
+
+void SvgElement::setAttribute(const char *name, const QString &value)
+{
+    if (value.isEmpty())
+        m_elem->DeleteAttribute(name);
+    else
+        m_elem->SetAttribute(name, ToChar(value).constData());
 }
 
 QString SvgElement::id() const
@@ -164,7 +183,7 @@ QString SvgElement::id() const
 QString SvgElement::defIdFromAttribute(const QString &name)
 {
     QString id = attribute(name);
-    if (!id.startsWith("url("))
+    if (!id.startsWith(QL1S("url(")))
         return QString();
     return id.mid(5, id.size()-6);
 }
@@ -188,7 +207,7 @@ bool SvgElement::hasLinkedDef()
     if (illegalStyleAttrList.isEmpty())
         illegalStyleAttrList << "fill" << "stroke";
     foreach (const QString attrName, illegalStyleAttrList) {
-        if (attribute(attrName).startsWith("url("))
+        if (attribute(attrName).startsWith(QL1S("url(")))
             return true;
     }
     return false;
@@ -215,12 +234,25 @@ bool SvgElement::hasAttributes(const QStringList &list) const
 QString SvgElement::attribute(const QString &name) const
 {
     const char *ch = ToChar(name);
-    return QLatin1String(m_elem->Attribute(ch));
+    return QL1S(m_elem->Attribute(ch));
 }
 
 QString SvgElement::attribute(const char *name) const
 {
-    return QLatin1String(m_elem->Attribute(name));
+    return QL1S(m_elem->Attribute(name));
+}
+
+bool SvgElement::attributeEqualTo(const char *attrName, const char *value)
+{
+    const char *attrValue = m_elem->Attribute(attrName);
+    if (attrValue == 0)
+        return false;
+    return XMLUtil::StringEqual(attrValue, value);
+}
+
+double SvgElement::doubleAttribute(const char *name) const
+{
+    return m_elem->DoubleAttribute(name);
 }
 
 double SvgElement::doubleAttribute(const QString &name) const
@@ -250,7 +282,7 @@ const char* SvgElement::tagNameChar() const
 
 QString SvgElement::tagName() const
 {
-    return QLatin1String(m_elem->Name());
+    return QL1S(m_elem->Name());
 }
 
 SvgElement SvgElement::parentElement() const

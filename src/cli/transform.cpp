@@ -74,14 +74,14 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
         ++str;
 
         TransformMatrix matrix;
-        if (transformType == QLatin1String("matrix")) {
+        if (transformType == QL1S("matrix")) {
             matrix(0,0) = Tools::getNum(str);
             matrix(1,0) = Tools::getNum(str);
             matrix(0,1) = Tools::getNum(str);
             matrix(1,1) = Tools::getNum(str);
             matrix(0,2) = Tools::getNum(str);
             matrix(1,2) = Tools::getNum(str);
-        } else if (transformType == QLatin1String("translate")) {
+        } else if (transformType == QL1S("translate")) {
             matrix(0,2) = Tools::getNum(str);
             while (str->isSpace())
                 ++str;
@@ -89,7 +89,7 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
                 matrix(1,2) = Tools::getNum(str);
             else
                 matrix(1,2) = 0;
-        } else if (transformType == QLatin1String("scale")) {
+        } else if (transformType == QL1S("scale")) {
             matrix(0,0) = Tools::getNum(str);
             while (str->isSpace())
                 ++str;
@@ -97,15 +97,15 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
                 matrix(1,1) = Tools::getNum(str);
             else
                 matrix(1,1) = matrix(0,0);
-        } else if (transformType == QLatin1String("rotate")) {
+        } else if (transformType == QL1S("rotate")) {
             qreal val = Tools::getNum(str);
             matrix(0,0) = cos((val/180)*M_PI);
             matrix(1,0) = sin((val/180)*M_PI);
             matrix(0,1) = -sin((val/180)*M_PI);
             matrix(1,1) = cos((val/180)*M_PI);
-        } else if (transformType == QLatin1String("skewX")) {
+        } else if (transformType == QL1S("skewX")) {
             matrix(0,1) = tan(Tools::getNum(str));
-        } else if (transformType == QLatin1String("skewY")) {
+        } else if (transformType == QL1S("skewY")) {
             matrix(1,0) = tan(Tools::getNum(str));
         } else {
             qFatal("Error: wrong transform matrix: %s", qPrintable(text.toString()));
@@ -137,6 +137,7 @@ QList<qreal> Transform::mergeMatrixes(QString text)
     return pointList;
 }
 
+// TODO: add key for this
 QString Transform::simplified() const
 {
     if (m_points.isEmpty())
@@ -238,7 +239,8 @@ QString Transform::simplified() const
     for (int i = 0; i < newPoints.size(); ++i) {
         if (i != 0) {
             if (Keys::get().flag(Key::RemoveUnneededSymbols)) {
-                if ((!newPoints.at(i-1).contains('.') && newPoints.at(i).startsWith('.'))
+                if ((!newPoints.at(i-1).contains('.')
+                     && newPoints.at(i).startsWith(QLatin1Char('.')))
                         || newPoints.at(i).at(0).isDigit())
                     transform += " ";
             } else {

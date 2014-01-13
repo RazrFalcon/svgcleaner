@@ -92,7 +92,7 @@ void Remover::removeUnusedDefs()
 {
     StringSet defsIdList;
     foreach (const SvgElement &elem, defsElement().childElemList())
-        if (elem.tagName() != QLatin1String("clipPath"))
+        if (elem.tagName() != QL1S("clipPath"))
             defsIdList << elem.id();
 
     StringSet currDefsIdList = defsIdList;
@@ -106,7 +106,7 @@ void Remover::removeUnusedDefs()
             foreach (const char* attrName, Props::linkableStyleAttributes) {
                 if (elem.hasAttribute(attrName)) {
                     QString url = elem.attribute(attrName);
-                    if (url.startsWith(QLatin1String("url(")))
+                    if (url.startsWith(QL1S("url(")))
                         currDefsIdList.remove(url.mid(5, url.size()-6));
                 }
             }
@@ -136,11 +136,11 @@ void Remover::removeUnusedXLinks()
         foreach (const char *attrName, xlinkStyles) {
             if (elem.hasAttribute(attrName)) {
                 if (QString(attrName) == "xlink:href") {
-                    if (!elem.attribute("xlink:href").contains("base64"))
+                    if (!elem.attribute("xlink:href").startsWith(QL1S("data")))
                         xlinkSet << elem.xlinkId();
                 } else {
                     QString url = elem.attribute(attrName);
-                    if (url.startsWith(QLatin1String("url(")))
+                    if (url.startsWith(QL1S("url(")))
                         xlinkSet << url.mid(5, url.size()-6);
                 }
             }
@@ -165,7 +165,7 @@ void Remover::removeUnusedXLinks()
                         elem.removeAttribute(attrName);
                 } else {
                     QString url = elem.attribute(attrName);
-                    if (url.startsWith(QLatin1String("url("))) {
+                    if (url.startsWith(QL1S("url("))) {
                         if (xlinkSet.contains(url.mid(5, url.size()-6)))
                             elem.removeAttribute(attrName);
                     }
@@ -292,7 +292,7 @@ void Remover::removeDuplicatedDefs()
     for (int i = 0; i < elemStructList.count(); ++i) {
         DefsElemStruct des1 = elemStructList.at(i);
         QString id1 = des1.id;
-        if (des1.tagName == QLatin1String("linearGradient") || des1.tagName == "radialGradient") {
+        if (des1.tagName == QL1S("linearGradient") || des1.tagName == "radialGradient") {
             for (int j = i; j < elemStructList.count(); ++j) {
                 DefsElemStruct des2 = elemStructList.at(j);
                 QString id2 = des2.id;
@@ -490,17 +490,17 @@ void Remover::removeElements()
                          && currTag != "inkscape:path-effect"
                          && Keys.flag(Key::RemoveInkscapeElements))
                     removeThisNode = true;
-                else if ((   currTag.startsWith("a:")
-                          || currTag.startsWith("i:"))
+                else if ((   currTag.startsWith(QL1S("a:"))
+                          || currTag.startsWith(QL1S("i:")))
                          && Keys.flag(Key::RemoveAdobeElements))
                     removeThisNode = true;
-                else if (currTag.startsWith("v:")
+                else if (currTag.startsWith(QL1S("v:"))
                          && Keys.flag(Key::RemoveMSVisioElements))
                     removeThisNode = true;
-                else if (currTag.startsWith("c:")
+                else if (currTag.startsWith(QL1S("c:"))
                          && Keys.flag(Key::RemoveCorelDrawElements))
                     removeThisNode = true;
-                else if (currTag.startsWith("sketch:")
+                else if (currTag.startsWith(QL1S("sketch:"))
                          && Keys.flag(Key::RemoveSketchElements))
                     removeThisNode = true;
                 else if (currTag == "foreignObject"
@@ -529,7 +529,7 @@ void Remover::removeElements()
                              && !currElem.hasAttribute("xlink:href")) {
                         removeThisNode = true;
                     } else if (    currTag == "image"
-                               && !currElem.attribute("xlink:href").startsWith("data"))
+                               && !currElem.attribute("xlink:href").startsWith(QL1S("data")))
                         removeThisNode = true;
                     else if (    currElem.isReferenced()
                              && !currElem.hasAttribute("id")
@@ -616,11 +616,11 @@ bool Remover::isDoctype(const QString &str)
         return false;
     if (str.startsWith(QLatin1Char('!')))
         return true;
-    if (str.startsWith(QLatin1String("DOCTYPE")))
+    if (str.startsWith(QL1S("DOCTYPE")))
         return true;
-    if (str.startsWith(QLatin1String("ENTITY")))
+    if (str.startsWith(QL1S("ENTITY")))
         return true;
-    if (str.startsWith(QLatin1String("]>")) || str.startsWith(QLatin1String("\n]>")))
+    if (str.startsWith(QL1S("]>")) || str.startsWith(QL1S("\n]>")))
         return true;
     return false;
 }
@@ -771,63 +771,67 @@ void Remover::removeAttributes()
         SvgElement elem = list.takeFirst();
         QStringList baseAttrList = elem.attributesList();
         if (!baseAttrList.isEmpty()) {
+            QString tagName = elem.tagName();
             QStringList attrList = baseAttrList;
             // sodipodi:type="inkscape:offset" supported only by inkscape,
             // and its creates problems in other renders
             foreach (const QString &attrName, attrList) {
-                if (attrName.startsWith("inkscape") && Keys.flag(Key::RemoveInkscapeAttributes))
+                if (attrName.startsWith(QL1S("inkscape")) && Keys.flag(Key::RemoveInkscapeAttributes))
                     attrList.removeOne(attrName);
-                if (attrName.startsWith("sodipodi") && Keys.flag(Key::RemoveSodipodiAttributes))
+                if (attrName.startsWith(QL1S("sodipodi")) && Keys.flag(Key::RemoveSodipodiAttributes))
                     attrList.removeOne(attrName);
-                if ((attrName.startsWith("i:") || attrName.startsWith("a:"))
+                if ((attrName.startsWith(QL1S("i:")) || attrName.startsWith(QL1S("a:")))
                     && Keys.flag(Key::RemoveAdobeAttributes))
                     attrList.removeOne(attrName);
-                if (attrName.startsWith("v:") && Keys.flag(Key::RemoveMSVisioAttributes))
+                if (attrName.startsWith(QL1S("v:")) && Keys.flag(Key::RemoveMSVisioAttributes))
                     attrList.removeOne(attrName);
-                if (attrName.startsWith("c:") && Keys.flag(Key::RemoveCorelDrawAttributes))
+                if (attrName.startsWith(QL1S("c:")) && Keys.flag(Key::RemoveCorelDrawAttributes))
                     attrList.removeOne(attrName);
-                if (attrName.startsWith("sketch:") && Keys.flag(Key::RemoveSketchAttributes))
+                if (attrName.startsWith(QL1S("sketch:")) && Keys.flag(Key::RemoveSketchAttributes))
                     attrList.removeOne(attrName);
             }
 
             if (Keys.flag(Key::RemoveDefaultAttributes)) {
-                if (elem.attribute("spreadMethod") == "pad")
+                if (elem.attributeEqualTo("spreadMethod", "pad"))
                     attrList.removeOne("spreadMethod");
-                if (elem.tagName() == "clipPath") {
-                    if (elem.attribute("clipPathUnits") == "userSpaceOnUse")
+                if (tagName == QL1S("clipPath")) {
+                    if (elem.attributeEqualTo("clipPathUnits", "userSpaceOnUse"))
                         attrList.removeOne("clipPathUnits");
                 }
             }
             if (Keys.flag(Key::RemoveNotAppliedAttributes)) {
-                if (attrList.contains("desc"))
-                    attrList.removeOne("desc");
+                if (attrList.contains(QL1S("desc")))
+                    attrList.removeOne(QL1S("desc"));
                 // xlink:href could not contains uri with spaces
-                if (attrList.contains("xlink:href")) {
+                if (attrList.contains(QL1S("xlink:href"))) {
                     QString xlink = elem.attribute("xlink:href");
-                    if (xlink.indexOf(' ') != -1 && !xlink.startsWith("data:"))
+                    if (xlink.indexOf(QLatin1Char(' ')) != -1 && !xlink.startsWith(QL1S("data:")))
                         attrList.removeOne("xlink:href");
                 }
                 if (!elem.isTagName("svg")) {
                     foreach (const QString &attrName, attrList) {
-                        if (attrName.startsWith("xmlns"))
+                        if (attrName.startsWith(QL1S("xmlns")))
                             attrList.removeOne(attrName);
                     }
                 }
 
-                if (attrList.contains("marker"))
-                    if (elem.attribute("marker") == "none")
+                if (attrList.contains(QL1S("marker")))
+                    if (elem.attributeEqualTo("marker", "none"))
                         elem.removeAttribute("marker");
 
                 // path inside clipPath needs to contains only d attribute
                 // TODO: remove all style props from path used only in clipPath or mask
-                if (elem.tagName() == "path" || elem.tagName() == "use") {
+                if (tagName == "path" || tagName == "use") {
                     QString parentTag = elem.parentElement().tagName();
                     if (parentTag == "clipPath"/* || parentTag == "defs"*/) {
                         foreach (const QString &attrName, attrList) {
                             bool removeAttr = true;
-                            if (attrName == "d" || attrName == "transform" || attrName == "id")
+                            if (   attrName == QL1S("d")
+                                || attrName == QL1S("transform")
+                                || attrName == QL1S("id"))
                                 removeAttr = false;
-                            if (elem.tagName() == "use" && attrName == "xlink:href")
+                            if (tagName == QL1S("use")
+                                && attrName == QL1S("xlink:href"))
                                 removeAttr = false;
                             if (removeAttr)
                                 attrList.removeOne(attrName);
@@ -839,7 +843,7 @@ void Remover::removeAttributes()
                 foreach (const char *attrName, strokeAndFill) {
                     if (attrList.contains(attrName)) {
                         QString url = elem.attribute(attrName);
-                        if (url.startsWith("url(")) {
+                        if (url.startsWith(QL1S("url("))) {
                             SvgElement defElem = findDefElement(url.mid(5, url.size()-6));
                             if (defElem.isNull()) {
                                 elem.setAttribute(attrName, "none");
@@ -865,7 +869,7 @@ void Remover::removeAttributes()
             }
 
 
-            if (elem.tagName() == "stop") {
+            if (tagName == "stop") {
                 if (elem.doubleAttribute("offset") < 0.0001)
                     attrList.removeOne("offset");
             }
@@ -892,7 +896,7 @@ void Remover::removeAttributes()
             QList<XMLNode *> list2 = Tools::childNodeList(elem.xmlElement());
             while (!list2.isEmpty()) {
                 XMLNode *elem2 = list2.takeFirst();
-                QString tagName = QLatin1String(elem2->Value());
+                QString tagName = QL1S(elem2->Value());
                 if (tagName == "tspan" || tagName == "flowPara") {
                     if (elem2->FirstChild() != 0) {
                         if (elem2->FirstChild()->ToText() != 0) {
@@ -1007,7 +1011,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
         if (!value.isEmpty()) {
             bool ok = false;
             qreal num = value.toDouble(&ok);
-            if (!ok && !value.startsWith("url(")) {
+            if (!ok && !value.startsWith(QL1S("url("))) {
                 hash.insert(key, Tools::convertUnitsToPx(value));
                 num = hash.value(key).toDouble();
             }
@@ -1026,7 +1030,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
             hash.remove(attr);
     } else if (isConvertColors) {
         QString fill = hash.value("fill");
-        if (!fill.isEmpty() && fill != "none" && !fill.startsWith("url"))
+        if (!fill.isEmpty() && fill != "none" && !fill.startsWith(QL1S("url")))
             hash.insert("fill", Tools::trimColor(fill));
     }
 
@@ -1045,7 +1049,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
             QString stroke = hash.value("stroke");
             if (   !stroke.isEmpty()
                 &&  stroke != "none"
-                && !stroke.startsWith("url"))
+                && !stroke.startsWith(QL1S("url")))
             {
                 hash.insert("stroke", Tools::trimColor(hash.value("stroke")));
             }

@@ -28,6 +28,8 @@
 
 #include "svgelement.h"
 
+#define QL1S(x) QLatin1String(x)
+
 class Tools
 {
 public:

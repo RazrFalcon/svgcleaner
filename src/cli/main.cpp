@@ -35,7 +35,7 @@ void printLine(const QString &key, const QString &desc = QString())
 {
     if (desc.isEmpty())
         qDebug("  %s %s", qPrintable(key.leftJustified(35, ' ')),
-               qPrintable(Keys.description(key)));
+                          qPrintable(Keys.description(key)));
     else
         qDebug("  %s %s", qPrintable(key.leftJustified(35, ' ')), qPrintable(desc));
 }

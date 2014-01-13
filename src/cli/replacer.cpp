@@ -248,37 +248,29 @@ void Replacer::convertUnits()
     //       For gradientUnits="objectBoundingBox", percentages represent values relative to the bounding box for the object.
 
     // TODO: process 'offset' attr with %
-    StringSet attributes = Props::digitList;
     QList<SvgElement> list = Tools::childElemList(document());
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         QString currTag = currElem.tagName();
-        QStringList attrList = currElem.attributesList();
-        for (int j = 0; j < attrList.count(); ++j) {
-            if (attributes.contains(attrList.at(j))) {
-                // TODO: to many setAttribute, rewrite
+        foreach (const QString &attrName, currElem.attributesListBySet(Props::digitList)) {
+            // fix attributes like:
+            // x="170.625 205.86629 236.34703 255.38924 285.87 310.99512 338.50049"
+            // FIXME: ignores list based attr
+            QString attrValue = currElem.attribute(attrName);
+            if (attrValue.contains(" "))
+                attrValue = attrValue.left(attrValue.indexOf(" "));
 
-                // fix attributes like:
-                // x="170.625 205.86629 236.34703 255.38924 285.87 310.99512 338.50049"
-                // PS: bad way...
-                // FIXME: ignores list based attr
-                if (currElem.attribute(attrList.at(j)).contains(" "))
-                    currElem.setAttribute(attrList.at(j), currElem.attribute(attrList.at(j))
-                                                                  .remove(QRegExp(" .*")));
-
-                QString value = currElem.attribute(attrList.at(j));
-                // TODO: process gradients attrs
-                if (value.contains("%")
-                    && currTag != "radialGradient" && currTag != "linearGradient") {
-                    if (attrList.at(j).contains("x"))
-                        value = Tools::convertUnitsToPx(value, width);
-                    else if (attrList.at(j).contains("y"))
-                       value = Tools::convertUnitsToPx(value, height);
-                } else {
-                    value = Tools::convertUnitsToPx(value);
-                }
-                currElem.setAttribute(attrList.at(j), value);
+            // TODO: process gradients attrs
+            if (attrValue.contains("%")
+                && currTag != "radialGradient" && currTag != "linearGradient") {
+                if (attrName.contains("x"))
+                    attrValue = Tools::convertUnitsToPx(attrValue, width);
+                else if (attrName.contains("y"))
+                   attrValue = Tools::convertUnitsToPx(attrValue, height);
+            } else {
+                attrValue = Tools::convertUnitsToPx(attrValue);
             }
+            currElem.setAttribute(attrName, attrValue);
         }
 
         if (currElem.hasChildren())
@@ -391,9 +383,9 @@ void Replacer::prepareDefs()
 void Replacer::fixWrongAttr()
 {
     // fix bad Adobe Illustrator SVG exporting
-    if (svgElement().attribute("xmlns") == QLatin1String("&ns_svg;"))
+    if (svgElement().attributeEqualTo("xmlns", "&ns_svg;"))
         svgElement().setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    if (svgElement().attribute("xmlns:xlink") == QLatin1String("&ns_xlink;"))
+    if (svgElement().attributeEqualTo("xmlns:xlink", "&ns_xlink;"))
         svgElement().setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
     QList<SvgElement> list = svgElement().childElemList();
@@ -586,15 +578,16 @@ void Replacer::trimIds()
         foreach (const QString &attrName, Props::linkableStyleAttributes) {
             if (currElem.hasAttribute(attrName)) {
                 QString url = currElem.attribute(attrName);
-                if (url.startsWith("url")) {
+                if (url.startsWith(QL1S("url"))) {
                     url = url.mid(5, url.size()-6);
                     currElem.setAttribute(attrName, QString("url(#" + idHash.value(url) + ")"));
                 }
             }
         }
         if (currElem.hasAttribute("xlink:href")) {
-            QString id = currElem.xlinkId();
-            if (!id.startsWith(QLatin1String("data:"))) {
+            QString id = currElem.attribute("xlink:href");
+            if (!id.startsWith(QL1S("data:"))) {
+                id.remove(0,1);
                 currElem.setAttribute("xlink:href", QString("#" + idHash.value(id)));
             }
         }

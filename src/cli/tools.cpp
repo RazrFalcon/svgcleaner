@@ -65,18 +65,18 @@ QString Tools::roundNumber(qreal value, int precision)
 
 QString Tools::doubleToStr(qreal value, int precision)
 {
-    QString num_str;
-    bool negative = false;
     if (qIsInf(value)) {
-        num_str = QString::fromLatin1("inf");
+        return QString::fromLatin1("inf");
     } else if (qIsNaN(value)) {
-        num_str = QString::fromLatin1("nan");
+        return QString::fromLatin1("nan");
     } else {
+        bool negative = false;
         int decpt, sign;
         int pr = precision;
         char *rve = 0;
         char *buff = 0;
-        num_str = QLatin1String(qdtoa(value, 3, pr, &decpt, &sign, &rve, &buff));
+
+        QString num_str = QL1S(qdtoa(value, 3, pr, &decpt, &sign, &rve, &buff));
         if (buff != 0)
             free(buff);
         if (decpt < 0) {
@@ -93,8 +93,9 @@ QString Tools::doubleToStr(qreal value, int precision)
         negative = sign != 0;
         if (negative && !(num_str.size() == 1 && num_str.at(0) == QLatin1Char('0')))
             num_str.prepend(QLatin1Char('-'));
+        return num_str;
     }
-    return num_str;
+    return "";
 }
 
 qreal Tools::getNum(const QChar *&str)
@@ -214,7 +215,7 @@ QString Tools::trimColor(QString color)
 
     // convert 'rgb (255, 255, 255)' to #RRGGBB
     if (Keys::get().flag(Key::ConvertColorToRRGGBB)) {
-        if (color.contains(QLatin1String("rgb"))) {
+        if (color.contains(QL1S("rgb"))) {
             const QChar *str = color.constData();
             const QChar *end = str + color.size();
             QVector<qreal> nums;
@@ -618,24 +619,24 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
         }
     }
 
-    if (unit == QLatin1String("px"))
+    if (unit == QL1S("px"))
         return roundNumber(number, Tools::ATTRIBUTE);
 
     // TODO: em/ex
-    if (unit == QLatin1String("em") || unit == QLatin1String("ex"))
+    if (unit == QL1S("em") || unit == QL1S("ex"))
         return text;
 
-    if (unit == QLatin1String("pt"))
+    if (unit == QL1S("pt"))
         number = number * 1.25;
-    else if (unit == QLatin1String("pc"))
+    else if (unit == QL1S("pc"))
         number = number * 15;
-    else if (unit == QLatin1String("mm"))
+    else if (unit == QL1S("mm"))
         number = number * 3.543307;
-    else if (unit == QLatin1String("cm"))
+    else if (unit == QL1S("cm"))
         number = number * 35.43307;
-    else if (unit == QLatin1String("in"))
+    else if (unit == QL1S("in"))
         number = number * 90;
-    else if (unit == QLatin1String("%") && baseValue > 0)
+    else if (unit == QL1S("%") && baseValue > 0)
         number = number * baseValue / 100;
     else
         return text;

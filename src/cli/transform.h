@@ -72,21 +72,45 @@ public:
     qreal newY() const;
     QString simplified() const;
     qreal scaleFactor() const;
-    qreal xScale() const;
-    qreal yScale() const;
     bool isProportionalScale();
     bool isMirrored();
+    bool isSkew();
     bool isRotating();
+    bool isTranslate();
+
+    enum TsType {
+        Scale = 0x1,
+        Rotate = 0x2,
+        Skew = 0x4,
+        Translate = 0x8,
+        Mirror = 0x10,
+        ProportionalScale = 0x20
+    };
+    Q_DECLARE_FLAGS(Types, TsType)
+    Types type();
 
 private:
-    QList<qreal> m_points;
-    qreal m_baseX;
-    qreal m_baseY;
+    qreal oldX;
+    qreal oldY;
     qreal m_xScale;
     qreal m_yScale;
+    qreal m_xSkew;
+    qreal m_ySkew;
+    qreal m_angle;
+
+    qreal a;
+    qreal b;
+    qreal c;
+    qreal d;
+    qreal e;
+    qreal f;
+
+    Types m_types;
 
     QList<TransformMatrix> parseTransform(const QStringRef &text);
-    QList<qreal> mergeMatrixes(QString text);
+    void calcMatrixes(const QString &text);
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Transform::Types)
 
 #endif // TRANSFORM_H

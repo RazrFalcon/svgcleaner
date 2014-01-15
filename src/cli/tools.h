@@ -26,7 +26,7 @@
 #include <QRectF>
 #include <QtDebug>
 
-#include "svgelement.h"
+#include "keys.h"
 
 #define QL1S(x) QLatin1String(x)
 
@@ -35,31 +35,25 @@ class Tools
 public:
     explicit Tools() {}
     enum RoundType { COORDINATE, TRANSFORM, ATTRIBUTE };
-    static bool isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2);
     static bool isZero(qreal value);
-    static SvgElement svgElement(XMLDocument *doc);
-    static SvgElement defsElement(XMLDocument *doc, SvgElement &svgElem);
-    static QList<XMLNode *> childNodeList(XMLNode *node);
-    static QList<SvgElement> childElemList(const SvgElement &node);
-    static QList<SvgElement> childElemList(XMLDocument *doc);
+    static bool isZeroTs(qreal value);
     static QString convertUnitsToPx(const QString &text, qreal baseValue = 0);
     static QString roundNumber(qreal value, RoundType type = COORDINATE);
     static QString roundNumber(qreal value, int precision);
-    static QString trimColor(QString color);
-    static void sortNodes(QList<SvgElement> &nodeList);
+    static QString trimColor(const QString &color);
     static QVariantHash initDefaultStyleHash();
-    static QRectF viewBoxRect(const SvgElement &svgElem);
-    static StringHash splitStyle(QString style);
+    static StringHash splitStyle(const QString &style);
     static QString removeEdgeSpaces(const QString &str);
     static qreal getNum(const QChar *&str);
     static qreal strToDouble(const QString &str);
+    static QString doubleToStr(const qreal value, int precision = 6);
 
 private:
-    static QString doubleToStr(qreal value, int precision = 6);
-    static bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2);
     static bool isDigit(ushort ch);
     static qreal toDouble(const QChar *&str);
     static QString replaceColorName(const QString &color);
+    static int numbersBeforePoint(qreal value);
+    static int zerosAfterPoint(qreal value);
 };
 
 namespace Props {
@@ -105,7 +99,7 @@ static const StringSet maskAttributes = StringSet()
 
 static const StringSet digitList = StringSet()
     << "x" << "y" << "x1" << "y1" << "x2" << "y2" << "width" << "height" << "r" << "rx" << "ry"
-    << "fx" << "fy" << "cx" << "cy" << "offset";
+    << "fx" << "fy" << "cx" << "cy" << "dx" << "dy" << "offset";
 
 static const StringSet filterDigitList = StringSet()
     << "stdDeviation" << "baseFrequency" << "k" << "k1" << "k2" << "k3" << "specularConstant"

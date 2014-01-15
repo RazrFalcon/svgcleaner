@@ -530,7 +530,6 @@ QString Path::findAttribute(const QString &attrName)
     return "";
 }
 
-// TODO: replace l to m, when prev cmd is m
 void Path::processSegments(QList<Segment> &segList)
 {
     // TODO: test it
@@ -627,6 +626,10 @@ void Path::processSegments(QList<Segment> &segList)
                     segList[i].command = Command::VerticalLineTo;
                 else if (seg.x != prevSeg.x && isZero(seg.y - prevSeg.y))
                     segList[i].command = Command::HorizontalLineTo;
+                else if (prevSeg.command == Command::MoveTo) {
+                    segList[i].command = Command::MoveTo;
+                    segList[i].srcCmd = false;
+                }
             } else if (cmd == Command::CurveTo) {
                 if (   isZero(seg.x1 - prevSeg.x1)
                     && isZero(seg.y1 - prevSeg.y1)
@@ -709,7 +712,6 @@ QString Path::segmentsToPath(QList<Segment> &segList)
         Segment segment = segList.at(i);
         const QChar cmd = segment.command;
         // check is previous command is the same as next
-        // TODO: save commands when RemoveUnneededSymbols is false
         bool writeCmd = true;
         if (isTrim) {
             if (cmd == prevCom && !prevCom.isNull()) {

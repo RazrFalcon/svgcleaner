@@ -54,6 +54,7 @@ public:
     void markUsedElements();
     QHash<QString,int> calcDefsUsageCount();
     void applyTransformToDefs();
+    void applyTransformToShapes();
     void mergeGradientsWithEqualStopElem();
 
 private:
@@ -62,6 +63,8 @@ private:
     bool isBlurFilter(const QString &id);
     void updateLinkedDefTransform(SvgElement &elem);
     static void plusOne(QList<int> &list, int offset = 0);
+    static bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2);
+    void calcNewStrokeWidth(SvgElement &elem, const Transform &transform);
 };
 
 #endif // REPLACER_H

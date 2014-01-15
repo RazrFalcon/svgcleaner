@@ -57,7 +57,7 @@ namespace Key {
     static const QString RemoveEmptyContainers       = "--remove-empty-containers";
     static const QString RemoveTinyGaussianBlur      = "--remove-gaussian-blur";
     static const QString RemoveDuplicatedDefs        = "--remove-duplicated-defs";
-    static const QString UngroupGroups               = "--ungroup-groups";
+    static const QString UngroupContainers           = "--ungroup-containers";
     static const QString MergeGradients              = "--merge-gradients";
 
     static const QString RemoveSvgVersion            = "--remove-version";
@@ -78,6 +78,7 @@ namespace Key {
     static const QString GroupElemByStyle            = "--group-elements-by-styles";
     static const QString JoinStyleAttributes         = "--join-style-atts";
     static const QString ApplyTransformsToDefs       = "--apply-transforms-to-defs";
+    static const QString ApplyTransformsToShapes     = "--apply-transforms-to-shapes";
     // TODO: remove bitmaps, as utility
 
     static const QString ConvertToRelative           = "--convert-to-relative";

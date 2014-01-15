@@ -146,6 +146,7 @@ void IconsWidget::paintEvent(QPaintEvent *)
         return;
     }
 
+    // TODO: render preview only once!
     if (compareView) {
         renderSvg(inpath,  &painter, QRect(0,   0, 100, 100));
         renderSvg(outpath, &painter, QRect(105, 0, 100, 100));

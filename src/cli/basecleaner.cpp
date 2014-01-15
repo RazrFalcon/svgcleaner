@@ -24,8 +24,8 @@
 BaseCleaner::BaseCleaner(XMLDocument *doc)
 {
     m_doc = doc;
-    m_svgElem = Tools::svgElement(doc);
-    m_defsElem = Tools::defsElement(doc, m_svgElem);
+    m_svgElem = svgElement(doc);
+    m_defsElem = defsElement(doc, m_svgElem);
 }
 
 XMLDocument* BaseCleaner::document() const
@@ -41,6 +41,39 @@ SvgElement BaseCleaner::svgElement() const
 SvgElement BaseCleaner::defsElement() const
 {
     return m_defsElem;
+}
+
+SvgElement BaseCleaner::defsElement(XMLDocument *doc, SvgElement &svgElem)
+{
+    XMLElement *child;
+    for (child = svgElem.xmlElement()->FirstChildElement(); child;
+         child = child->NextSiblingElement()) {
+        if (strcmp(child->Name(), "defs") == 0) {
+            break;
+        }
+    }
+    if (child == 0) {
+        XMLElement* element = doc->NewElement("defs");
+        svgElem.xmlElement()->InsertFirstChild(element);
+        child = element;
+    }
+    return SvgElement(child);
+}
+
+QList<XMLNode *> BaseCleaner::childNodeList(XMLNode *node)
+{
+    QList<XMLNode *> list;
+    for (XMLNode *child = node->FirstChild(); child; child = child->NextSibling())
+        list << child;
+    return list;
+}
+
+QList<SvgElement> BaseCleaner::childElemList(XMLDocument *doc)
+{
+    QList<SvgElement> list;
+    for (XMLElement *child = doc->FirstChildElement(); child; child = child->NextSiblingElement())
+        list << SvgElement(child);
+    return list;
 }
 
 void BaseCleaner::updateXLinks(const StringHash &hash)
@@ -79,6 +112,17 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
         if (currElem.hasChildren())
             list << currElem.childElemList();
     }
+}
+
+SvgElement BaseCleaner::svgElement(XMLDocument *doc)
+{
+    XMLElement *child;
+    for (child = doc->FirstChildElement(); child; child = child->NextSiblingElement()) {
+        if (strcmp(child->Name(), "svg") == 0) {
+            break;
+        }
+    }
+    return SvgElement(child);
 }
 
 SvgElement BaseCleaner::findDefElement(const QString &id)
@@ -133,4 +177,21 @@ QString BaseCleaner::findAttribute(const SvgElement &elem, const char *attrName)
         parent = parent.parentElement();
     }
     return "";
+}
+
+QRectF BaseCleaner::viewBoxRect()
+{
+    Q_ASSERT(svgElement().tagName() == "svg");
+    QRectF rect;
+    if (svgElement().hasAttribute("viewBox")) {
+        QStringList list = svgElement().attribute("viewBox").split(" ");
+        rect.setRect(list.at(0).toDouble(), list.at(1).toDouble(),
+                     list.at(2).toDouble(), list.at(3).toDouble());
+    } else if (svgElement().hasAttribute("width") && svgElement().hasAttribute("height")) {
+        rect.setRect(0, 0, svgElement().doubleAttribute("width"),
+                           svgElement().doubleAttribute("height"));
+    } else {
+        qDebug() << "Warning: can not detect viewBox";
+    }
+    return rect;
 }

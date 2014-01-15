@@ -22,6 +22,7 @@
 #ifndef BASECLEANER_H
 #define BASECLEANER_H
 
+#include "svgelement.h"
 #include "transform.h"
 #include "tools.h"
 
@@ -40,11 +41,17 @@ public:
     SvgElement findElement(const QString &id, XMLElement *parent = 0);
     bool hasParent(const SvgElement &elem, const QString &tagName);
     QString findAttribute(const SvgElement &elem, const char *attrName);
+    QRectF viewBoxRect();
+    static SvgElement svgElement(XMLDocument *doc);
+    static QList<XMLNode *> childNodeList(XMLNode *node);
+    static QList<SvgElement> childElemList(XMLDocument *doc);
 
 private:
     XMLDocument *m_doc;
     SvgElement m_svgElem;
     SvgElement m_defsElem;
+
+    SvgElement defsElement(XMLDocument *doc, SvgElement &svgElem);
 };
 
 #endif // BASECLEANER_H

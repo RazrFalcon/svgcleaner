@@ -158,8 +158,8 @@ void Keys::prepareDescription()
                     tr("Remove invisible elements"));
     descHash.insert(RemoveEmptyContainers,
                     tr("Remove empty containers elements"));
-    descHash.insert(UngroupGroups,
-                    tr("Ungroup 'group' elements, when possible"));
+    descHash.insert(UngroupContainers,
+                    tr("Ungroup container elements, when possible"));
     descHash.insert(RemoveDuplicatedDefs,
                     tr("Remove duplicate elements in 'defs' element"));
     descHash.insert(MergeGradients,
@@ -203,6 +203,8 @@ void Keys::prepareDescription()
                     tr("Merge style properties into 'style' attribute"));
     descHash.insert(ApplyTransformsToDefs,
                     tr("Apply transform matrices to gradients, when possible"));
+    descHash.insert(ApplyTransformsToShapes,
+                    tr("Apply transform matrices to basic shapes, when possible"));
 
     descHash.insert(ConvertToRelative,
                     tr("Convert absolute coordinates into relative ones"));
@@ -230,7 +232,7 @@ void Keys::prepareDescription()
     descHash.insert(AttributesPrecision,
                     tr("Set rounding precision for attributes"));
     descHash.insert(CompactOutput,
-                    tr("Save svg with only required whitespace and newlines"));
+                    tr("Save file with only required whitespace and newlines"));
     descHash.insert(SortDefs,
                     tr("Sort elements by name in 'defs' element"));
 }
@@ -257,7 +259,7 @@ QStringList Keys::elementsKeys()
         << RemoveSketchElements
         << RemoveInvisibleElements
         << RemoveEmptyContainers
-        << UngroupGroups
+        << UngroupContainers
         << RemoveDuplicatedDefs
         << MergeGradients
         << RemoveTinyGaussianBlur;
@@ -282,7 +284,8 @@ QStringList Keys::attributesKeys()
         << RemoveFillProps
         << RemoveUnusedXLinks
         << GroupElemByStyle
-        << ApplyTransformsToDefs;
+        << ApplyTransformsToDefs
+        << ApplyTransformsToShapes;
     return list;
 }
 

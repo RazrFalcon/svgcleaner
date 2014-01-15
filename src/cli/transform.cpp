@@ -30,28 +30,24 @@ Transform::Transform(const QString &text)
     Q_ASSERT(text.isEmpty() == false);
     if (text.isEmpty())
         return;
-    m_points = mergeMatrixes(text);
-
-    // calculate
-    m_xScale = sqrt(pow(m_points.at(0), 2) + pow(m_points.at(2), 2));
-    m_yScale = sqrt(pow(m_points.at(1), 2) + pow(m_points.at(3), 2));
+    calcMatrixes(text);
 }
 
 void Transform::setOldXY(qreal prevX, qreal prevY)
 {
     // NOTE: must be set
-    m_baseX = prevX;
-    m_baseY = prevY;
+    oldX = prevX;
+    oldY = prevY;
 }
 
 qreal Transform::newX() const
 {
-    return m_points.at(0)*m_baseX + m_points.at(2)*m_baseY + m_points.at(4);
+    return a*oldX + c*oldY + e;
 }
 
 qreal Transform::newY() const
 {
-    return m_points.at(1)*m_baseX + m_points.at(3)*m_baseY + m_points.at(5);
+    return b*oldX + d*oldY + f;
 }
 
 QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
@@ -122,7 +118,7 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
     return list;
 }
 
-QList<qreal> Transform::mergeMatrixes(QString text)
+void Transform::calcMatrixes(const QString &text)
 {
     QList<TransformMatrix> transMatrixList = parseTransform(text.midRef(0));
 
@@ -130,110 +126,126 @@ QList<qreal> Transform::mergeMatrixes(QString text)
     for (int i = 1; i < transMatrixList.count(); ++i)
         newMatrix = newMatrix * transMatrixList.at(i);
 
-    QList<qreal> pointList;
-    pointList.reserve(6);
-    pointList << newMatrix(0,0) << newMatrix(1,0) << newMatrix(0,1)
-              << newMatrix(1,1) << newMatrix(0,2) << newMatrix(1,2);
-    return pointList;
+    a = 0; b = 0; c = 0; d = 0; e = 0; f = 0;
+
+    if (!Tools::isZeroTs(newMatrix(0,0)))
+        a = newMatrix(0,0);
+    if (!Tools::isZeroTs(newMatrix(1,0)))
+        b = newMatrix(1,0);
+    if (!Tools::isZeroTs(newMatrix(0,1)))
+        c = newMatrix(0,1);
+    if (!Tools::isZeroTs(newMatrix(1,1)))
+        d = newMatrix(1,1);
+    if (!Tools::isZero(newMatrix(0,2)))
+        e = newMatrix(0,2);
+    if (!Tools::isZero(newMatrix(1,2)))
+        f = newMatrix(1,2);
+
+    // calculate
+    m_xScale = sqrt(pow(a, 2) + pow(c, 2));
+    m_yScale = sqrt(pow(b, 2) + pow(d, 2));
+    m_xSkew = atan(b)*(180.0/M_PI);
+    m_ySkew = atan(c)*(180.0/M_PI);
+    m_angle = acos(a)*(180/M_PI);
+    if (b < c)
+        m_angle = -m_angle;
+
+    if (f != 0 || e != 0)
+        m_types |= Translate;
+
+    if (   (Tools::isZeroTs(qAbs(b) - qAbs(c)) && b != 0)
+        || !Tools::isZero(m_angle))
+        m_types |= Rotate;
+
+    if (m_xScale != 1 || m_yScale != 1)
+        m_types |= Scale;
+
+    if (Tools::isZeroTs(m_xScale - m_yScale))
+        m_types |= ProportionalScale;
+
+    if (!Tools::isZeroTs(qAbs(m_xSkew) - qAbs(m_ySkew))
+        && (m_xSkew != 0 || m_ySkew != 0))
+        m_types |= Skew;
+
+    if (m_xScale < 0 || m_yScale < 0 || a < 0 || d < 0)
+        m_types |= Mirror;
 }
 
 // TODO: add key for this
 QString Transform::simplified() const
 {
-    if (m_points.isEmpty())
-        return "";
-
-    const QList<qreal> pt = m_points;
     QString transform;
     QStringList newPoints;
-    newPoints.reserve(6);
+    newPoints.reserve(2);
+
+    Types type = m_types;
+    type &= ~(Transform::Mirror | Transform::ProportionalScale);
 
     // [1 0 0 1 tx ty] = translate
-    if (   pt.at(0) == 1
-        && pt.at(1) == 0
-        && pt.at(2) == 0
-        && pt.at(3) == 1)
+    if (m_types == Translate)
     {
+        if (f != e) {
+            if (f == 0 && e == 0)
+                return "";
+            newPoints << Tools::roundNumber(e, Tools::COORDINATE);
+            newPoints << Tools::roundNumber(f, Tools::COORDINATE);
+        } else if (f == e || e == 0) {
+            if (Tools::isZero(f))
+                return "";
+            newPoints << Tools::roundNumber(f, Tools::COORDINATE);
+        }
         transform = "translate(";
-        if (pt.at(5) != 0) {
-            if (   Tools::isZero(pt.at(4))
-                && Tools::isZero(pt.at(5)))
-                return "";
-            newPoints << Tools::roundNumber(pt.at(4), Tools::COORDINATE);
-            newPoints << Tools::roundNumber(pt.at(5), Tools::COORDINATE);
-        } else if (pt.at(4) != 0) {
-            if (Tools::isZero(pt.at(4)))
-                return "";
-            newPoints << Tools::roundNumber(pt.at(4), Tools::COORDINATE);
-        }
     } // [sx 0 0 sy 0 0] = scale
-    else if (   pt.at(1) == 0
-             && pt.at(2) == 0
-             && pt.at(4) == 0
-             && pt.at(5) == 0)
+    else if (m_types == Scale)
     {
-        transform = "scale(";
-        if (pt.at(0) != pt.at(3)) {
-            if (   Tools::isZero(pt.at(0))
-                && Tools::isZero(pt.at(3)))
+        if (a != d) {
+            if (   Tools::isZeroTs(a)
+                && Tools::isZeroTs(d))
                 return "";
-            newPoints << Tools::roundNumber(pt.at(0), Tools::TRANSFORM);
-            newPoints << Tools::roundNumber(pt.at(3), Tools::TRANSFORM);
+            newPoints << Tools::roundNumber(a, Tools::TRANSFORM);
+            newPoints << Tools::roundNumber(d, Tools::TRANSFORM);
         } else {
-            if (Tools::isZero(pt.at(0)))
+            if (Tools::isZeroTs(a))
                 return "";
-            newPoints << Tools::roundNumber(pt.at(0), Tools::TRANSFORM);
+            newPoints << Tools::roundNumber(a, Tools::TRANSFORM);
         }
+        transform = "scale(";
     } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
-    else if (   pt.at(0) == pt.at(3)
-             && pt.at(1) > 0
-             && pt.at(2) < 0
-             && pt.at(4) == 0
-             && pt.at(5) == 0)
+    else if (m_types == Rotate)
     {
+        if (m_angle == 0)
+            return "";
         transform = "rotate(";
-        qreal num = acos(pt.at(0))*(180/M_PI);
-        if (Tools::isZero(num))
-            return "";
-        newPoints << Tools::roundNumber(num, Tools::TRANSFORM);
-    } // [1 0 tan(a) 1 0 0] = skewX
-    else if (   pt.at(0) == 1
-             && pt.at(1) == 0
-             && pt.at(3) == 1
-             && pt.at(4) == 0
-             && pt.at(5) == 0)
+        newPoints << Tools::roundNumber(m_angle, Tools::TRANSFORM);
+    } // [1 0 tan(a) 1 0 0] = skewX, [1 tan(a) 0 1 0 0] = skewY
+    else if (m_types == Skew)
     {
-        transform = "skewX(";
-        qreal num = atan(pt.at(2))*(180/M_PI);
-        if (Tools::isZero(pt.at(2)))
+        if (m_xSkew == 0 && m_ySkew == 0)
             return "";
-        newPoints << Tools::roundNumber(num, Tools::TRANSFORM);
-    } // [1 tan(a) 0 1 0 0] = skewY
-    else if (   pt.at(0) == 1
-             && pt.at(2) == 0
-             && pt.at(3) == 1
-             && pt.at(4) == 0
-             && pt.at(5) == 0)
-    {
-        transform = "skewY(";
-        qreal num = atan(pt.at(1))*(180/M_PI);
-        if (Tools::isZero(num))
-            return "";
-        newPoints << Tools::roundNumber(num, Tools::TRANSFORM);
+        if (m_xSkew != 0) {
+            transform = "skewX(";
+            newPoints << Tools::roundNumber(m_xSkew, Tools::TRANSFORM);
+        } else {
+            transform = "skewY(";
+            newPoints << Tools::roundNumber(m_ySkew, Tools::TRANSFORM);
+        }
     } else {
-        bool isAllZero = true;
-        for (int i = 0; i < 6; ++i)
-            isAllZero *= Tools::isZero(pt.at(i));
-        if (isAllZero)
+        if (   a == 1
+            && b == 0
+            && c == 0
+            && d == 1
+            && e == 0
+            && f == 0)
             return "";
 
         transform = "matrix(";
-        for (int i = 0; i < 6; ++i) {
-            if (i < 4)
-                newPoints << Tools::roundNumber(pt.at(i), Tools::TRANSFORM);
-            else
-                newPoints << Tools::roundNumber(pt.at(i), Tools::COORDINATE);
-        }
+        newPoints.reserve(6);
+        newPoints << Tools::roundNumber(a, Tools::TRANSFORM);
+        newPoints << Tools::roundNumber(b, Tools::TRANSFORM);
+        newPoints << Tools::roundNumber(c, Tools::TRANSFORM);
+        newPoints << Tools::roundNumber(d, Tools::TRANSFORM);
+        newPoints << Tools::roundNumber(e, Tools::COORDINATE);
+        newPoints << Tools::roundNumber(f, Tools::COORDINATE);
     }
 
     for (int i = 0; i < newPoints.size(); ++i) {
@@ -258,31 +270,32 @@ qreal Transform::scaleFactor() const
     return m_xScale;
 }
 
-qreal Transform::xScale() const
-{
-    return m_xScale;
-}
-
-qreal Transform::yScale() const
-{
-    return m_yScale;
-}
-
 bool Transform::isProportionalScale()
 {
-    return Tools::isZero(m_xScale - m_yScale);
+    return m_types.testFlag(ProportionalScale);
 }
 
 bool Transform::isMirrored()
 {
-    if (m_points.at(0) < 0)
-        return true;
-    else if (m_points.at(2) < 0)
-        return true;
-    return false;
+    return m_types.testFlag(Mirror);
+}
+
+bool Transform::isSkew()
+{
+    return m_types.testFlag(Skew);
 }
 
 bool Transform::isRotating()
 {
-    return !Tools::isZero(atan(m_points.at(1) / m_points.at(3)));
+    return m_types.testFlag(Rotate);
+}
+
+bool Transform::isTranslate()
+{
+    return m_types.testFlag(Translate);
+}
+
+Transform::Types Transform::type()
+{
+    return m_types;
 }

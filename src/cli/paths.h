@@ -26,6 +26,8 @@
 #include <QPointF>
 #include <QVector>
 
+#include "svgelement.h"
+#include "transform.h"
 #include "tools.h"
 
 namespace Command {
@@ -77,9 +79,9 @@ public:
     qreal y2;
     qreal rx;
     qreal ry;
-    int xAxisRotation;
-    int largeArc;
-    int sweep;
+    qreal xAxisRotation;
+    bool largeArc;
+    bool sweep;
 
 private:
     QPointF rotatePoint(qreal x, qreal y, qreal rad) const;

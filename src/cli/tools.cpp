@@ -28,8 +28,6 @@ Q_CORE_EXPORT double qstrtod(const char *s00, char const **se, bool *ok);
 Q_CORE_EXPORT char *qdtoa(double d, int mode, int ndigits, int *decpt,
                         int *sign, char **rve, char **digits_str);
 
-// TODO: add key to round to integer when possible
-//       for example remove fraction part from big numbers
 QString Tools::roundNumber(qreal value, RoundType type)
 {
     int precision;
@@ -42,13 +40,11 @@ QString Tools::roundNumber(qreal value, RoundType type)
     return roundNumber(value, precision);
 }
 
+
 QString Tools::roundNumber(qreal value, int precision)
 {
-    // check is number is integer
     double fractpart, intpart;
     fractpart = modf(value, &intpart);
-    if (qFuzzyCompare(fractpart, 0))
-        return QString::number((int)value);
 
     // round number when fraction part is really small
     // when fraction part is smaller than 1% of integer part
@@ -63,39 +59,79 @@ QString Tools::roundNumber(qreal value, int precision)
     return doubleToStr(value, precision);
 }
 
-QString Tools::doubleToStr(qreal value, int precision)
-{
-    if (qIsInf(value)) {
-        return QString::fromLatin1("inf");
-    } else if (qIsNaN(value)) {
-        return QString::fromLatin1("nan");
-    } else {
-        bool negative = false;
-        int decpt, sign;
-        int pr = precision;
-        char *rve = 0;
-        char *buff = 0;
 
-        QString num_str = QL1S(qdtoa(value, 3, pr, &decpt, &sign, &rve, &buff));
-        if (buff != 0)
-            free(buff);
-        if (decpt < 0) {
-            for (int i = 0; i < -decpt; ++i)
-                num_str.prepend(QLatin1Char('0'));
-            decpt = 0;
-        }
-        else if (decpt > num_str.length()) {
-            for (int i = num_str.length(); i < decpt; ++i)
-                num_str.append(QLatin1Char('0'));
-        }
-        if (decpt < num_str.length())
-            num_str.insert(decpt, '.');
-        negative = sign != 0;
-        if (negative && !(num_str.size() == 1 && num_str.at(0) == QLatin1Char('0')))
-            num_str.prepend(QLatin1Char('-'));
-        return num_str;
+QString Tools::doubleToStr(const qreal value, int precision)
+{
+    uint multiplier = 1;
+    while (precision--)
+        multiplier *= 10;
+    qreal tmpValue = qRound64(qAbs(value) * multiplier);
+
+    if (qFuzzyCompare(tmpValue, 0.0))
+        return "0";
+
+    qreal newValue = tmpValue/multiplier;
+
+    int decimalPointPos = numbersBeforePoint(newValue);
+    int zeroAfterPoint = zerosAfterPoint(newValue);
+
+    qulonglong l = tmpValue;
+    ushort buff[65];
+    ushort *p = buff + 65;
+    static ushort m_zero = QChar('0').unicode();
+    int pos = 0;
+    while (l != 0) {
+        pos++;
+        l /= 10;
     }
-    return "";
+    l = tmpValue;
+    bool isTrailingZero = true;
+    int charCount = 0;
+    while (l != 0) {
+        int c = l % 10;
+        if (c != 0)
+            isTrailingZero = false;
+        if (!isTrailingZero) {
+            *(--p) = m_zero + c;
+            charCount++;
+        }
+        pos--;
+        if (pos == decimalPointPos && decimalPointPos != 0) {
+            if (charCount > 0)
+                *(--p) = QChar('.').unicode();
+            isTrailingZero = false;
+        }
+        l /= 10;
+    }
+    while (zeroAfterPoint--)
+        *(--p) = m_zero;
+    if (decimalPointPos == 0)
+        *(--p) = QChar('.').unicode();
+    if (value < 0)
+        *(--p) = QChar('-').unicode();
+    return QString(reinterpret_cast<QChar *>(p), 65 - (p - buff));
+}
+
+int Tools::numbersBeforePoint(qreal value)
+{
+    int v = floor(value);
+    int count = 0;
+    while(v) {
+        v /= 10;
+        count++;
+    }
+    return count;
+}
+
+int Tools::zerosAfterPoint(qreal value)
+{
+    qreal v = qAbs(value);
+    int count = 0;
+    while(v < 0.1) {
+        v *= 10;
+        count++;
+    }
+    return count;
 }
 
 qreal Tools::getNum(const QChar *&str)
@@ -209,15 +245,15 @@ qreal Tools::toDouble(const QChar *&str)
     return val;
 }
 
-QString Tools::trimColor(QString color)
+QString Tools::trimColor(const QString &color)
 {
-    color = color.toLower();
+    QString newColor = color.toLower();
 
     // convert 'rgb (255, 255, 255)' to #RRGGBB
     if (Keys::get().flag(Key::ConvertColorToRRGGBB)) {
-        if (color.contains(QL1S("rgb"))) {
-            const QChar *str = color.constData();
-            const QChar *end = str + color.size();
+        if (newColor.contains(QL1S("rgb"))) {
+            const QChar *str = newColor.constData();
+            const QChar *end = str + newColor.size();
             QVector<qreal> nums;
             nums.reserve(3);
             while (str != end) {
@@ -236,35 +272,35 @@ QString Tools::trimColor(QString color)
                 ++str;
             }
             // convert 'rgb (100%, 100%, 100%)' to 'rgb (255, 255, 255)'
-            if (color.contains(QLatin1Char('%'))) {
+            if (newColor.contains(QLatin1Char('%'))) {
                 for (int i = 0; i < 3; ++i)
                     nums[i] = nums.at(i) * 255 / 100;
             }
-            color = QLatin1Char('#');
+            newColor = QLatin1Char('#');
             foreach (const qreal &value, nums)
-                color += QString::number((int)value, 16).rightJustified(2, QLatin1Char('0'));
+                newColor += QString::number((int)value, 16).rightJustified(2, QLatin1Char('0'));
         }
 
         // check is color set by name
-        if (!color.contains(QLatin1Char('#')))
-            color = replaceColorName(color);
+        if (!newColor.contains(QLatin1Char('#')))
+            newColor = replaceColorName(newColor);
     }
 
     if (Keys::get().flag(Key::ConvertRRGGBBToRGB)) {
-        if (color.startsWith(QLatin1Char('#'))) {
+        if (newColor.startsWith(QLatin1Char('#'))) {
             // try to convert #rrggbb to #rgb
-            if (color.size() == 7) { // #000000
+            if (newColor.size() == 7) { // #000000
                 int inter = 0;
                 for (int i = 1; i < 6; i += 2) {
-                    if (color.at(i) == color.at(i+1))
+                    if (newColor.at(i) == newColor.at(i+1))
                         inter++;
                 }
                 if (inter == 3)
-                    color = QLatin1Char('#') + color.at(1) + color.at(3) + color.at(5);
+                    newColor = QLatin1Char('#') + newColor.at(1) + newColor.at(3) + newColor.at(5);
             }
         }
     }
-    return color;
+    return newColor;
 }
 
 QString Tools::replaceColorName(const QString &color)
@@ -415,16 +451,6 @@ QString Tools::replaceColorName(const QString &color)
     return colors.value(color);
 }
 
-bool Tools::nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2)
-{
-    return QString::localeAwareCompare(node1.tagName(), node2.tagName()) < 0;
-}
-
-void Tools::sortNodes(QList<SvgElement> &nodeList)
-{
-    qSort(nodeList.begin(), nodeList.end(), &Tools::nodeByTagNameSort);
-}
-
 QVariantHash Tools::initDefaultStyleHash()
 {
     static QVariantHash hash;
@@ -457,7 +483,6 @@ QVariantHash Tools::initDefaultStyleHash()
     hash.insert("marker-start", "none");
     hash.insert("marker-mid", "none");
     hash.insert("marker-end", "none");
-//    hash.insert("marker", "none");
     hash.insert("mask", "none");
     hash.insert("opacity", 1.0);
     hash.insert("overflow", "visible");
@@ -479,50 +504,6 @@ QVariantHash Tools::initDefaultStyleHash()
     return hash;
 }
 
-QRectF Tools::viewBoxRect(const SvgElement &svgElem)
-{
-    Q_ASSERT(svgElem.tagName() == "svg");
-    QRectF rect;
-    if (svgElem.hasAttribute("viewBox")) {
-        QStringList list = svgElem.attribute("viewBox").split(" ");
-        rect.setRect(list.at(0).toDouble(), list.at(1).toDouble(),
-                     list.at(2).toDouble(), list.at(3).toDouble());
-    } else if (svgElem.hasAttribute("width") && svgElem.hasAttribute("height")) {
-        rect.setRect(0, 0, svgElem.doubleAttribute("width"),
-                           svgElem.doubleAttribute("height"));
-    } else {
-        qDebug() << "Warning: can not detect viewBox";
-    }
-    return rect;
-}
-
-QList<XMLNode *> Tools::childNodeList(XMLNode *node)
-{
-    QList<XMLNode *> list;
-    for (XMLNode *child = node->FirstChild(); child; child = child->NextSibling())
-        list << child;
-    return list;
-}
-
-QList<SvgElement> Tools::childElemList(XMLDocument *doc)
-{
-    QList<SvgElement> list;
-    for (XMLElement *child = doc->FirstChildElement(); child; child = child->NextSiblingElement())
-        list << SvgElement(child);
-    return list;
-}
-
-// TODO: maybe use inline for insted of creating additional list
-QList<SvgElement> Tools::childElemList(const SvgElement &node)
-{
-    QList<SvgElement> list;
-    list.reserve(node.childElementCount());
-    for (XMLElement *child = node.xmlElement()->FirstChildElement();
-            child; child = child->NextSiblingElement())
-        list << SvgElement(child);
-    return list;
-}
-
 QString Tools::removeEdgeSpaces(const QString &str)
 {
     QString tmpstr = str;
@@ -533,7 +514,7 @@ QString Tools::removeEdgeSpaces(const QString &str)
     return tmpstr;
 }
 
-StringHash Tools::splitStyle(QString style)
+StringHash Tools::splitStyle(const QString &style)
 {
     StringHash hash;
     if (style.isEmpty())
@@ -548,67 +529,23 @@ StringHash Tools::splitStyle(QString style)
     return hash;
 }
 
-bool Tools::isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2)
-{
-    if (elem1.childElementCount() != elem2.childElementCount())
-        return false;
-
-    QList<SvgElement> list1 = elem1.childElemList();
-    QList<SvgElement> list2 = elem2.childElemList();
-
-    for (int i = 0; i < list1.size(); ++i) {
-        SvgElement childElem1 = list1.at(i);
-        SvgElement childElem2 = list2.at(i);
-
-        if (childElem1.tagName() != childElem2.tagName())
-            return false;
-
-        foreach (const QString &attrName, Props::stopAttributes) {
-            if (childElem1.attribute(attrName) != childElem2.attribute(attrName))
-                return false;
-        }
-    }
-    return true;
-}
-
 bool Tools::isZero(qreal value)
 {
     static qreal minValue = 1 / pow(10, Keys::get().coordinatesPrecision());
     return (qAbs(value) < minValue);
 }
 
-SvgElement Tools::svgElement(XMLDocument *doc)
+bool Tools::isZeroTs(qreal value)
 {
-    XMLElement *child;
-    for (child = doc->FirstChildElement(); child; child = child->NextSiblingElement()) {
-        if (strcmp(child->Name(), "svg") == 0) {
-            break;
-        }
-    }
-    return SvgElement(child);
+    static qreal minValue = 1 / pow(10, Keys::get().transformPrecision());
+    return (qAbs(value) < minValue);
 }
 
-SvgElement Tools::defsElement(XMLDocument *doc, SvgElement &svgElem)
-{
-    XMLElement *child;
-    for (child = svgElem.xmlElement()->FirstChildElement(); child;
-         child = child->NextSiblingElement()) {
-        if (strcmp(child->Name(), "defs") == 0) {
-            break;
-        }
-    }
-    if (child == 0) {
-        XMLElement* element = doc->NewElement("defs");
-        svgElem.xmlElement()->InsertFirstChild(element);
-        child = element;
-    }
-    return SvgElement(child);
-}
-
+// http://www.w3.org/TR/SVG11/coords.html#Units
 QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
 {
     QString unit;
-    qreal number;
+    qreal number = 0;
     const QChar *str = text.constData();
     const QChar *end = str + text.size();
     while (str != end) {
@@ -622,9 +559,14 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
     if (unit == QL1S("px"))
         return roundNumber(number, Tools::ATTRIBUTE);
 
-    // TODO: em/ex
-    if (unit == QL1S("em") || unit == QL1S("ex"))
-        return text;
+    // fix string parsing, getNum func detect 'e' char as exponent...
+    if (unit == QL1S("x"))
+        unit = QL1S("ex");
+    else if (unit == QL1S("m"))
+        unit = QL1S("em");
+
+    // note that all relative units depends on users screen dpi
+    // and cleaner use 90dpi as default
 
     if (unit == QL1S("pt"))
         number = number * 1.25;
@@ -636,8 +578,12 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
         number = number * 35.43307;
     else if (unit == QL1S("in"))
         number = number * 90;
-    else if (unit == QL1S("%") && baseValue > 0)
+    else if (unit == QL1S("%"))
         number = number * baseValue / 100;
+    else if (unit == QL1S("em"))
+        number = number * baseValue;
+    else if (unit == QL1S("ex"))
+        number = number * baseValue / 2;
     else
         return text;
 

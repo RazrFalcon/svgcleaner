@@ -55,6 +55,7 @@ public:
     bool isUsed() const;
     double doubleAttribute(const char *name) const;
     double doubleAttribute(const QString &name) const;
+    bool hasChildWithTagName(const char *name) const;
     int attributesCount() const;
     int childElementCount() const;
     QList<SvgElement> childElemList() const;
@@ -80,6 +81,7 @@ public:
     void clear();
     void removeAttribute(const QString &name);
     void removeAttribute(const char *name);
+    void removeAttributeIf(const char *name, const char *value);
     void removeAttributes(const QStringList &list);
     void removeChild(const SvgElement &elem);
     void setAttribute(const QString &name, const QString &value);
@@ -99,6 +101,7 @@ public:
 
 private:
     XMLElement *m_elem;
+    bool _hasChildWithTagName(XMLElement *parent, const char *name) const;
 };
 
 #endif // SVGELEMENT_H

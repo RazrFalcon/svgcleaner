@@ -49,6 +49,7 @@ public:
     void removeAttributes();
     void cleanPresentationAttributes(SvgElement elem = SvgElement());
     void removeGroups();
+    void ungroupAElement();
 
 private:
     QList<StringMap> styleHashList;
@@ -61,6 +62,7 @@ private:
     bool isElementInvisible2(SvgElement &elem);
     void megreGroups(SvgElement parentElem, SvgElement childElem, bool isParentToChild);
     bool isDoctype(const QString &str);
+    bool isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2);
 };
 
 #endif // REMOVER_H

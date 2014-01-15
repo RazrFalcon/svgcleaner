@@ -26,8 +26,6 @@
 // TODO: remove items which out of viewbox
 //       Anonymous_butterfly_and_flowers.svg
 // TODO: remove "tspan" without attributes
-// TODO: remove "feBlend" element with in or in2 linked to empty object
-//       babayasin_air_hammer.svg
 // TODO: remove "symbol"
 // TODO: remove elem from defs if it used only by one use elem
 void Remover::cleanSvgElementAttribute()
@@ -65,9 +63,8 @@ void Remover::cleanSvgElementAttribute()
         if (!Keys.flag(Key::RemoveSketchAttributes))
             ignoreAttr << "xmlns:sketch";
         foreach (const QString &attrName, svgElement().attributesList()) {
-            if (!ignoreAttr.contains(attrName)) {
+            if (!ignoreAttr.contains(attrName))
                 svgElement().removeAttribute(attrName);
-            }
         }
     } else {
         if (Keys.flag(Key::RemoveSvgVersion))
@@ -80,12 +77,9 @@ void Remover::cleanSvgElementAttribute()
 
     // dirty way, but svg cannot be processed by default style cleaning func,
     // because in svg node we cannot remove default values
-    if (Keys.flag(Key::RemoveDefaultAttributes)) {
-        if (svgElement().hasAttribute("display")) {
-            if (svgElement().attribute("display") == "inline")
-                svgElement().removeAttribute("display");
-        }
-    }
+    if (Keys.flag(Key::RemoveDefaultAttributes))
+        svgElement().removeAttributeIf("display", "inline");
+    // TODO: add default attributes removing
 }
 
 void Remover::removeUnusedDefs()
@@ -303,7 +297,7 @@ void Remover::removeDuplicatedDefs()
                         if (des1.attrList == des2.attrList) {
                             bool isRemove = true;
                             if (des1.hasChildren && des2.hasChildren)
-                                isRemove = Tools::isGradientsEqual(des1.elem, des2.elem);
+                                isRemove = isGradientsEqual(des1.elem, des2.elem);
                             if (isRemove) {
                                 if (xlinkToReplace.values().contains(id2)) {
                                     for (int k = 0; k < xlinkToReplace.keys().count(); ++k) {
@@ -391,6 +385,29 @@ void Remover::removeDuplicatedDefs()
     updateXLinks(xlinkToReplace);
 }
 
+bool Remover::isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2)
+{
+    if (elem1.childElementCount() != elem2.childElementCount())
+        return false;
+
+    QList<SvgElement> list1 = elem1.childElemList();
+    QList<SvgElement> list2 = elem2.childElemList();
+
+    for (int i = 0; i < list1.size(); ++i) {
+        SvgElement childElem1 = list1.at(i);
+        SvgElement childElem2 = list2.at(i);
+
+        if (childElem1.tagName() != childElem2.tagName())
+            return false;
+
+        foreach (const QString &attrName, Props::stopAttributes) {
+            if (childElem1.attribute(attrName) != childElem2.attribute(attrName))
+                return false;
+        }
+    }
+    return true;
+}
+
 void Remover::removeUnreferencedIds()
 {
     // find
@@ -466,7 +483,7 @@ void Remover::removeElements()
 
         // have to use XMLNode insted of SvgElement, because after converting to element
         // detecting and removing of "comment" or "processing instruction" is impossible
-        QList<XMLNode *> nodeList = Tools::childNodeList(document());
+        QList<XMLNode *> nodeList = childNodeList(document());
         while (!nodeList.isEmpty()) {
             XMLNode *currNode = nodeList.takeFirst();
             SvgElement currElem = SvgElement(currNode->ToElement());
@@ -557,55 +574,36 @@ void Remover::removeElements()
             }
 
             if (!currNode->NoChildren())
-                nodeList << Tools::childNodeList(currNode);
+                nodeList << childNodeList(currNode);
         }
-    }
-
-    // ungroup "a" element
-    QList<SvgElement> elemList = svgElement().childElemList();
-    while (!elemList.isEmpty()) {
-        SvgElement currElem = elemList.takeFirst();
-        if (currElem.tagName() == "a") {
-            if ((currElem.hasAttribute("id") && currElem.attributesCount() == 1)
-                || currElem.attributesCount() == 0)
-            {
-                foreach (const SvgElement &childElem, currElem.childElemList())
-                    currElem.parentElement().insertBefore(childElem, currElem);
-                currElem.parentElement().removeChild(currElem);
-                currElem.clear();
-            }
-        }
-        if (!currElem.isNull())
-            if (currElem.hasChildren())
-                elemList << currElem.childElemList();
     }
 
     // TODO: add switch element ungroup
 
     qreal stdDevLimit = Keys.doubleNumber(Key::RemoveTinyGaussianBlur);
     if (stdDevLimit != 0) {
-        elemList = defsElement().childElemList();
+        QList<SvgElement> elemList = defsElement().childElemList();
         while (!elemList.isEmpty()) {
-            SvgElement currElem = elemList.takeFirst();
-            if (currElem.tagName() == "feGaussianBlur") {
+            SvgElement elem = elemList.takeFirst();
+            if (elem.tagName() == "feGaussianBlur") {
                 // FIXME: check for stdDeviation with transform of all linked element applied
                 if (stdDevLimit != 0.0) {
-                    if (currElem.parentElement().childElementCount() == 1) {
+                    if (elem.parentElement().childElementCount() == 1) {
                         // 'stdDeviation' can contains not only one value
                         // we process it when it contains only one value
-                        QString stdDev = currElem.attribute("stdDeviation");
+                        QString stdDev = elem.attribute("stdDeviation");
                         if (!stdDev.contains(",") && !stdDev.contains(" ")) {
                             bool ok = true;
                             if (stdDev.toDouble(&ok) <= stdDevLimit) {
                                 Q_ASSERT(ok == true);
-                                defsElement().removeChild(currElem.parentElement());
+                                defsElement().removeChild(elem.parentElement());
                             }
                         }
                     }
                 }
             }
-            if (currElem.hasChildren())
-                elemList << currElem.childElemList();
+            if (elem.hasChildren())
+                elemList << elem.childElemList();
         }
     }
 }
@@ -630,7 +628,7 @@ void Remover::removeElementsFinal()
     if (!Keys.flag(Key::RemoveInvisibleElements))
         return;
 
-    QList<SvgElement> list = Tools::childElemList(document());
+    QList<SvgElement> list = childElemList(document());
     while (!list.isEmpty()) {
         SvgElement elem = list.takeFirst();
         if (isElementInvisible2(elem))
@@ -682,12 +680,8 @@ bool Remover::isElementInvisible(SvgElement &elem)
     //remove elements "rect", "pattern" and "image" with height or width <= 0
     if (tagName == "rect" || tagName == "pattern" || tagName == "image") {
         if (elem.hasAttribute("width") && elem.hasAttribute("height")) {
-            QRectF rect = Tools::viewBoxRect(svgElement());
-            bool ok = false;
-            qreal width  = Tools::convertUnitsToPx(elem.attribute("width"), rect.width()).toDouble(&ok);
-            Q_ASSERT(ok == true);
-            qreal height = Tools::convertUnitsToPx(elem.attribute("height"), rect.height()).toDouble(&ok);
-            Q_ASSERT(ok == true);
+            qreal width  = elem.doubleAttribute("width");
+            qreal height = elem.doubleAttribute("height");
             if (width <= 0 || height <= 0)
                 return true;
         }
@@ -766,7 +760,7 @@ bool Remover::isElementInvisible(SvgElement &elem)
 // TODO: process '*-rendering' attribute
 void Remover::removeAttributes()
 {
-    QList<SvgElement> list = Tools::childElemList(document());
+    QList<SvgElement> list = childElemList(document());
     while (!list.isEmpty()) {
         SvgElement elem = list.takeFirst();
         QStringList baseAttrList = elem.attributesList();
@@ -853,7 +847,7 @@ void Remover::removeAttributes()
                 }
 
                 // remove all text based values from non text elements
-                if (!elem.isText()) {
+                if (!elem.isText() && !elem.hasChildWithTagName("text")) {
                     foreach (const QString &attrName, attrList) {
                         if (   attrName.contains("font")
                             || attrName.contains("text")
@@ -887,13 +881,12 @@ void Remover::removeAttributes()
     }
 
     // remove xml:space when no child has multispace text
-    list = Tools::childElemList(document());
+    list = childElemList(document());
     while (!list.isEmpty()) {
         SvgElement elem = list.takeFirst();
-
         if (elem.hasAttribute("xml:space")) {
             bool canRemove = true;
-            QList<XMLNode *> list2 = Tools::childNodeList(elem.xmlElement());
+            QList<XMLNode *> list2 = childNodeList(elem.xmlElement());
             while (!list2.isEmpty()) {
                 XMLNode *elem2 = list2.takeFirst();
                 QString tagName = QL1S(elem2->Value());
@@ -908,7 +901,7 @@ void Remover::removeAttributes()
                     }
                 }
                 if (!elem2->NoChildren())
-                    list2 << Tools::childNodeList(elem2);
+                    list2 << childNodeList(elem2);
             }
             if (canRemove)
                 elem.removeAttribute("xml:space");
@@ -1006,13 +999,26 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
                             << "stroke-opacity" << "stroke-width" << "font-size" << "kerning"
                             << "letter-spacing" << "word-spacing" << "baseline-shift"
                             << "stroke-dashoffset";
+    static QRectF m_viewBoxRect = viewBoxRect();
     foreach (const QString &key, numericStyleList) {
         QString value = hash.value(key);
         if (!value.isEmpty()) {
             bool ok = false;
             qreal num = value.toDouble(&ok);
             if (!ok && !value.startsWith(QL1S("url("))) {
-                hash.insert(key, Tools::convertUnitsToPx(value));
+                if (key == "stroke-width") {
+                    if (value.endsWith(QL1S("%")))
+                        hash.insert(key, Tools::convertUnitsToPx(value, m_viewBoxRect.width()));
+                    else if (value.endsWith(QL1S("em")) || value.endsWith(QL1S("ex"))) {
+                        QString fontSizeStr = findAttribute(elem, "font-size");
+                        qreal fontSize = Tools::convertUnitsToPx(fontSizeStr).toDouble();
+                        Q_ASSERT(fontSize != 0);
+                        hash.insert(key, Tools::convertUnitsToPx(value, fontSize));
+                    } else {
+                        hash.insert(key, Tools::convertUnitsToPx(value));
+                    }
+                } else
+                    hash.insert(key, Tools::convertUnitsToPx(value));
                 num = hash.value(key).toDouble();
             }
             hash.insert(key, Tools::roundNumber(num, Tools::ATTRIBUTE));
@@ -1180,6 +1186,23 @@ void Remover::removeGroups()
             if (elem.hasChildren())
                 list << elem.childElemList();
         }
+    }
+}
+
+void Remover::ungroupAElement()
+{
+    QList<SvgElement> elemList = svgElement().childElemList();
+    while (!elemList.isEmpty()) {
+        SvgElement elem = elemList.takeFirst();
+        if (elem.tagName() == "a" && !elem.hasImportantAttrs()) {
+            foreach (const SvgElement &childElem, elem.childElemList())
+                elem.parentElement().insertBefore(childElem, elem);
+            elem.parentElement().removeChild(elem);
+            elem.clear();
+        }
+        if (!elem.isNull())
+            if (elem.hasChildren())
+                elemList << elem.childElemList();
     }
 }
 

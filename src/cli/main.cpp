@@ -29,8 +29,6 @@
 #include "remover.h"
 #include "replacer.h"
 
-// TODO: custom xml printing
-
 void printLine(const QString &key, const QString &desc = QString())
 {
     if (desc.isEmpty())
@@ -129,7 +127,7 @@ void processFile(const QString &firstFile, const QString &secondFile)
 
     XMLDocument doc;
     doc.LoadFile(firstFile.toUtf8().constData());
-    if (Tools::svgElement(&doc).isNull()) {
+    if (BaseCleaner::svgElement(&doc).isNull()) {
         if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text))
             qFatal("Error: cannot open input file.");
         QTextStream inputStream(&inputFile);
@@ -138,7 +136,7 @@ void processFile(const QString &firstFile, const QString &secondFile)
         svgText.replace("</svg:", "</");
         doc.Clear();
         doc.Parse(svgText.toUtf8().constData());
-        if (Tools::svgElement(&doc).isNull())
+        if (BaseCleaner::svgElement(&doc).isNull())
             qFatal("Error: invalid svg file.");
     }
 
@@ -149,9 +147,9 @@ void processFile(const QString &firstFile, const QString &secondFile)
 
     // mandatory fixes used to simplify subsequent functions
     replacer.splitStyleAttr();
-    replacer.convertUnits();
     // TODO: add key
     replacer.convertCDATAStyle();
+    replacer.convertUnits();
     replacer.prepareDefs();
     replacer.fixWrongAttr();
     replacer.markUsedElements();
@@ -176,10 +174,14 @@ void processFile(const QString &firstFile, const QString &secondFile)
     if (Keys.flag(Key::RemoveUnusedXLinks))
         remover.removeUnusedXLinks();
     remover.cleanPresentationAttributes();
+    if (Keys.flag(Key::ApplyTransformsToShapes))
+        replacer.applyTransformToShapes();
     if (Keys.flag(Key::ConvertBasicShapes))
         replacer.convertBasicShapes();
-    if (Keys.flag(Key::UngroupGroups))
+    if (Keys.flag(Key::UngroupContainers)) {
+        remover.ungroupAElement();
         remover.removeGroups();
+    }
     replacer.processPaths();
     if (Keys.flag(Key::GroupElemByStyle))
         replacer.groupElementsByStyles();

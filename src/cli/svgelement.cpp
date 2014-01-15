@@ -33,9 +33,15 @@ SvgElement::SvgElement(XMLElement *elem)
     m_elem = elem;
 }
 
+// TODO: maybe use inline 'for' insted of creating additional list
 QList<SvgElement> SvgElement::childElemList() const
 {
-    return Tools::childElemList(*this);
+    QList<SvgElement> list;
+    list.reserve(this->childElementCount());
+    for (XMLElement *child = m_elem->FirstChildElement();
+            child; child = child->NextSiblingElement())
+        list << SvgElement(child);
+    return list;
 }
 
 bool SvgElement::isReferenced() const
@@ -260,6 +266,23 @@ double SvgElement::doubleAttribute(const QString &name) const
     return m_elem->DoubleAttribute(ToChar(name));
 }
 
+bool SvgElement::hasChildWithTagName(const char *name) const
+{
+    return _hasChildWithTagName(m_elem, name);
+}
+
+bool SvgElement::_hasChildWithTagName(XMLElement *parent, const char *name) const
+{
+    for (XMLElement *child = parent->FirstChildElement(); child;
+         child = child->NextSiblingElement()) {
+        if (!strcmp(child->Name(), name))
+            return true;
+        if (!child->NoChildren())
+            return _hasChildWithTagName(child, name);
+    }
+    return false;
+}
+
 void SvgElement::removeAttribute(const QString &name)
 {
     m_elem->DeleteAttribute(ToChar(name));
@@ -268,6 +291,15 @@ void SvgElement::removeAttribute(const QString &name)
 void SvgElement::removeAttribute(const char *name)
 {
     m_elem->DeleteAttribute(name);
+}
+
+void SvgElement::removeAttributeIf(const char *name, const char *value)
+{
+    const char *attrValue = m_elem->Attribute(name);
+    if (attrValue != 0) {
+        if (!strcmp(attrValue, value))
+            m_elem->DeleteAttribute(name);
+    }
 }
 
 bool SvgElement::isTagName(const char *tagName) const
@@ -325,7 +357,7 @@ void SvgElement::setTransform(const QString &transform, bool fromParent)
             Transform ts(attribute("transform") + " " + transform);
             setAttribute("transform", ts.simplified());
         }
-    } else if (hasAttribute("transform")) {
+    } else {
         setAttribute("transform", transform);
     }
 }

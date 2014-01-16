@@ -22,8 +22,8 @@
 #ifndef KEYS_H
 #define KEYS_H
 
-#include <QVariantHash>
 #include <QStringList>
+#include <QHash>
 #include <QMap>
 #include <QObject>
 
@@ -40,7 +40,7 @@ namespace Preset {
     static const QString Custom   = "custom";
 }
 
-namespace Key {
+namespace KeyStr {
     static const QString RemoveProlog                = "--remove-prolog";
     static const QString RemoveComments              = "--remove-comments";
     static const QString RemoveProcInstruction       = "--remove-proc-instr";
@@ -77,6 +77,7 @@ namespace Key {
     static const QString RemoveUnusedXLinks          = "--remove-unused-xlinks";
     static const QString GroupElemByStyle            = "--group-elements-by-styles";
     static const QString JoinStyleAttributes         = "--join-style-atts";
+    static const QString SimplifyTransformMatrix     = "--simplify-transform-matrix";
     static const QString ApplyTransformsToDefs       = "--apply-transforms-to-defs";
     static const QString ApplyTransformsToShapes     = "--apply-transforms-to-shapes";
     // TODO: remove bitmaps, as utility
@@ -101,6 +102,71 @@ namespace Key {
     static const QString ShortOutput                 = "--short-output";
 }
 
+
+namespace Key {
+    enum Key {
+        RemoveProlog,
+        RemoveComments,
+        RemoveProcInstruction,
+        RemoveUnusedDefs,
+        RemoveNonSvgElements,
+        RemoveMetadata,
+        RemoveInkscapeElements,
+        RemoveSodipodiElements,
+        RemoveAdobeElements,
+        RemoveCorelDrawElements,
+        RemoveMSVisioElements,
+        RemoveSketchElements,
+        RemoveInvisibleElements,
+        RemoveEmptyContainers,
+        RemoveDuplicatedDefs,
+        UngroupContainers,
+        MergeGradients,
+        RemoveTinyGaussianBlur,
+
+        RemoveSvgVersion,
+        RemoveUnreferencedIds,
+        TrimIds,
+        RemoveNotAppliedAttributes,
+        RemoveDefaultAttributes,
+        RemoveInkscapeAttributes,
+        RemoveSodipodiAttributes,
+        RemoveAdobeAttributes,
+        RemoveCorelDrawAttributes,
+        RemoveMSVisioAttributes,
+        RemoveSketchAttributes,
+        RemoveStrokeProps,
+        RemoveFillProps,
+        RemoveUnusedXLinks,
+        GroupElemByStyle,
+        SimplifyTransformMatrix,
+        ApplyTransformsToDefs,
+        ApplyTransformsToShapes,
+
+        JoinStyleAttributes,
+        KeepNamedIds,
+
+        ConvertToRelative,
+        RemoveUnneededSymbols,
+        RemoveTinySegments,
+        ConvertSegments,
+        ApplyTransformsToPaths,
+
+        CreateViewbox,
+        ConvertColorToRRGGBB,
+        ConvertRRGGBBToRGB,
+        ConvertBasicShapes,
+        TransformPrecision,
+        CoordsPrecision,
+        AttributesPrecision,
+        CompactOutput,
+
+        SortDefs,
+
+        ShortOutput
+    };
+}
+
 // singleton
 class Keys : public QObject
 {
@@ -111,30 +177,32 @@ public:
         static Keys instance;
         return instance;
     }
-    bool flag(const QString &key) const;
-    int intNumber(const QString &key) const;
+    bool flag(const int &key) const;
+    int intNumber(const int &key) const;
     int coordinatesPrecision() const;
     int attributesPrecision() const;
     int transformPrecision() const;
-    double doubleNumber(const QString &key) const;
+    double doubleNumber(const int &key) const;
     void parseOptions(QStringList &list);
     void prepareDescription();
-    QString description(const QString &key);
-    QStringList elementsKeys();
-    QStringList attributesKeys();
-    QStringList attributesUtilsKeys();
-    QStringList pathsKeys();
-    QStringList optimizationsKeys();
-    QStringList optimizationsUtilsKeys();
-    QStringList basicPresetKeys();
-    QStringList completePresetKeys();
-    QStringList extremePresetKeys();
+    QString description(const int &key);
+    QList<int> elementsKeysId();
+    QList<int> attributesKeysId();
+    QList<int> attributesUtilsKeysId();
+    QList<int> pathsKeysId();
+    QList<int> optimizationsKeys();
+    QList<int> optimizationsUtilsKeys();
+    QList<int> basicPresetKeys();
+    QList<int> completePresetKeys();
+    QList<int> extremePresetKeys();
     void setPreset(const QString &name);
     QStringList& allKeys();
+    QString keyName(const int &key);
 
 private:
-    QVariantHash hash;
-    StringHash descHash;
+    QHash<int, double> numHash;
+    QSet<int> *flags;
+    QHash<int, QString> descHash;
     int m_coordinatesPrecision;
     int m_attributesPrecision;
     int m_transformPrecision;

@@ -84,15 +84,16 @@ void WizardDialog::loadSettings()
     if (!keyList.isEmpty()) {
         foreach (QWidget *page, m_pageList) {
             foreach(QWidget *w, page->findChildren<QWidget *>()) {
-                QString key = w->property("key").toString();
-                if (!key.isEmpty() && !keyList.filter(key).isEmpty()) {
+                bool ok = true;
+                int key = w->property("key").toInt(&ok);
+                if (ok && !keyList.filter(Keys::get().keyName(key)).isEmpty()) {
                     if (w->inherits("QCheckBox")) {
                         qobject_cast<QCheckBox *>(w)->setChecked(true);
-                        keyList.removeOne(key);
+                        keyList.removeOne(Keys::get().keyName(key));
                     }
                     else if (w->inherits("SpinBox")) {
-                        QString ckey = keyList.filter(key).first();
-                        ckey.remove(key).remove("=");
+                        QString ckey = keyList.filter(Keys::get().keyName(key)).first();
+                        ckey.remove(Keys::get().keyName(key)).remove("=");
                         qobject_cast<SpinBox *>(w)->setValue(ckey.toDouble());
                     }
                 }
@@ -204,7 +205,7 @@ void WizardDialog::addUtilsLabel(QVBoxLayout *layout)
 void WizardDialog::initElementsPage()
 {
     QVBoxLayout* lay = addPage();
-    foreach (const QString &key, Keys::get().elementsKeys()) {
+    foreach (const int &key, Keys::get().elementsKeysId()) {
         if (key != Key::RemoveTinyGaussianBlur) {
             QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
             chBox->setProperty("key", key);
@@ -224,13 +225,13 @@ void WizardDialog::initElementsPage()
 void WizardDialog::initAttributesPage()
 {
     QVBoxLayout* lay = addPage();
-    foreach (const QString &key, Keys::get().attributesKeys()) {
+    foreach (const int &key, Keys::get().attributesKeysId()) {
         QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
         chBox->setProperty("key", key);
         lay->addWidget(chBox);
     }
     addUtilsLabel(lay);
-    foreach (const QString &key, Keys::get().attributesUtilsKeys()) {
+    foreach (const int &key, Keys::get().attributesUtilsKeysId()) {
         QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
         chBox->setProperty("key", key);
         lay->addWidget(chBox);
@@ -241,7 +242,7 @@ void WizardDialog::initAttributesPage()
 void WizardDialog::initPathsPage()
 {
     QVBoxLayout* lay = addPage();
-    foreach (const QString &key, Keys::get().pathsKeys()) {
+    foreach (const int &key, Keys::get().pathsKeysId()) {
         QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
         chBox->setProperty("key", key);
         lay->addWidget(chBox);
@@ -252,7 +253,7 @@ void WizardDialog::initPathsPage()
 void WizardDialog::initOptimizationPage()
 {
     QVBoxLayout* lay = addPage();
-    foreach (const QString &key, Keys::get().optimizationsKeys()) {
+    foreach (const int &key, Keys::get().optimizationsKeys()) {
         if (   key != Key::TransformPrecision
             && key != Key::CoordsPrecision
             && key != Key::AttributesPrecision) {
@@ -268,7 +269,7 @@ void WizardDialog::initOptimizationPage()
         }
     }
     addUtilsLabel(lay);
-    foreach (const QString &key, Keys::get().optimizationsUtilsKeys()) {
+    foreach (const int &key, Keys::get().optimizationsUtilsKeys()) {
         QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
         chBox->setProperty("key", key);
         lay->addWidget(chBox);
@@ -304,8 +305,9 @@ void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &presetName
 
     foreach (QWidget *page, m_pageList) {
         foreach(QWidget *w, page->findChildren<QWidget *>()) {
-            QString key = w->property("key").toString();
-            if (!key.isEmpty()) {
+            bool ok = true;
+            int key = w->property("key").toInt(&ok);
+            if (ok) {
                 if (w->inherits("QCheckBox"))
                     qobject_cast<QCheckBox *>(w)->setChecked(Keys::get().flag(key));
                 else if (w->inherits("SpinBox"))
@@ -429,24 +431,27 @@ QStringList WizardDialog::argsList(bool *isCustom)
     QList<QWidget *> allWidgets;
     foreach (QWidget *page, m_pageList) {
         foreach(QWidget *w, page->findChildren<QWidget *>()) {
-            QString key = w->property("key").toString();
-            if (!key.isEmpty()) {
+            bool ok = true;
+            w->property("key").toInt(&ok);
+            if (ok)
                 allWidgets << w;
-            }
         }
     }
 
     if (isCustom) {
         *isCustom = false;
         foreach (QWidget *w, allWidgets) {
-            QString key = w->property("key").toString();
-            if (w->inherits("QCheckBox")) {
-                bool isChecked = qobject_cast<QCheckBox *>(w)->isChecked();
-                if (Keys::get().flag(key) != isChecked)
-                    *isCustom = true;
-            } else if (w->inherits("SpinBox")) {
-                if (Keys::get().doubleNumber(key) != qobject_cast<SpinBox *>(w)->value())
-                    *isCustom = true;
+            bool ok = true;
+            int key = w->property("key").toInt(&ok);
+            if (ok) {
+                if (w->inherits("QCheckBox")) {
+                    bool isChecked = qobject_cast<QCheckBox *>(w)->isChecked();
+                    if (Keys::get().flag(key) != isChecked)
+                        *isCustom = true;
+                } else if (w->inherits("SpinBox")) {
+                    if (Keys::get().doubleNumber(key) != qobject_cast<SpinBox *>(w)->value())
+                        *isCustom = true;
+                }
             }
         }
     }
@@ -454,10 +459,10 @@ QStringList WizardDialog::argsList(bool *isCustom)
         foreach (QWidget *w, allWidgets) {
             if (w->inherits("QCheckBox")) {
                 if (qobject_cast<QCheckBox *>(w)->isChecked())
-                    tmpList << w->property("key").toString();
+                    tmpList << Keys::get().keyName(w->property("key").toInt());
             } else if (w->inherits("SpinBox")) {
                 qreal value = qobject_cast<SpinBox *>(w)->value();
-                tmpList << w->property("key").toString() + "=" + QString::number(value);
+                tmpList << Keys::get().keyName(w->property("key").toInt()) + "=" + QString::number(value);
             }
         }
     } else {
@@ -468,15 +473,15 @@ QStringList WizardDialog::argsList(bool *isCustom)
         else if (cmbBoxPreset->currentText() == tr("Extreme"))
             tmpList << "--preset=" + Preset::Extreme;
         foreach (QWidget *w, allWidgets) {
-            QString key = w->property("key").toString();
+            int key = w->property("key").toInt();
             if (w->inherits("QCheckBox")) {
                 bool isChecked = qobject_cast<QCheckBox *>(w)->isChecked();
                 if (Keys::get().flag(key) != isChecked && isChecked)
-                    tmpList << key;
+                    tmpList << Keys::get().keyName(key);
             } else if (w->inherits("SpinBox")) {
                 qreal value = qobject_cast<SpinBox *>(w)->value();
                 if (Keys::get().doubleNumber(key) != value)
-                    tmpList << key + "=" + QString::number(value);
+                    tmpList << Keys::get().keyName(key) + "=" + QString::number(value);
             }
         }
     }

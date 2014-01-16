@@ -20,6 +20,7 @@
 ****************************************************************************/
 
 #include <QtCore/QFileInfo>
+#include <QtGui/QResizeEvent>
 
 #include "someutils.h"
 #include "thumbwidget.h"
@@ -28,26 +29,17 @@ ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
     QWidget(parent)
 {
     setupUi(this);
-    // fix Windows/Gnome no-frame to ugly frame...
 #ifdef Q_OS_WIN
     frame->setFrameShadow(QFrame::Plain);
 #endif
-
-    lbl1->setText("<b>" + tr("Name:") + "</b>");
     refill(info, compare);
 }
 
 void ThumbWidget::refill(const SVGInfo &info, bool compare)
 {
-    iconsWidget->setPaths(info.inPath, info.outPath,compare);
+    iconsWidget->setPaths(info.inPath, info.outPath, compare);
 
-    lblName->setMinimumWidth(300);
-    QFont font = QFont().defaultFamily();
-    font.setBold(true);
-    QFontMetrics fm(font);
-    QString name = fm.elidedText(QFileInfo(info.outPath).fileName(),
-                                 Qt::ElideLeft, lblName->width());
-    lblName->setText("<b>" + name + "</b>");
+    m_name = QFileInfo(info.outPath).fileName();
 
     if (!info.errString.isEmpty()) {
         lblSizes->setText("0 -> 0 (0.00%)");
@@ -74,4 +66,18 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
                          .arg(QString::number(attrPerc, 'f', 2)));
         lblTime->setText(SomeUtils::prepareTime(info.time));
     }
+    QResizeEvent event(size(),size());
+    QApplication::sendEvent(this, &event);
+}
+
+void ThumbWidget::resizeEvent(QResizeEvent *)
+{
+    QFont font = QFont().defaultFamily();
+    font.setBold(true);
+    QFontMetrics fm(font);
+    int w = lblName->width();
+    if (w < 120)
+        w = 300;
+    QString name = fm.elidedText(m_name, Qt::ElideLeft, w - 50);
+    lblName->setText("<b>" + name + "</b>");
 }

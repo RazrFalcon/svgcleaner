@@ -978,7 +978,7 @@ void Remover::cleanPresentationAttributes(SvgElement elem)
 // needed for all inherited attributes
 void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
 {
-    static bool isRemoveNotApplied = Keys.flag(Key::RemoveNotAppliedAttributes);    
+    static bool isRemoveNotApplied = Keys.flag(Key::RemoveNotAppliedAttributes);
     static bool isConvertColors
             = (Keys.flag(Key::ConvertColorToRRGGBB) || Keys.flag(Key::ConvertRRGGBBToRGB));
 
@@ -1026,8 +1026,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
     }
 
     // remove all fill properties if fill is off
-    static bool isRemoveFillProps = Keys.flag(Key::RemoveFillProps);
-    if (isRemoveFillProps
+    if (Keys.flag(Key::RemoveFillProps)
         && parentAttrs.contains("fill")
         && parentHash.value("fill") == "none"
         && (hash.value("fill") == "none" || hash.value("fill-opacity") == "0"))
@@ -1041,8 +1040,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
     }
 
     // remove all stroke properties if stroke is off
-    static bool isRemoveStrokeProps = Keys.flag(Key::RemoveStrokeProps);
-    if (isRemoveStrokeProps
+    if (Keys.flag(Key::RemoveStrokeProps)
         && (   hash.value("stroke") == "none"
             || hash.value("stroke-opacity") == "0"
             || hash.value("stroke-width") == "0")) {
@@ -1092,12 +1090,10 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
             hash.remove("overflow");
     }
 
-    static bool isRemoveInkscapeAttributes = Keys.flag(Key::RemoveInkscapeAttributes);
-    if (isRemoveInkscapeAttributes)
+    if (Keys.flag(Key::RemoveInkscapeAttributes))
         hash.remove("-inkscape-font-specification");
 
-    static bool isRemoveDefaultAttributes = Keys.flag(Key::RemoveDefaultAttributes);
-    if (isRemoveDefaultAttributes) {
+    if (Keys.flag(Key::RemoveDefaultAttributes)) {
         foreach (const QString &attrName, hash.keys())
             removeDefaultValue(hash, attrName);
     }

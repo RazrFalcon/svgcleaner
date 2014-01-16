@@ -40,6 +40,13 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
+    <item row="1" column="0" colspan="4">
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="1" colspan="3">
      <widget class="QScrollBar" name="itemsScroll">
       <property name="maximum">
@@ -85,13 +92,6 @@
         </property>
        </layout>
       </widget>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="4">
-     <widget class="QProgressBar" name="progressBar">
-      <property name="value">
-       <number>0</number>
-      </property>
      </widget>
     </item>
    </layout>

@@ -1107,7 +1107,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                     groupElementsByStyles(parentGElem);
                 }
                 similarElemList.clear();
-                if (!currElem.tagName().isEmpty())
+                if (!currElem.tagName().isEmpty() && !currElem.isGroup())
                     list.prepend(currElem);
             }
         }

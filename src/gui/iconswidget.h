@@ -38,13 +38,16 @@ private:
     bool compareView;
     bool crashed;
     bool newToolTip;
+    bool refresh;
     QLabel *toolTip;
-    QPixmap mainPix;
+    QPixmap tooltipPix;
+    QPixmap leftPix;
+    QPixmap rightPix;
     QString inpath;
     QString outpath;
     QString errText;
     void makeToolTip();
-    void renderSvg(const QString path, QPainter *painter, QRect rect);
+    QPixmap renderSvg(const QString &path, const QRect &rect, bool cleaned);
     
 private slots:
     void showToolTip();
@@ -55,7 +58,6 @@ protected:
     void mouseMoveEvent(QMouseEvent *);
     void mousePressEvent(QMouseEvent *);
     void paintEvent(QPaintEvent *);
-//    void focusOutEvent(QFocusEvent *);
 };
 
 #endif // ICONSWIDGET_H

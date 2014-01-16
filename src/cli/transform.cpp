@@ -35,7 +35,6 @@ Transform::Transform(const QString &text)
 
 void Transform::setOldXY(qreal prevX, qreal prevY)
 {
-    // NOTE: must be set
     oldX = prevX;
     oldY = prevY;
 }
@@ -171,9 +170,20 @@ void Transform::calcMatrixes(const QString &text)
         m_types |= Mirror;
 }
 
-// TODO: add key for this
 QString Transform::simplified() const
 {
+    if (!Keys::get().flag(Key::SimplifyTransformMatrix)) {
+        QString ts = "matrix(";
+        ts += Tools::roundNumber(a, Tools::TRANSFORM) + " ";
+        ts += Tools::roundNumber(b, Tools::TRANSFORM) + " ";
+        ts += Tools::roundNumber(c, Tools::TRANSFORM) + " ";
+        ts += Tools::roundNumber(d, Tools::TRANSFORM) + " ";
+        ts += Tools::roundNumber(e, Tools::COORDINATE) + " ";
+        ts += Tools::roundNumber(f, Tools::COORDINATE);
+        ts += ")";
+        return ts;
+    }
+
     QString transform;
     QStringList newPoints;
     newPoints.reserve(2);
@@ -248,9 +258,10 @@ QString Transform::simplified() const
         newPoints << Tools::roundNumber(f, Tools::COORDINATE);
     }
 
+    bool isTrim = Keys::get().flag(Key::RemoveUnneededSymbols);
     for (int i = 0; i < newPoints.size(); ++i) {
         if (i != 0) {
-            if (Keys::get().flag(Key::RemoveUnneededSymbols)) {
+            if (isTrim) {
                 if ((!newPoints.at(i-1).contains('.')
                      && newPoints.at(i).startsWith(QLatin1Char('.')))
                         || newPoints.at(i).at(0).isDigit())

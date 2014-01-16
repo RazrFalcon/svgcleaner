@@ -29,18 +29,23 @@
 #include "remover.h"
 #include "replacer.h"
 
-void printLine(const QString &key, const QString &desc = QString())
+void printLine(const int &keyId, const QString &desc = QString())
 {
     if (desc.isEmpty())
-        qDebug("  %s %s", qPrintable(key.leftJustified(35, ' ')),
-                          qPrintable(Keys.description(key)));
+        qDebug("  %s %s", qPrintable(Keys.keyName(keyId).leftJustified(35, ' ')),
+                          qPrintable(Keys.description(keyId)));
     else
-        qDebug("  %s %s", qPrintable(key.leftJustified(35, ' ')), qPrintable(desc));
+        qDebug("  %s %s", qPrintable(Keys.keyName(keyId).leftJustified(35, ' ')), qPrintable(desc));
+}
+
+void printLine(const QString &key, const QString &desc)
+{
+    qDebug("  %s %s", qPrintable(key.leftJustified(35, ' ')), qPrintable(desc));
 }
 
 void showPresetInfo(const QString &presetName)
 {
-    QStringList list;
+    QList<int> list;
     if (presetName.endsWith(Preset::Basic)) {
         Keys.setPreset(Preset::Basic);
         list = Keys.basicPresetKeys();
@@ -51,14 +56,15 @@ void showPresetInfo(const QString &presetName)
         Keys.setPreset(Preset::Extreme);
         list = Keys.extremePresetKeys();
     }
-    foreach (const QString &key, list) {
-        if (key == Key::TransformPrecision || key == Key::AttributesPrecision
+    foreach (const int &key, list) {
+        if (   key == Key::TransformPrecision
+            || key == Key::AttributesPrecision
             || key == Key::CoordsPrecision) {
-            qDebug() << key + "=" + QString::number(Keys.intNumber(key));
+            qDebug() << Keys.keyName(key) + "=" + QString::number(Keys.intNumber(key));
         } else if (key == Key::RemoveTinyGaussianBlur) {
-            qDebug() << key + "=" + QString::number(Keys.doubleNumber(key));
+            qDebug() << Keys.keyName(key) + "=" + QString::number(Keys.doubleNumber(key));
         } else {
-            qDebug() << key;
+            qDebug() << Keys.keyName(key);
         }
     }
 }
@@ -72,12 +78,12 @@ void showHelp()
     qDebug() << "Usage:";
     qDebug() << "  svgcleaner-cli <in-file> <out-file> [--preset=] [--options]";
     qDebug() << "Show options included in preset:";
-    qDebug() << "  svgcleaner-cli --info --preset=";
+    qDebug() << "  svgcleaner-cli --info --preset=<name>";
     qDebug() << "";
     qDebug() << "Presets:";
-    printLine("--preset basic", "Basic cleaning");
-    printLine("--preset complete", "Complete cleaning");
-    printLine("--preset extreme", "Extreme cleaning");
+    printLine("--preset=basic",    "Basic cleaning");
+    printLine("--preset=complete", "Complete cleaning");
+    printLine("--preset=extreme",  "Extreme cleaning");
     qDebug() << "";
     qDebug() << "Options:";
     qDebug() << "";
@@ -86,36 +92,38 @@ void showHelp()
     qDebug() << "";
 
     qDebug() << "Elements:";
-    foreach (const QString &key, Keys.elementsKeys()) {
+    foreach (const int &key, Keys.elementsKeysId()) {
         if (key == Key::RemoveTinyGaussianBlur)
-            printLine(key + "=<0..1.0>",
-                    Keys.description(key) + QString(" [default: %1]").arg(Keys.doubleNumber(key)));
+            printLine(Keys.keyName(key) + "=<0..1.0>",
+                      Keys.description(key) + QString(" [default: %1]")
+                        .arg(Keys.doubleNumber(Key::RemoveTinyGaussianBlur)));
         else
             printLine(key);
     }
     qDebug() << "";
     qDebug() << "Attributes:";
-    foreach (const QString &key, Keys.attributesKeys())
+    foreach (const int &key, Keys.attributesKeysId())
         printLine(key);
     qDebug() << "Additional:";
-    foreach (const QString &key, Keys.attributesUtilsKeys())
+    foreach (const int &key, Keys.attributesUtilsKeysId())
         printLine(key);
     qDebug() << "";
     qDebug() << "Paths:";
-    foreach (const QString &key, Keys.pathsKeys())
+    foreach (const int &key, Keys.pathsKeysId())
         printLine(key, Keys.description(key));
     qDebug() << "";
     qDebug() << "Optimizations:";
-    foreach (const QString &key, Keys.optimizationsKeys()) {
-        if (key == Key::TransformPrecision || key == Key::AttributesPrecision
+    foreach (const int &key, Keys.optimizationsKeys()) {
+        if (   key == Key::TransformPrecision
+            || key == Key::AttributesPrecision
             || key == Key::CoordsPrecision) {
-            printLine(key + "=<1..8>",
-                    Keys.description(key) + QString(" [default: %1]").arg(Keys.doubleNumber(key)));
+            printLine(Keys.keyName(key) + "=<1..8>",
+                      Keys.description(key) + QString(" [default: %1]").arg(Keys.doubleNumber(key)));
         } else
             printLine(key);
     }
     qDebug() << "Additional:";
-    foreach (const QString &key, Keys.optimizationsUtilsKeys())
+    foreach (const int &key, Keys.optimizationsUtilsKeys())
         printLine(key);
 }
 
@@ -157,6 +165,7 @@ void processFile(const QString &firstFile, const QString &secondFile)
     remover.cleanSvgElementAttribute();
     if (Keys.flag(Key::CreateViewbox))
         replacer.convertSizeToViewbox();
+
 
     if (Keys.flag(Key::RemoveUnusedDefs))
         remover.removeUnusedDefs();

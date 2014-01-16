@@ -34,5 +34,11 @@ class ThumbWidget : public QWidget, private Ui::ThumbWidget
 public:
     explicit ThumbWidget(const SVGInfo &info, bool compare = false, QWidget *parent = 0);
     void refill(const SVGInfo &info, bool compare = false);
+
+private:
+    QString m_name;
+
+protected:
+    void resizeEvent(QResizeEvent *);
 };
 #endif // THUMBWIDGET_H

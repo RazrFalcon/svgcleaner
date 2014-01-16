@@ -28,6 +28,7 @@
 #include <QtGui/QDesktopServices>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
+#include <QtGui/QPixmapCache>
 
 #include <QtSvg/QSvgRenderer>
 
@@ -40,6 +41,7 @@ IconsWidget::IconsWidget(QWidget *parent) :
     toolTip->setWindowFlags(Qt::ToolTip);
     setMouseTracking(true);
     setFixedHeight(100);
+    refresh = true;
 }
 
 void IconsWidget::setPaths(const QString &pathIn, const QString &pathOut, const bool compare)
@@ -48,6 +50,7 @@ void IconsWidget::setPaths(const QString &pathIn, const QString &pathOut, const 
     outpath = pathOut;
     compareView = compare;
     newToolTip = true;
+    refresh = true;
     if (toolTip->isVisible())
         makeToolTip();
 
@@ -71,20 +74,19 @@ void IconsWidget::makeToolTip()
 {
     QImage image(620, 310, QImage::Format_ARGB32);
     image.fill(0);
-    mainPix = QPixmap::fromImage(image, Qt::NoOpaqueDetection | Qt::AutoColor);
-    QPainter painter(&mainPix);
+    tooltipPix = QPixmap::fromImage(image, Qt::NoOpaqueDetection | Qt::AutoColor);
+    QPainter painter(&tooltipPix);
     QPalette pal;
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
     painter.setBrush(QBrush(pal.color(QPalette::Background)));
     painter.setPen(QPen(QColor("#636363"), 2));
     painter.drawRoundedRect(2, 2, image.width()-4, image.height()-4, 5, 5);
+    painter.drawPixmap(5, 5, renderSvg(inpath, QRect(5, 5, 300, 300), false));
+    painter.drawPixmap(310, 5, renderSvg(outpath, QRect(5, 5, 300, 300), true));
 
-    renderSvg(inpath,  &painter, QRect(5,   5, 300, 300));
-    renderSvg(outpath, &painter, QRect(310, 5, 300, 300));
-
-    toolTip->setPixmap(mainPix);
-    toolTip->setMask(mainPix.mask());
+    toolTip->setPixmap(tooltipPix);
+    toolTip->setMask(tooltipPix.mask());
     newToolTip = false;
 }
 
@@ -113,26 +115,25 @@ void IconsWidget::mouseMoveEvent(QMouseEvent *event)
         return;
 
     QCursor cursor;
-    QPoint  cursorPos = mapFromGlobal(cursor.pos());
+    QPoint cursorPos = mapFromGlobal(cursor.pos());
 
     if (rect().contains(cursorPos)) {
         int border = 5;
         QPoint point  = mapToGlobal(event->pos());
         QPoint point2 = mapToGlobal(QPoint(0, 0));
-        if (point2.y() - mainPix.height() - 6 > 0) {
-            toolTip->setGeometry(point.x() - mainPix.width()/2, point2.y() - mainPix.height()-6,
-                                 mainPix.width(), mainPix.height());
+        if (point2.y() - tooltipPix.height() - 6 > 0) {
+            toolTip->setGeometry(point.x() - tooltipPix.width()/2, point2.y() - tooltipPix.height()-6,
+                                 tooltipPix.width(), tooltipPix.height());
         } else {
-            toolTip->setGeometry(point.x() - mainPix.width()/2, point2.y() + height() + border,
-                                 mainPix.width(), mainPix.height());
+            toolTip->setGeometry(point.x() - tooltipPix.width()/2, point2.y() + height() + border,
+                                 tooltipPix.width(), tooltipPix.height());
         }
     }
 }
 
 void IconsWidget::leaveEvent(QEvent *)
 {
-    QCursor curs;
-    QPoint cursPos = mapFromGlobal(curs.pos());
+    QPoint cursPos = mapFromGlobal(QCursor().pos());
     if (!rect().contains(cursPos))
         toolTip->hide();
 }
@@ -140,29 +141,54 @@ void IconsWidget::leaveEvent(QEvent *)
 void IconsWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
     if (crashed) {
         painter.setPen(QPen(Qt::red));
-        painter.drawText(rect(), Qt::AlignCenter|Qt::TextWordWrap, errText);
+        painter.drawText(rect(), Qt::AlignCenter | Qt::TextWordWrap, errText);
         return;
     }
 
-    // TODO: render preview only once!
     if (compareView) {
-        renderSvg(inpath,  &painter, QRect(0,   0, 100, 100));
-        renderSvg(outpath, &painter, QRect(105, 0, 100, 100));
+        if (refresh)
+            leftPix = renderSvg(inpath, QRect(0,   0, 100, 100), false);
+        painter.drawPixmap(0, 0, leftPix);
+
+        if (refresh)
+            rightPix = renderSvg(outpath, QRect(0, 0, 100, 100), true);
+        painter.drawPixmap(105, 0, rightPix);
     } else {
-        renderSvg(outpath, &painter, QRect(0, 0, width(), height()));
+        if (refresh)
+            rightPix = renderSvg(outpath, QRect(0, 0, width(), height()), true);
+        painter.drawPixmap(0, 0, rightPix);
     }
+    refresh = false;
 }
 
-void IconsWidget::renderSvg(const QString path, QPainter *painter, QRect rect)
+QPixmap IconsWidget::renderSvg(const QString &path, const QRect &rect, bool cleaned)
 {
+    QString tpath = path;
+    if (cleaned)
+        tpath += "_cleaned" + QString::number(rect.height());
+    else
+        tpath += "_orig" + QString::number(rect.height());
+
+    if (QPixmapCache::find(tpath)) {
+        QPixmap pix;
+        QPixmapCache::find(tpath, &pix);
+        return pix;
+    }
+
     QSvgRenderer renderer(path);
     QSize size = renderer.viewBox().size();
     size.scale(rect.width(), rect.height(), Qt::KeepAspectRatio);
-    int border = 3;
-    renderer.render(painter, QRect(rect.x()+border, (rect.height()-size.height())/2+rect.y()+border,
-                                   size.width()-border*2, size.height()-border*2));
+    static int border = 3;
+    QPixmap pix(rect.width(), rect.height());
+    pix.fill(Qt::transparent);
+    QPainter p(&pix);
+    renderer.render(&p, QRect(rect.x()+border, (rect.height()-size.height())/2+rect.y()+border,
+                                size.width()-border*2, size.height()-border*2));
+    QPixmapCache::insert(tpath, pix);
+    return pix;
 }
 
 void IconsWidget::mousePressEvent(QMouseEvent *event)
@@ -174,8 +200,3 @@ void IconsWidget::mousePressEvent(QMouseEvent *event)
     else
         QDesktopServices::openUrl(QUrl(outpath));
 }
-
-//void IconsWidget::focusOutEvent(QFocusEvent *)
-//{
-//    toolTip->hide(); // FIXME: always remove all tooltips
-//}

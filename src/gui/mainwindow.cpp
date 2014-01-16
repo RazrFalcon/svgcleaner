@@ -322,23 +322,25 @@ void MainWindow::sortingChanged(int value)
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (obj == scrollArea && event->type() == QEvent::Wheel) {
-        QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
-        if (wheelEvent->delta() > 0)
-            itemsScroll->setValue(itemsScroll->value()-1);
-        else
-            itemsScroll->setValue(itemsScroll->value()+1);
-        return true;
+    if (obj == scrollArea) {
+        if (event->type() == QEvent::Wheel) {
+            QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
+            if (wheelEvent->delta() > 0)
+                itemsScroll->setValue(itemsScroll->value()-1);
+            else
+                itemsScroll->setValue(itemsScroll->value()+1);
+            return true;
+        }
+        else if (event->type() == QEvent::KeyPress) {
+            QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+            if (keyEvent->key() == Qt::Key_End)
+                itemsScroll->setValue(itemsScroll->maximum());
+            else if (keyEvent->key() == Qt::Key_Home)
+                itemsScroll->setValue(0);
+            return true;
+        }
     }
-    if (obj == scrollArea && event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-        if (keyEvent->key() == Qt::Key_End)
-            itemsScroll->setValue(itemsScroll->maximum());
-        else if (keyEvent->key() == Qt::Key_Home)
-            itemsScroll->setValue(0);
-        return true;
-    }
-    return false;
+    return QMainWindow::eventFilter(obj, event);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *)

@@ -87,13 +87,16 @@ void Keys::parseOptions(QStringList &list)
         QString value;
         if (flag.contains(QLatin1Char('='))) {
             QStringList tmpList = flag.split(QLatin1Char('='));
-            Q_ASSERT(tmpList.count() == 2);
-            flag  = tmpList.first();
-            value = tmpList.last();
-            bool ok = false;
-            value.toDouble(&ok);
-            if (!ok)
+            if (tmpList.size() != 2) {
                 isError = true;
+            } else {
+                flag  = tmpList.first();
+                value = tmpList.last();
+                bool ok = false;
+                value.toDouble(&ok);
+                if (!ok)
+                    isError = true;
+            }
         }
         int index = allKeys().indexOf(flag);
         if (index != -1 && !isError) {
@@ -161,6 +164,8 @@ void Keys::prepareDescription()
                     tr("Remove invisible elements"));
     descHash.insert(Key::RemoveEmptyContainers,
                     tr("Remove empty containers elements"));
+    descHash.insert(Key::RemoveOutsideElements,
+                    tr("Remove elements which is outside the viewbox"));
     descHash.insert(Key::UngroupContainers,
                     tr("Ungroup container elements, when possible"));
     descHash.insert(Key::RemoveDuplicatedDefs,
@@ -265,6 +270,7 @@ QList<int> Keys::elementsKeysId()
         << Key::RemoveInvisibleElements
         << Key::RemoveEmptyContainers
         << Key::RemoveDuplicatedDefs
+        << Key::RemoveOutsideElements
         << Key::UngroupContainers
         << Key::MergeGradients
         << Key::RemoveTinyGaussianBlur;
@@ -374,6 +380,7 @@ QList<int> Keys::extremePresetKeys()
 
 QStringList &Keys::allKeys()
 {
+    // must be in the same order as in Key namespace
     static QStringList allKeys = QStringList()
         << KeyStr::RemoveProlog
         << KeyStr::RemoveComments
@@ -390,6 +397,7 @@ QStringList &Keys::allKeys()
         << KeyStr::RemoveInvisibleElements
         << KeyStr::RemoveEmptyContainers
         << KeyStr::RemoveDuplicatedDefs
+        << KeyStr::RemoveOutsideElements
         << KeyStr::UngroupContainers
         << KeyStr::MergeGradients
         << KeyStr::RemoveTinyGaussianBlur

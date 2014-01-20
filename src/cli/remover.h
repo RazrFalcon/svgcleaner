@@ -50,6 +50,7 @@ public:
     void cleanPresentationAttributes(SvgElement elem = SvgElement());
     void removeGroups();
     void ungroupAElement();
+    void removeElementsOutsideTheViewbox();
 
 private:
     QList<StringMap> styleHashList;
@@ -63,6 +64,7 @@ private:
     void megreGroups(SvgElement parentElem, SvgElement childElem, bool isParentToChild);
     bool isDoctype(const QString &str);
     bool isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2);
+    void prepareViewBoxRect(QRectF &viewBox);
 };
 
 #endif // REMOVER_H

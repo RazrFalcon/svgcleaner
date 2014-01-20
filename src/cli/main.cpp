@@ -127,17 +127,17 @@ void showHelp()
         printLine(key);
 }
 
-void processFile(const QString &firstFile, const QString &secondFile)
+void processFile(const QString &inPath, const QString &outPath)
 {
-    QFile inputFile(firstFile);
     if (!Keys.flag(Key::ShortOutput))
-        qDebug("The initial file size is: %u", (int)inputFile.size());
+        qDebug("The initial file size is: %u", (int)QFile(inPath).size());
 
     XMLDocument doc;
-    doc.LoadFile(firstFile.toUtf8().constData());
+    doc.LoadFile(inPath.toUtf8().constData());
     if (BaseCleaner::svgElement(&doc).isNull()) {
+        QFile inputFile(inPath);
         if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text))
-            qFatal("Error: cannot open input file.");
+            qFatal("Error: cannot open input file");
         QTextStream inputStream(&inputFile);
         QString svgText = inputStream.readAll();
         svgText.replace("<svg:", "<");
@@ -145,7 +145,7 @@ void processFile(const QString &firstFile, const QString &secondFile)
         doc.Clear();
         doc.Parse(svgText.toUtf8().constData());
         if (BaseCleaner::svgElement(&doc).isNull())
-            qFatal("Error: invalid svg file.");
+            qFatal("Error: invalid svg file");
     }
 
     Replacer replacer(&doc);
@@ -165,8 +165,6 @@ void processFile(const QString &firstFile, const QString &secondFile)
     remover.cleanSvgElementAttribute();
     if (Keys.flag(Key::CreateViewbox))
         replacer.convertSizeToViewbox();
-
-
     if (Keys.flag(Key::RemoveUnusedDefs))
         remover.removeUnusedDefs();
     if (Keys.flag(Key::RemoveDuplicatedDefs))
@@ -192,6 +190,8 @@ void processFile(const QString &firstFile, const QString &secondFile)
         remover.removeGroups();
     }
     replacer.processPaths();
+    if (Keys.flag(Key::RemoveOutsideElements))
+        remover.removeElementsOutsideTheViewbox();
     if (Keys.flag(Key::GroupElemByStyle))
         replacer.groupElementsByStyles();
     if (Keys.flag(Key::ApplyTransformsToDefs))
@@ -206,24 +206,12 @@ void processFile(const QString &firstFile, const QString &secondFile)
     if (Keys.flag(Key::SortDefs))
         replacer.sortDefs();
 
-    // TODO: check is out file smaller than original
-    QFile outFile(secondFile);
-    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
-        qFatal("Error: could not open out file for write.");
-
-    XMLPrinter printer(0, Keys.flag(Key::CompactOutput));
-    doc.Print(&printer);
-    QString outStr = QString::fromUtf8(printer.CStr());
-
-    QTextStream outStream(&outFile);
-    // TODO: get rid of this lines
-    outStr.replace(">\n<tspan", "><tspan");
-    outStr.replace("&apos;", "'");
-    outStream << outStr;
-    outFile.close();
+    XMLError err = doc.SaveFile(outPath.toUtf8().constData(), Keys.flag(Key::CompactOutput));
+    if (err != XML_NO_ERROR)
+        qFatal("Error: could not write output file");
 
     if (!Keys.flag(Key::ShortOutput))
-        qDebug("The final file size is: %u", (int)outFile.size());
+        qDebug("The final file size is: %u", (int)QFile(outPath).size());
 
     replacer.calcElemAttrCount("final");
 }
@@ -255,9 +243,9 @@ int main(int argc, char *argv[])
     QString outputFile = argList.takeFirst();
 
     if (!QFile(inputFile).exists())
-        qFatal("Error: input file does not exist.");
+        qFatal("Error: input file does not exist");
     if (!QFileInfo(outputFile).absoluteDir().exists())
-        qFatal("Error: output folder does not exist.");
+        qFatal("Error: output folder does not exist");
 
     Keys.parseOptions(argList);
     processFile(inputFile, outputFile);

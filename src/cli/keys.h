@@ -40,69 +40,6 @@ namespace Preset {
     static const QString Custom   = "custom";
 }
 
-namespace KeyStr {
-    static const QString RemoveProlog                = "--remove-prolog";
-    static const QString RemoveComments              = "--remove-comments";
-    static const QString RemoveProcInstruction       = "--remove-proc-instr";
-    static const QString RemoveUnusedDefs            = "--remove-unused-defs";
-    static const QString RemoveNonSvgElements        = "--remove-nonsvg-elts";
-    static const QString RemoveMetadata              = "--remove-metadata-elts";
-    static const QString RemoveInkscapeElements      = "--remove-inkscape-elts";
-    static const QString RemoveSodipodiElements      = "--remove-sodipodi-elts";
-    static const QString RemoveAdobeElements         = "--remove-ai-elts";
-    static const QString RemoveCorelDrawElements     = "--remove-corel-elts";
-    static const QString RemoveMSVisioElements       = "--remove-msvisio-elts";
-    static const QString RemoveSketchElements        = "--remove-sketch-elts";
-    static const QString RemoveInvisibleElements     = "--remove-invisible-elts";
-    static const QString RemoveEmptyContainers       = "--remove-empty-containers";
-    static const QString RemoveTinyGaussianBlur      = "--remove-gaussian-blur";
-    static const QString RemoveDuplicatedDefs        = "--remove-duplicated-defs";
-    static const QString UngroupContainers           = "--ungroup-containers";
-    static const QString MergeGradients              = "--merge-gradients";
-
-    static const QString RemoveSvgVersion            = "--remove-version";
-    static const QString RemoveUnreferencedIds       = "--remove-unreferenced-ids";
-    static const QString TrimIds                     = "--trim-ids";
-    static const QString KeepNamedIds                = "--keep-named-ids";
-    static const QString RemoveNotAppliedAttributes  = "--remove-notappl-atts";
-    static const QString RemoveDefaultAttributes     = "--remove-default-atts";
-    static const QString RemoveInkscapeAttributes    = "--remove-inkscape-atts";
-    static const QString RemoveSodipodiAttributes    = "--remove-sodipodi-atts";
-    static const QString RemoveAdobeAttributes       = "--remove-ai-atts";
-    static const QString RemoveCorelDrawAttributes   = "--remove-corel-atts";
-    static const QString RemoveMSVisioAttributes     = "--remove-msvisio-atts";
-    static const QString RemoveSketchAttributes      = "--remove-sketch-atts";
-    static const QString RemoveStrokeProps           = "--remove-stroke-props";
-    static const QString RemoveFillProps             = "--remove-fill-props";
-    static const QString RemoveUnusedXLinks          = "--remove-unused-xlinks";
-    static const QString GroupElemByStyle            = "--group-elements-by-styles";
-    static const QString JoinStyleAttributes         = "--join-style-atts";
-    static const QString SimplifyTransformMatrix     = "--simplify-transform-matrix";
-    static const QString ApplyTransformsToDefs       = "--apply-transforms-to-defs";
-    static const QString ApplyTransformsToShapes     = "--apply-transforms-to-shapes";
-    // TODO: remove bitmaps, as utility
-
-    static const QString ConvertToRelative           = "--convert-to-relative";
-    static const QString RemoveUnneededSymbols       = "--remove-unneeded-symbols";
-    static const QString RemoveTinySegments          = "--remove-tiny-segments";
-    static const QString ConvertSegments             = "--convert-segments";
-    static const QString ApplyTransformsToPaths      = "--apply-transforms-to-paths";
-
-    static const QString CreateViewbox               = "--create-viewbox";
-    static const QString ConvertColorToRRGGBB        = "--colors-to-rrggbb";
-    static const QString ConvertRRGGBBToRGB          = "--rrggbb-to-rgb";
-    static const QString ConvertBasicShapes          = "--convert-basic-shapes";    
-    static const QString TransformPrecision          = "--transform-precision";
-    static const QString CoordsPrecision             = "--coordinates-precision";
-    static const QString AttributesPrecision         = "--attributes-precision";
-    static const QString CompactOutput               = "--compact-output";
-    static const QString SortDefs                    = "--sort-defs";
-    // TODO: convert all shapes to path, as utility
-
-    static const QString ShortOutput                 = "--short-output";
-}
-
-
 namespace Key {
     enum Key {
         RemoveProlog,
@@ -120,6 +57,7 @@ namespace Key {
         RemoveInvisibleElements,
         RemoveEmptyContainers,
         RemoveDuplicatedDefs,
+        RemoveOutsideElements,
         UngroupContainers,
         MergeGradients,
         RemoveTinyGaussianBlur,
@@ -165,6 +103,69 @@ namespace Key {
 
         ShortOutput
     };
+}
+
+namespace KeyStr {
+    static const QString RemoveProlog                = "--remove-prolog";
+    static const QString RemoveComments              = "--remove-comments";
+    static const QString RemoveProcInstruction       = "--remove-proc-instr";
+    static const QString RemoveUnusedDefs            = "--remove-unused-defs";
+    static const QString RemoveNonSvgElements        = "--remove-nonsvg-elts";
+    static const QString RemoveMetadata              = "--remove-metadata-elts";
+    static const QString RemoveInkscapeElements      = "--remove-inkscape-elts";
+    static const QString RemoveSodipodiElements      = "--remove-sodipodi-elts";
+    static const QString RemoveAdobeElements         = "--remove-ai-elts";
+    static const QString RemoveCorelDrawElements     = "--remove-corel-elts";
+    static const QString RemoveMSVisioElements       = "--remove-msvisio-elts";
+    static const QString RemoveSketchElements        = "--remove-sketch-elts";
+    static const QString RemoveInvisibleElements     = "--remove-invisible-elts";
+    static const QString RemoveEmptyContainers       = "--remove-empty-containers";
+    static const QString RemoveTinyGaussianBlur      = "--remove-gaussian-blur";
+    static const QString RemoveDuplicatedDefs        = "--remove-duplicated-defs";
+    static const QString RemoveOutsideElements       = "--remove-outside-elts";
+    static const QString UngroupContainers           = "--ungroup-containers";
+    static const QString MergeGradients              = "--merge-gradients";
+
+    static const QString RemoveSvgVersion            = "--remove-version";
+    static const QString RemoveUnreferencedIds       = "--remove-unreferenced-ids";
+    static const QString TrimIds                     = "--trim-ids";
+    static const QString KeepNamedIds                = "--keep-named-ids";
+    static const QString RemoveNotAppliedAttributes  = "--remove-notappl-atts";
+    static const QString RemoveDefaultAttributes     = "--remove-default-atts";
+    static const QString RemoveInkscapeAttributes    = "--remove-inkscape-atts";
+    static const QString RemoveSodipodiAttributes    = "--remove-sodipodi-atts";
+    static const QString RemoveAdobeAttributes       = "--remove-ai-atts";
+    static const QString RemoveCorelDrawAttributes   = "--remove-corel-atts";
+    static const QString RemoveMSVisioAttributes     = "--remove-msvisio-atts";
+    static const QString RemoveSketchAttributes      = "--remove-sketch-atts";
+    static const QString RemoveStrokeProps           = "--remove-stroke-props";
+    static const QString RemoveFillProps             = "--remove-fill-props";
+    static const QString RemoveUnusedXLinks          = "--remove-unused-xlinks";
+    static const QString GroupElemByStyle            = "--group-elts-by-styles";
+    static const QString JoinStyleAttributes         = "--join-style-atts";
+    static const QString SimplifyTransformMatrix     = "--simplify-transform-matrix";
+    static const QString ApplyTransformsToDefs       = "--apply-transforms-to-defs";
+    static const QString ApplyTransformsToShapes     = "--apply-transforms-to-shapes";
+    // TODO: remove bitmaps, as utility
+
+    static const QString ConvertToRelative           = "--convert-to-relative";
+    static const QString RemoveUnneededSymbols       = "--remove-unneeded-symbols";
+    static const QString RemoveTinySegments          = "--remove-tiny-segments";
+    static const QString ConvertSegments             = "--convert-segments";
+    static const QString ApplyTransformsToPaths      = "--apply-transforms-to-paths";
+
+    static const QString CreateViewbox               = "--create-viewbox";
+    static const QString ConvertColorToRRGGBB        = "--colors-to-rrggbb";
+    static const QString ConvertRRGGBBToRGB          = "--rrggbb-to-rgb";
+    static const QString ConvertBasicShapes          = "--convert-basic-shapes";
+    static const QString TransformPrecision          = "--transform-precision";
+    static const QString CoordsPrecision             = "--coordinates-precision";
+    static const QString AttributesPrecision         = "--attributes-precision";
+    static const QString CompactOutput               = "--compact-output";
+    static const QString SortDefs                    = "--sort-defs";
+    // TODO: convert all shapes to path, as utility
+
+    static const QString ShortOutput                 = "--short-output";
 }
 
 // singleton

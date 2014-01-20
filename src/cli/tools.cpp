@@ -40,7 +40,6 @@ QString Tools::roundNumber(qreal value, RoundType type)
     return roundNumber(value, precision);
 }
 
-
 QString Tools::roundNumber(qreal value, int precision)
 {
     double fractpart, intpart;
@@ -58,7 +57,6 @@ QString Tools::roundNumber(qreal value, int precision)
     }
     return doubleToStr(value, precision);
 }
-
 
 QString Tools::doubleToStr(const qreal value, int precision)
 {

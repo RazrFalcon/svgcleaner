@@ -22,8 +22,7 @@
 #include "paths.h"
 #include "replacer.h"
 
-// TODO: remove empty spaces at end of line in text elem
-// TODO: round font size to int
+// TODO: remove spaces at end of line in text elem
 // TODO: replace equal 'fill', 'stroke', 'stop-color', 'flood-color' and 'lighting-color' attr
 //       with 'color' attr
 //       addon_the_couch.svg
@@ -48,13 +47,11 @@ void Replacer::convertSizeToViewbox()
     } else {
         QRectF rect = viewBoxRect();
         if (svgElement().hasAttribute("width")) {
-            if (rect.width() == svgElement().doubleAttribute("width")
-                || svgElement().attribute("width") == "100%")
+            if (Tools::isZero(rect.width() - svgElement().doubleAttribute("width")))
                 svgElement().removeAttribute("width");
         }
         if (svgElement().hasAttribute("height")) {
-            if (rect.height() == svgElement().doubleAttribute("height")
-                || svgElement().attribute("height") == "100%")
+            if (Tools::isZero(rect.height() - svgElement().doubleAttribute("height")))
                 svgElement().removeAttribute("height");
         }
     }
@@ -220,29 +217,25 @@ void Replacer::updateLinkedDefTransform(SvgElement &elem)
 
 void Replacer::convertUnits()
 {
-    // get
-    // TODO: rewrite
     QRectF rect = viewBoxRect();
     if (svgElement().hasAttribute("width")) {
-        qreal width = 0;
-        if (svgElement().attribute("width").contains("%") && svgElement().hasAttribute("viewBox")) {
-            width = Tools::convertUnitsToPx(svgElement().attribute("width"), rect.width()).toDouble();
-        } else {
-            bool ok;
-            width = Tools::convertUnitsToPx(svgElement().attribute("width")).toDouble(&ok);
-            Q_ASSERT(ok == true);
-        }
+        QString widthStr = svgElement().attribute("width");
+        if (widthStr.contains('%') && !svgElement().hasAttribute("viewBox"))
+            qFatal("Error: could not convert width in percentage into px without viewBox");
+        bool ok;
+        qreal width = Tools::convertUnitsToPx(widthStr, rect.width()).toDouble(&ok);
+        if (!ok)
+            qFatal("Error: could not convert width to px");
         svgElement().setAttribute("width", Tools::roundNumber(width));
     }
     if (svgElement().hasAttribute("height")) {
-        qreal height = 0;
-        if (svgElement().attribute("height").contains("%") && svgElement().hasAttribute("viewBox")) {
-            height = Tools::convertUnitsToPx(svgElement().attribute("height"), rect.height()).toDouble();
-        } else {
-            bool ok;
-            height = Tools::convertUnitsToPx(svgElement().attribute("height")).toDouble(&ok);
-            Q_ASSERT(ok == true);
-        }
+        QString heightStr = svgElement().attribute("height");
+        if (heightStr.contains('%') && !svgElement().hasAttribute("viewBox"))
+            qFatal("Error: could not convert height in percentage into px without viewBox");
+        bool ok;
+        qreal height = Tools::convertUnitsToPx(heightStr, rect.height()).toDouble(&ok);
+        if (!ok)
+            qFatal("Error: could not convert height to px");
         svgElement().setAttribute("height", Tools::roundNumber(height));
     }
 
@@ -294,7 +287,9 @@ void Replacer::convertUnits()
                    attrValue = Tools::convertUnitsToPx(attrValue, rect.height());
             } else if (attrValue.endsWith(QL1S("ex")) || attrValue.endsWith(QL1S("em"))) {
                 qreal fontSize = findAttribute(elem, "font-size").toDouble();
-                Q_ASSERT(fontSize != 0);
+                if (fontSize == 0)
+                    qFatal("Error: could not convert em/ex values "
+                           "without font-size attribute is set.");
                 attrValue = Tools::convertUnitsToPx(attrValue, fontSize);
             } else {
                 attrValue = Tools::convertUnitsToPx(attrValue);
@@ -307,7 +302,6 @@ void Replacer::convertUnits()
     }
 }
 
-// FIXME: gaim-4.svg
 // TODO: style can be set in ENTITY
 void Replacer::convertCDATAStyle()
 {
@@ -349,10 +343,10 @@ void Replacer::convertCDATAStyle()
         text.remove(QRegExp("[^\\/]\\*(?!\\/)"));
         text.remove(QRegExp("\\/\\*[^\\/\\*]*\\*\\/"));
         QStringList classList = text.split(QRegExp(" +(\\.|@)"), QString::SkipEmptyParts);
-        for (int j = 0; j < classList.count(); ++j) {
-            QStringList tmpList = classList.at(j).split(QRegExp("( +|)\\{"));
-            Q_ASSERT(tmpList.count() == 2);
-            classHash.insert(tmpList.at(0), QString(tmpList.at(1)).remove(QRegExp("\\}.*")));
+        foreach (const QString &currClass, classList) {
+            QStringList tmpList = currClass.split(QRegExp("( +|)\\{"));
+            if (tmpList.size() == 2)
+                classHash.insert(tmpList.at(0), QString(tmpList.at(1)).remove(QRegExp("\\}.*")));
         }
     }
 
@@ -381,7 +375,6 @@ void Replacer::convertCDATAStyle()
     }
 }
 
-// BUG: corrupts hwinfo-3.svg
 void Replacer::prepareDefs()
 {
     // move all gradient, filters, etc. to 'defs' element
@@ -495,7 +488,6 @@ void Replacer::finalFixes()
         elem.removeAttribute(CleanerAttr::UsedElement);
 
         if (Keys.flag(Key::RemoveNotAppliedAttributes)) {
-            // TODO: add other elements
             if (tagName == "rect" || tagName == "use") {
                 elem.removeAttributeIf("ry", ToChar(elem.attribute("rx")));
                 elem.removeAttributeIf("x", "0");
@@ -662,7 +654,6 @@ bool Replacer::nodeByTagNameSort(const SvgElement &node1, const SvgElement &node
     return QString::localeAwareCompare(node1.tagName(), node2.tagName()) < 0;
 }
 
-// TODO: maybe round all viewBox width height x y attrs to integer
 void Replacer::roundNumericAttributes()
 {
     QList<SvgElement> list = svgElement().childElemList();
@@ -676,7 +667,8 @@ void Replacer::roundNumericAttributes()
                 if (!value.contains("%")) {
                     bool ok;
                     QString attrVal = Tools::roundNumber(value.toDouble(&ok), Tools::ATTRIBUTE);
-                    Q_ASSERT_X(ok == true, value.toAscii(), "wrong unit type");
+                    if (!ok)
+                        qFatal("Error: could not process value: %s", qPrintable(value));
                     elem.setAttribute(attr, attrVal);
                 }
             }
@@ -691,15 +683,16 @@ void Replacer::roundNumericAttributes()
                     foreach (const QString &text, tmpList) {
                         bool ok;
                         tmpStr += Tools::roundNumber(text.toDouble(&ok), Tools::TRANSFORM) + " ";
-                        Q_ASSERT(ok == true);
+                        if (!ok)
+                            qFatal("Error: could not process value: %s", qPrintable(value));
                     }
                     tmpStr.chop(1);
                     elem.setAttribute(attr, tmpStr);
                 } else {
                     bool ok;
                     QString attrVal = Tools::roundNumber(value.toDouble(&ok), Tools::TRANSFORM);
-                    Q_ASSERT_X(ok == true, value.toAscii(),
-                               qPrintable("wrong unit type in " + elem.id()));
+                    if (!ok)
+                        qFatal("Error: could not process value: %s", qPrintable(value));
                     elem.setAttribute(attr, attrVal);
                 }
             }
@@ -710,13 +703,8 @@ void Replacer::roundNumericAttributes()
                 QString transform = ts.simplified();
                 if (transform.isEmpty())
                     elem.removeAttribute("gradientTransform");
-                else {
-                    // NOTE: some kind of bug...
-                    // with rotate transform some files are crashed
-                    // pitr_green_double_arrows_set_2.svg
-                    if (!transform.contains("rotate"))
-                        elem.setAttribute("gradientTransform", transform);
-                }
+                else
+                    elem.setAttribute("gradientTransform", transform);
             }
             if (attrList.contains("transform")) {
                 Transform ts(elem.attribute("transform"));
@@ -741,28 +729,35 @@ void Replacer::convertBasicShapes()
 {
     QList<SvgElement> list = svgElement().childElemList();
     while (!list.isEmpty()) {
-        SvgElement currElem = list.takeFirst();
-        QString ctag = currElem.tagName();
+        SvgElement elem = list.takeFirst();
+        QString ctag = elem.tagName();
         if (ctag == "polygon" || ctag == "polyline" || ctag == "line" || ctag == "rect") {
             QString dAttr;
             if (ctag == "line") {
                 dAttr = QString("M %1,%2 %3,%4")
-                        .arg(currElem.attribute("x1"), currElem.attribute("y1"),
-                             currElem.attribute("x2"), currElem.attribute("y2"));
-                currElem.removeAttributes(QStringList() << "x1" << "y1" << "x2" << "y2");
+                        .arg(elem.attribute("x1"), elem.attribute("y1"),
+                             elem.attribute("x2"), elem.attribute("y2"));
+                elem.removeAttributes(QStringList() << "x1" << "y1" << "x2" << "y2");
             } else if (ctag == "rect") {
-                if (currElem.doubleAttribute("rx") == 0 || currElem.doubleAttribute("ry") == 0) {
-                    qreal x = currElem.doubleAttribute("x");
-                    qreal y = currElem.doubleAttribute("y");
-                    qreal x1 = x + currElem.doubleAttribute("width");
-                    qreal y1 = y + currElem.doubleAttribute("height");
+                if (elem.doubleAttribute("rx") == 0 || elem.doubleAttribute("ry") == 0) {
+                    if (Keys.flag(Key::RemoveOutsideElements)) {
+                        elem.setAttribute(CleanerAttr::BoundingBox,
+                                                      elem.attribute("x")
+                                              + " " + elem.attribute("y")
+                                              + " " + elem.attribute("width")
+                                              + " " + elem.attribute("height"));
+                    }
+                    qreal x = elem.doubleAttribute("x");
+                    qreal y = elem.doubleAttribute("y");
+                    qreal x1 = x + elem.doubleAttribute("width");
+                    qreal y1 = y + elem.doubleAttribute("height");
                     dAttr = QString("M %1,%2 H%3 V%4 H%1 z").arg(x).arg(y).arg(x1).arg(y1);
-                    currElem.removeAttributes(QStringList() << "x" << "y" << "width" << "height"
-                                                            << "rx" << "ry");
+                    elem.removeAttributes(QStringList() << "x" << "y" << "width" << "height"
+                                                        << "rx" << "ry");
                 }
             } else if (ctag == "polyline" || ctag == "polygon") {
                 QList<Segment> segmentList;
-                QString path = currElem.attribute("points").remove("\t").remove("\n");
+                QString path = elem.attribute("points").remove("\t").remove("\n");
                 const QChar *str = path.constData();
                 const QChar *end = str + path.size();
                 while (str != end) {
@@ -782,16 +777,16 @@ void Replacer::convertBasicShapes()
                     segmentList.append(seg);
                 }
                 dAttr = Path().segmentsToPath(segmentList);
-                currElem.removeAttribute("points");
+                elem.removeAttribute("points");
             }
             if (!dAttr.isEmpty()) {
-                currElem.setAttribute("d", dAttr);
-                currElem.setTagName("path");
+                elem.setAttribute("d", dAttr);
+                elem.setTagName("path");
             }
         }
 
-        if (currElem.hasChildren())
-            list << currElem.childElemList();
+        if (elem.hasChildren())
+            list << elem.childElemList();
     }
 }
 
@@ -799,22 +794,22 @@ void Replacer::splitStyleAttr()
 {
     QList<SvgElement> list = childElemList(document());
     while (!list.isEmpty()) {
-        SvgElement currElem = list.takeFirst();
-        if (!currElem.tagName().contains("feFlood")) {
-            if (currElem.hasAttribute("style")) {
-                StringHash hash = Tools::splitStyle(currElem.attribute("style"));
+        SvgElement elem = list.takeFirst();
+        if (!elem.tagName().contains("feFlood")) {
+            if (elem.hasAttribute("style")) {
+                StringHash hash = Tools::splitStyle(elem.attribute("style"));
                 foreach (const QString &key, hash.keys()) {
                     // ignore attributes like "-inkscape-font-specification"
-                    // NOTE: qt render prefer property attributes instead of "style" attribute
+                    // qt render prefer property attributes instead of "style" attribute
                     if (key.at(0) != '-')
-                        currElem.setAttribute(key, hash.value(key));
+                        elem.setAttribute(key, hash.value(key));
                 }
-                currElem.removeAttribute("style");
+                elem.removeAttribute("style");
             }
         }
 
-        if (currElem.hasChildren())
-            list << currElem.childElemList();
+        if (elem.hasChildren())
+            list << elem.childElemList();
     }
 }
 
@@ -909,7 +904,6 @@ void Replacer::mergeGradients()
  * <linearGradient id="linearGradient002" xlink:href="#linearGradient001">
  *
  */
-// FIXME: broke applications-graphics.svg
 void Replacer::mergeGradientsWithEqualStopElem()
 {
     QList<SvgElement> list = defsElement().childElemList();
@@ -1180,7 +1174,7 @@ void Replacer::applyTransformToDefs()
         if (elem.tagName() == "linearGradient") {
             if (elem.hasAttribute("gradientTransform")) {
                 Transform gts(elem.attribute("gradientTransform"));
-                if (!gts.isMirrored() && gts.isProportionalScale()) {
+                if (gts.isProportionalScale()) {
                     gts.setOldXY(elem.doubleAttribute("x1"),
                                  elem.doubleAttribute("y1"));
                     elem.setAttribute("x1", Tools::roundNumber(gts.newX()));

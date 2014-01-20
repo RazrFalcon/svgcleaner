@@ -76,7 +76,10 @@ SVGInfo Cleaner::cleanFile(const ToThread &data)
         info.elemFinal   = vec.at(2);
         info.attrFinal   = vec.at(3);
     } else {
-        info.errString = output;
+        if (output.contains("Error:"))
+            info.errString = output.split("\n").filter("Error:").first();
+        else
+            info.errString = "Unknown error";
     }
 
     if (data.compress) {

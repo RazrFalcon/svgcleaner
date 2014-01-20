@@ -24,6 +24,7 @@
 
 #include <QList>
 #include <QString>
+#include <QRect>
 
 class TransformMatrix
 {
@@ -68,6 +69,7 @@ class Transform
 public:
     explicit Transform(const QString &text);
     void setOldXY(qreal prevX, qreal prevY);
+    QRectF transformRect(const QRectF &rect);
     qreal newX() const;
     qreal newY() const;
     QString simplified() const;
@@ -83,8 +85,9 @@ public:
         Rotate = 0x2,
         Skew = 0x4,
         Translate = 0x8,
-        Mirror = 0x10,
-        ProportionalScale = 0x20
+        HorizontalMirror = 0x10,
+        VertiacalMirror = 0x20,
+        ProportionalScale = 0x40
     };
     Q_DECLARE_FLAGS(Types, TsType)
     Types type();

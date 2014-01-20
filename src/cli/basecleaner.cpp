@@ -181,17 +181,17 @@ QString BaseCleaner::findAttribute(const SvgElement &elem, const char *attrName)
 
 QRectF BaseCleaner::viewBoxRect()
 {
-    Q_ASSERT(svgElement().tagName() == "svg");
     QRectF rect;
     if (svgElement().hasAttribute("viewBox")) {
-        QStringList list = svgElement().attribute("viewBox").split(" ");
+        QStringList list = svgElement().attribute("viewBox").split(" ", QString::SkipEmptyParts);
         rect.setRect(list.at(0).toDouble(), list.at(1).toDouble(),
                      list.at(2).toDouble(), list.at(3).toDouble());
     } else if (svgElement().hasAttribute("width") && svgElement().hasAttribute("height")) {
         rect.setRect(0, 0, svgElement().doubleAttribute("width"),
                            svgElement().doubleAttribute("height"));
     } else {
-        qDebug() << "Warning: can not detect viewBox";
+        // TODO: maybe show this error only when viwBox really needed
+        qFatal("Error: could not detect viewBox");
     }
     return rect;
 }

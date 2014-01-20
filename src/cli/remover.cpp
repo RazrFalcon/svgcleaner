@@ -171,7 +171,7 @@ void Remover::removeUnusedXLinks()
     }
 }
 
-// TODO: detect not only equal, but with diff less than 1%
+// TODO: detect not only equal, but with diff less than 0.1%
 // TODO: refract this func
 void Remover::removeDuplicatedDefs()
 {
@@ -591,11 +591,14 @@ void Remover::removeElements()
                     if (elem.parentElement().childElementCount() == 1) {
                         // 'stdDeviation' can contains not only one value
                         // we process it when it contains only one value
-                        QString stdDev = elem.attribute("stdDeviation");
+                        const QString stdDev = elem.attribute("stdDeviation");
                         if (!stdDev.contains(",") && !stdDev.contains(" ")) {
                             bool ok = true;
                             if (stdDev.toDouble(&ok) <= stdDevLimit) {
-                                Q_ASSERT(ok == true);
+                                if (!ok) {
+                                    qFatal("Error: could not parse stdDeviation value: %s",
+                                           qPrintable(stdDev));
+                                }
                                 defsElement().removeChild(elem.parentElement());
                             }
                         }
@@ -814,10 +817,9 @@ void Remover::removeAttributes()
                         elem.removeAttribute("marker");
 
                 // path inside clipPath needs to contains only d attribute
-                // TODO: remove all style props from path used only in clipPath or mask
                 if (tagName == "path" || tagName == "use") {
                     QString parentTag = elem.parentElement().tagName();
-                    if (parentTag == "clipPath"/* || parentTag == "defs"*/) {
+                    if (parentTag == "clipPath") {
                         foreach (const QString &attrName, attrList) {
                             bool removeAttr = true;
                             if (   attrName == QL1S("d")
@@ -839,9 +841,8 @@ void Remover::removeAttributes()
                         QString url = elem.attribute(attrName);
                         if (url.startsWith(QL1S("url("))) {
                             SvgElement defElem = findDefElement(url.mid(5, url.size()-6));
-                            if (defElem.isNull()) {
+                            if (defElem.isNull())
                                 elem.setAttribute(attrName, "none");
-                            }
                         }
                     }
                 }
@@ -1012,7 +1013,9 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
                     else if (value.endsWith(QL1S("em")) || value.endsWith(QL1S("ex"))) {
                         QString fontSizeStr = findAttribute(elem, "font-size");
                         qreal fontSize = Tools::convertUnitsToPx(fontSizeStr).toDouble();
-                        Q_ASSERT(fontSize != 0);
+                        if (fontSize == 0)
+                            qFatal("Error: could not convert em/ex values "
+                                   "without font-size attribute is set.");
                         hash.insert(key, Tools::convertUnitsToPx(value, fontSize));
                     } else {
                         hash.insert(key, Tools::convertUnitsToPx(value));
@@ -1185,23 +1188,6 @@ void Remover::removeGroups()
     }
 }
 
-void Remover::ungroupAElement()
-{
-    QList<SvgElement> elemList = svgElement().childElemList();
-    while (!elemList.isEmpty()) {
-        SvgElement elem = elemList.takeFirst();
-        if (elem.tagName() == "a" && !elem.hasImportantAttrs()) {
-            foreach (const SvgElement &childElem, elem.childElemList())
-                elem.parentElement().insertBefore(childElem, elem);
-            elem.parentElement().removeChild(elem);
-            elem.clear();
-        }
-        if (!elem.isNull())
-            if (elem.hasChildren())
-                elemList << elem.childElemList();
-    }
-}
-
 void Remover::megreGroups(SvgElement parentElem, SvgElement childElem, bool isParentToChild)
 {
     QStringList ignoreAttrList = QStringList() << "id";
@@ -1222,5 +1208,128 @@ void Remover::megreGroups(SvgElement parentElem, SvgElement childElem, bool isPa
         } else if (!ignoreAttrList.contains(attrName) || !childElem.hasAttribute(attrName)) {
             childElem.setAttribute(attrName, parentElem.attribute(attrName));
         }
+    }
+}
+
+void Remover::ungroupAElement()
+{
+    QList<SvgElement> list = svgElement().childElemList();
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+        if (elem.tagName() == "a" && !elem.hasImportantAttrs()) {
+            foreach (const SvgElement &childElem, elem.childElemList())
+                elem.parentElement().insertBefore(childElem, elem);
+            elem.parentElement().removeChild(elem);
+            elem.clear();
+        }
+        if (!elem.isNull())
+            if (elem.hasChildren())
+                list << elem.childElemList();
+    }
+}
+
+void _setupTransformForBBox(const SvgElement &elem, const QStringList &trList)
+{
+    QList<SvgElement> list = elem.childElemList();
+    while (!list.isEmpty()) {
+        SvgElement child = list.takeFirst();
+        if (child.isContainer()) {
+            QStringList tmpTrList = trList;
+            if (child.hasAttribute("transform"))
+                tmpTrList << child.attribute("transform");
+            _setupTransformForBBox(child, tmpTrList);
+        } else if (child.hasAttribute(CleanerAttr::BoundingBox)) {
+            QStringList tmpTrList = trList;
+            if (child.hasAttribute("transform"))
+                tmpTrList << child.attribute("transform");
+            child.setAttribute(CleanerAttr::BBoxTransform, tmpTrList.join(" "));
+        } else if (child.hasChildren())
+            _setupTransformForBBox(child, trList);
+    }
+}
+
+void Remover::prepareViewBoxRect(QRectF &viewBox)
+{
+    if (svgElement().hasAttribute("width") || svgElement().hasAttribute("height")) {
+        qreal w = viewBox.width();
+        if (svgElement().hasAttribute("width"))
+            w = svgElement().doubleAttribute("width");
+
+        qreal h = viewBox.height();
+        if (svgElement().hasAttribute("height"))
+            h = svgElement().doubleAttribute("height");
+
+        qreal vbAspect = viewBox.width()/viewBox.height();
+        qreal aspect = w/h;
+
+        QSizeF s(w, h);
+        if ((aspect > 1.0 && aspect > vbAspect) || aspect > vbAspect) {
+            qreal asp = viewBox.height()/h;
+            s.scale(w * asp, h * asp, Qt::KeepAspectRatio);
+        } else {
+            qreal asp = viewBox.width()/w;
+            s.scale(w * asp, h * asp, Qt::KeepAspectRatio);
+        }
+        viewBox.moveTo(viewBox.x() + (viewBox.width() - s.width()) / 2,
+                       viewBox.y() + (viewBox.height() - s.height()) / 2);
+        viewBox.setSize(s);
+    }
+}
+
+// TODO: add other elements
+// TODO: add blur support
+void Remover::removeElementsOutsideTheViewbox()
+{
+    QRectF viewBox = viewBoxRect();
+    prepareViewBoxRect(viewBox);
+
+    _setupTransformForBBox(svgElement(), QStringList());
+
+    QList<SvgElement> list = svgElement().childElemList();
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+
+        if (   elem.hasAttribute(CleanerAttr::BoundingBox)
+            && !elem.isUsed()
+            && !hasParent(elem, "defs")
+            && !hasParent(elem, "flowRegion")) {
+            QStringList pList = elem.attribute(CleanerAttr::BoundingBox).split(" ");
+            QRectF rect(Tools::strToDouble(pList.at(0)), Tools::strToDouble(pList.at(1)),
+                        Tools::strToDouble(pList.at(2)), Tools::strToDouble(pList.at(3)));
+            // fix rect's with zero area
+            if (rect.width() == 0)
+                rect.setWidth(1);
+            if (rect.height() == 0)
+                rect.setHeight(1);
+
+            QRectF viewBoxTr = viewBox;
+            if (elem.hasAttribute(CleanerAttr::BBoxTransform)) {
+                Transform tr(elem.attribute(CleanerAttr::BBoxTransform));
+                rect = tr.transformRect(rect);
+            }
+
+            QString stroke = findAttribute(elem, "stroke");
+            if (!stroke.isEmpty() && stroke != "none") {
+                QString sws = findAttribute(elem, "stroke-width");
+                qreal sw = 1;
+                if (!sws.isEmpty())
+                    sw = sws.toDouble();
+                rect.adjust(-sw/2, -sw/2, sw, sw);
+            }
+
+            if (!viewBoxTr.intersects(rect)) {
+                elem.parentElement().removeChild(elem);
+                elem.clear();
+            } else {
+                elem.removeAttribute(CleanerAttr::BoundingBox);
+                elem.removeAttribute(CleanerAttr::BBoxTransform);
+            }
+        } else if (elem.hasAttribute(CleanerAttr::BoundingBox)) {
+            elem.removeAttribute(CleanerAttr::BoundingBox);
+            elem.removeAttribute(CleanerAttr::BBoxTransform);
+        }
+        if (!elem.isNull())
+            if (elem.hasChildren())
+                list << elem.childElemList();
     }
 }

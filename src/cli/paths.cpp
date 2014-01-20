@@ -81,7 +81,7 @@ QPointF Segment::rotatePoint(qreal x, qreal y, qreal rad) const
     return QPointF(X, Y);
 }
 
-// arcToCurve is a port from 'raphaeljs' to Qt (MIT license)
+// arcToCurve is a port from Raphael JavaScript library to Qt (MIT license)
 QList<QPointF> Segment::arcToCurve(ArcStruct arc) const
 {
     qreal f1 = 0;
@@ -210,6 +210,7 @@ QList<Segment> Segment::toCurve(qreal prevX, qreal prevY) const
         seg.y2 = y;
         seg.x  = x;
         seg.y  = y;
+        segList.reserve(1);
         segList.append(seg);
     }
     else if (command == Command::EllipticalArc)
@@ -218,6 +219,7 @@ QList<Segment> Segment::toCurve(qreal prevX, qreal prevY) const
             ArcStruct arc = { prevX, prevY, rx, ry, xAxisRotation, largeArc,
                               sweep, x, y, QList<qreal>() };
             QList<QPointF> list = arcToCurve(arc);
+            segList.reserve(list.size()/3);
             for (int i = 0; i < list.size(); i += 3) {
                 Segment seg;
                 seg.command = Command::CurveTo;
@@ -279,7 +281,6 @@ void Segment::coords(QVector<qreal> &points)
 
 // New class
 
-// TODO: add support to save default segment absolute value
 void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathApplyed)
 {
     const QString inPath = elem.attribute("d");
@@ -292,7 +293,6 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
 
     QList<Segment> segList;
     splitToSegments(inPath.midRef(0), segList);
-
     if (segList.isEmpty()) {
         if (Keys.flag(Key::RemoveInvisibleElements))
             elem.setAttribute("d", "");
@@ -304,6 +304,11 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     bool isOnlyAbsolute = false;
     if (segList.at(1).command == Command::EllipticalArc)
         isOnlyAbsolute = true;
+
+    if (Keys.flag(Key::RemoveOutsideElements)) {
+        if (!elem.hasAttribute(CleanerAttr::BoundingBox))
+            calcBoundingBox(segList);
+    }
 
     processSegments(segList);
     if (canApplyTransform && !isOnlyAbsolute)
@@ -532,7 +537,6 @@ QString Path::findAttribute(const QString &attrName)
 
 void Path::processSegments(QList<Segment> &segList)
 {
-    // TODO: test it
     if (Keys.flag(Key::RemoveUnneededSymbols)) {
         // remove 'z' command if start point equal to last
         // except 'stroke-linejoin' is not default, because it causes render error
@@ -677,31 +681,10 @@ bool Path::isZero(double value)
     return Tools::isZero(value);
 }
 
-// FIXME: small precision broke: mabroox_Get_SOM_-_Spread_Open_Media.svg
 QString Path::segmentsToPath(QList<Segment> &segList)
 {
     if (segList.size() == 1 || segList.isEmpty())
         return "";
-
-    // TODO: rewrite to bounding box
-    // rounding to >=4 decimal usually do not cause deformation
-    bool isUseBiggerPrecision = false;
-    const int smallPathPrecision = Keys.coordinatesPrecision() + 1;
-    if (Keys.coordinatesPrecision() < 4) {
-        // simple check to detect path with small segments wich can be damaged after rounding
-        int smallNumCount = 0;
-        for (int i = 0; i < segList.size(); ++i) {
-            if (segList.at(i).command != Command::ClosePath) {
-                if (qAbs(segList.at(i).x) < 1 /*|| qAbs(segList.at(i).y) < 1*/) {
-                    smallNumCount++;
-                    if (smallNumCount > segList.size()/2) {
-                        isUseBiggerPrecision = true;
-                        break;
-                    }
-                }
-            }
-        }
-    }
 
     QString outPath;
     QChar prevCom;
@@ -747,12 +730,9 @@ QString Path::segmentsToPath(QList<Segment> &segList)
                round = false;
             for (int j = 0; j < points.size(); ++j) {
                 QString currPos;
-                if (round) {
-                    if (!isUseBiggerPrecision)
-                        currPos = Tools::roundNumber(points.at(j));
-                    else
-                        currPos = Tools::roundNumber(points.at(j), smallPathPrecision);
-                } else
+                if (round)
+                    currPos = Tools::roundNumber(points.at(j));
+                else
                     currPos = Tools::roundNumber(points.at(j), 6);
 
                 bool useSep = false;
@@ -785,4 +765,121 @@ QString Path::segmentsToPath(QList<Segment> &segList)
     if (!isTrim)
         outPath.chop(1);
     return outPath;
+}
+
+// path bounding box calculating part
+
+struct Box
+{
+    qreal minx;
+    qreal miny;
+    qreal maxx;
+    qreal maxy;
+};
+
+struct Bezier
+{
+    qreal p_x;
+    qreal p_y;
+    qreal x1;
+    qreal y1;
+    qreal x2;
+    qreal y2;
+    qreal x;
+    qreal y;
+};
+
+void updateBBox(Box &bbox, qreal x, qreal y)
+{
+    if (x > bbox.maxx)
+        bbox.maxx = x;
+    else if (x < bbox.minx)
+        bbox.minx = x;
+
+    if (y > bbox.maxy)
+        bbox.maxy = y;
+    else if (y < bbox.miny)
+        bbox.miny = y;
+}
+
+QPointF findDotOnCurve(const Bezier &b, qreal t)
+{
+    qreal t1 = 1 - t;
+    qreal t_2 = t * t;
+    qreal t_3 = t_2 * t;
+    qreal t1_2 = t1 * t1;
+    qreal t1_3 = t1_2 * t1;
+    qreal x =   t1_3 * b.p_x
+              + t1_2 * 3 * t * b.x1
+              + t1 * 3 * t_2 * b.x2
+              + t_3 * b.x;
+    qreal y =   t1_3 * b.p_y
+              + t1_2 * 3 * t * b.y1
+              + t1 * 3 * t_2 * b.y2
+              + t_3 * b.y;
+    return QPointF(x, y);
+}
+
+void curveExtremum(qreal a, qreal b, qreal c, const Bezier &bezier, Box &bbox)
+{
+    qreal t1 = (-b + sqrt(b * b - 4 * a * c)) / 2 / a;
+    qreal t2 = (-b - sqrt(b * b - 4 * a * c)) / 2 / a;
+
+    if (t1 > 0 && t1 < 1) {
+        QPointF p = findDotOnCurve(bezier, t1);
+        updateBBox(bbox, p.x(), p.y());
+    }
+    if (t2 > 0 && t2 < 1) {
+        QPointF p = findDotOnCurve(bezier, t2);
+        updateBBox(bbox, p.x(), p.y());
+    }
+}
+
+void curveBBox(const Bezier &bz, Box &bbox)
+{
+    updateBBox(bbox, bz.p_x, bz.p_y);
+    updateBBox(bbox, bz.x, bz.y);
+
+    qreal a = (bz.x2 - 2 * bz.x1 + bz.p_x) - (bz.x - 2 * bz.x2 + bz.x1);
+    qreal b = 2 * (bz.x1 - bz.p_x) - 2 * (bz.x2 - bz.x1);
+    qreal c = bz.p_x - bz.x1;
+    curveExtremum(a, b, c, bz, bbox);
+
+    a = (bz.y2 - 2 * bz.y1 + bz.p_y) - (bz.y - 2 * bz.y2 + bz.y1);
+    b = 2 * (bz.y1 - bz.p_y) - 2 * (bz.y2 - bz.y1);
+    c = bz.p_y - bz.y1;
+    curveExtremum(a, b, c, bz, bbox);
+}
+
+void Path::calcBoundingBox(const QList<Segment> &segList)
+{
+    // convert all segments to curve, exept m and z
+    QList<Segment> tmpSegList = segList;
+    for (int i = 1; i < tmpSegList.size(); ++i) {
+        Segment prevSegment = tmpSegList.at(i-1);
+        QList<Segment> list = tmpSegList.at(i).toCurve(prevSegment.x, prevSegment.y);
+        if (!list.isEmpty()) {
+            tmpSegList.removeAt(i);
+            for (int j = 0; j < list.count(); ++j)
+                tmpSegList.insert(i+j, list.at(j));
+        }
+    }
+    // get all points
+    Box bbox = { tmpSegList.at(0).x, tmpSegList.at(0).y,
+                 tmpSegList.at(0).x, tmpSegList.at(0).y };
+    for (int i = 0; i < tmpSegList.size(); ++i) {
+        Segment seg = tmpSegList.at(i);
+        if (seg.command == Command::MoveTo) {
+            updateBBox(bbox, seg.x, seg.y);
+        } else if (seg.command == Command::CurveTo) {
+            Bezier bezier = {tmpSegList.at(i-1).x, tmpSegList.at(i-1).y,
+                             seg.x1, seg.y1, seg.x2, seg.y2, seg.x, seg.y};
+            curveBBox(bezier, bbox);
+        }
+    }
+    m_elem.setAttribute(CleanerAttr::BoundingBox,
+                                  Tools::roundNumber(bbox.minx)
+                          + " " + Tools::roundNumber(bbox.miny)
+                          + " " + Tools::roundNumber(bbox.maxx - bbox.minx)
+                          + " " + Tools::roundNumber(bbox.maxy - bbox.miny));
 }

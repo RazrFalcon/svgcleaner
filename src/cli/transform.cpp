@@ -27,9 +27,8 @@
 // http://www.w3.org/TR/SVG/coords.html#EstablishingANewUserSpace
 Transform::Transform(const QString &text)
 {
-    Q_ASSERT(text.isEmpty() == false);
     if (text.isEmpty())
-        return;
+        qFatal("Error: transform attribute is empty");
     calcMatrixes(text);
 }
 
@@ -37,6 +36,47 @@ void Transform::setOldXY(qreal prevX, qreal prevY)
 {
     oldX = prevX;
     oldY = prevY;
+}
+
+QRectF Transform::transformRect(const QRectF &rect)
+{
+    QList<qreal> xList;
+    xList.reserve(4);
+    QList<qreal> yList;
+    yList.reserve(4);
+
+    setOldXY(rect.x(), rect.y());
+    xList << newX();
+    yList << newY();
+
+    setOldXY(rect.x() + rect.width(), rect.y());
+    xList << newX();
+    yList << newY();
+
+    setOldXY(rect.x(), rect.y() + rect.height());
+    xList << newX();
+    yList << newY();
+
+    setOldXY(rect.x() + rect.width(), rect.y() + rect.height());
+    xList << newX();
+    yList << newY();
+
+    qreal minx, miny, maxx, maxy;
+    minx = maxx = xList.first();
+    miny = maxy = yList.first();
+    foreach (qreal x, xList) {
+        if (x > maxx)
+            maxx = x;
+        else if (x < minx)
+            minx = x;
+    }
+    foreach (qreal y, yList) {
+        if (y > maxy)
+            maxy = y;
+        else if (y < miny)
+            miny = y;
+    }
+    return QRectF(minx, miny, maxx - minx, maxy - miny);
 }
 
 qreal Transform::newX() const
@@ -140,14 +180,20 @@ void Transform::calcMatrixes(const QString &text)
     if (!Tools::isZero(newMatrix(1,2)))
         f = newMatrix(1,2);
 
+//    qDebug() << "abc" << a << b << c << d << e << f;
+
     // calculate
     m_xScale = sqrt(pow(a, 2) + pow(c, 2));
     m_yScale = sqrt(pow(b, 2) + pow(d, 2));
     m_xSkew = atan(b)*(180.0/M_PI);
     m_ySkew = atan(c)*(180.0/M_PI);
-    m_angle = acos(a)*(180/M_PI);
+    m_angle = atan(-b/a)*(180/M_PI);
+    if (isnan(m_angle))
+        qFatal("Error: rotation is NaN");
     if (b < c)
         m_angle = -m_angle;
+
+//    qDebug() << "calc" << m_xScale << m_yScale << m_xSkew << m_ySkew << m_angle;
 
     if (f != 0 || e != 0)
         m_types |= Translate;
@@ -162,12 +208,14 @@ void Transform::calcMatrixes(const QString &text)
     if (Tools::isZeroTs(m_xScale - m_yScale))
         m_types |= ProportionalScale;
 
-    if (!Tools::isZeroTs(qAbs(m_xSkew) - qAbs(m_ySkew))
-        && (m_xSkew != 0 || m_ySkew != 0))
+    if (m_xSkew != 0 || m_ySkew != 0)
         m_types |= Skew;
 
-    if (m_xScale < 0 || m_yScale < 0 || a < 0 || d < 0)
-        m_types |= Mirror;
+    if (m_xScale < 0 || a < 0)
+        m_types |= HorizontalMirror;
+
+    if (m_yScale < 0 || d < 0)
+        m_types |= VertiacalMirror;
 }
 
 QString Transform::simplified() const
@@ -189,24 +237,24 @@ QString Transform::simplified() const
     newPoints.reserve(2);
 
     Types type = m_types;
-    type &= ~(Transform::Mirror | Transform::ProportionalScale);
+    type &= ~(Transform::ProportionalScale);
 
     // [1 0 0 1 tx ty] = translate
-    if (m_types == Translate)
+    if (type == Translate)
     {
-        if (f != e) {
-            if (f == 0 && e == 0)
+        if (f != 0) {
+            if (e == 0 && f == 0)
                 return "";
             newPoints << Tools::roundNumber(e, Tools::COORDINATE);
             newPoints << Tools::roundNumber(f, Tools::COORDINATE);
-        } else if (f == e || e == 0) {
-            if (Tools::isZero(f))
+        } else if (f == 0) {
+            if (Tools::isZero(e))
                 return "";
-            newPoints << Tools::roundNumber(f, Tools::COORDINATE);
+            newPoints << Tools::roundNumber(e, Tools::COORDINATE);
         }
         transform = "translate(";
     } // [sx 0 0 sy 0 0] = scale
-    else if (m_types == Scale)
+    else if (type == Scale)
     {
         if (a != d) {
             if (   Tools::isZeroTs(a)
@@ -221,14 +269,14 @@ QString Transform::simplified() const
         }
         transform = "scale(";
     } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
-    else if (m_types == Rotate)
+    else if (type == Rotate)
     {
         if (m_angle == 0)
             return "";
         transform = "rotate(";
         newPoints << Tools::roundNumber(m_angle, Tools::TRANSFORM);
     } // [1 0 tan(a) 1 0 0] = skewX, [1 tan(a) 0 1 0 0] = skewY
-    else if (m_types == Skew)
+    else if (type == Skew)
     {
         if (m_xSkew == 0 && m_ySkew == 0)
             return "";
@@ -288,7 +336,7 @@ bool Transform::isProportionalScale()
 
 bool Transform::isMirrored()
 {
-    return m_types.testFlag(Mirror);
+    return m_types.testFlag(VertiacalMirror) || m_types.testFlag(HorizontalMirror);
 }
 
 bool Transform::isSkew()

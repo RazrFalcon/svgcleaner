@@ -56,6 +56,9 @@ private:
     static int zerosAfterPoint(qreal value);
 };
 
+// TODO: maybe add namespace with static string with usual elem/attr names,
+// to prevent QString::fromLatin1_helper executing
+
 namespace Props {
 static const StringSet fillList = StringSet() << "fill" << "fill-rule" << "fill-opacity";
 static const StringSet strokeList = StringSet()
@@ -154,7 +157,9 @@ static const StringSet lengthTypes = StringSet()
 }
 
 namespace CleanerAttr {
-    static const QString UsedElement = "used-element";
+    static const char* UsedElement = "used-element";
+    static const char* BoundingBox = "bbox";
+    static const char* BBoxTransform = "bbox-transform";
 }
 
 #endif // TOOLS_H

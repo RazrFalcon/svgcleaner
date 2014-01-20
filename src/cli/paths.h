@@ -98,6 +98,7 @@ public:
 private:
     SvgElement m_elem;
 
+    void calcBoundingBox(const QList<Segment> &segList);
     void splitToSegments(const QStringRef &path, QList<Segment> &segList);
     void processSegments(QList<Segment> &segList);
     void segmentsToRelative(QList<Segment> &segList);

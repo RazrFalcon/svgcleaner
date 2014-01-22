@@ -183,6 +183,8 @@ void processFile(const QString &inPath, const QString &outPath)
     remover.cleanPresentationAttributes();
     if (Keys.flag(Key::ApplyTransformsToShapes))
         replacer.applyTransformToShapes();
+    if (Keys.flag(Key::RemoveOutsideElements))
+        replacer.calcElementsBoundingBox();
     if (Keys.flag(Key::ConvertBasicShapes))
         replacer.convertBasicShapes();
     if (Keys.flag(Key::UngroupContainers)) {
@@ -190,6 +192,10 @@ void processFile(const QString &inPath, const QString &outPath)
         remover.removeGroups();
     }
     replacer.processPaths();
+    if (Keys.flag(Key::ReplaceEqualEltsByUse))
+        replacer.replaceEqualElementsWithByUse();
+    if (Keys.flag(Key::RemoveNotAppliedAttributes))
+        replacer.moveStyleFromUsedElemToUse();
     if (Keys.flag(Key::RemoveOutsideElements))
         remover.removeElementsOutsideTheViewbox();
     if (Keys.flag(Key::GroupElemByStyle))
@@ -199,6 +205,7 @@ void processFile(const QString &inPath, const QString &outPath)
     if (Keys.flag(Key::TrimIds))
         replacer.trimIds();
     replacer.roundNumericAttributes();
+    remover.cleanSvgElementAttribute();
     replacer.finalFixes();
 
     if (Keys.flag(Key::JoinStyleAttributes))
@@ -218,6 +225,7 @@ void processFile(const QString &inPath, const QString &outPath)
 
 int main(int argc, char *argv[])
 {
+    // TODO: maybe get rid of QCoreApplication
     QCoreApplication app(argc, argv);
 
     QStringList argList = app.arguments();

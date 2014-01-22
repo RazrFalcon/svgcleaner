@@ -199,7 +199,7 @@ QString SvgElement::xlinkId()
     return attribute("xlink:href").remove(0,1);
 }
 
-bool SvgElement::hasLinkedDef()
+bool SvgElement::hasLinkedDef() const
 {
     // TODO: is filter needed?
     static CharList illegalAttrList;
@@ -368,6 +368,11 @@ SvgElement SvgElement::insertBefore(const SvgElement &elemNew, const SvgElement 
     if (refElem == 0)
         return SvgElement(m_elem->InsertFirstChild(elemNew.xmlElement())->ToElement());
     return SvgElement(m_elem->InsertAfterChild(refElem, elemNew.xmlElement())->ToElement());
+}
+
+SvgElement SvgElement::insertLast(const SvgElement &elemNew) const
+{
+    return SvgElement(m_elem->InsertEndChild(elemNew.xmlElement())->ToElement());
 }
 
 StringMap SvgElement::styleMap() const

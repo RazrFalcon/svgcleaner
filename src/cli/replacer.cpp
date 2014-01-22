@@ -215,6 +215,182 @@ void Replacer::updateLinkedDefTransform(SvgElement &elem)
     }
 }
 
+class EqElement {
+public:
+    QString tagName;
+    StringHash attrHash;
+    SvgElement elem;
+    bool operator ==(const EqElement &elem) {
+        return elem.elem.xmlElement() == this->elem.xmlElement();
+    }
+};
+
+void Replacer::replaceEqualElementsWithByUse()
+{
+    QStringList rectAttrs;
+    rectAttrs << "x" << "y" << "width" << "height" << "rx" << "ry";
+    QList<SvgElement> list = svgElement().childElemList();
+    int newAttrId = 0;
+
+    QList<EqElement> elemList;
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+        bool canUse = false;
+        if (elem.isTagName("path") || elem.isTagName("rect"))
+            canUse = true;
+        if (hasParent(elem, "defs")) {
+            if (!elem.parentElement().isTagName("defs"))
+                canUse = false;
+        }
+        if (canUse) {
+            EqElement e;
+            e.tagName = elem.tagName();
+            StringHash hash;
+            if (e.tagName == "path")
+                hash.insert("d", elem.attribute("d"));
+            else if (e.tagName == "rect") {
+                foreach (const QString &attrName, rectAttrs)
+                    hash.insert(attrName, elem.attribute(attrName));
+            }
+            e.attrHash = hash;
+            e.elem = elem;
+            elemList << e;
+        }
+        if (elem.hasChildren())
+            list << elem.childElemList();
+    }
+
+    for (int i = 0; i < elemList.size(); ++i) {
+        EqElement mainEqElem = elemList.at(i);
+        QList<EqElement> equalElems;
+        for (int j = i; j < elemList.size(); ++j) {
+            if (   mainEqElem.tagName == elemList.at(j).tagName
+                && mainEqElem.elem != elemList.at(j).elem
+                && mainEqElem.attrHash == elemList.at(j).attrHash)
+            {
+                equalElems << elemList.at(j);
+            }
+        }
+
+        if (equalElems.size() == 1
+            && equalElems.first().elem.styleHash() == mainEqElem.elem.styleHash())
+        {
+            SvgElement eqElem = equalElems.first().elem;
+            SvgElement mainElem = mainEqElem.elem;
+            mainElem.setAttribute(CleanerAttr::UsedElement, "1");
+            eqElem.setTagName("use");
+            foreach (const QString &attrName, mainEqElem.attrHash.keys())
+                eqElem.removeAttribute(attrName);
+            eqElem.removeAttribute(CleanerAttr::BoundingBox);
+            if (!mainElem.hasAttribute("id"))
+                mainElem.setAttribute("id", "SVGCleanerId_" + QString::number(newAttrId++));
+            eqElem.setAttribute("xlink:href", "#" + mainElem.attribute("id"));
+
+            if (eqElem.attribute("transform") == mainElem.attribute("transform"))
+                eqElem.removeAttribute("transform");
+            else {
+                Transform tr(eqElem.attribute("transform"));
+                tr.divide(mainElem.attribute("transform"));
+                eqElem.setAttribute("transform", tr.simplified());
+            }
+            elemList.removeOne(equalElems.first());
+        } else if (equalElems.size() > 1) {
+            SvgElement newElem = document()->NewElement(ToChar(mainEqElem.tagName));
+            newElem.setAttribute("id", "SVGCleanerId_" + QString::number(newAttrId++));
+            foreach (const QString &attrName, mainEqElem.attrHash.keys())
+                newElem.setAttribute(attrName, mainEqElem.attrHash.value(attrName));
+            newElem.setAttribute(CleanerAttr::UsedElement, "1");
+            defsElement().insertLast(newElem);
+
+            equalElems << mainEqElem;
+            foreach (EqElement eqElem, equalElems) {
+                SvgElement elem = eqElem.elem;
+                elem.setTagName("use");
+                elem.setAttribute("xlink:href", "#" + newElem.attribute("id"));
+                elem.removeAttribute(CleanerAttr::BoundingBox);
+                foreach (const QString &attrName, mainEqElem.attrHash.keys())
+                    elem.removeAttribute(attrName);
+            }
+            foreach (EqElement eq, equalElems)
+                elemList.removeOne(eq);
+        }
+    }
+}
+
+// TODO: process use element which is used too
+// webmichl_wristwatch_1_-_chronometer.svg
+void Replacer::moveStyleFromUsedElemToUse()
+{
+    QStringList useAttrs;
+    useAttrs << "x" << "y" << "width" << "height";
+
+    QHash<QString,SvgElement> elemXLink;
+    QList<SvgElement> list = svgElement().childElemList();
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+        if (elem.isTagName("use"))
+            elemXLink.insertMulti(elem.xlinkId(), elem);
+        if (elem.hasChildren())
+            list << elem.childElemList();
+    }
+
+    list = svgElement().childElemList();
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+        if (elem.isUsed()) {
+            QList<SvgElement> usedElemList = elemXLink.values(elem.id());
+            // use elem could not overwrite style properties of used element
+            foreach (SvgElement usedElem, usedElemList) {
+                foreach (const QString &attrName, elem.styleAttributesList()) {
+                    usedElem.removeAttribute(attrName);
+                }
+            }
+
+            if (hasParent(elem, "defs")) {
+                QHash<QString, int> attrsCount;
+                foreach (const SvgElement &usedElem, usedElemList) {
+                    QStringList usedElemAttrs = usedElem.styleAttributesList();
+                    if (usedElem.hasAttribute("transform"))
+                        usedElemAttrs << "transform";
+                    foreach (const QString &attrName, usedElemAttrs) {
+                        if (usedElem.hasAttribute(attrName)) {
+                            bool isCount = true;
+                            if (attrName == "transform"
+                                && (usedElem.hasAttributes(useAttrs) || usedElem.hasLinkedDef()))
+                                isCount = false;
+                            if (isCount) {
+                                QString attr = attrName + ":" + usedElem.attribute(attrName);
+                                if (attrsCount.contains(attr))
+                                    attrsCount.insert(attr, attrsCount.value(attr) + 1);
+                                else
+                                    attrsCount.insert(attr, 1);
+                            }
+                        }
+                    }
+                }
+                foreach (const QString &attr, attrsCount.keys()) {
+                    // do not replace transform when used elem has already has transform
+                    if (attrsCount.value(attr) == usedElemList.count()
+                        && !(attr.startsWith(QL1S("transform"))
+                             && (elem.hasAttribute("transform") || attrsCount.value(attr) == 1)))
+                    {
+                        QString attrName = attr;
+                        attrName.remove(attrName.indexOf(':'), attrName.size());
+                        QString attrValue = attr;
+                        attrValue.remove(0, attrValue.indexOf(':') + 1);
+                        foreach (SvgElement usedElem, usedElemList)
+                            usedElem.removeAttribute(attrName);
+                        elem.setAttribute(attrName, attrValue);
+                    }
+                }
+            }
+        }
+
+        if (elem.hasChildren())
+            list << elem.childElemList();
+    }
+}
+
 void Replacer::convertUnits()
 {
     QRectF rect = viewBoxRect();
@@ -279,12 +455,13 @@ void Replacer::convertUnits()
                 attrValue = attrValue.left(attrValue.indexOf(" "));
 
             // TODO: process gradients attrs
-            if (attrValue.contains(QL1S("%"))
-                && currTag != "radialGradient" && currTag != "linearGradient") {
-                if (attrName.contains("x") || attrName == "width")
-                    attrValue = Tools::convertUnitsToPx(attrValue, rect.width());
-                else if (attrName.contains("y") || attrName == "height")
-                   attrValue = Tools::convertUnitsToPx(attrValue, rect.height());
+            if (attrValue.contains(QL1S("%"))) {
+                if (currTag != "radialGradient" && currTag != "linearGradient") {
+                    if (attrName.contains("x") || attrName == "width")
+                        attrValue = Tools::convertUnitsToPx(attrValue, rect.width());
+                    else if (attrName.contains("y") || attrName == "height")
+                       attrValue = Tools::convertUnitsToPx(attrValue, rect.height());
+                }
             } else if (attrValue.endsWith(QL1S("ex")) || attrValue.endsWith(QL1S("em"))) {
                 qreal fontSize = findAttribute(elem, "font-size").toDouble();
                 if (fontSize == 0)
@@ -502,6 +679,9 @@ void Replacer::finalFixes()
                 elem.removeAttributeIf("y1", "0");
                 elem.removeAttributeIf("x2", "0");
                 elem.removeAttributeIf("y2", "0");
+            } else if (tagName == "marker") {
+                elem.removeAttributeIf("refX", "0");
+                elem.removeAttributeIf("refY", "0");
             }
 
             if (tagName == "linearGradient"
@@ -740,13 +920,6 @@ void Replacer::convertBasicShapes()
                 elem.removeAttributes(QStringList() << "x1" << "y1" << "x2" << "y2");
             } else if (ctag == "rect") {
                 if (elem.doubleAttribute("rx") == 0 || elem.doubleAttribute("ry") == 0) {
-                    if (Keys.flag(Key::RemoveOutsideElements)) {
-                        elem.setAttribute(CleanerAttr::BoundingBox,
-                                                      elem.attribute("x")
-                                              + " " + elem.attribute("y")
-                                              + " " + elem.attribute("width")
-                                              + " " + elem.attribute("height"));
-                    }
                     qreal x = elem.doubleAttribute("x");
                     qreal y = elem.doubleAttribute("y");
                     qreal x1 = x + elem.doubleAttribute("width");
@@ -797,7 +970,15 @@ void Replacer::splitStyleAttr()
         SvgElement elem = list.takeFirst();
         if (!elem.tagName().contains("feFlood")) {
             if (elem.hasAttribute("style")) {
-                StringHash hash = Tools::splitStyle(elem.attribute("style"));
+                QString style = elem.attribute("style");
+                int commentPos = 0;
+                while (commentPos != -1) {
+                    commentPos = style.indexOf("/*");
+                    if (commentPos != -1)
+                        style.remove(commentPos, style.indexOf("*/") - commentPos + 2);
+                }
+                style.remove("\n");
+                StringHash hash = Tools::splitStyle(style);
                 foreach (const QString &key, hash.keys()) {
                     // ignore attributes like "-inkscape-font-specification"
                     // qt render prefer property attributes instead of "style" attribute
@@ -946,6 +1127,42 @@ void Replacer::mergeGradientsWithEqualStopElem()
     }
 }
 
+void Replacer::calcElementsBoundingBox()
+{
+    QList<SvgElement> list = svgElement().childElemList();
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+
+        if (elem.isTagName("rect")) {
+            elem.setAttribute(CleanerAttr::BoundingBox,
+                                          elem.attribute("x")
+                                  + " " + elem.attribute("y")
+                                  + " " + elem.attribute("width")
+                                  + " " + elem.attribute("height"));
+        } else if (elem.isTagName("circle")) {
+            qreal x = elem.doubleAttribute("cx") - elem.doubleAttribute("r");
+            qreal y = elem.doubleAttribute("cy") - elem.doubleAttribute("r");
+            elem.setAttribute(CleanerAttr::BoundingBox,
+                                          Tools::roundNumber(x)
+                                  + " " + Tools::roundNumber(y)
+                                  + " " + Tools::roundNumber(qAbs(x*2))
+                                  + " " + Tools::roundNumber(qAbs(y*2)));
+        } else if (elem.isTagName("ellipse")) {
+            qreal x = elem.doubleAttribute("cx") - elem.doubleAttribute("rx");
+            qreal y = elem.doubleAttribute("cy") - elem.doubleAttribute("ry");
+            elem.setAttribute(CleanerAttr::BoundingBox,
+                                          Tools::roundNumber(x)
+                                  + " " + Tools::roundNumber(y)
+                                  + " " + Tools::roundNumber(qAbs(x*2))
+                                  + " " + Tools::roundNumber(qAbs(y*2)));
+        }
+        // all other basic shapes bounding boxes are calculated in Paths class
+
+        if (elem.hasChildren())
+            list << elem.childElemList();
+    }
+}
+
 SvgElement Replacer::findLinearGradient(const QString &id)
 {
     for (XMLElement *child = defsElement().xmlElement()->FirstChildElement(); child;
@@ -1011,18 +1228,20 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
             }
 
             // we can not group elements by some attributes
-            for (int i = 0; i < ignoreAttrList.size(); ++i) {
-                if (groupHash.contains(ignoreAttrList.at(i)))
-                    groupHash.remove(ignoreAttrList.at(i));
+            foreach (const QString &attrName, ignoreAttrList) {
+                if (groupHash.contains(attrName))
+                    groupHash.remove(attrName);
             }
             if (!groupHash.isEmpty())
                 similarElemList << currElem;
             // elem linked to 'use' have to store style properties only in elem, not in group
-            if (currElem.isUsed() || currElem.isTagName("use")) {
+            if (currElem.isUsed()) {
                 groupHash.clear();
                 similarElemList.clear();
             }
         } else {
+            if (currElem.isUsed())
+                groupHash.clear();
             StringHash lastGroupHash = groupHash;
             // remove attributes which is not exist or different in next element
             foreach (const QString &attrName, groupHash.keys()) {
@@ -1030,10 +1249,6 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
                     groupHash.remove(attrName);
                 else if (currElem.attribute(attrName) != groupHash.value(attrName))
                     groupHash.remove(attrName);
-            }
-            if (currElem.isUsed() || currElem.isTagName("use")) {
-                groupHash.clear();
-                similarElemList.clear();
             }
 
             // if hash of style attrs is empty - then current element is has completely different

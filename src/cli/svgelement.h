@@ -43,7 +43,7 @@ public:
     bool hasAttribute(const char *name) const;
     bool hasAttributes(const QStringList &list) const;
     bool hasChildren() const;
-    bool hasLinkedDef();
+    bool hasLinkedDef() const;
     bool isContainer() const;
     bool isGroup() const;
     bool isNull() const;
@@ -75,6 +75,7 @@ public:
     StringMap styleMap() const;
     StringHash styleHash() const;
     SvgElement insertBefore(const SvgElement &elemNew, const SvgElement &elemBefore) const;
+    SvgElement insertLast(const SvgElement &elemNew) const;
     SvgElement parentElement() const;
     SvgElement firstChild() const;
     void appendChild(const SvgElement &elem);

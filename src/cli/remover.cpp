@@ -71,8 +71,10 @@ void Remover::cleanSvgElementAttribute()
             svgElement().removeAttribute("version");
     }
 
-    // fix missing xmlns:xlink attribute
-    if (isXlinkUsed && !svgElement().hasAttribute("xmlns:xlink"))
+    // fix missing or wrong xmlns:xlink attribute
+    if (isXlinkUsed
+        && (!svgElement().hasAttribute("xmlns:xlink")
+            || svgElement().attribute("xmlns:xlink") != "http://www.w3.org/1999/xlink"))
         svgElement().setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
     // dirty way, but svg cannot be processed by default style cleaning func,
@@ -495,6 +497,7 @@ void Remover::removeElements()
                         || currTag == "flowRegion")
                     && !currElem.hasChildren()
                     && currTag != "glyph"
+                    && currTag != "defs"
                     && Keys.flag(Key::RemoveEmptyContainers))
                     removeThisNode = true;
                 else if (currTag.contains("metadata")
@@ -547,10 +550,6 @@ void Remover::removeElements()
                         removeThisNode = true;
                     } else if (    currTag == "image"
                                && !currElem.attribute("xlink:href").startsWith(QL1S("data")))
-                        removeThisNode = true;
-                    else if (    currElem.isReferenced()
-                             && !currElem.hasAttribute("id")
-                             &&  currElem.parentElement().tagName() == "defs")
                         removeThisNode = true;
                     else if (isElementInvisible(currElem))
                         removeThisNode = true;
@@ -1131,6 +1130,7 @@ void Remover::removeDefaultValue(StringMap &hash, const QString &name)
     }
 }
 
+// TODO: remove group with only transform attribute and all child has transform
 void Remover::removeGroups()
 {
     QStringList illegalGAttrList;
@@ -1276,7 +1276,6 @@ void Remover::prepareViewBoxRect(QRectF &viewBox)
     }
 }
 
-// TODO: add other elements
 // TODO: add blur support
 void Remover::removeElementsOutsideTheViewbox()
 {
@@ -1290,7 +1289,7 @@ void Remover::removeElementsOutsideTheViewbox()
         SvgElement elem = list.takeFirst();
 
         if (   elem.hasAttribute(CleanerAttr::BoundingBox)
-            && !elem.isUsed()
+            && findAttribute(elem, CleanerAttr::UsedElement).isEmpty()
             && !hasParent(elem, "defs")
             && !hasParent(elem, "flowRegion")) {
             QStringList pList = elem.attribute(CleanerAttr::BoundingBox).split(" ");
@@ -1302,7 +1301,6 @@ void Remover::removeElementsOutsideTheViewbox()
             if (rect.height() == 0)
                 rect.setHeight(1);
 
-            QRectF viewBoxTr = viewBox;
             if (elem.hasAttribute(CleanerAttr::BBoxTransform)) {
                 Transform tr(elem.attribute(CleanerAttr::BBoxTransform));
                 rect = tr.transformRect(rect);
@@ -1317,7 +1315,7 @@ void Remover::removeElementsOutsideTheViewbox()
                 rect.adjust(-sw/2, -sw/2, sw, sw);
             }
 
-            if (!viewBoxTr.intersects(rect)) {
+            if (!viewBox.intersects(rect)) {
                 elem.parentElement().removeChild(elem);
                 elem.clear();
             } else {

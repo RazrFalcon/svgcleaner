@@ -52,12 +52,15 @@ public:
     void calcElemAttrCount(const QString &text);
     void groupElementsByStyles(SvgElement parentElem = SvgElement());
     void markUsedElements();
-    QHash<QString,int> calcDefsUsageCount();
     void applyTransformToDefs();
     void applyTransformToShapes();
     void mergeGradientsWithEqualStopElem();
+    void calcElementsBoundingBox();
+    void replaceEqualElementsWithByUse();
+    void moveStyleFromUsedElemToUse();
 
 private:
+    QHash<QString,int> calcDefsUsageCount();
     SvgElement findLinearGradient(const QString &id);
     bool isPathValidToTransform(SvgElement &pathElem, QHash<QString, int> &defsIdHash);
     bool isBlurFilter(const QString &id);

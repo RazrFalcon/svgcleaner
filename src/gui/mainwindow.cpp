@@ -299,7 +299,7 @@ bool MainWindow::customSort(const SVGInfo &s1, const SVGInfo &s2)
     else if (m_sortType == 1)
         return s1.outSize < s2.outSize;
     else if (m_sortType == 2)
-        return s1.compress > s2.compress;
+        return s1.compress < s2.compress;
     else if (m_sortType == 3)
         return s1.attrFinal < s2.attrFinal;
     else if (m_sortType == 4)

@@ -166,10 +166,12 @@ void Keys::prepareDescription()
                     tr("Remove empty containers elements"));
     descHash.insert(Key::RemoveOutsideElements,
                     tr("Remove elements which is outside the viewbox"));
+    descHash.insert(Key::ReplaceEqualEltsByUse,
+                    tr("Replace equal elements by the 'use'"));
     descHash.insert(Key::UngroupContainers,
                     tr("Ungroup container elements, when possible"));
     descHash.insert(Key::RemoveDuplicatedDefs,
-                    tr("Remove duplicate elements in 'defs' element"));
+                    tr("Remove duplicate elements in the 'defs' element"));
     descHash.insert(Key::MergeGradients,
                     tr("Merge 'linearGradient' into 'radialGradient', when possible"));
     descHash.insert(Key::RemoveTinyGaussianBlur,
@@ -271,6 +273,7 @@ QList<int> Keys::elementsKeysId()
         << Key::RemoveEmptyContainers
         << Key::RemoveDuplicatedDefs
         << Key::RemoveOutsideElements
+        << Key::ReplaceEqualEltsByUse
         << Key::UngroupContainers
         << Key::MergeGradients
         << Key::RemoveTinyGaussianBlur;
@@ -398,6 +401,7 @@ QStringList &Keys::allKeys()
         << KeyStr::RemoveEmptyContainers
         << KeyStr::RemoveDuplicatedDefs
         << KeyStr::RemoveOutsideElements
+        << KeyStr::ReplaceEqualEltsWithUse
         << KeyStr::UngroupContainers
         << KeyStr::MergeGradients
         << KeyStr::RemoveTinyGaussianBlur

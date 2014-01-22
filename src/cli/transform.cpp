@@ -24,18 +24,38 @@
 #include "tools.h"
 #include "transform.h"
 
+// TODO: add support to save mirror transform as scale
+
 // http://www.w3.org/TR/SVG/coords.html#EstablishingANewUserSpace
 Transform::Transform(const QString &text)
 {
     if (text.isEmpty())
-        qFatal("Error: transform attribute is empty");
-    calcMatrixes(text);
+        calcMatrixes("translate(0,0)");
+    else
+        calcMatrixes(text);
 }
 
 void Transform::setOldXY(qreal prevX, qreal prevY)
 {
     oldX = prevX;
     oldY = prevY;
+}
+
+void Transform::divide(const QString &text)
+{
+    if (text.isEmpty()) {
+        divide("translate(0,0)");
+        return;
+    }
+    QList<TransformMatrix> transMatrixList = parseTransform(text.midRef(0));
+
+    TransformMatrix newMatrix = transMatrixList.at(0);
+    for (int i = 1; i < transMatrixList.count(); ++i)
+        newMatrix = newMatrix * transMatrixList.at(i);
+    newMatrix.invert();
+    TransformMatrix currMatrix(a,b,c,d,e,f);
+    newMatrix = currMatrix * newMatrix;
+    calcParameters(newMatrix);
 }
 
 QRectF Transform::transformRect(const QRectF &rect)
@@ -164,32 +184,36 @@ void Transform::calcMatrixes(const QString &text)
     TransformMatrix newMatrix = transMatrixList.at(0);
     for (int i = 1; i < transMatrixList.count(); ++i)
         newMatrix = newMatrix * transMatrixList.at(i);
+    calcParameters(newMatrix);
+}
 
+void Transform::calcParameters(TransformMatrix &matrix)
+{
     a = 0; b = 0; c = 0; d = 0; e = 0; f = 0;
 
-    if (!Tools::isZeroTs(newMatrix(0,0)))
-        a = newMatrix(0,0);
-    if (!Tools::isZeroTs(newMatrix(1,0)))
-        b = newMatrix(1,0);
-    if (!Tools::isZeroTs(newMatrix(0,1)))
-        c = newMatrix(0,1);
-    if (!Tools::isZeroTs(newMatrix(1,1)))
-        d = newMatrix(1,1);
-    if (!Tools::isZero(newMatrix(0,2)))
-        e = newMatrix(0,2);
-    if (!Tools::isZero(newMatrix(1,2)))
-        f = newMatrix(1,2);
+    if (!Tools::isZeroTs(matrix(0,0)))
+        a = matrix(0,0);
+    if (!Tools::isZeroTs(matrix(1,0)))
+        b = matrix(1,0);
+    if (!Tools::isZeroTs(matrix(0,1)))
+        c = matrix(0,1);
+    if (!Tools::isZeroTs(matrix(1,1)))
+        d = matrix(1,1);
+    if (!Tools::isZero(matrix(0,2)))
+        e = matrix(0,2);
+    if (!Tools::isZero(matrix(1,2)))
+        f = matrix(1,2);
 
 //    qDebug() << "abc" << a << b << c << d << e << f;
 
-    // calculate
     m_xScale = sqrt(pow(a, 2) + pow(c, 2));
     m_yScale = sqrt(pow(b, 2) + pow(d, 2));
     m_xSkew = atan(b)*(180.0/M_PI);
     m_ySkew = atan(c)*(180.0/M_PI);
     m_angle = atan(-b/a)*(180/M_PI);
-    if (isnan(m_angle))
+    if (isnan(m_angle)) {
         qFatal("Error: rotation is NaN");
+    }
     if (b < c)
         m_angle = -m_angle;
 

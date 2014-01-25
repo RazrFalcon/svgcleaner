@@ -42,6 +42,9 @@ IconsWidget::IconsWidget(QWidget *parent) :
     setMouseTracking(true);
     setFixedHeight(100);
     refresh = true;
+    compareView = true;
+    crashed = false;
+    newToolTip = true;
 }
 
 void IconsWidget::setPaths(const QString &pathIn, const QString &pathOut, const bool compare)
@@ -118,14 +121,13 @@ void IconsWidget::mouseMoveEvent(QMouseEvent *event)
     QPoint cursorPos = mapFromGlobal(cursor.pos());
 
     if (rect().contains(cursorPos)) {
-        int border = 5;
         QPoint point  = mapToGlobal(event->pos());
         QPoint point2 = mapToGlobal(QPoint(0, 0));
         if (point2.y() - tooltipPix.height() - 6 > 0) {
             toolTip->setGeometry(point.x() - tooltipPix.width()/2, point2.y() - tooltipPix.height()-6,
                                  tooltipPix.width(), tooltipPix.height());
         } else {
-            toolTip->setGeometry(point.x() - tooltipPix.width()/2, point2.y() + height() + border,
+            toolTip->setGeometry(point.x() - tooltipPix.width()/2, point2.y() + height() + 5,
                                  tooltipPix.width(), tooltipPix.height());
         }
     }

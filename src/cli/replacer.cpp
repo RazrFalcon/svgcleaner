@@ -1453,7 +1453,6 @@ void Replacer::applyTransformToShapes()
                  && elem.hasAttribute("transform")
                  && !elem.hasAttribute("clip-path")
                  && !elem.hasAttribute("mask")
-                 && elem.hasAttribute("transform")
                  && defsHash.value(elem.defIdFromAttribute("filter")) < 2
                  && defsHash.value(elem.defIdFromAttribute("stroke")) < 2
                  && defsHash.value(elem.defIdFromAttribute("fill")) < 2)

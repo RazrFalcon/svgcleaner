@@ -187,12 +187,9 @@ TreeItem *TreeModel::getItem(const QModelIndex &index) const
 bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     TreeItem *parentItem = getItem(parent);
-    bool success = true;
-
     beginRemoveRows(parent, row, row + count - 1);
-    success = parentItem->removeChildren(row, count);
+    bool success = parentItem->removeChildren(row, count);
     endRemoveRows();
-
     return success;
 }
 
@@ -330,8 +327,6 @@ void TreeModel::removeRootItem(const QModelIndex &itemIndex)
 {
     if (!itemIndex.isValid())
         return;
-    TreeItem *item;
-    item = static_cast<TreeItem*>(itemIndex.internalPointer());
     removeRow(itemIndex.row(), itemIndex.parent());
 }
 

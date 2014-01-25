@@ -98,7 +98,10 @@ public:
     bool operator!=(const SvgElement &elem1) {
         return elem1.xmlElement() != this->xmlElement();
     }
-    void operator=(const SvgElement &elem) { m_elem = elem.xmlElement(); }
+    SvgElement operator=(const SvgElement &elem) {
+        m_elem = elem.xmlElement();
+        return SvgElement(m_elem);
+    }
 
 private:
     XMLElement *m_elem;

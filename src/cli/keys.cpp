@@ -62,15 +62,15 @@ int Keys::transformPrecision() const
 void Keys::prepareDescription()
 {
     descHash.insert(Key::RemoveProlog,
-                    tr("Remove xml prolog"));
+                    tr("Remove XML prolog"));
     descHash.insert(Key::RemoveComments,
-                    tr("Remove xml comments"));
+                    tr("Remove XML comments"));
     descHash.insert(Key::RemoveProcInstruction,
-                    tr("Remove xml processing instruction"));
+                    tr("Remove XML processing instruction"));
     descHash.insert(Key::RemoveUnusedDefs,
                     tr("Remove unused elements in 'defs' element"));
     descHash.insert(Key::RemoveNonSvgElements,
-                    tr("Remove non svg elements"));
+                    tr("Remove non SVG elements"));
     descHash.insert(Key::RemoveMetadata,
                     tr("Remove metadata elements"));
     descHash.insert(Key::RemoveInkscapeElements,
@@ -100,7 +100,7 @@ void Keys::prepareDescription()
     descHash.insert(Key::MergeGradients,
                     tr("Merge 'linearGradient' into 'radialGradient', when possible"));
     descHash.insert(Key::RemoveTinyGaussianBlur,
-                    tr("Remove Gaussian blur filters with deviation lower than:"));
+                    tr("Remove Gaussian blur filters with deviation lower than"));
 
     descHash.insert(Key::RemoveSvgVersion,
                     tr("Remove SVG version"));
@@ -161,7 +161,7 @@ void Keys::prepareDescription()
     descHash.insert(Key::ConvertRRGGBBToRGB,
                     tr("Convert #RRGGBB colors into #RGB format, when possible"));
     descHash.insert(Key::ConvertBasicShapes,
-                    tr("Convert polygon, polyline, line, rect into paths"));
+                    tr("Convert 'polygon', 'polyline', 'line', 'rect' into paths"));
     descHash.insert(Key::TransformPrecision,
                     tr("Set rounding precision for transformations"));
     descHash.insert(Key::CoordsPrecision,
@@ -383,7 +383,7 @@ QString Keys::keyName(const int &key)
 QString Keys::presetDescription(const QString &name)
 {
     if (name == Preset::Basic) {
-        return tr("<b>Basic</b> preset are designed to remove all unnecessary data from svg file, "
+        return tr("<b>Basic</b> preset are designed to remove all unnecessary data from SVG file, "
                   "without changing it structure. "
                   "Allows you to continue editing of the file.<br>"
                   "Сan not damage your files. Otherwise, please send this file to our email.");

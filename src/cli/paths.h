@@ -60,7 +60,7 @@ struct ArcStruct
 class Segment
 {
 public:
-    Segment() {}
+    Segment();
     void setTransform(Transform &ts);
     void toRelative(qreal xLast, qreal yLast);
     void coords(QVector<qreal> &points);

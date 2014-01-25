@@ -125,12 +125,12 @@ private:
     qreal _determinant(const TransformMatrix &matrix, int n)
     {
         qreal tmpDet = 0;
-        double k = 1;
         if (n == 1) {
             tmpDet = matrix(0,0);
         } else if (n == 2) {
             tmpDet = matrix(0,0) * matrix(1,1) - matrix(1,0) * matrix(0,1);
         } else {
+            double k = 1;
             for (int i = 0; i < n; i++) {
                 int mm = n - 1;
                 tmpDet = tmpDet + k * matrix(0,i) * _determinant(subMatrix(matrix, n, 0, i), mm);

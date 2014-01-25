@@ -434,7 +434,7 @@
             <item row="1" column="0" colspan="2">
              <widget class="QLabel" name="lblPresetInfo">
               <property name="text">
-               <string>Info:</string>
+               <string notr="true">Info</string>
               </property>
               <property name="wordWrap">
                <bool>true</bool>

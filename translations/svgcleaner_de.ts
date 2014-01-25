@@ -29,16 +29,8 @@
         <translation>SVG Cleaner kann Ihnen helfen, Ihre SVG-Dateien von ungenutzten Daten zu befreien. Er arbeitet im Stapelverarbeitungs-Modus und macht einfach betrachtet folgendes:&lt;br /&gt;- Elemente und Attribute aus dem Quelltext entfernen, die nicht zum eigetnlich darzustellenden Bild beitragen;&lt;br /&gt;- die Elemente und Attribute, die wirklich genutzt werden, komprimieren.&lt;br /&gt;Die Anwendung verfügt über eine reihe von Optionen für die Bereinigung und Optimierung der Dateien und bietet multithread Verarbeitung auf Mehrkern-CPUs.</translation>
     </message>
     <message>
-        <source>Images cleaned by SVG Cleaner are typically 10-60 percent smaller than the original ones.</source>
-        <translation>In der Regel schrumpfen mit SVG Cleaner optimierte Bilddateien auf 10-60% ihrer Ausgangsgröße.</translation>
-    </message>
-    <message>
         <source>Important! The internal image viewer in SVG Cleaner uses the QtSvg module for rendering SVG images. Qt supports only the static features of SVG 1.2 Tiny, and that imposes a number of restrictions on rendering of advanced features. For instance, elements such as clipPath, mask, filters etc. will not be rendered at all.</source>
         <translation>Achtung! Die interne Bildbetrachter in SVG Cleaner benutzt QtSvg, um die SVG-Dateien darzustellen. Da Qt nur die statischen Features von SVG 1.2 Tiny unterstützt, beeinträchtigt dies die Darstellung von einigen erweiterten Merkmalen. So können zum Beispiel Elemente wie Clip-Pfade, Masken, Filter etc. generell nicht dargestellt werden.</translation>
-    </message>
-    <message>
-        <source>We apologize for any bugs in advance. Please send bug reports to </source>
-        <translation type="obsolete">Wir bitten etwaig auftretenden Programmfehler zu entschuldigen. Bitte senden Sie uns Fehlerberichte an </translation>
     </message>
     <message>
         <source>Developers:</source>
@@ -64,24 +56,255 @@
         <source>Please send bug reports to </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Images cleaned by SVG Cleaner are typically 40-60 percent smaller than the original ones.</source>
+        <translation>In der Regel schrumpfen mit SVG Cleaner optimierte Bilddateien auf 40-60% ihrer Ausgangsgröße.</translation>
+    </message>
 </context>
 <context>
-    <name>CleanerThread</name>
+    <name>FilesView</name>
     <message>
-        <source>Crashed</source>
-        <translation>Abgestürzt</translation>
+        <source>Warning</source>
+        <translation type="unfinished">Warnung</translation>
     </message>
     <message>
-        <source>Input file does not exist.</source>
-        <translation>Die Eingabedatei existiert nicht.</translation>
+        <source>You can drop only svg(z) files or folders.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Keys</name>
+    <message>
+        <source>Remove unused elements in &apos;defs&apos; element</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Output folder does not exist.</source>
-        <translation>Der Ausgabe-Ordner existiert nicht.</translation>
+        <source>Remove metadata elements</source>
+        <translation type="unfinished">entferne Metatdaten-Elemente</translation>
     </message>
     <message>
-        <source>It&apos;s a not well-formed SVG file.</source>
-        <translation>Die SVG-Datei ist nicht wohlgeformt.</translation>
+        <source>Remove Inkscape namespaced elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove SodiPodi namespaced elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Adobe Illustrator namespaced elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove CorelDRAW namespaced elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove MS Visio namespaced elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Sketch namespaced elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove invisible elements</source>
+        <translation type="unfinished">entferne unsichtbare Elemente</translation>
+    </message>
+    <message>
+        <source>Remove empty containers elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove elements which is outside the viewbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Replace equal elements by the &apos;use&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ungroup container elements, when possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove duplicate elements in the &apos;defs&apos; element</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Merge &apos;linearGradient&apos; into &apos;radialGradient&apos;, when possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove SVG version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove unreferenced id&apos;s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trim &apos;id&apos; attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keep unreferenced id&apos;s which contains only letters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove not applied attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove attributes with default values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Inkscape namespaced attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove SodiPodi namespaced attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Adobe Illustrator namespaced attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove CorelDRAW namespaced attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove MS Visio namespaced attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Sketch namespaced attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove stroke properties when no stroking</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove fill properties when no filling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove XLinks which pointed to nonexistent elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group elements by style properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Merge style properties into &apos;style&apos; attribute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Simplify transform matrices into short equivalent, when possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply transform matrices to gradients, when possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply transform matrices to basic shapes, when possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Convert absolute coordinates into relative ones</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove unneeded symbols in &apos;d&apos; attribute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove tiny or empty segments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Convert segments into shorter equivalent, when possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply transform matrices, when possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Convert &apos;height&apos; and &apos;width&apos; attributes into &apos;viewBox&apos; attribute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Convert colors into #RRGGBB format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Convert #RRGGBB colors into #RGB format, when possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set rounding precision for transformations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set rounding precision for coordinates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set rounding precision for attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save file with only required whitespace and newlines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort elements by name in &apos;defs&apos; element</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Complete&lt;/b&gt; preset are designed to create a file which will be used only for showing. This preset completely change file structure, what in most cases prevents future editing.&lt;br&gt;Should not damage your files. Otherwise, please send this file to our email.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Extreme&lt;/b&gt; preset does the same that &lt;b&gt;Complete&lt;/b&gt; do, but also enables some unstable features.&lt;br&gt;It will definitely change displaying of your file and could even damage it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Custom&lt;/b&gt; preset is used to store your own cleaning options. By default all options are off.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove XML prolog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove XML comments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove XML processing instruction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove non SVG elements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Basic&lt;/b&gt; preset are designed to remove all unnecessary data from SVG file, without changing it structure. Allows you to continue editing of the file.&lt;br&gt;Сan not damage your files. Otherwise, please send this file to our email.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Convert &apos;polygon&apos;, &apos;polyline&apos;, &apos;line&apos;, &apos;rect&apos; into paths</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Gaussian blur filters with deviation lower than</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -120,10 +343,6 @@
     <message>
         <source>Size after:</source>
         <translation>Größe hinterher:</translation>
-    </message>
-    <message>
-        <source>New file sizes</source>
-        <translation>Neue Dateigrößen</translation>
     </message>
     <message>
         <source>Maximum:</source>
@@ -166,10 +385,6 @@
         <translation>Nach Größe sortieren</translation>
     </message>
     <message>
-        <source>Sort by compression</source>
-        <translation>Nach Kompressionsgrad sortieren</translation>
-    </message>
-    <message>
         <source>Sort by attributes</source>
         <translation>Nach Attributen sortieren</translation>
     </message>
@@ -205,24 +420,49 @@
         <source>Stop cleaning</source>
         <translation>Bereinigen beenden</translation>
     </message>
+    <message>
+        <source>Cleaned</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by cleaning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cleaning is not finished.
+Did you really want to exit?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
-    <name>SomeUtils</name>
+    <name>QObject</name>
     <message>
         <source>B</source>
-        <translation>B</translation>
+        <translation type="unfinished">B</translation>
     </message>
     <message>
         <source>KiB</source>
-        <translation>KiB</translation>
+        <translation type="unfinished">KiB</translation>
     </message>
     <message>
         <source>MiB</source>
-        <translation>MiB</translation>
+        <translation type="unfinished">MiB</translation>
     </message>
     <message>
-        <source>%1h %2m %3s %4ms</source>
-        <translation>%1h %2m %3s %4ms</translation>
+        <source>h</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>m</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ms</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -244,8 +484,8 @@
         <translation>Verarbeitungszeit:</translation>
     </message>
     <message>
-        <source>Name:</source>
-        <translation>Name:</translation>
+        <source>&lt;b&gt;Name:&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -299,10 +539,6 @@
         <translation>Anzahl der Threads:</translation>
     </message>
     <message>
-        <source>Open files from the input folder and:</source>
-        <translation>Öffne Datein vom Eingabeordner und:</translation>
-    </message>
-    <message>
         <source>filename</source>
         <translation>Dateiname</translation>
     </message>
@@ -327,18 +563,6 @@
         <translation>überschreibe Ausgangsdateien</translation>
     </message>
     <message>
-        <source>Open an input folder</source>
-        <translation>öffne einen Eingabeordner</translation>
-    </message>
-    <message>
-        <source>Input folder:</source>
-        <translation>Eingabeordner:</translation>
-    </message>
-    <message>
-        <source>Open an output folder</source>
-        <translation>öffne einen Ausgabeordner</translation>
-    </message>
-    <message>
         <source>Output folder:</source>
         <translation>Ausgabeordner:</translation>
     </message>
@@ -351,212 +575,12 @@
         <translation>rekursive Suche</translation>
     </message>
     <message>
-        <source>Select a preset:</source>
-        <translation>wähle eine Vorlage:</translation>
-    </message>
-    <message>
-        <source>Enter preset name:</source>
-        <translation>Vorlagen-Name:</translation>
-    </message>
-    <message>
-        <source>Save</source>
-        <translation>Speichern</translation>
-    </message>
-    <message>
-        <source>Remove</source>
-        <translation>Entfernen</translation>
-    </message>
-    <message>
-        <source>Preset description:</source>
-        <translation>Vorlagen-Beschreibung:</translation>
-    </message>
-    <message>
-        <source>Remove prolog</source>
-        <translation>entferne Prolog</translation>
-    </message>
-    <message>
-        <source>Remove comments</source>
-        <translation>entferne Kommentare</translation>
-    </message>
-    <message>
-        <source>Remove unused definitions</source>
-        <translation>entferne ungenutzte Definitionen</translation>
-    </message>
-    <message>
-        <source>Remove non-SVG elements</source>
-        <translation>entferne SVG-fremde Elemente</translation>
-    </message>
-    <message>
-        <source>Remove metadata elements</source>
-        <translation>entferne Metatdaten-Elemente</translation>
-    </message>
-    <message>
-        <source>Remove elements from namespaces by the following graphics editors:</source>
-        <translation>entferne Elemente aus dem Namensraum folgender Grafik-Programme:</translation>
-    </message>
-    <message>
-        <source>Remove invisible elements</source>
-        <translation>entferne unsichtbare Elemente</translation>
-    </message>
-    <message>
-        <source>Remove empty container elements</source>
-        <translation>entferne leere Container-Elemente</translation>
-    </message>
-    <message>
-        <source>Collapse groups when possible</source>
-        <translation>fasse Gruppen wenn möglich zusammen</translation>
-    </message>
-    <message>
-        <source>Remove duplicated definitions</source>
-        <translation>entferne doppelte Definitionen</translation>
-    </message>
-    <message>
-        <source>Remove gradients that are only referenced by one other gradient</source>
-        <translation>entferne Verläufe die nur von anderen Verläufen referenziert werden</translation>
-    </message>
-    <message>
-        <source>Remove Gaussian blur filters</source>
-        <translation>entferne gaußsche Weichzeichen-Filter</translation>
-    </message>
-    <message>
-        <source>if their standard deviation is less than:</source>
-        <translation>wenn ihr Standardmaß kleiner ist als:</translation>
-    </message>
-    <message>
-        <source>Remove the SVG language version</source>
-        <translation>entferne die SVG-Sprachversion</translation>
-    </message>
-    <message>
-        <source>Remove unreferenced IDs</source>
-        <translation>entferne unreferenzierte IDs</translation>
-    </message>
-    <message>
-        <source>Always keep IDs that contain only letters</source>
-        <translation type="obsolete">behalte IDs, die nur Buchstaben enthalten immer</translation>
-    </message>
-    <message>
-        <source>Remove non-SVG attributes</source>
-        <translation type="obsolete">entferne SVG-fremde Attribute</translation>
-    </message>
-    <message>
-        <source>Remove attributes that are not applicable to elements</source>
-        <translation>entferne Attributen, die auf kein Element angewendet werden können</translation>
-    </message>
-    <message>
-        <source>Remove attributes with default SVG values</source>
-        <translation>entferne Attribute mit Standardwerten</translation>
-    </message>
-    <message>
-        <source>Remove attributes from namespaces by the following graphics editors:</source>
-        <translation>entferne Attribute aus dem Namensraum folgender Grafik-Programme:</translation>
-    </message>
-    <message>
-        <source>Remove all stroke properties when there&apos;s no stroking</source>
-        <translation>entferne alle Linien-Eigenschaften, wenn keine Linien gezeichnet werden</translation>
-    </message>
-    <message>
-        <source>Remove all fill properties when there&apos;s no filling</source>
-        <translation>entferne alle Fülleigenschaften, wenn es keine Füllung gibt</translation>
-    </message>
-    <message>
-        <source>Remove all unused properties from children of clipPath elements</source>
-        <translation type="obsolete">entferne alle ungenutzten Eigenschaften von Nachkommen von Clip-Pfad-Elementen</translation>
-    </message>
-    <message>
-        <source>Remove gradient coordinates when possible</source>
-        <translation>entferne Verlaufskoordinaten, wenn möglich</translation>
-    </message>
-    <message>
-        <source>Keep existing paths data</source>
-        <translation>erhalte bestehende Pfad-Daten</translation>
-    </message>
-    <message>
-        <source>Remove unnecessary whitespace between commands and coordinates</source>
-        <translation>entferne überflüssige Leerzeichen zwischen Befehlen und Koordinaten</translation>
-    </message>
-    <message>
-        <source>Convert absolute paths into relative ones</source>
-        <translation>wandle absolute Pfade in relative</translation>
-    </message>
-    <message>
-        <source>Convert lines into horizontal/vertical equivalents when possible</source>
-        <translation type="obsolete">wandle Linien in horizontale/vertikale Äquivalente, wenn möglich</translation>
-    </message>
-    <message>
-        <source>Convert straight curves into lines when possible</source>
-        <translation type="obsolete">wandle gerade Kurven in Linien, wenn möglich</translation>
-    </message>
-    <message>
-        <source>Convert cubic curve segments into shorthand equivalents when possible</source>
-        <translation type="obsolete">wandle kubische Kurven-Segmente in kürzere Äquivalente, wenn möglich</translation>
-    </message>
-    <message>
-        <source>Convert quadratic curve segments into shorthand equivalents when possible</source>
-        <translation type="obsolete">wandle quadradische Kurven-Segmente in kürzere Äquivalente, wenn möglich</translation>
-    </message>
-    <message>
-        <source>Convert width/height into a viewBox when possible</source>
-        <translation>wandle Breite/Höhe in eine viewBox, wenn möglich</translation>
-    </message>
-    <message>
-        <source>Convert style properties into SVG attributes</source>
-        <translation>wandle Style-Eigenschaften in SVG-Attribute</translation>
-    </message>
-    <message>
-        <source>Convert colors to #RRGGBB format</source>
-        <translation>wandle farbangaben ins #RRGGBB-Format</translation>
-    </message>
-    <message>
-        <source>Convert colors to #RGB format when possible</source>
-        <translation>wandle Farben ins #RGB-Format, wenn möglich</translation>
-    </message>
-    <message>
-        <source>Convert basic shapes into paths</source>
-        <translation>wandle Grundformen in Pfade</translation>
-    </message>
-    <message>
-        <source>Recalculate coordinates and remove transform attributes when possible</source>
-        <translation type="obsolete">berechne Koordinaten neu und entferne Transformations-Attribute, wenn möglich</translation>
-    </message>
-    <message>
-        <source>Sort elements by name inside the defs section</source>
-        <translation>sortiere Elemente innerhalb des def-Bereiches nach ihrem Namen</translation>
-    </message>
-    <message>
-        <source>Round numbers to a given precision</source>
-        <translation>runde Zahlen mit angegebener Präzision</translation>
-    </message>
-    <message>
-        <source>inside transform attributes:</source>
-        <translation>innerhalb von transform-Attributen:</translation>
-    </message>
-    <message>
-        <source>inside coordinate attributes:</source>
-        <translation>innerhalb von coordinate-Attributen:</translation>
-    </message>
-    <message>
-        <source>inside other attributes:</source>
-        <translation>innerhalb anderer Attribute:</translation>
-    </message>
-    <message>
-        <source>The indentation for the pretty print style:</source>
-        <translation type="obsolete">Art des Einrückens für schönen Quelltext:</translation>
-    </message>
-    <message>
         <source>prefix</source>
         <translation>Präfix</translation>
     </message>
     <message>
         <source>suffix</source>
         <translation>Suffix</translation>
-    </message>
-    <message>
-        <source>Main</source>
-        <translation>Grundeinstellungen</translation>
-    </message>
-    <message>
-        <source>Presets</source>
-        <translation>Vorlagen</translation>
     </message>
     <message>
         <source>Elements</source>
@@ -571,24 +595,8 @@
         <translation>Pfad-Optionen</translation>
     </message>
     <message>
-        <source>Optimization</source>
-        <translation>Optimierungsoptionen</translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation>Ausgabe-Optionen</translation>
-    </message>
-    <message>
-        <source>Select an input folder</source>
-        <translation>wähle einen Eingabeordner</translation>
-    </message>
-    <message>
         <source>Select an output folder</source>
         <translation>wähle einen Ausgabeordner</translation>
-    </message>
-    <message>
-        <source>An input folder is not selected.</source>
-        <translation>Es ist kein EIngabeordner ausgewählt.</translation>
     </message>
     <message>
         <source>An output folder is not selected.</source>
@@ -599,14 +607,6 @@
         <translation>Sie müssen ein Präfix oder ein Suffix für diese Speicher-Methode angeben.</translation>
     </message>
     <message>
-        <source>An input folder is not exist.</source>
-        <translation>Ein Eingabeordner existiert nicht.</translation>
-    </message>
-    <message>
-        <source>An input folder did not contain any svg, svgz files.</source>
-        <translation>Ein Eingabeordner enthält keine SVG- oder SVGZ-Dateien.</translation>
-    </message>
-    <message>
         <source>Selected output folder is not writable.</source>
         <translation>Der ausgewählte Ausgabeordner ist nicht beschreibbar.</translation>
     </message>
@@ -615,99 +615,73 @@
         <translation>Warnung</translation>
     </message>
     <message>
-        <source>You have to set preset name.</source>
-        <translation>Sie müssen der Vorlage einen Namen geben.</translation>
-    </message>
-    <message>
-        <source>This preset already exists.
-Overwrite?</source>
-        <translation>Diese Vorlage existiert bereits.(new line)
-Überschreiben?</translation>
-    </message>
-    <message>
-        <source>Warning! The original files will be destroyed!</source>
-        <translation>Achtung! Die Ausgangsdateien gehen hierbei verloren!</translation>
-    </message>
-    <message>
-        <source>Remove processing instruction</source>
-        <translation>Entferne die Verarbeitungs-Angaben</translation>
-    </message>
-    <message>
-        <source>Remove XLinks which pointed to nonexistent element</source>
-        <translation>Entferne Xlinks, die auf nicht existierende Elemente zeigen</translation>
-    </message>
-    <message>
-        <source>Remove empty segments</source>
-        <translation>entferne leere Linien- und Kurven-Segmente</translation>
-    </message>
-    <message>
-        <source>Merge multiply matrices into one and simplify it</source>
-        <translation type="obsolete">Führe mehrfahe Matrizen in eine zusammen udn vereinfache sie</translation>
-    </message>
-    <message>
-        <source>Group elements by style properties</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>For example</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>before</source>
+        <source>Set an output folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>after</source>
+        <source>Saving method:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Error</source>
+        <source>Add files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You can not handle the SVGZ files.</source>
+        <source>Add folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The &apos;svgcleaner-cli&apos; executable is not found in these folders:
-</source>
+        <source>Preset:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The &apos;7za&apos; executable is not found in these folders:
-</source>
+        <source>Basic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>If this option is set, then output is created with only required whitespace and newlines.</source>
+        <source>Complete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>not-compact</source>
+        <source>Extreme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Compact output</source>
+        <source>Custom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Remove IDs that contain only letters</source>
+        <source>Files</source>
+        <translation type="unfinished">Dateien</translation>
+    </message>
+    <message>
+        <source>Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>skip-ids-trim</source>
+        <source>Optimizations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Trim the id attributes into hexadecimal format</source>
+        <source>Additional:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Convert &apos;curveto&apos; segment to short one, when possible</source>
+        <source>No files are selected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Apply transform matrices to the elements when possible</source>
+        <source>The &apos;svgcleaner-cli&apos; executable is not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The &apos;7za&apos; executable is not found.
+
+You will not be able to clean the SVGZ files.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

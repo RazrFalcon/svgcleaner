@@ -35,6 +35,14 @@
 //       fjudy2001_02.svg
 //       warszawianka_Betel.svg
 
+Segment::Segment()
+{
+    absolute = false;
+    srcCmd = false;
+    largeArc = false;
+    sweep = false;
+}
+
 void Segment::setTransform(Transform &ts)
 {
     if (   command == Command::MoveTo

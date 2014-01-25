@@ -36,7 +36,7 @@ QString SomeUtils::prepareSize(const quint32 bytes)
     }
     static QStringList list = QStringList() << QObject::tr("B") << QObject::tr("KiB")
                                             << QObject::tr("MiB");
-    return QString::number(size, 'f', 1) + list.at(i);
+    return QString::number(size, 'f', 1) + " " + list.at(i);
 }
 
 QString SomeUtils::prepareTime(const quint64 ms)
@@ -45,12 +45,12 @@ QString SomeUtils::prepareTime(const quint64 ms)
     t = t.addMSecs(ms);
     QString timeStr;
     if (t.hour() != 0)
-        timeStr += t.toString("hh") + "h";
+        timeStr += t.toString("hh") + QObject::tr("h");
     if (!timeStr.isEmpty() || t.minute() != 0)
-        timeStr += " " + t.toString("mm") + "m";
+        timeStr += " " + t.toString("mm") + QObject::tr("m");
     if (!timeStr.isEmpty() || t.second() != 0)
-        timeStr += " " + t.toString("ss") + "s";
-    timeStr += " " + t.toString("zzz") + "ms";
+        timeStr += " " + t.toString("ss") + QObject::tr("s");
+    timeStr += " " + t.toString("zzz") + QObject::tr("ms");
     return timeStr;
 }
 

@@ -194,7 +194,7 @@ QList<QPointF> Segment::arcToCurve(ArcStruct arc) const
     return list;
 }
 
-// TODO: add s, q, t segmetns
+// FIXME: add s, q, t segmetns
 QList<Segment> Segment::toCurve(qreal prevX, qreal prevY) const
 {
     QList<Segment> segList;
@@ -592,9 +592,7 @@ void Path::processSegments(QList<Segment> &segList)
                 if (   isZero(seg.x1 - prevSeg.x1) && isZero(seg.y1 - prevSeg.y1)
                     && isZero(seg.x2 - prevSeg.x2) && isZero(seg.y2 - prevSeg.y2)
                     && isZero(seg.x - prevSeg.x)   && isZero(seg.y - prevSeg.y))
-                {
                     segList.removeAt(i--);
-                }
             }
             if (   cmd == Command::LineTo
                      || cmd == Command::SmoothQuadratic) {

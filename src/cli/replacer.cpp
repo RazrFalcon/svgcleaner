@@ -26,14 +26,11 @@
 // TODO: replace equal 'fill', 'stroke', 'stop-color', 'flood-color' and 'lighting-color' attr
 //       with 'color' attr
 //       addon_the_couch.svg
-// TODO: try to group similar elems to use
-//       gaerfield_data-center.svg, alnilam_Stars_Pattern.svg
 // TODO: If 'x1' = 'x2' and 'y1' = 'y2', then the area to be painted will be painted as
 //       a single color using the color and opacity of the last gradient stop.
 // TODO: merge "tspan" elements with similar styles
 // TODO: try to recalculate 'userSpaceOnUse' to 'objectBoundingBox'
 
-// TODO: rewrite
 void Replacer::convertSizeToViewbox()
 {
     if (!svgElement().hasAttribute("viewBox")) {
@@ -46,6 +43,8 @@ void Replacer::convertSizeToViewbox()
         }
     } else {
         QRectF rect = viewBoxRect();
+        if (rect.isNull())
+            return;
         if (svgElement().hasAttribute("width")) {
             if (Tools::isZero(rect.width() - svgElement().doubleAttribute("width")))
                 svgElement().removeAttribute("width");
@@ -57,10 +56,6 @@ void Replacer::convertSizeToViewbox()
     }
 }
 
-// TODO: remove identical paths
-//       Anonymous_man_head.svg
-//       input-keyboard-2.svg
-//       applications-graphics.svg
 // TODO: join paths with only style different
 //       Anonymous_Chesspiece_-_bishop.svg
 // TODO: replace paths with use, when paths has only first segment different
@@ -225,10 +220,15 @@ public:
     }
 };
 
-void Replacer::replaceEqualElementsWithByUse()
+// TODO: reuse groups
+void Replacer::replaceEqualElementsByUse()
 {
     QStringList rectAttrs;
     rectAttrs << "x" << "y" << "width" << "height" << "rx" << "ry";
+    QStringList circleAttrs;
+    circleAttrs << "cx" << "cy" << "r";
+    QStringList ellipseAttrs;
+    ellipseAttrs << "cx" << "cy" << "rx" << "ry";
     QList<SvgElement> list = svgElement().childElemList();
     int newAttrId = 0;
 
@@ -251,6 +251,12 @@ void Replacer::replaceEqualElementsWithByUse()
             else if (e.tagName == "rect") {
                 foreach (const QString &attrName, rectAttrs)
                     hash.insert(attrName, elem.attribute(attrName));
+            } else if (e.tagName == "circle") {
+                foreach (const QString &attrName, circleAttrs)
+                   hash.insert(attrName, elem.attribute(attrName));
+            } else if (e.tagName == "ellipse") {
+                foreach (const QString &attrName, ellipseAttrs)
+                    hash.insert(attrName, elem.attribute(attrName));
             }
             e.attrHash = hash;
             e.elem = elem;
@@ -266,9 +272,8 @@ void Replacer::replaceEqualElementsWithByUse()
         for (int j = i; j < elemList.size(); ++j) {
             if (   mainEqElem.tagName == elemList.at(j).tagName
                 && mainEqElem.elem != elemList.at(j).elem
-                && mainEqElem.attrHash == elemList.at(j).attrHash)
-            {
-                equalElems << elemList.at(j);
+                && mainEqElem.attrHash == elemList.at(j).attrHash) {
+                    equalElems << elemList.at(j);
             }
         }
 
@@ -301,7 +306,6 @@ void Replacer::replaceEqualElementsWithByUse()
                 newElem.setAttribute(attrName, mainEqElem.attrHash.value(attrName));
             newElem.setAttribute(CleanerAttr::UsedElement, "1");
             defsElement().insertLast(newElem);
-
             equalElems << mainEqElem;
             foreach (EqElement eqElem, equalElems) {
                 SvgElement elem = eqElem.elem;
@@ -310,9 +314,8 @@ void Replacer::replaceEqualElementsWithByUse()
                 elem.removeAttribute(CleanerAttr::BoundingBox);
                 foreach (const QString &attrName, mainEqElem.attrHash.keys())
                     elem.removeAttribute(attrName);
+                elemList.removeOne(eqElem);
             }
-            foreach (EqElement eq, equalElems)
-                elemList.removeOne(eq);
         }
     }
 }
@@ -396,7 +399,7 @@ void Replacer::convertUnits()
     QRectF rect = viewBoxRect();
     if (svgElement().hasAttribute("width")) {
         QString widthStr = svgElement().attribute("width");
-        if (widthStr.contains('%') && !svgElement().hasAttribute("viewBox"))
+        if (widthStr.contains('%') && rect.isNull())
             qFatal("Error: could not convert width in percentage into px without viewBox");
         bool ok;
         qreal width = Tools::convertUnitsToPx(widthStr, rect.width()).toDouble(&ok);
@@ -406,7 +409,7 @@ void Replacer::convertUnits()
     }
     if (svgElement().hasAttribute("height")) {
         QString heightStr = svgElement().attribute("height");
-        if (heightStr.contains('%') && !svgElement().hasAttribute("viewBox"))
+        if (heightStr.contains('%') && rect.isNull())
             qFatal("Error: could not convert height in percentage into px without viewBox");
         bool ok;
         qreal height = Tools::convertUnitsToPx(heightStr, rect.height()).toDouble(&ok);
@@ -414,9 +417,6 @@ void Replacer::convertUnits()
             qFatal("Error: could not convert height to px");
         svgElement().setAttribute("height", Tools::roundNumber(height));
     }
-
-    // TODO: For gradientUnits="userSpaceOnUse", percentages represent values relative to the current viewport.
-    //       For gradientUnits="objectBoundingBox", percentages represent values relative to the bounding box for the object.
 
     // TODO: process 'offset' attr with %
     QList<SvgElement> list = childElemList(document());

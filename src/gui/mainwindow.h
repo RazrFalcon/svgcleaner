@@ -80,6 +80,9 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
     void closeEvent(QCloseEvent *);
     void resizeEvent(QResizeEvent *);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
 };
 
 #endif // MAINWINDOW_H

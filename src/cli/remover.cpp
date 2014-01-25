@@ -22,9 +22,6 @@
 #include "remover.h"
 
 // TODO: remove elements not included in selected spec, like flow* elements
-// TODO: remove equal styles in used element and it use
-// TODO: remove items which out of viewbox
-//       Anonymous_butterfly_and_flowers.svg
 // TODO: remove "tspan" without attributes
 // TODO: remove "symbol"
 // TODO: remove elem from defs if it used only by one use elem
@@ -173,7 +170,6 @@ void Remover::removeUnusedXLinks()
     }
 }
 
-// TODO: detect not only equal, but with diff less than 0.1%
 // TODO: refract this func
 void Remover::removeDuplicatedDefs()
 {
@@ -759,7 +755,6 @@ bool Remover::isElementInvisible(SvgElement &elem)
     return false;
 }
 
-// TODO: process '*-rendering' attribute
 void Remover::removeAttributes()
 {
     QList<SvgElement> list = childElemList(document());
@@ -999,7 +994,6 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
                             << "stroke-opacity" << "stroke-width" << "font-size" << "kerning"
                             << "letter-spacing" << "word-spacing" << "baseline-shift"
                             << "stroke-dashoffset";
-    static QRectF m_viewBoxRect = viewBoxRect();
     foreach (const QString &key, numericStyleList) {
         QString value = hash.value(key);
         if (!value.isEmpty()) {
@@ -1007,8 +1001,12 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
             qreal num = value.toDouble(&ok);
             if (!ok && !value.startsWith(QL1S("url("))) {
                 if (key == "stroke-width") {
-                    if (value.endsWith(QL1S("%")))
+                    if (value.endsWith(QL1S("%"))) {
+                        static QRectF m_viewBoxRect = viewBoxRect();
+                        if (m_viewBoxRect.isNull())
+                            qFatal("Error: could not detect viewBox");
                         hash.insert(key, Tools::convertUnitsToPx(value, m_viewBoxRect.width()));
+                    }
                     else if (value.endsWith(QL1S("em")) || value.endsWith(QL1S("ex"))) {
                         QString fontSizeStr = findAttribute(elem, "font-size");
                         qreal fontSize = Tools::convertUnitsToPx(fontSizeStr).toDouble();
@@ -1130,7 +1128,6 @@ void Remover::removeDefaultValue(StringMap &hash, const QString &name)
     }
 }
 
-// TODO: remove group with only transform attribute and all child has transform
 void Remover::removeGroups()
 {
     QStringList illegalGAttrList;
@@ -1149,14 +1146,39 @@ void Remover::removeGroups()
             } else if (   elem.isGroup()
                        && elem.parentElement().tagName() != "switch")
             {
-                if (   !elem.hasImportantAttrs()
-                    && !elem.firstChild().hasAttribute("mask"))
+                if (!elem.firstChild().hasAttribute("mask"))
                 {
-                    // ungroup group without attributes
-                    foreach (SvgElement childElem, elem.childElemList())
-                        parent.insertBefore(childElem, elem);
-                    parent.removeChild(elem);
-                    isAnyGroupRemoved = true;
+                    bool isOnlyTransform = false;
+                    int attrCount = elem.attributesCount();
+                    if ((attrCount == 1 && elem.hasAttribute("transform"))
+                        || (attrCount == 2
+                            && elem.hasAttribute("transform")
+                            && elem.hasAttribute("id")
+                            && Keys.flag(Key::RemoveUnreferencedIds)))
+                    {
+                        int trAttrCount = 0;
+                        foreach (const SvgElement &childElem, elem.childElemList()) {
+                            if (   childElem.isUsed()
+                                || childElem.isTagName("use")
+                                || childElem.isGroup())
+                                break;
+                            if (childElem.hasAttribute("transform"))
+                                trAttrCount++;
+                        }
+                        if (trAttrCount == elem.childElementCount())
+                            isOnlyTransform = true;
+                    }
+                    if (!elem.hasImportantAttrs() || isOnlyTransform) {
+                        // ungroup group without attributes
+                        QString parentTransfrom = elem.attribute("transform");
+                        foreach (SvgElement childElem, elem.childElemList()) {
+                            if (isOnlyTransform)
+                                childElem.setTransform(parentTransfrom, true);
+                            parent.insertBefore(childElem, elem);
+                        }
+                        parent.removeChild(elem);
+                        isAnyGroupRemoved = true;
+                    }
                 } else if (   !elem.isUsed()
                            && parent.isGroup()
                            && !elem.hasAttributes(illegalGAttrList))
@@ -1280,6 +1302,8 @@ void Remover::prepareViewBoxRect(QRectF &viewBox)
 void Remover::removeElementsOutsideTheViewbox()
 {
     QRectF viewBox = viewBoxRect();
+    if (viewBox.isNull())
+        return;
     prepareViewBoxRect(viewBox);
 
     _setupTransformForBBox(svgElement(), QStringList());

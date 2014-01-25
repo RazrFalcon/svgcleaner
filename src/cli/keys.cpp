@@ -59,81 +59,6 @@ int Keys::transformPrecision() const
     return m_transformPrecision;
 }
 
-void Keys::parseOptions(QStringList &list)
-{
-    m_transformPrecision   = intNumber(Key::TransformPrecision);
-    m_attributesPrecision  = intNumber(Key::AttributesPrecision);
-    m_coordinatesPrecision = intNumber(Key::CoordsPrecision);
-
-
-    if (list.first().startsWith(QLatin1String("--preset"))) {
-        QString preset = list.takeFirst();
-        preset.remove(QLatin1String("--preset="));
-        if (preset == Preset::Complete)
-            setPreset(Preset::Complete);
-        else if (preset == Preset::Basic)
-            setPreset(Preset::Basic);
-        else if (preset == Preset::Extreme)
-            setPreset(Preset::Extreme);
-    } else {
-        setPreset(Preset::Custom);
-    }
-
-    if (list.isEmpty())
-        return;
-
-    foreach (QString flag, list) {
-        bool isError = false;
-        QString value;
-        if (flag.contains(QLatin1Char('='))) {
-            QStringList tmpList = flag.split(QLatin1Char('='));
-            if (tmpList.size() != 2) {
-                isError = true;
-            } else {
-                flag  = tmpList.first();
-                value = tmpList.last();
-                bool ok = false;
-                value.toDouble(&ok);
-                if (!ok)
-                    isError = true;
-            }
-        }
-        int index = allKeys().indexOf(flag);
-        if (index != -1 && !isError) {
-            if (   flag == KeyStr::TransformPrecision
-                || flag == KeyStr::AttributesPrecision
-                || flag == KeyStr::CoordsPrecision)
-            {
-                if (value.toInt() > 0 && value.toInt() <= 8) {
-                    if (flag == KeyStr::TransformPrecision) {
-                        m_transformPrecision = value.toInt();
-                        numHash.insert(Key::TransformPrecision, value.toInt());
-                    } else if (flag == KeyStr::AttributesPrecision) {
-                        m_attributesPrecision = value.toInt();
-                        numHash.insert(Key::AttributesPrecision, value.toInt());
-                    } else if (flag == KeyStr::CoordsPrecision) {
-                        m_coordinatesPrecision = value.toInt();
-                        numHash.insert(Key::CoordsPrecision, value.toInt());
-                    }
-                } else {
-                    isError = true;
-                }
-            } else if (flag == KeyStr::RemoveTinyGaussianBlur) {
-                if (value.toDouble() >= 0 && value.toDouble() <= 1.0) {
-                    numHash.insert(Key::CoordsPrecision, value.toDouble());
-                } else
-                    isError = true;
-            } else {
-                flags->insert(index);
-            }
-        } else {
-            qFatal("Error: SVG Cleaner does not support option: %s", qPrintable(flag));
-        }
-        if (isError)
-            qFatal("Error: wrong value for option: %s", qPrintable(flag));
-    }
-}
-
 void Keys::prepareDescription()
 {
     descHash.insert(Key::RemoveProlog,
@@ -186,7 +111,7 @@ void Keys::prepareDescription()
     descHash.insert(Key::KeepNamedIds,
                     tr("Keep unreferenced id's which contains only letters"));
     descHash.insert(Key::RemoveNotAppliedAttributes,
-                    tr("Remove not applied attributes, like 'font-size' for 'rect' element"));
+                    tr("Remove not applied attributes"));
     descHash.insert(Key::RemoveDefaultAttributes,
                     tr("Remove attributes with default values"));
     descHash.insert(Key::RemoveInkscapeAttributes,
@@ -350,6 +275,7 @@ QList<int> Keys::basicPresetKeys()
     static QList<int> list = QList<int>()
         << Key::RemoveComments
         << Key::RemoveNonSvgElements
+        << Key::RemoveInvisibleElements
         << Key::RemoveEmptyContainers
         << Key::RemoveDuplicatedDefs
         << Key::RemoveNotAppliedAttributes
@@ -454,10 +380,32 @@ QString Keys::keyName(const int &key)
     return allKeys().at(key);
 }
 
+QString Keys::presetDescription(const QString &name)
+{
+    if (name == Preset::Basic) {
+        return tr("<b>Basic</b> preset are designed to remove all unnecessary data from svg file, "
+                  "without changing it structure. "
+                  "Allows you to continue editing of the file.<br>"
+                  "Сan not damage your files. Otherwise, please send this file to our email.");
+    } else if (name == Preset::Complete) {
+        return tr("<b>Complete</b> preset are designed to create a file which will be used only for showing. "
+                  "This preset completely change file structure, what in most cases prevents future editing.<br>"
+                  "Should not damage your files. Otherwise, please send this file to our email.");
+    } else if (name == Preset::Extreme) {
+        return tr("<b>Extreme</b> preset does the same that <b>Complete</b> do, but also enables some unstable features.<br>"
+                  "It will definitely change displaying of your file and could even damage it.");
+    } else if (name == Preset::Custom) {
+        return tr("<b>Custom</b> preset is used to store your own cleaning options. "
+                  "By default all options are off.");
+    }
+    return "";
+}
+
 void Keys::setPreset(const QString &name)
 {
     flags->clear();
 
+    m_preset = name;
     if (name == Preset::Basic) {
         foreach (const int &key, basicPresetKeys())
             flags->insert(key);
@@ -477,8 +425,8 @@ void Keys::setPreset(const QString &name)
             flags->insert(key);
         numHash.insert(Key::RemoveTinyGaussianBlur, 0.2);
         numHash.insert(Key::TransformPrecision, 3);
-        numHash.insert(Key::CoordsPrecision, 1);
-        numHash.insert(Key::AttributesPrecision, 1);
+        numHash.insert(Key::CoordsPrecision, 2);
+        numHash.insert(Key::AttributesPrecision, 2);
     } else if (name == Preset::Custom) {
         numHash.insert(Key::RemoveTinyGaussianBlur, 0.0);
         numHash.insert(Key::TransformPrecision, 8);
@@ -486,5 +434,85 @@ void Keys::setPreset(const QString &name)
         numHash.insert(Key::AttributesPrecision, 8);
     } else {
         qFatal("Error: wrong preset name");
+    }
+}
+
+QString Keys::preset()
+{
+    return m_preset;
+}
+
+void Keys::parseOptions(QStringList &list)
+{
+    m_transformPrecision   = intNumber(Key::TransformPrecision);
+    m_attributesPrecision  = intNumber(Key::AttributesPrecision);
+    m_coordinatesPrecision = intNumber(Key::CoordsPrecision);
+
+
+    if (list.first().startsWith(QLatin1String("--preset"))) {
+        QString preset = list.takeFirst();
+        preset.remove(QLatin1String("--preset="));
+        if (preset == Preset::Complete)
+            setPreset(Preset::Complete);
+        else if (preset == Preset::Basic)
+            setPreset(Preset::Basic);
+        else if (preset == Preset::Extreme)
+            setPreset(Preset::Extreme);
+    } else {
+        setPreset(Preset::Custom);
+    }
+
+    if (list.isEmpty())
+        return;
+
+    foreach (QString flag, list) {
+        bool isError = false;
+        QString value;
+        if (flag.contains(QLatin1Char('='))) {
+            QStringList tmpList = flag.split(QLatin1Char('='));
+            if (tmpList.size() != 2) {
+                isError = true;
+            } else {
+                flag  = tmpList.first();
+                value = tmpList.last();
+                bool ok = false;
+                value.toDouble(&ok);
+                if (!ok)
+                    isError = true;
+            }
+        }
+        int index = allKeys().indexOf(flag);
+        if (index != -1 && !isError) {
+            if (   flag == KeyStr::TransformPrecision
+                || flag == KeyStr::AttributesPrecision
+                || flag == KeyStr::CoordsPrecision)
+            {
+                if (value.toInt() > 0 && value.toInt() <= 8) {
+                    if (flag == KeyStr::TransformPrecision) {
+                        m_transformPrecision = value.toInt();
+                        numHash.insert(Key::TransformPrecision, value.toInt());
+                    } else if (flag == KeyStr::AttributesPrecision) {
+                        m_attributesPrecision = value.toInt();
+                        numHash.insert(Key::AttributesPrecision, value.toInt());
+                    } else if (flag == KeyStr::CoordsPrecision) {
+                        m_coordinatesPrecision = value.toInt();
+                        numHash.insert(Key::CoordsPrecision, value.toInt());
+                    }
+                } else {
+                    isError = true;
+                }
+            } else if (flag == KeyStr::RemoveTinyGaussianBlur) {
+                if (value.toDouble() >= 0 && value.toDouble() <= 1.0) {
+                    numHash.insert(Key::CoordsPrecision, value.toDouble());
+                } else
+                    isError = true;
+            } else {
+                flags->insert(index);
+            }
+        } else {
+            qFatal("Error: SVG Cleaner does not support option: %s", qPrintable(flag));
+        }
+        if (isError)
+            qFatal("Error: wrong value for option: %s", qPrintable(flag));
     }
 }

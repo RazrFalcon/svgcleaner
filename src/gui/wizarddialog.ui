@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>646</width>
-    <height>647</height>
+    <height>560</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,10 +19,21 @@
   <property name="windowTitle">
    <string>Wizard - SVG Cleaner</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../../icons/icons.qrc">
+    <normaloff>:/svgcleaner.svgz</normaloff>:/svgcleaner.svgz</iconset>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="margin">
     <number>4</number>
    </property>
+   <item row="7" column="0" colspan="3">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBoxMain">
      <property name="styleSheet">
@@ -44,92 +55,14 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="pageMain">
          <layout class="QGridLayout" name="gridLayout_4">
           <property name="horizontalSpacing">
            <number>6</number>
           </property>
-          <item row="3" column="0">
-           <widget class="QFrame" name="frameInDir">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="lineWidth">
-             <number>0</number>
-            </property>
-            <property name="midLineWidth">
-             <number>0</number>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_11">
-             <property name="horizontalSpacing">
-              <number>6</number>
-             </property>
-             <property name="verticalSpacing">
-              <number>0</number>
-             </property>
-             <property name="margin">
-              <number>0</number>
-             </property>
-             <item row="1" column="1">
-              <widget class="LineEdit" name="lineEditInDir">
-               <property name="inputMask">
-                <string/>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2" colspan="2">
-              <widget class="QToolButton" name="btnOpenInDir">
-               <property name="toolTip">
-                <string>Open an input folder</string>
-               </property>
-               <property name="text">
-                <string notr="true">...</string>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>22</width>
-                 <height>22</height>
-                </size>
-               </property>
-               <property name="autoRaise">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="lblInFolder">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Input folder:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="4" column="0">
+          <item row="5" column="0">
            <widget class="QFrame" name="frameOutDir">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -162,10 +95,14 @@
              <item row="1" column="2">
               <widget class="QToolButton" name="btnOpenOutDir">
                <property name="toolTip">
-                <string>Open an output folder</string>
+                <string>Set an output folder</string>
                </property>
                <property name="text">
                 <string notr="true">...</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../../icons/icons.qrc">
+                 <normaloff>:/open.svgz</normaloff>:/open.svgz</iconset>
                </property>
                <property name="iconSize">
                 <size>
@@ -191,7 +128,7 @@
             </layout>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="6" column="0">
            <widget class="QFrame" name="frameRename">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -269,6 +206,12 @@
              </item>
              <item row="4" column="0" colspan="4">
               <widget class="QLabel" name="lblExample">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>For example: </string>
                </property>
@@ -284,20 +227,7 @@
             </layout>
            </widget>
           </item>
-          <item row="7" column="0">
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="0">
+          <item row="2" column="0">
            <widget class="QLabel" name="label_3">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -306,11 +236,11 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Open files from the input folder and:</string>
+             <string>Saving method:</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="3" column="0">
            <widget class="QWidget" name="widget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -364,7 +294,169 @@
             </layout>
            </widget>
           </item>
-          <item row="11" column="0">
+          <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QCheckBox" name="chBoxRecursive">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Search for SVG files in subfolders</string>
+              </property>
+              <property name="text">
+               <string>Recursive folder scanning</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnAddFiles">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>Add files</string>
+              </property>
+              <property name="text">
+               <string notr="true"/>
+              </property>
+              <property name="icon">
+               <iconset resource="../../icons/icons.qrc">
+                <normaloff>:/file-add.svgz</normaloff>:/file-add.svgz</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnAddFolder">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>Add folder</string>
+              </property>
+              <property name="text">
+               <string notr="true"/>
+              </property>
+              <property name="icon">
+               <iconset resource="../../icons/icons.qrc">
+                <normaloff>:/folder-add.svgz</normaloff>:/folder-add.svgz</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+              <property name="flat">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="FilesView" name="treeView">
+            <property name="selectionMode">
+             <enum>QAbstractItemView::NoSelection</enum>
+            </property>
+            <property name="animated">
+             <bool>true</bool>
+            </property>
+            <attribute name="headerVisible">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="headerStretchLastSection">
+             <bool>false</bool>
+            </attribute>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_15">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Preset:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="cmbBoxPreset">
+              <item>
+               <property name="text">
+                <string>Basic</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Complete</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Extreme</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Custom</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="2">
+             <widget class="QLabel" name="lblPresetInfo">
+              <property name="text">
+               <string>Info:</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
              <widget class="QGroupBox" name="gBoxCompress">
@@ -550,70 +642,6 @@
             </item>
            </layout>
           </item>
-          <item row="6" column="0">
-           <widget class="QCheckBox" name="chBoxRecursive">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Search for SVG files in subfolders</string>
-            </property>
-            <property name="text">
-             <string>Recursive folder scanning</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="0" rowspan="3">
-           <layout class="QGridLayout" name="gridLayout_8">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_15">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Preset:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QComboBox" name="cmbBoxPreset">
-              <item>
-               <property name="text">
-                <string>Basic</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Complete</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Extreme</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Custom</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="2">
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Info:</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
          </layout>
         </widget>
        </widget>
@@ -633,13 +661,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="7" column="0" colspan="3">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
-     </property>
-    </widget>
    </item>
    <item row="0" column="2">
     <spacer name="horizontalSpacer_3">
@@ -704,31 +725,24 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>LineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>lineedit.h</header>
+   <class>FilesView</class>
+   <extends>QTreeView</extends>
+   <header>filesview.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>radioBtn1</tabstop>
   <tabstop>radioBtn2</tabstop>
   <tabstop>radioBtn3</tabstop>
-  <tabstop>lineEditInDir</tabstop>
-  <tabstop>btnOpenInDir</tabstop>
   <tabstop>lineEditOutDir</tabstop>
   <tabstop>btnOpenOutDir</tabstop>
   <tabstop>lineEditPrefix</tabstop>
   <tabstop>lineEditSuffix</tabstop>
-  <tabstop>chBoxRecursive</tabstop>
-  <tabstop>gBoxCompress</tabstop>
-  <tabstop>rBtnSaveSuffix</tabstop>
-  <tabstop>rBtnCompressAll</tabstop>
-  <tabstop>cmbBoxCompress</tabstop>
-  <tabstop>gBoxThreads</tabstop>
-  <tabstop>spinBoxThreads</tabstop>
   <tabstop>buttonBox</tabstop>
   <tabstop>listWidget</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../../icons/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

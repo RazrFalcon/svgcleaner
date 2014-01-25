@@ -10,7 +10,7 @@ namespace SettingKey {
     namespace Wizard {
         static const QString SaveMode = "Wizard/SaveMode";
         static const QString RecursiveScan = "Wizard/RecursiveScan";
-        static const QString LastInDir = "Wizard/LastInDir";
+        static const QString LastInPaths = "Wizard/LastInPaths";
         static const QString LastOutDir = "Wizard/LastOutDir";
         static const QString Prefix = "Wizard/Prefix";
         static const QString Suffix = "Wizard/Suffix";

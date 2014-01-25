@@ -26,7 +26,7 @@
 
 Q_CORE_EXPORT double qstrtod(const char *s00, char const **se, bool *ok);
 Q_CORE_EXPORT char *qdtoa(double d, int mode, int ndigits, int *decpt,
-                        int *sign, char **rve, char **digits_str);
+                          int *sign, char **rve, char **digits_str);
 
 QString Tools::roundNumber(qreal value, RoundType type)
 {

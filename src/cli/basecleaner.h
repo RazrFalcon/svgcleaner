@@ -41,6 +41,7 @@ public:
     SvgElement findElement(const QString &id, XMLElement *parent = 0);
     bool hasParent(const SvgElement &elem, const QString &tagName);
     QString findAttribute(const SvgElement &elem, const char *attrName);
+    QString absoluteTransform(const SvgElement &elem);
     QRectF viewBoxRect();
     static SvgElement svgElement(XMLDocument *doc);
     static QList<XMLNode *> childNodeList(XMLNode *node);

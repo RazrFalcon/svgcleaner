@@ -193,7 +193,7 @@ void processFile(const QString &inPath, const QString &outPath)
     }
     replacer.processPaths();
     if (Keys.flag(Key::ReplaceEqualEltsByUse))
-        replacer.replaceEqualElementsWithByUse();
+        replacer.replaceEqualElementsByUse();
     if (Keys.flag(Key::RemoveNotAppliedAttributes))
         replacer.moveStyleFromUsedElemToUse();
     if (Keys.flag(Key::RemoveOutsideElements))

@@ -24,12 +24,10 @@
 #include "tools.h"
 #include "transform.h"
 
-// TODO: add support to save mirror transform as scale
-
 // http://www.w3.org/TR/SVG/coords.html#EstablishingANewUserSpace
 Transform::Transform(const QString &text)
 {
-    if (text.isEmpty())
+    if (text.isEmpty() || text.count(' ') == text.size())
         calcMatrixes("translate(0,0)");
     else
         calcMatrixes(text);
@@ -43,7 +41,7 @@ void Transform::setOldXY(qreal prevX, qreal prevY)
 
 void Transform::divide(const QString &text)
 {
-    if (text.isEmpty()) {
+    if (text.isEmpty() || text.count(' ') == text.size()) {
         divide("translate(0,0)");
         return;
     }
@@ -128,6 +126,8 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
         }
         ++str;
 
+        qreal cx = 0;
+        qreal cy = 0;
         TransformMatrix matrix;
         if (transformType == QL1S("matrix")) {
             matrix(0,0) = Tools::getNum(str);
@@ -154,6 +154,8 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
                 matrix(1,1) = matrix(0,0);
         } else if (transformType == QL1S("rotate")) {
             qreal val = Tools::getNum(str);
+            cx = Tools::getNum(str);
+            cy = Tools::getNum(str);
             matrix(0,0) = cos((val/180)*M_PI);
             matrix(1,0) = sin((val/180)*M_PI);
             matrix(0,1) = -sin((val/180)*M_PI);
@@ -165,7 +167,19 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
         } else {
             qFatal("Error: wrong transform matrix: %s", qPrintable(text.toString()));
         }
+        if (cx != 0 && cy != 0) {
+            TransformMatrix matrix;
+            matrix(0,2) = cx;
+            matrix(1,2) = cy;
+            list << matrix;
+        }
         list << matrix;
+        if (cx != 0 && cy != 0) {
+            TransformMatrix matrix;
+            matrix(0,2) = -cx;
+            matrix(1,2) = -cy;
+            list << matrix;
+        }
 
         while (*str != QLatin1Char(')'))
             ++str;
@@ -276,7 +290,7 @@ QString Transform::simplified() const
                 return "";
             newPoints << Tools::roundNumber(e, Tools::COORDINATE);
         }
-        transform = "translate(";
+        transform = "translate";
     } // [sx 0 0 sy 0 0] = scale
     else if (type == Scale)
     {
@@ -291,13 +305,13 @@ QString Transform::simplified() const
                 return "";
             newPoints << Tools::roundNumber(a, Tools::TRANSFORM);
         }
-        transform = "scale(";
+        transform = "scale";
     } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
     else if (type == Rotate)
     {
         if (m_angle == 0)
             return "";
-        transform = "rotate(";
+        transform = "rotate";
         newPoints << Tools::roundNumber(m_angle, Tools::TRANSFORM);
     } // [1 0 tan(a) 1 0 0] = skewX, [1 tan(a) 0 1 0 0] = skewY
     else if (type == Skew)
@@ -305,13 +319,30 @@ QString Transform::simplified() const
         if (m_xSkew == 0 && m_ySkew == 0)
             return "";
         if (m_xSkew != 0) {
-            transform = "skewX(";
+            transform = "skewX";
             newPoints << Tools::roundNumber(m_xSkew, Tools::TRANSFORM);
         } else {
-            transform = "skewY(";
+            transform = "skewY";
             newPoints << Tools::roundNumber(m_ySkew, Tools::TRANSFORM);
         }
-    } else {
+    }
+    else if (type == HorizontalMirror)
+    {
+        transform = "scale";
+        newPoints << "-1" << "1";
+    }
+    else if (type == VertiacalMirror)
+    {
+        transform = "scale";
+        newPoints << "1" << "-1";
+    }
+    else if (type == (HorizontalMirror | VertiacalMirror))
+    {
+        transform = "scale";
+        newPoints << "-1" << "-1";
+    }
+    else
+    {
         if (   a == 1
             && b == 0
             && c == 0
@@ -320,7 +351,7 @@ QString Transform::simplified() const
             && f == 0)
             return "";
 
-        transform = "matrix(";
+        transform = "matrix";
         newPoints.reserve(6);
         newPoints << Tools::roundNumber(a, Tools::TRANSFORM);
         newPoints << Tools::roundNumber(b, Tools::TRANSFORM);
@@ -330,6 +361,7 @@ QString Transform::simplified() const
         newPoints << Tools::roundNumber(f, Tools::COORDINATE);
     }
 
+    transform += "(";
     bool isTrim = Keys::get().flag(Key::RemoveUnneededSymbols);
     for (int i = 0; i < newPoints.size(); ++i) {
         if (i != 0) {

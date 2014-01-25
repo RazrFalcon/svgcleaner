@@ -33,7 +33,6 @@ SvgElement::SvgElement(XMLElement *elem)
     m_elem = elem;
 }
 
-// TODO: maybe use inline 'for' insted of creating additional list
 QList<SvgElement> SvgElement::childElemList() const
 {
     QList<SvgElement> list;

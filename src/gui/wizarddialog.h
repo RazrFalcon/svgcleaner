@@ -23,7 +23,6 @@
 #define WIZARDDIALOG_H
 
 #include <QtGui/QDialog>
-#include <QtCore>
 
 #include "arguments.h"
 #include "ui_wizarddialog.h"
@@ -34,14 +33,10 @@ class WizardDialog : public QDialog, private Ui::WizardDialog
 
 public:
     explicit WizardDialog(QWidget *parent = 0);
-    virtual ~WizardDialog();
+    void setPathList(const QStringList &list);
     QList<ToThread> threadData();
 
 private:
-    QFileInfoList m_fileList;
-    QFutureWatcher<QFileInfoList> *m_folderWatcher;
-    static bool m_isRecursive;
-    static bool m_isStopScan;
     QList<QWidget *> m_pageList;
 
 private:
@@ -62,21 +57,16 @@ private:
     void deleteThreads();
     QVBoxLayout* addPage();
     void addUtilsLabel(QVBoxLayout *layout);
-    static QFileInfoList searchForFiles(const QString &startDir, bool recursive);
-    static QFileInfoList scanFolder(const QString &dirPath);
 
 private slots:
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);
     void createExample();
-    void loadFileList();
-    void on_btnOpenInDir_clicked();
     void on_btnOpenOutDir_clicked();
     void on_buttonBox_clicked(QAbstractButton *button);
     void on_cmbBoxPreset_currentIndexChanged(const QString &presetName);
     void onRadioSelected();
-    void onFolderScaned(int value);
-    void onFolderScanFinished();
-    void on_chBoxRecursive_toggled(bool checked);
+    void on_btnAddFiles_clicked();
+    void on_btnAddFolder_clicked();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

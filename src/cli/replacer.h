@@ -56,7 +56,7 @@ public:
     void applyTransformToShapes();
     void mergeGradientsWithEqualStopElem();
     void calcElementsBoundingBox();
-    void replaceEqualElementsWithByUse();
+    void replaceEqualElementsByUse();
     void moveStyleFromUsedElemToUse();
 
 private:

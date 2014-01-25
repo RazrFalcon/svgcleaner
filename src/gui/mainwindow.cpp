@@ -20,6 +20,7 @@
 ****************************************************************************/
 
 #include <QtGui/QKeyEvent>
+#include <QtGui/QPixmapCache>
 #include <QtGui/QMenu>
 #include <QtGui/QMessageBox>
 #include <QtGui/QShortcut>
@@ -33,7 +34,6 @@
 #include "mainwindow.h"
 
 // FIXME: processing files like image.svg and image.svgz from different threads causes problems
-// TODO: add drag&drop support
 
 int MainWindow::m_sortType = -1;
 
@@ -41,8 +41,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     setupUi(this);
+    setAcceptDrops(true);
     qRegisterMetaType<SVGInfo>("SVGInfo");
-    qRegisterMetaType<QFileInfoList>("QFileInfoList");
 
     // setup GUI
     scrollArea->installEventFilter(this);
@@ -101,6 +101,7 @@ void MainWindow::on_actionWizard_triggered()
 
 void MainWindow::prepareStart()
 {
+    QPixmapCache::clear();
     m_data.compressMax = 0;
     m_data.compressMin = 99;
     m_data.timeMax = 0;
@@ -364,6 +365,42 @@ void MainWindow::resizeEvent(QResizeEvent *)
         }
     }
     itemsScroll->setMaximum(itemList.count()-itemLayout->count()+1);
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->accept();
+}
+
+void MainWindow::dragMoveEvent(QDragMoveEvent *event)
+{
+    event->accept();
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    const QMimeData *mime = event->mimeData();
+    if (!mime->hasUrls()) {
+        event->ignore();
+        return;
+    }
+
+    QStringList paths;
+    foreach (const QUrl &url, mime->urls()) {
+        if (url.isLocalFile()) {
+            QString path = url.toLocalFile();
+            if (QFileInfo(path).isDir() || QFileInfo(path).isFile())
+                paths << path;
+        }
+    }
+    event->acceptProposedAction();
+
+    WizardDialog wizard;
+    wizard.setPathList(paths);
+    if (wizard.exec()) {
+        arguments = wizard.threadData();
+        actionStart->setEnabled(true);
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

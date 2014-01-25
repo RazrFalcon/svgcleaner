@@ -2,10 +2,10 @@ TEMPLATE = subdirs
 SUBDIRS = src/cli src/gui
 CONFIG += ordered
 
-unix {
+unix:!mac {
     isEmpty (PREFIX):PREFIX = /usr
 
-    INSTALLS           += bin desktop logo presets translations
+    INSTALLS           += desktop logo translations bin
 
     desktop.path        = $$PREFIX/share/applications
     desktop.files      += svgcleaner.desktop

@@ -10,29 +10,31 @@ SOURCES += \
     main.cpp \
     aboutdialog.cpp \
     cleaner.cpp \
+    filesview.cpp \
     iconswidget.cpp \
     lineedit.cpp \
     mainwindow.cpp \
     settings.cpp \
     someutils.cpp \
+    spinbox.cpp \
     thumbwidget.cpp \
     wizarddialog.cpp \
-    ../cli/keys.cpp \
-    spinbox.cpp
+    ../cli/keys.cpp
 
 HEADERS += \
     aboutdialog.h \
     arguments.h \
     cleaner.h \
+    filesview.h \
     iconswidget.h \
     lineedit.h \
     mainwindow.h \
     settings.h \
     someutils.h \
+    spinbox.h \
     thumbwidget.h \
     wizarddialog.h \
-    ../cli/keys.h \
-    spinbox.h
+    ../cli/keys.h
 
 FORMS += \
     aboutdialog.ui \

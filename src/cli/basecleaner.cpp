@@ -179,6 +179,17 @@ QString BaseCleaner::findAttribute(const SvgElement &elem, const char *attrName)
     return "";
 }
 
+QString BaseCleaner::absoluteTransform(const SvgElement &elem)
+{
+    QString transform;
+    SvgElement parent = elem;
+    while (!parent.isNull()) {
+        transform += parent.attribute("transform") + " ";
+        parent = parent.parentElement();
+    }
+    return Transform(transform).simplified();
+}
+
 QRectF BaseCleaner::viewBoxRect()
 {
     QRectF rect;
@@ -189,9 +200,6 @@ QRectF BaseCleaner::viewBoxRect()
     } else if (svgElement().hasAttribute("width") && svgElement().hasAttribute("height")) {
         rect.setRect(0, 0, svgElement().doubleAttribute("width"),
                            svgElement().doubleAttribute("height"));
-    } else {
-        // TODO: maybe show this error only when viwBox really needed
-        qFatal("Error: could not detect viewBox");
     }
     return rect;
 }

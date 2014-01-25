@@ -199,8 +199,10 @@ public:
     QList<int> completePresetKeys();
     QList<int> extremePresetKeys();
     void setPreset(const QString &name);
+    QString preset();
     QStringList& allKeys();
     QString keyName(const int &key);
+    QString presetDescription(const QString &name);
 
 private:
     QHash<int, double> numHash;
@@ -209,6 +211,7 @@ private:
     int m_coordinatesPrecision;
     int m_attributesPrecision;
     int m_transformPrecision;
+    QString m_preset;
 
     Keys(QObject *parent = 0);
     Keys(Keys const&);

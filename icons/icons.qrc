@@ -1,15 +1,20 @@
 <RCC>
     <qresource prefix="/">
         <file>attributes.svgz</file>
+        <file>delete.svgz</file>
         <file>elements.svgz</file>
+        <file>file-add.svgz</file>
+        <file>files.svgz</file>
+        <file>folder-add.svgz</file>
         <file>information.svgz</file>
-        <file>main.svgz</file>
         <file>open.svgz</file>
         <file>optimizations.svgz</file>
         <file>paths.svgz</file>
         <file>pause.svgz</file>
+        <file>preferences.svgz</file>
         <file>start.svgz</file>
         <file>stop.svgz</file>
+        <file>svg-file.svgz</file>
         <file>svgcleaner.svgz</file>
         <file>thumbs-off.svgz</file>
         <file>thumbs-on.svgz</file>

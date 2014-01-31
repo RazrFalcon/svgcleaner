@@ -107,8 +107,7 @@ void Cleaner::unzip(const ToThread &data)
     QProcess proc;
     QStringList args;
     args << "e" << "-so" << data.inputFile;
-//    static QString zipPath = QApplication::applicationDirPath() + "/7za";
-    static QString zipPath = "7za";
+    static QString zipPath = QApplication::applicationDirPath() + "/7za";
     proc.start(zipPath, args);
     proc.waitForFinished();
     QFile file(data.outputFile);
@@ -125,8 +124,7 @@ void Cleaner::zip(const ToThread &data)
     QStringList args;
     args << "a" << "-tgzip" << "-y" << "-mx" + data.compressLevel << data.outputFile + "z"
          << data.outputFile;
-    static QString zipPath = "7za";
-//    static QString zipPath = QApplication::applicationDirPath() + "/7za";
+    static QString zipPath = QApplication::applicationDirPath() + "/7za";
     proc.start(zipPath, args);
     proc.waitForFinished();
     QFile(data.outputFile).remove();

@@ -1,6 +1,28 @@
+/****************************************************************************
+**
+** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
+** Copyright (C) 2012-2014 Evgeniy Reizner
+**
+** This program is free software; you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation; either version 2 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License along
+** with this program; if not, write to the Free Software Foundation, Inc.,
+** 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+**
+****************************************************************************/
+
 #include <QtGui/QDropEvent>
 #include <QtGui/QMessageBox>
 #include <QtGui/QHeaderView>
+#include <QtGui/QPainter>
 #include <QtGui/QApplication>
 #include <QtCore/QDir>
 #include <QtCore/QUrl>
@@ -13,16 +35,15 @@
 // ButtonDelegate class
 
 void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
-                         const QModelIndex &index) const
+                           const QModelIndex &index) const
 {
     if (index.parent().isValid())
         return;
-    QStyleOptionButton button;
-    button.rect = option.rect;
-    button.features = QStyleOptionButton::Flat;
-    button.icon = QIcon(":/delete.svgz");
-    button.state = QStyle::State_Enabled;
-    QApplication::style()->drawControl( QStyle::CE_PushButton, &button, painter);
+    static QPixmap deletePix = QPixmap(":/delete.svgz").scaledToHeight(option.rect.height()-4,
+                                                                        Qt::SmoothTransformation);
+    int x = option.rect.x() + option.rect.width() - deletePix.width()-2;
+    int y = option.rect.y() + option.rect.height() - deletePix.height()-2;
+    painter->drawPixmap(x, y, deletePix);
 }
 
 bool ButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,

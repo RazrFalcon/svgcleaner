@@ -19,6 +19,7 @@
 **
 ****************************************************************************/
 
+#include <QtGui/QApplication>
 #include <QtCore/QDir>
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QFileInfo>
@@ -47,7 +48,8 @@ SVGInfo Cleaner::cleanFile(const ToThread &data)
     QProcess proc;
     QElapsedTimer cleaningTime;
     cleaningTime.start();
-    proc.start("./svgcleaner-cli", args);
+    static QString cliPath = QApplication::applicationDirPath() + "/svgcleaner-cli";
+    proc.start(cliPath, args);
     proc.waitForFinished(300000); // 5min
     info.time = cleaningTime.elapsed();
     QString output = proc.readAllStandardError();
@@ -105,7 +107,9 @@ void Cleaner::unzip(const ToThread &data)
     QProcess proc;
     QStringList args;
     args << "e" << "-so" << data.inputFile;
-    proc.start(SomeUtils::zipPath(), args);
+//    static QString zipPath = QApplication::applicationDirPath() + "/7za";
+    static QString zipPath = "7za";
+    proc.start(zipPath, args);
     proc.waitForFinished();
     QFile file(data.outputFile);
     if (file.open(QFile::WriteOnly)) {
@@ -121,7 +125,9 @@ void Cleaner::zip(const ToThread &data)
     QStringList args;
     args << "a" << "-tgzip" << "-y" << "-mx" + data.compressLevel << data.outputFile + "z"
          << data.outputFile;
-    proc.start(SomeUtils::zipPath(), args);
+    static QString zipPath = "7za";
+//    static QString zipPath = QApplication::applicationDirPath() + "/7za";
+    proc.start(zipPath, args);
     proc.waitForFinished();
     QFile(data.outputFile).remove();
 }

@@ -202,7 +202,7 @@ QList<QPointF> Segment::arcToCurve(ArcStruct arc) const
     return list;
 }
 
-// FIXME: add s, q, t segmetns
+// FIXME: add s, q, t segments
 QList<Segment> Segment::toCurve(qreal prevX, qreal prevY) const
 {
     QList<Segment> segList;
@@ -248,19 +248,19 @@ QList<Segment> Segment::toCurve(qreal prevX, qreal prevY) const
 
 void Segment::toRelative(qreal xLast, qreal yLast)
 {
-    x = x - xLast;
-    y = y - yLast;
+    x -= xLast;
+    y -= yLast;
     if (command == Command::CurveTo) {
-        x1 = x1 - xLast;
-        y1 = y1 - yLast;
-        x2 = x2 - xLast;
-        y2 = y2 - yLast;
+        x1 -= xLast;
+        y1 -= yLast;
+        x2 -= xLast;
+        y2 -= yLast;
     } else if (command == Command::SmoothCurveTo) {
-        x2 = x2 - xLast;
-        y2 = y2 - yLast;
+        x2 -= xLast;
+        y2 -= yLast;
     } else if (command == Command::Quadratic) {
-        x1 = x1 - xLast;
-        y1 = y1 - yLast;
+        x1 -= xLast;
+        y1 -= yLast;
     }
     absolute = false;
 }
@@ -286,7 +286,6 @@ void Segment::coords(QVector<qreal> &points)
         points << rx << ry << xAxisRotation << largeArc << sweep << x << y;
 }
 
-
 // New class
 
 void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathApplyed)
@@ -301,7 +300,8 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
 
     QList<Segment> segList;
     splitToSegments(inPath.midRef(0), segList);
-    if (segList.isEmpty()) {
+    // paths without segments or with first segment not 'moveto' are invalid
+    if (segList.isEmpty() || segList.first().command != Command::MoveTo) {
         if (Keys.flag(Key::RemoveInvisibleElements))
             elem.setAttribute("d", "");
         return;
@@ -309,6 +309,7 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
 
     // path like 'M x,y A rx,ry 0 1 1 x,y', where x and y of both segments are similar
     // can't be converted to relative coordinates
+    // TODO: MA could be in subpath
     bool isOnlyAbsolute = false;
     if (segList.at(1).command == Command::EllipticalArc)
         isOnlyAbsolute = true;
@@ -322,9 +323,9 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     if (canApplyTransform && !isOnlyAbsolute)
         canApplyTransform = applyTransform(segList);
     if (!isOnlyAbsolute && Keys.flag(Key::ConvertToRelative))
-        segmentsToRelative(segList);
+        segmentsToRelative(segList, false);
     else
-        segmentsToDefaultRelative(segList);
+        segmentsToRelative(segList, true);
 
     // merge segments to path
     QString outPath = segmentsToPath(segList);
@@ -353,40 +354,63 @@ void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
 {
     const QChar *str = path.constData();
     const QChar *end = str + path.size();
+    QChar cmd;
     QChar prevCmd;
-    bool newCmd = false;
+    bool isNewCmd = false;
     qreal prevX = 0;
     qreal prevY = 0;
+    qreal prevMX = 0;
+    qreal prevMY = 0;
     while (str != end) {
         while (str->isSpace())
             ++str;
         QChar pathElem = *str;
         if (pathElem.isLetter()) {
-            newCmd = true;
+            isNewCmd = true;
             if (pathElem == Command::ClosePath) {
                 Segment seg;
                 seg.command = Command::ClosePath;
                 seg.absolute = false;
                 seg.srcCmd = true;
                 segList << seg;
+                prevX = prevMX;
+                prevY = prevMY;
             }
-            prevCmd = pathElem;
+            prevCmd = cmd.toLower();
+            cmd = pathElem;
             ++str;
-        } else if (prevCmd != Command::ClosePath) {
+        } else if (cmd != Command::ClosePath) {
             qreal offsetX = 0;
             qreal offsetY = 0;
             Segment seg;
-            seg.command = prevCmd.toLower();
-            seg.absolute = prevCmd.isUpper();
+            seg.command = cmd.toLower();
+            seg.absolute = cmd.isUpper();
             if (!seg.absolute) {
                 offsetX = prevX;
                 offsetY = prevY;
             }
-            seg.srcCmd = newCmd;
-            newCmd = false;
-            if (   seg.command == Command::MoveTo
-                || seg.command == Command::LineTo
-                || seg.command == Command::SmoothQuadratic) {
+            seg.srcCmd = isNewCmd;
+            isNewCmd = false;
+            if (seg.command == Command::MoveTo) {
+                if (seg.srcCmd) {
+                    if (seg.absolute) {
+                        offsetX = 0;
+                        offsetY = 0;
+                    } else if (prevCmd == Command::ClosePath) {
+                        offsetX = prevMX;
+                        offsetY = prevMY;
+                    }
+                }
+                if (!seg.srcCmd)
+                    seg.command = Command::LineTo;
+                seg.x = Tools::getNum(str) + offsetX;
+                seg.y = Tools::getNum(str) + offsetY;
+                if (seg.srcCmd) {
+                    prevMX = seg.x;
+                    prevMY = seg.y;
+                }
+            } else if (   seg.command == Command::LineTo
+                       || seg.command == Command::SmoothQuadratic) {
                 seg.x = Tools::getNum(str) + offsetX;
                 seg.y = Tools::getNum(str) + offsetY;
             } else if (seg.command == Command::HorizontalLineTo) {
@@ -395,7 +419,7 @@ void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
                 seg.y = segList.last().y;
             } else if (seg.command == Command::VerticalLineTo) {
                 seg.command = Command::LineTo;
-                seg.x = segList.last().x ;
+                seg.x = segList.last().x;
                 seg.y = Tools::getNum(str) + offsetY;
             } else if (seg.command == Command::CurveTo) {
                 seg.x1 = Tools::getNum(str) + offsetX;
@@ -426,6 +450,7 @@ void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
             prevX = seg.x;
             prevY = seg.y;
             segList << seg;
+            prevCmd = cmd.toLower();
         }
     }
     if (segList.size() == 1)
@@ -471,7 +496,7 @@ bool Path::applyTransform(QList<Segment> &segList)
         tsSegList[i].setTransform(ts);
 
     if (Keys.flag(Key::ConvertToRelative))
-        segmentsToRelative(tsSegList);
+        segmentsToRelative(tsSegList, false);
     calcNewStrokeWidth(ts);
     m_elem.setAttribute("dts", segmentsToPath(tsSegList));
     return true;
@@ -501,31 +526,30 @@ bool Path::isTsPathShorter()
     return (afterTransform < beforeTransform);
 }
 
-void Path::segmentsToRelative(QList<Segment> &segList)
+void Path::segmentsToRelative(QList<Segment> &segList, bool onlyIfSourceWasRelative)
 {
     qreal lastX = 0;
     qreal lastY = 0;
+    qreal lastMX = segList.first().x;
+    qreal lastMY = segList.first().y;
     for (int i = 0; i < segList.count(); ++i) {
         Segment segment = segList.at(i);
         if (segment.command != Command::ClosePath) {
-            segList[i].toRelative(lastX, lastY);
-            lastX = segment.x;
-            lastY = segment.y;
-        }
-    }
-}
-
-void Path::segmentsToDefaultRelative(QList<Segment> &segList)
-{
-    qreal lastX = 0;
-    qreal lastY = 0;
-    for (int i = 0; i < segList.count(); ++i) {
-        Segment segment = segList.at(i);
-        if (segment.command != Command::ClosePath) {
-            if (!segment.absolute)
+            if (onlyIfSourceWasRelative) {
+                if (!segment.absolute)
+                    segList[i].toRelative(lastX, lastY);
+            } else {
                 segList[i].toRelative(lastX, lastY);
+            }
             lastX = segment.x;
             lastY = segment.y;
+            if (i > 0 && segment.command == Command::MoveTo) {
+                lastMX = lastX;
+                lastMY = lastY;
+            }
+        } else {
+            lastX = lastMX;
+            lastY = lastMY;
         }
     }
 }
@@ -564,6 +588,18 @@ void Path::processSegments(QList<Segment> &segList)
                 }
             }
         }
+
+        // remove unneeded moveto commands
+        for (int i = 1; i < segList.count(); ++i) {
+            Segment prevSeg = segList.at(i-1);
+            Segment seg = segList.at(i);
+            if (seg.command == Command::MoveTo) {
+                if (prevSeg.command == Command::MoveTo && seg.absolute) {
+                    segList.removeAt(i-1);
+                    i--;
+                }
+            }
+        }
     }
 
     if (Keys.flag(Key::RemoveTinySegments)) {
@@ -580,9 +616,7 @@ void Path::processSegments(QList<Segment> &segList)
                 }
             }
         }
-    }
 
-    if (Keys.flag(Key::RemoveTinySegments)) {
         for (int i = 1; i < segList.count(); ++i) {
             Segment prevSeg = segList.at(i-1);
             Segment seg = segList.at(i);
@@ -590,7 +624,8 @@ void Path::processSegments(QList<Segment> &segList)
             if (cmd == Command::MoveTo) {
                 // removing MoveTo from path with blur filter change render
                 if ((isZero(seg.x - prevSeg.x) && isZero(seg.y - prevSeg.y))
-                        && findAttribute("filter").isEmpty()) {
+                    && findAttribute("filter").isEmpty()
+                    && prevSeg.command == Command::MoveTo) {
                     segList.removeAt(i--);
                 } else if (i == segList.size()-1 && prevSeg.command != Command::MoveTo) {
                     segList.removeAt(i--);
@@ -636,10 +671,11 @@ void Path::processSegments(QList<Segment> &segList)
                     segList[i].command = Command::VerticalLineTo;
                 else if (seg.x != prevSeg.x && isZero(seg.y - prevSeg.y))
                     segList[i].command = Command::HorizontalLineTo;
-                else if (prevSeg.command == Command::MoveTo) {
-                    segList[i].command = Command::MoveTo;
-                    segList[i].srcCmd = false;
-                }
+                // TODO: useful, but do not work well with subpaths
+//                else if (prevSeg.command == Command::MoveTo) {
+//                    segList[i].command = Command::MoveTo;
+//                    segList[i].srcCmd = false;
+//                }
             } else if (cmd == Command::CurveTo) {
                 if (   isZero(seg.x1 - prevSeg.x1)
                     && isZero(seg.y1 - prevSeg.y1)
@@ -671,11 +707,33 @@ void Path::processSegments(QList<Segment> &segList)
                             || (isZero(seg.y1 - prevSeg.y1) && isZero(prevSeg.y - prevSeg.y2))))
                 {
                     segList[i].command = Command::SmoothCurveTo;
-                } else if (   isZero(seg.x1 - prevSeg.x1)
-                           && isZero(seg.y1 - prevSeg.y1)
-                           && prevSeg.command == Command::MoveTo)
-                {
-                    segList[i].command = Command::SmoothCurveTo;
+//                } else if (   isZero(seg.x1 - prevSeg.x1)
+//                           && isZero(seg.y1 - prevSeg.y1)
+//                           && prevSeg.command == Command::MoveTo)
+//                {
+//                    segList[i].command = Command::SmoothCurveTo;
+                }
+            }
+        }
+    }
+
+    if (Keys.flag(Key::RemoveUnneededSymbols)) {
+        for (int i = 1; i < segList.count(); ++i) {
+            Segment prevSeg = segList.at(i-1);
+            Segment seg = segList.at(i);
+            if (seg.command == prevSeg.command) {
+                if (seg.command == Command::MoveTo) {
+                    segList[i] = seg;
+                    segList.removeAt(i-1);
+                    i--;
+//                } else if (seg.command == Command::VerticalLineTo) {
+//                    segList[i] = seg;
+//                    segList.removeAt(i-1);
+//                    i--;
+//                } else if (seg.command == Command::HorizontalLineTo) {
+//                    segList[i] = seg;
+//                    segList.removeAt(i-1);
+//                    i--;
                 }
             }
         }

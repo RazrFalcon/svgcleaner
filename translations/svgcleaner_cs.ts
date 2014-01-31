@@ -47,7 +47,7 @@
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="57"/>
         <source>Please send bug reports to </source>
-        <translation type="unfinished"></translation>
+        <translation>Hlášení o chybách posílejte, prosím, </translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="63"/>
@@ -78,14 +78,14 @@
 <context>
     <name>FilesView</name>
     <message>
-        <location filename="../src/gui/filesview.cpp" line="515"/>
+        <location filename="../src/gui/filesview.cpp" line="536"/>
         <source>Warning</source>
-        <translation type="unfinished">Varování</translation>
+        <translation>Varování</translation>
     </message>
     <message>
-        <location filename="../src/gui/filesview.cpp" line="516"/>
+        <location filename="../src/gui/filesview.cpp" line="537"/>
         <source>You can drop only svg(z) files or folders.</source>
-        <translation type="unfinished"></translation>
+        <translation>Upustit můžete pouze soubory svg(z) nebo složky.</translation>
     </message>
 </context>
 <context>
@@ -93,292 +93,292 @@
     <message>
         <location filename="../src/cli/keys.cpp" line="71"/>
         <source>Remove unused elements in &apos;defs&apos; element</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit nepoužívané prvky v prvku &apos;defs&apos;</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="65"/>
         <source>Remove XML prolog</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prolog XML</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="67"/>
         <source>Remove XML comments</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit poznámky XML</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="69"/>
         <source>Remove XML processing instruction</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit příkaz ke zpracování XML</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="73"/>
         <source>Remove non SVG elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky, které nejsou SVG</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="75"/>
         <source>Remove metadata elements</source>
-        <translation type="unfinished">Odstranit prvky metadat</translation>
+        <translation>Odstranit prvky popisných dat</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="77"/>
         <source>Remove Inkscape namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky se jmenným prostorem Inkscape</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="79"/>
         <source>Remove SodiPodi namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky se jmenným prostorem SodiPodi</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="81"/>
         <source>Remove Adobe Illustrator namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky se jmenným prostorem Adobe Illustrator</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="83"/>
         <source>Remove CorelDRAW namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky se jmenným prostorem CorelDRAW</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="85"/>
         <source>Remove MS Visio namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky se jmenným prostorem MS Visio</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="87"/>
         <source>Remove Sketch namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky se jmenným prostorem Sketch</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="89"/>
         <source>Remove invisible elements</source>
-        <translation type="unfinished">Odstranit neviditelné prvky</translation>
+        <translation>Odstranit neviditelné prvky</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="91"/>
         <source>Remove empty containers elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prázdné kontejnerové prvky</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="93"/>
         <source>Remove elements which is outside the viewbox</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit prvky, jež jsou vně zobrazeného rámečku</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="95"/>
         <source>Replace equal elements by the &apos;use&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahradit stejné prvky pomocí &apos;use&apos;</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="97"/>
         <source>Ungroup container elements, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrušit seskupení kontejnerových prvků, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="99"/>
         <source>Remove duplicate elements in the &apos;defs&apos; element</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit zdvojené prvky v prvku &apos;defs&apos;</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="101"/>
         <source>Merge &apos;linearGradient&apos; into &apos;radialGradient&apos;, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Sloučit &apos;linearGradient&apos; do &apos;radialGradient&apos;, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="103"/>
         <source>Remove Gaussian blur filters with deviation lower than</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit filtry Gaussovského rozmazání s odchylkou menší než</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="106"/>
         <source>Remove SVG version</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit verzi SVG</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="108"/>
         <source>Remove unreferenced id&apos;s</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit nereferencované ID</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="110"/>
         <source>Trim &apos;id&apos; attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Oříznout vlastnosti ID</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="112"/>
         <source>Keep unreferenced id&apos;s which contains only letters</source>
-        <translation type="unfinished"></translation>
+        <translation>Zachovat nereferencované ID, které obsahuje pouze písmena</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="114"/>
         <source>Remove not applied attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit nepoužité vlastnosti</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="116"/>
         <source>Remove attributes with default values</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti s výchozími hodnotami</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="118"/>
         <source>Remove Inkscape namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti se jmenným prostorem Inkscape</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="120"/>
         <source>Remove SodiPodi namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti se jmenným prostorem SodiPodi</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="122"/>
         <source>Remove Adobe Illustrator namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti  se jmenným prostorem Adobe Illustrator</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="124"/>
         <source>Remove CorelDRAW namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti  se jmenným prostorem CorelDRAW</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="126"/>
         <source>Remove MS Visio namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti se jmenným prostorem MS Visio</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="128"/>
         <source>Remove Sketch namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti se jmenným prostorem Sketch</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="130"/>
         <source>Remove stroke properties when no stroking</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti tahu, když není žádný tah</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="132"/>
         <source>Remove fill properties when no filling</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit vlastnosti výplně, když není žádná výplň</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="134"/>
         <source>Remove XLinks which pointed to nonexistent elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit XLinky, které ukazovaly na neexistující prvky</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="136"/>
         <source>Group elements by style properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Seskupit prvky podle vlastností stylů</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="138"/>
         <source>Merge style properties into &apos;style&apos; attribute</source>
-        <translation type="unfinished"></translation>
+        <translation>Sloučit vlastností stylů do vlastnosti &apos;style&apos;</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="140"/>
         <source>Simplify transform matrices into short equivalent, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Zjednodušit transformační matice do krátkého ekvivalentu, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="142"/>
         <source>Apply transform matrices to gradients, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Použít transformační matice na přechody, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="144"/>
         <source>Apply transform matrices to basic shapes, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Použít transformační matice na základní tvary, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="147"/>
         <source>Convert absolute coordinates into relative ones</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést absolutní souřadnice na relativní</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="149"/>
         <source>Remove unneeded symbols in &apos;d&apos; attribute</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit nepotřebné symboly ve vlastnosti &apos;d&apos;</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="151"/>
         <source>Remove tiny or empty segments</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit nepatrné nebo prázdné segmenty</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="153"/>
         <source>Convert segments into shorter equivalent, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést segmenty na kratší ekvivalent, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="155"/>
         <source>Apply transform matrices, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Použít transformační matice, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="158"/>
         <source>Convert &apos;height&apos; and &apos;width&apos; attributes into &apos;viewBox&apos; attribute</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést vlastnosti &apos;height&apos; (výška) a &apos;width&apos; (šířka) na vlastnost &apos;viewBox&apos;</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="160"/>
         <source>Convert colors into #RRGGBB format</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést barvy na formát #RRGGBB</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="162"/>
         <source>Convert #RRGGBB colors into #RGB format, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést barvy #RRGGBB na formát #RGB, když je to možné</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="164"/>
         <source>Convert &apos;polygon&apos;, &apos;polyline&apos;, &apos;line&apos;, &apos;rect&apos; into paths</source>
-        <translation type="unfinished"></translation>
+        <translation>Převést &apos;polygon&apos; (mnohoúhelník), &apos;polyline&apos; (lomená čára), &apos;line&apos; (čára), &apos;rect&apos; (obdélník) na cesty</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="166"/>
         <source>Set rounding precision for transformations</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavit přesnost zaokruhlení pro transformace</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="168"/>
         <source>Set rounding precision for coordinates</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavit přesnost zaokruhlení pro souřadnice</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="170"/>
         <source>Set rounding precision for attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavit přesnost zaokruhlení pro vlastnosti</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="172"/>
         <source>Save file with only required whitespace and newlines</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit soubor jen s požadovanými mezerami a konci řádků</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="174"/>
         <source>Sort elements by name in &apos;defs&apos; element</source>
-        <translation type="unfinished"></translation>
+        <translation>Třídit prvky podle názvu v prvku &apos;defs&apos;</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="386"/>
-        <source>&lt;b&gt;Basic&lt;/b&gt; preset are designed to remove all unnecessary data from SVG file, without changing it structure. Allows you to continue editing of the file.&lt;br&gt;Сan not damage your files. Otherwise, please send this file to our email.</source>
-        <translation type="unfinished"></translation>
+        <source>&lt;b&gt;Basic&lt;/b&gt; preset are designed to remove all unnecessary data from SVG file, without changing it structure. Allows you to continue editing of the file.&lt;br&gt;Сan not damage your files. Otherwise, please send this files to our email.</source>
+        <translation>&lt;b&gt;Základní&lt;/b&gt; přednastavení je navrženo k odstranění všech nikoli nezbytných dat ze souboru SVG, aniž by došlo ke změně v jeho stavbě. Umožní vám pokračovat v úpravách souboru.&lt;br&gt;Nemůže poškodit vaše soubory. V opačném případě nám, prosím, pošlete takové soubory na naši adresu elektronické pošty.</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="391"/>
-        <source>&lt;b&gt;Complete&lt;/b&gt; preset are designed to create a file which will be used only for showing. This preset completely change file structure, what in most cases prevents future editing.&lt;br&gt;Should not damage your files. Otherwise, please send this file to our email.</source>
-        <translation type="unfinished"></translation>
+        <source>&lt;b&gt;Complete&lt;/b&gt; preset are designed to create a file which will be used only for showing. This preset completely change file structure, what in most cases prevents future editing.&lt;br&gt;Should not damage your files. Otherwise, please send this files to our email.</source>
+        <translation>&lt;b&gt;Úplné&lt;/b&gt; přednastavení je navrženo k vytvoření souboru, který se bude dát použít jen k zobrazení. Toto přednastavení úplně změní stavbu souboru, což ve většině případů zabrání možnosti jeho úprav v budoucnosti.&lt;br&gt;Nemělo by poškodit vaše soubory. V opačném případě nám, prosím, pošlete takové soubory na naši adresu elektronické pošty.</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="395"/>
         <source>&lt;b&gt;Extreme&lt;/b&gt; preset does the same that &lt;b&gt;Complete&lt;/b&gt; do, but also enables some unstable features.&lt;br&gt;It will definitely change displaying of your file and could even damage it.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Dokonalé&lt;/b&gt; přednastavení dělá to samé co &lt;b&gt;Úplné&lt;/b&gt;, ale zároveˇn povoluje některé nestabilní funkce&lt;br&gt;Rozhodně dojde ke změně v zobrazení vašeho souboru a dokonce by mohlo dojít k jeho poškození.</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="398"/>
         <source>&lt;b&gt;Custom&lt;/b&gt; preset is used to store your own cleaning options. By default all options are off.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Vlastní&lt;/b&gt; přednastavení se používá k ukládání vašich vlastních voleb pro úklid. Ve výchozím nastavení jsou všechny volby vypnuty.</translation>
     </message>
 </context>
 <context>
@@ -399,7 +399,7 @@
     <message>
         <location filename="../src/gui/mainwindow.ui" line="277"/>
         <source>Cleaned</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyčištěno</translation>
     </message>
     <message>
         <location filename="../src/gui/mainwindow.ui" line="329"/>
@@ -490,7 +490,7 @@
     <message>
         <location filename="../src/gui/mainwindow.cpp" line="63"/>
         <source>Sort by cleaning</source>
-        <translation type="unfinished"></translation>
+        <translation>Třídit podle úklidu</translation>
     </message>
     <message>
         <location filename="../src/gui/mainwindow.cpp" line="64"/>
@@ -538,10 +538,21 @@
         <translation>Srovnávací pohled: vypnuto</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="410"/>
+        <location filename="../src/gui/mainwindow.cpp" line="407"/>
+        <source>Warning</source>
+        <translation>Varování</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow.cpp" line="408"/>
+        <source>You can drop only svg(z) files or folders.</source>
+        <translation>Upustit můžete pouze soubory svg(z) nebo složky.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow.cpp" line="425"/>
         <source>Cleaning is not finished.
 Did you really want to exit?</source>
-        <translation type="unfinished"></translation>
+        <translation>Úklid není dokončen.
+Skutečně jste chtěl skončit?</translation>
     </message>
 </context>
 <context>
@@ -549,37 +560,37 @@ Did you really want to exit?</source>
     <message>
         <location filename="../src/gui/someutils.cpp" line="37"/>
         <source>B</source>
-        <translation type="unfinished">B</translation>
+        <translation>B</translation>
     </message>
     <message>
         <location filename="../src/gui/someutils.cpp" line="37"/>
         <source>KiB</source>
-        <translation type="unfinished">KiB</translation>
+        <translation>KiB</translation>
     </message>
     <message>
         <location filename="../src/gui/someutils.cpp" line="38"/>
         <source>MiB</source>
-        <translation type="unfinished">MiB</translation>
+        <translation>MiB</translation>
     </message>
     <message>
         <location filename="../src/gui/someutils.cpp" line="48"/>
         <source>h</source>
-        <translation type="unfinished"></translation>
+        <translation>h</translation>
     </message>
     <message>
         <location filename="../src/gui/someutils.cpp" line="50"/>
         <source>m</source>
-        <translation type="unfinished"></translation>
+        <translation>m</translation>
     </message>
     <message>
         <location filename="../src/gui/someutils.cpp" line="52"/>
         <source>s</source>
-        <translation type="unfinished"></translation>
+        <translation>s</translation>
     </message>
     <message>
         <location filename="../src/gui/someutils.cpp" line="53"/>
         <source>ms</source>
-        <translation type="unfinished"></translation>
+        <translation>ms</translation>
     </message>
 </context>
 <context>
@@ -597,7 +608,7 @@ Did you really want to exit?</source>
     <message>
         <location filename="../src/gui/thumbwidget.ui" line="55"/>
         <source>&lt;b&gt;Name:&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Název:&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/thumbwidget.ui" line="93"/>
@@ -618,251 +629,258 @@ Did you really want to exit?</source>
         <translation>Průvodce - Uklízeč SVG</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="98"/>
+        <location filename="../src/gui/wizarddialog.ui" line="107"/>
         <source>Set an output folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavit výstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="239"/>
+        <location filename="../src/gui/wizarddialog.ui" line="251"/>
         <source>Saving method:</source>
-        <translation type="unfinished"></translation>
+        <translation>Metoda ukládání:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="324"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="580"/>
+        <location filename="../src/gui/wizarddialog.ui" line="342"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="593"/>
         <source>Add files</source>
-        <translation type="unfinished"></translation>
+        <translation>Přidat soubory</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="353"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="595"/>
+        <location filename="../src/gui/wizarddialog.ui" line="377"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="608"/>
         <source>Add folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Přidat složku</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="406"/>
+        <location filename="../src/gui/wizarddialog.ui" line="430"/>
         <source>Preset:</source>
-        <translation type="unfinished"></translation>
+        <translation>Přednastavení:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="414"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="291"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="426"/>
-        <source>Basic</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/wizarddialog.ui" line="419"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="136"/>
+        <location filename="../src/gui/wizarddialog.ui" line="438"/>
         <location filename="../src/gui/wizarddialog.cpp" line="293"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="428"/>
-        <source>Complete</source>
-        <translation type="unfinished"></translation>
+        <location filename="../src/gui/wizarddialog.cpp" line="435"/>
+        <source>Basic</source>
+        <translation>Základní</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="424"/>
+        <location filename="../src/gui/wizarddialog.ui" line="443"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="134"/>
         <location filename="../src/gui/wizarddialog.cpp" line="295"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="430"/>
-        <source>Extreme</source>
-        <translation type="unfinished"></translation>
+        <location filename="../src/gui/wizarddialog.cpp" line="437"/>
+        <source>Complete</source>
+        <translation>Úplné</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="429"/>
+        <location filename="../src/gui/wizarddialog.ui" line="448"/>
         <location filename="../src/gui/wizarddialog.cpp" line="297"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="551"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="439"/>
+        <source>Extreme</source>
+        <translation>Dokonalé</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.ui" line="453"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="299"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="564"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Vlastní</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="485"/>
+        <location filename="../src/gui/wizarddialog.ui" line="509"/>
         <source>Compress level:</source>
-        <translation>Úroveň stlačení:</translation>
+        <translation>Úroveň komprimace:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="502"/>
+        <location filename="../src/gui/wizarddialog.ui" line="526"/>
         <source>fastest</source>
         <translation>Nejrychlejší</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="507"/>
+        <location filename="../src/gui/wizarddialog.ui" line="531"/>
         <source>fast</source>
         <translation>Rychle</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="512"/>
+        <location filename="../src/gui/wizarddialog.ui" line="536"/>
         <source>normal</source>
         <translation>Obvyklý</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="517"/>
+        <location filename="../src/gui/wizarddialog.ui" line="541"/>
         <source>maximum</source>
         <translation>Nejvyšší</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="522"/>
+        <location filename="../src/gui/wizarddialog.ui" line="546"/>
         <source>ultra</source>
         <translation>Extrémní</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="539"/>
+        <location filename="../src/gui/wizarddialog.ui" line="563"/>
         <source>Compress all processed files</source>
         <translation>Zabalit všechny zpracované soubory</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="580"/>
+        <location filename="../src/gui/wizarddialog.ui" line="604"/>
         <source>Multithreading</source>
         <translation>Více vláken</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="604"/>
+        <location filename="../src/gui/wizarddialog.ui" line="628"/>
         <source>The number of threads:</source>
         <translation>Počet vláken:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="216"/>
+        <location filename="../src/gui/wizarddialog.ui" line="228"/>
         <source>For example: </source>
         <translation>Například: </translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="223"/>
+        <location filename="../src/gui/wizarddialog.ui" line="235"/>
         <source>Set prefix and/or suffix:</source>
         <translation>Nastavit předponu a/nebo příponu:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="308"/>
+        <location filename="../src/gui/wizarddialog.ui" line="320"/>
         <source>Search for SVG files in subfolders</source>
         <translation>Hledat soubory SVG v podsložkách</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="558"/>
+        <location filename="../src/gui/wizarddialog.ui" line="582"/>
         <source>Compress processed .svgz files only</source>
         <translation>Zabalit pouze zpracované soubory .svgz</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="121"/>
+        <location filename="../src/gui/wizarddialog.ui" line="130"/>
         <source>Output folder:</source>
         <translation>Výstupní složka:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="203"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="270"/>
+        <location filename="../src/gui/wizarddialog.ui" line="215"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="272"/>
         <source>filename</source>
         <translation>Název souboru</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="311"/>
+        <location filename="../src/gui/wizarddialog.ui" line="323"/>
         <source>Recursive folder scanning</source>
         <translation>Prohledávání složek včetně podsložek</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="261"/>
+        <location filename="../src/gui/wizarddialog.ui" line="273"/>
         <source>save cleaned files into the output folder</source>
         <translation>Uložit uklizené soubory do výstupní složky</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="470"/>
+        <location filename="../src/gui/wizarddialog.ui" line="494"/>
         <source>Compressing</source>
         <translation>Zabalení</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="274"/>
+        <location filename="../src/gui/wizarddialog.ui" line="286"/>
         <source>save cleaned files into the current folder</source>
         <translation>Uložit uklizené soubory do nynější složky</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="287"/>
+        <location filename="../src/gui/wizarddialog.ui" line="299"/>
         <source>overwrite original files</source>
         <translation>Přepsat původní soubory</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="70"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="71"/>
         <source>prefix</source>
         <translation>Předpona</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="71"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="72"/>
         <source>suffix</source>
         <translation>Přípona</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="79"/>
-        <source>Files</source>
-        <translation type="unfinished">Soubory</translation>
-    </message>
-    <message>
         <location filename="../src/gui/wizarddialog.cpp" line="80"/>
-        <source>Preferences</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="84"/>
-        <source>Optimizations</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="187"/>
-        <source>Additional:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="492"/>
-        <source>No files are selected.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="505"/>
-        <source>The &apos;svgcleaner-cli&apos; executable is not found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="508"/>
-        <source>The &apos;7za&apos; executable is not found.
-
-You will not be able to clean the SVGZ files.</source>
-        <translation type="unfinished"></translation>
+        <source>Files</source>
+        <translation>Soubory</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.cpp" line="81"/>
+        <source>Preferences</source>
+        <translation>Nastavení</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="85"/>
+        <source>Optimizations</source>
+        <translation>Optimalizace</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="188"/>
+        <source>Additional:</source>
+        <translation>Dodatečné:</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="189"/>
+        <source>Options below do not increase cleaning value, but can be useful.</source>
+        <translation>Volby níže nezvyšují hodnotu úklidu, ale mohou být užitečné.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="501"/>
+        <source>No files are selected.</source>
+        <translation>Nejsou vybrány žádné soubory.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="514"/>
+        <source>The &apos;svgcleaner-cli&apos; executable is not found.</source>
+        <translation>Spustitelný soubor &apos;svgcleaner-cli&apos; nenalezen.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="521"/>
+        <source>The &apos;7za&apos; executable is not found.
+
+You will not be able to clean the SVGZ files.</source>
+        <translation>Spustitelný soubor &apos;7za&apos; nenalezen.
+
+Nebudete moci uklízet soubory SVGZ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="82"/>
         <source>Elements</source>
         <translation>Prvky</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="82"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="83"/>
         <source>Attributes</source>
         <translation>Vlastnosti</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="498"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="507"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Pro tento způsob ukládání musíte nastavit předponu nebo příponu.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="83"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="84"/>
         <source>Paths</source>
         <translation>Cesty</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="269"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="271"/>
         <source>For example</source>
-        <translation type="unfinished"></translation>
+        <translation>Například</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="481"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="490"/>
         <source>Select an output folder</source>
         <translation>Vybrat výstupní složku</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="495"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="504"/>
         <source>An output folder is not selected.</source>
         <translation>Výstupní složka není vybrána.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="512"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="525"/>
         <source>Selected output folder is not writable.</source>
         <translation>Vybraná výstupní složka není zapisovatelná.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="520"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="533"/>
         <source>Warning</source>
         <translation>Varování</translation>
     </message>

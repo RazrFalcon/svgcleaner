@@ -385,15 +385,30 @@ void MainWindow::dropEvent(QDropEvent *event)
         return;
     }
 
+    bool hasWrongFileTypes = false;
     QStringList paths;
     foreach (const QUrl &url, mime->urls()) {
         if (url.isLocalFile()) {
             QString path = url.toLocalFile();
-            if (QFileInfo(path).isDir() || QFileInfo(path).isFile())
+            if (QFileInfo(path).isDir()) {
                 paths << path;
+            } else if (QFileInfo(path).isFile()) {
+                QString suffix = QFileInfo(path).suffix().toLower();
+                if (suffix == "svg" || suffix == "svgz")
+                    paths << path;
+                else
+                    hasWrongFileTypes = true;
+            }
         }
     }
     event->acceptProposedAction();
+
+    if (hasWrongFileTypes)
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("You can drop only svg(z) files or folders."));
+
+    if (paths.isEmpty())
+        return;
 
     WizardDialog wizard;
     wizard.setPathList(paths);

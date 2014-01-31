@@ -265,19 +265,16 @@ double SvgElement::doubleAttribute(const QString &name) const
     return m_elem->DoubleAttribute(ToChar(name));
 }
 
-bool SvgElement::hasChildWithTagName(const char *name) const
+bool SvgElement::hasChildWithTagName(const char *name, XMLElement *parent) const
 {
-    return _hasChildWithTagName(m_elem, name);
-}
-
-bool SvgElement::_hasChildWithTagName(XMLElement *parent, const char *name) const
-{
+    if (!parent)
+        parent = m_elem;
     for (XMLElement *child = parent->FirstChildElement(); child;
          child = child->NextSiblingElement()) {
         if (!strcmp(child->Name(), name))
             return true;
         if (!child->NoChildren())
-            return _hasChildWithTagName(child, name);
+            return hasChildWithTagName(name, child);
     }
     return false;
 }

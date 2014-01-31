@@ -1777,11 +1777,11 @@ void XMLDocument::PrintError() const
 XMLPrinter::XMLPrinter( FILE* file, bool compact, int depth ) :
     _elementJustOpened( false ),
     _firstElement( true ),
-    _fp( file ),
     _depth( depth ),
     _textDepth( -1 ),
-    _processEntities( true ),
-    _compactMode( compact )
+    _compactMode( compact ),
+    _fp( file ),
+    _processEntities( true )
 {
     for( int i=0; i<ENTITY_RANGE; ++i ) {
         _entityFlag[i] = false;
@@ -1839,7 +1839,7 @@ void XMLPrinter::Print( const char* format, ... )
 void XMLPrinter::PrintSpace( int depth )
 {
     for( int i=0; i<depth; ++i ) {
-        Print( "    " );
+        Print( " " );
     }
 }
 

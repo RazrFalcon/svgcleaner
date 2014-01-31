@@ -55,7 +55,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="pageMain">
          <layout class="QGridLayout" name="gridLayout_4">
@@ -89,16 +89,25 @@
              <property name="spacing">
               <number>6</number>
              </property>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEditOutDir"/>
-             </item>
              <item row="1" column="2">
-              <widget class="QToolButton" name="btnOpenOutDir">
+              <widget class="QPushButton" name="btnOpenOutDir">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>32</width>
+                 <height>32</height>
+                </size>
+               </property>
                <property name="toolTip">
                 <string>Set an output folder</string>
                </property>
                <property name="text">
-                <string notr="true">...</string>
+                <string notr="true"/>
                </property>
                <property name="icon">
                 <iconset resource="../../icons/icons.qrc">
@@ -110,7 +119,7 @@
                  <height>22</height>
                 </size>
                </property>
-               <property name="autoRaise">
+               <property name="flat">
                 <bool>true</bool>
                </property>
               </widget>
@@ -124,6 +133,9 @@
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="lineEditOutDir"/>
              </item>
             </layout>
            </widget>
@@ -320,6 +332,12 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="maximumSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
               <property name="toolTip">
                <string>Add files</string>
               </property>
@@ -348,6 +366,12 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
               </property>
               <property name="toolTip">
                <string>Add folder</string>
@@ -735,7 +759,6 @@
   <tabstop>radioBtn2</tabstop>
   <tabstop>radioBtn3</tabstop>
   <tabstop>lineEditOutDir</tabstop>
-  <tabstop>btnOpenOutDir</tabstop>
   <tabstop>lineEditPrefix</tabstop>
   <tabstop>lineEditSuffix</tabstop>
   <tabstop>buttonBox</tabstop>

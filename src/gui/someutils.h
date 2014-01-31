@@ -28,7 +28,6 @@ class SomeUtils
 {
 public:
     explicit SomeUtils() {}
-    static QString zipPath();
     static QString prepareSize(const quint32 bytes);
     static QString prepareTime(const quint64 ms);
 };

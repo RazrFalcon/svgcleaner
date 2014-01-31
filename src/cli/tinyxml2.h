@@ -42,9 +42,6 @@ distribution.
 #endif
 
 /*
-   TODO: intern strings instead of allocation.
-*/
-/*
 	gcc:
         g++ -Wall -DDEBUG tinyxml2.cpp xmltest.cpp -o gccxmltest.exe
 
@@ -1914,7 +1911,7 @@ public:
     /** If streaming, start writing an element.
         The element must be closed with CloseElement()
     */
-    void OpenElement( const char* name );
+    virtual void OpenElement( const char* name );
     /// If streaming, add an attribute to an open element.
     void PushAttribute( const char* name, const char* value );
     void PushAttribute( const char* name, int value );
@@ -1984,18 +1981,19 @@ protected:
     void SealElement();
     bool _elementJustOpened;
     DynArray< const char*, 10 > _stack;
-
-private:
-    void PrintSpace( int depth );
-    void PrintString( const char*, bool restrictedEntitySet );	// prints out, after detecting entities.
-    void Print( const char* format, ... );
-
     bool _firstElement;
-    FILE* _fp;
     int _depth;
     int _textDepth;
-    bool _processEntities;
     bool _compactMode;
+
+    void Print( const char* format, ... );
+    void PrintSpace( int depth );
+
+private:
+    void PrintString( const char*, bool restrictedEntitySet );	// prints out, after detecting entities.
+
+    FILE* _fp;
+    bool _processEntities;
 
     enum {
         ENTITY_RANGE = 64,
@@ -2008,6 +2006,37 @@ private:
 #ifdef _MSC_VER
     DynArray< char, 20 > _accumulator;
 #endif
+};
+
+
+class SVGPrinter : public XMLPrinter
+{
+public:
+    SVGPrinter (FILE* file=0, bool compact = false, int depth = 0) :
+        XMLPrinter (file, compact, depth)
+    {}
+private:
+    // does exactly the same as default OpenElement does, but skips spaces before tspan element,
+    // because by SVG specification there should not be any spaces or new lines
+    void OpenElement(const char *name) {
+        if ( _elementJustOpened ) {
+            SealElement();
+        }
+        _stack.Push( name );
+
+        bool isTSpan = (strcasecmp(_stack.PeekTop(), "tspan") == 0);
+        if ( _textDepth < 0 && !_firstElement && !_compactMode && !isTSpan ) {
+            Print( "\n" );
+        }
+        if ( !_compactMode && !isTSpan) {
+            PrintSpace( _depth );
+        }
+
+        Print( "<%s", name );
+        _elementJustOpened = true;
+        _firstElement = false;
+        ++_depth;
+    }
 };
 
 

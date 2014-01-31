@@ -62,6 +62,16 @@ void Replacer::convertSizeToViewbox()
 //       Anonymous_Flag_of_South_Korea.svg
 void Replacer::processPaths()
 {
+    bool skip = true;
+    foreach (int id, Keys.pathsKeysId()) {
+        if (Keys.flag(id)) {
+            skip = false;
+            break;
+        }
+    }
+    if (skip)
+        return;
+
     QHash<QString,int> defsHash;
     if (Keys.flag(Key::ApplyTransformsToPaths))
         defsHash = calcDefsUsageCount();
@@ -220,6 +230,8 @@ public:
     }
 };
 
+// FIXME: parent styles should be set to elem before moving to defs
+//        address-book-new.svg
 // TODO: reuse groups
 void Replacer::replaceEqualElementsByUse()
 {
@@ -290,7 +302,6 @@ void Replacer::replaceEqualElementsByUse()
             if (!mainElem.hasAttribute("id"))
                 mainElem.setAttribute("id", "SVGCleanerId_" + QString::number(newAttrId++));
             eqElem.setAttribute("xlink:href", "#" + mainElem.attribute("id"));
-
             if (eqElem.attribute("transform") == mainElem.attribute("transform"))
                 eqElem.removeAttribute("transform");
             else {
@@ -359,7 +370,7 @@ void Replacer::moveStyleFromUsedElemToUse()
                         if (usedElem.hasAttribute(attrName)) {
                             bool isCount = true;
                             if (attrName == "transform"
-                                && (usedElem.hasAttributes(useAttrs) || usedElem.hasLinkedDef()))
+                                || (usedElem.hasAttributes(useAttrs) || usedElem.hasLinkedDef()))
                                 isCount = false;
                             if (isCount) {
                                 QString attr = attrName + ":" + usedElem.attribute(attrName);
@@ -802,11 +813,11 @@ void Replacer::calcElemAttrCount(const QString &text)
     quint32 attrCount = 0;
     QList<SvgElement> list = childElemList(document());
     while (!list.isEmpty()) {
-        SvgElement currElem = list.takeFirst();
+        SvgElement elem = list.takeFirst();
         elemCount++;
-        attrCount += currElem.attributesCount();
-        if (currElem.hasChildren())
-            list << currElem.childElemList();
+        attrCount += elem.attributesCount();
+        if (elem.hasChildren())
+            list << elem.childElemList();
     }
     if (!Keys.flag(Key::ShortOutput)) {
         qDebug("The %s number of elements is: %u",   qPrintable(text), elemCount);
@@ -817,15 +828,20 @@ void Replacer::calcElemAttrCount(const QString &text)
     }
 }
 
-// TODO: sort with linking order
-//       flag-um.svg
 void Replacer::sortDefs()
 {
+    // sort only not used definitions
     QList<SvgElement> list = defsElement().childElemList();
-    if (!list.isEmpty()) {
-        qSort(list.begin(), list.end(), &Replacer::nodeByTagNameSort);
-        for (int i = 0; i < list.count(); ++i)
-            defsElement().appendChild(list.at(i));
+    QList<SvgElement> list2;
+    while (!list.isEmpty()) {
+        SvgElement elem = list.takeFirst();
+        if (!elem.isTagName("use") && !elem.isUsed())
+            list2 << elem;
+    }
+    if (!list2.isEmpty()) {
+        qSort(list2.begin(), list2.end(), &Replacer::nodeByTagNameSort);
+        for (int i = 0; i < list2.count(); ++i)
+            defsElement().appendChild(list2.at(i));
     }
 }
 
@@ -840,31 +856,24 @@ void Replacer::roundNumericAttributes()
     while (!list.isEmpty()) {
         SvgElement elem = list.takeFirst();
         QStringList attrList = elem.attributesList();
-
-        foreach (const QString &attr, Props::digitList) {
-            if (attrList.contains(attr)) {
-                QString value = elem.attribute(attr);
-                if (!value.contains("%")) {
-                    bool ok;
-                    QString attrVal = Tools::roundNumber(value.toDouble(&ok), Tools::ATTRIBUTE);
-                    if (!ok)
-                        qFatal("Error: could not process value: %s", qPrintable(value));
-                    elem.setAttribute(attr, attrVal);
-                }
-            }
-        }
         foreach (const QString &attr, Props::filterDigitList) {
             if (attrList.contains(attr)) {
                 QString value = elem.attribute(attr);
                 // process list based attributes
-                if (attr == "stdDeviation" || attr == "baseFrequency" || attr == "dx") {
-                    QStringList tmpList = value.split(QRegExp("(,|) "), QString::SkipEmptyParts);
+                if (   attr == "stdDeviation" || attr == "baseFrequency"
+                    || attr == "dx" || attr == "dy" || attr == "stroke-dasharray") {
+                    // TODO: get rid of regex
+                    QStringList tmpList = value.split(QRegExp("(,|) |,"), QString::SkipEmptyParts);
                     QString tmpStr;
                     foreach (const QString &text, tmpList) {
                         bool ok;
-                        tmpStr += Tools::roundNumber(text.toDouble(&ok), Tools::TRANSFORM) + " ";
+                        if (attr == "stroke-dasharray")
+                            tmpStr += QString::number(text.toDouble(&ok)) + " ";
+                        else
+                            tmpStr += Tools::roundNumber(text.toDouble(&ok), Tools::TRANSFORM) + " ";
                         if (!ok)
-                            qFatal("Error: could not process value: %s", qPrintable(value));
+                            qFatal("Error: could not process value: %s",
+                                   qPrintable(attr + "=" + value));
                     }
                     tmpStr.chop(1);
                     elem.setAttribute(attr, tmpStr);
@@ -872,7 +881,19 @@ void Replacer::roundNumericAttributes()
                     bool ok;
                     QString attrVal = Tools::roundNumber(value.toDouble(&ok), Tools::TRANSFORM);
                     if (!ok)
-                        qFatal("Error: could not process value: %s", qPrintable(value));
+                        qFatal("Error: could not process value: %s", qPrintable(attr + "=" + value));
+                    elem.setAttribute(attr, attrVal);
+                }
+            }
+        }
+        foreach (const QString &attr, Props::digitList) {
+            if (attrList.contains(attr)) {
+                QString value = elem.attribute(attr);
+                if (!value.contains("%") && !value.contains(" ") && !value.contains(",")) {
+                    bool ok;
+                    QString attrVal = Tools::roundNumber(value.toDouble(&ok), Tools::ATTRIBUTE);
+                    if (!ok)
+                        qFatal("Error: could not process value: %s", qPrintable(attr + "=" + value));
                     elem.setAttribute(attr, attrVal);
                 }
             }
@@ -1140,21 +1161,24 @@ void Replacer::calcElementsBoundingBox()
                                   + " " + elem.attribute("width")
                                   + " " + elem.attribute("height"));
         } else if (elem.isTagName("circle")) {
-            qreal x = elem.doubleAttribute("cx") - elem.doubleAttribute("r");
-            qreal y = elem.doubleAttribute("cy") - elem.doubleAttribute("r");
+            qreal r = elem.doubleAttribute("r");
+            qreal x = elem.doubleAttribute("cx") - r;
+            qreal y = elem.doubleAttribute("cy") - r;
             elem.setAttribute(CleanerAttr::BoundingBox,
                                           Tools::roundNumber(x)
                                   + " " + Tools::roundNumber(y)
-                                  + " " + Tools::roundNumber(qAbs(x*2))
-                                  + " " + Tools::roundNumber(qAbs(y*2)));
+                                  + " " + Tools::roundNumber(qAbs(r*2))
+                                  + " " + Tools::roundNumber(qAbs(r*2)));
         } else if (elem.isTagName("ellipse")) {
-            qreal x = elem.doubleAttribute("cx") - elem.doubleAttribute("rx");
-            qreal y = elem.doubleAttribute("cy") - elem.doubleAttribute("ry");
+            qreal rx = elem.doubleAttribute("rx");
+            qreal ry = elem.doubleAttribute("ry");
+            qreal x = elem.doubleAttribute("cx") - rx;
+            qreal y = elem.doubleAttribute("cy") - ry;
             elem.setAttribute(CleanerAttr::BoundingBox,
                                           Tools::roundNumber(x)
                                   + " " + Tools::roundNumber(y)
-                                  + " " + Tools::roundNumber(qAbs(x*2))
-                                  + " " + Tools::roundNumber(qAbs(y*2)));
+                                  + " " + Tools::roundNumber(qAbs(rx*2))
+                                  + " " + Tools::roundNumber(qAbs(ry*2)));
         }
         // all other basic shapes bounding boxes are calculated in Paths class
 
@@ -1167,8 +1191,10 @@ SvgElement Replacer::findLinearGradient(const QString &id)
 {
     for (XMLElement *child = defsElement().xmlElement()->FirstChildElement(); child;
          child = child->NextSiblingElement()) {
-        if (!strcmp(child->Attribute("id"), id.toLatin1()) && !strcmp(child->Name(), "linearGradient"))
-            return SvgElement(child);
+        if (child->Attribute("id")) {
+            if (!strcmp(child->Attribute("id"), id.toLatin1()) && !strcmp(child->Name(), "linearGradient"))
+                return SvgElement(child);
+        }
     }
     return SvgElement();
 }
@@ -1196,6 +1222,7 @@ SvgElement Replacer::findLinearGradient(const QString &id)
 //       demo.svg
 // TODO: group non successively used attributes
 //       Anonymous_City_flag_of_Gijon_Asturies_Spain.svg
+// TODO: group tspan styles to text element
 void Replacer::groupElementsByStyles(SvgElement parentElem)
 {
     // first start
@@ -1439,6 +1466,7 @@ void Replacer::applyTransformToShapes()
             && elem.hasAttribute("transform")
             && !elem.hasAttribute("clip-path")
             && !elem.hasAttribute("mask")
+            && !elem.hasAttribute("filter")
             && elem.childElementCount() == 1
             && !elem.isUsed()
             && !elem.firstChild().isTagName("use")

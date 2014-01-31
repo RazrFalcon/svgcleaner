@@ -1,7 +1,7 @@
 QT       += core gui svg
 TEMPLATE  = app
 DESTDIR   = ../../bin
-TARGET      = SVGCleaner
+TARGET    = SVGCleaner
 unix:!mac:TARGET = svgcleaner-gui
 
 DEFINES *= QT_USE_QSTRINGBUILDER

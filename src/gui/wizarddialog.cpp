@@ -34,8 +34,6 @@
 #include "someutils.h"
 #include "wizarddialog.h"
 
-// TODO: save as svg when src is svgz
-
 WizardDialog::WizardDialog(QWidget *parent) :
     QDialog(parent)
 {
@@ -52,6 +50,9 @@ void WizardDialog::initGUI()
     initAttributesPage();
     initPathsPage();
     initOptimizationPage();
+#ifdef Q_OS_MAC
+    this->setStyleSheet("QScrollArea { background-color:transparent }");
+#endif
 
     // setup type radioButtons
     connect(radioBtn1, SIGNAL(clicked()), this, SLOT(onRadioSelected()));
@@ -106,9 +107,6 @@ void WizardDialog::initGUI()
     listWidget->setCurrentRow(0);
     listWidget->installEventFilter(this);
     listWidget->setFocus();
-
-    btnAddFiles->setFixedWidth(btnAddFiles->height());
-    btnAddFolder->setFixedWidth(btnAddFolder->height());
 }
 
 void WizardDialog::loadSettings()
@@ -173,6 +171,10 @@ QVBoxLayout* WizardDialog::addPage()
     area->setFrameShape(QFrame::NoFrame);
 
     QWidget *w = new QWidget(this);
+#ifdef Q_OS_MAC
+    w->setObjectName("pageWidget_" + QString::number(m_pageList.size()));
+    w->setStyleSheet(QString("QWidget#%1 { background-color:transparent }").arg(w->objectName()));
+#endif
     QVBoxLayout *lay = new QVBoxLayout(w);
 
     m_pageList << w;
@@ -183,8 +185,8 @@ QVBoxLayout* WizardDialog::addPage()
 
 void WizardDialog::addUtilsLabel(QVBoxLayout *layout)
 {
-    // TODO: add info button
     QLabel *lblUtils = new QLabel(tr("Additional:"), this);
+    lblUtils->setToolTip(tr("Options below do not increase cleaning value, but can be useful."));
     layout->addSpacing(40);
     layout->addWidget(lblUtils);
 }
@@ -249,7 +251,7 @@ void WizardDialog::initOptimizationPage()
             lay->addWidget(chBox);
         } else {
             SpinBox *spinBox = new SpinBox(false, this);
-            spinBox->setRange(0, 8);
+            spinBox->setRange(1, 8);
             spinBox->setText(Keys::get().description(key));
             spinBox->setProperty("key", key);
             lay->addWidget(spinBox);
@@ -346,12 +348,23 @@ QList<ToThread> WizardDialog::threadData()
     foreach (const QString &rootPath, treeView->rootList()) {
         foreach (const QString &file, treeView->rootFiles(rootPath)) {
             ToThread tth;
-            QFileInfo fileInfo(rootPath + "/" + file);
+            QFileInfo fileInfo;
+            if (QFileInfo(rootPath).isDir())
+                fileInfo = QFileInfo(rootPath + "/" + file);
+            else
+                fileInfo = QFileInfo(file);
             tth.inputFile = fileInfo.absoluteFilePath();
-            tth.decompress = tth.inputFile.endsWith("svgz");
+
             if (radioBtn1->isChecked()) {
-                QString path = QFileInfo(QDir(lineEditOutDir->text()).absolutePath() + "/" + file)
-                                   .absoluteFilePath();
+                QString path;
+                if (QFileInfo(rootPath).isDir()) {
+                    path = QDir(lineEditOutDir->text()).absolutePath()
+                                + QString(fileInfo.absoluteFilePath())
+                                    .remove(QDir(rootPath).absolutePath());
+                } else {
+                    path = QFileInfo(QDir(lineEditOutDir->text()).absolutePath()
+                                     + "/" + fileInfo.fileName()).absoluteFilePath();
+                }
                 if (path.endsWith("svgz"))
                     path.chop(1);
                 tth.outputFile = path;
@@ -373,11 +386,13 @@ QList<ToThread> WizardDialog::threadData()
                     tth.compress = true;
                 }
             }
+            tth.decompress    = tth.inputFile.endsWith("svgz");
             tth.args          = args;
             tth.compressLevel = compressLevel;
             list << tth;
         }
     }
+
     return list;
 }
 
@@ -498,13 +513,17 @@ bool WizardDialog::checkForWarnings()
         createWarning(tr("You have to set a prefix or a suffix for this save method."));
         check = false;
 #ifdef Q_OS_WIN
-    } else if (!QFile("./svgcleaner-cli.exe").exists()) {
+    } else if (!QFile(QApplication::applicationDirPath() + "/svgcleaner-cli.exe").exists()) {
 #else
-    } else if (!QFile("./svgcleaner-cli").exists()) {
+    } else if (!QFile(QApplication::applicationDirPath() + "/svgcleaner-cli").exists()) {
 #endif
         createWarning(tr("The 'svgcleaner-cli' executable is not found."));
         check = false;
-    } else if (!QFile(SomeUtils::zipPath()).exists()) {
+#ifdef Q_OS_WIN
+    } else if (!QFile(QApplication::applicationDirPath() + "/7za.exe").exists()) {
+#else
+    } else if (!QFile(QApplication::applicationDirPath() + "/7za").exists()) {
+#endif
         createWarning(tr("The '7za' executable is not found.\n\n"
                                   "You will not be able to clean the SVGZ files."));
     } else if (QFileInfo(lineEditOutDir->text()).isDir()

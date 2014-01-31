@@ -54,7 +54,7 @@
     </message>
     <message>
         <source>Please send bug reports to </source>
-        <translation type="unfinished"></translation>
+        <translation>BItte senden Sie Fehler-Meldungen an</translation>
     </message>
     <message>
         <source>Images cleaned by SVG Cleaner are typically 40-60 percent smaller than the original ones.</source>
@@ -65,246 +65,246 @@
     <name>FilesView</name>
     <message>
         <source>Warning</source>
-        <translation type="unfinished">Warnung</translation>
+        <translation>Warnung</translation>
     </message>
     <message>
         <source>You can drop only svg(z) files or folders.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sie können hier nur svg(z)-Dateien oder Ordner einfügen.</translation>
     </message>
 </context>
 <context>
     <name>Keys</name>
     <message>
         <source>Remove unused elements in &apos;defs&apos; element</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne unbenutzte ELemente im „defs“-Element</translation>
     </message>
     <message>
         <source>Remove metadata elements</source>
-        <translation type="unfinished">entferne Metatdaten-Elemente</translation>
+        <translation>Entferne Metatdaten-Elemente</translation>
     </message>
     <message>
         <source>Remove Inkscape namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Inkscape eigene Elemente</translation>
     </message>
     <message>
         <source>Remove SodiPodi namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne SodiPodi eigene Elemente</translation>
     </message>
     <message>
         <source>Remove Adobe Illustrator namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Adobe Illustrator eigene Elemente</translation>
     </message>
     <message>
         <source>Remove CorelDRAW namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne CorelDRAW eigene Elemente</translation>
     </message>
     <message>
         <source>Remove MS Visio namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne MS Visio eigene Elemente</translation>
     </message>
     <message>
         <source>Remove Sketch namespaced elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Sketch eigene Elemente</translation>
     </message>
     <message>
         <source>Remove invisible elements</source>
-        <translation type="unfinished">entferne unsichtbare Elemente</translation>
+        <translation>Entferne unsichtbare Elemente</translation>
     </message>
     <message>
         <source>Remove empty containers elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne leere Container-Elemente</translation>
     </message>
     <message>
         <source>Remove elements which is outside the viewbox</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Elemente, die sich außerhalb des scihtbaren Bereiches befinden</translation>
     </message>
     <message>
         <source>Replace equal elements by the &apos;use&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne gleiche Elemente nach deren Gebrauch</translation>
     </message>
     <message>
         <source>Ungroup container elements, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Löse Gruppen von Container-Elementen auf, wenn möglich</translation>
     </message>
     <message>
         <source>Remove duplicate elements in the &apos;defs&apos; element</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne doppelte Elemente im „defs“-Element</translation>
     </message>
     <message>
         <source>Merge &apos;linearGradient&apos; into &apos;radialGradient&apos;, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Führe „lineare Verläufe“ zu „radialen Verläufen“ zusammen, wenn möglich</translation>
     </message>
     <message>
         <source>Remove SVG version</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne dei SVG-Versionsangabe</translation>
     </message>
     <message>
         <source>Remove unreferenced id&apos;s</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne IDs ohne Bezug</translation>
     </message>
     <message>
         <source>Trim &apos;id&apos; attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Kürze „id“-Attribute</translation>
     </message>
     <message>
         <source>Keep unreferenced id&apos;s which contains only letters</source>
-        <translation type="unfinished"></translation>
+        <translation>Erhalte ungenutzte IDs, die nur Buchstaben enthalten</translation>
     </message>
     <message>
         <source>Remove not applied attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne ungenutzte Attribute</translation>
     </message>
     <message>
         <source>Remove attributes with default values</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Attribute mit Standardwerten</translation>
     </message>
     <message>
         <source>Remove Inkscape namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Inkscape eigene Attribute</translation>
     </message>
     <message>
         <source>Remove SodiPodi namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne SodiPodi eigene Attribute</translation>
     </message>
     <message>
         <source>Remove Adobe Illustrator namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Adobe Illustrator eigene Attribute</translation>
     </message>
     <message>
         <source>Remove CorelDRAW namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne CorelDRAW eigene Attribute</translation>
     </message>
     <message>
         <source>Remove MS Visio namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne MS Visio eigene Attribute</translation>
     </message>
     <message>
         <source>Remove Sketch namespaced attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Sketch eigene Attribute</translation>
     </message>
     <message>
         <source>Remove stroke properties when no stroking</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Randlinien-Attribute, wenn keine Randlinien gezeichnet werden</translation>
     </message>
     <message>
         <source>Remove fill properties when no filling</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Füllungs-Attribute, wenn nicht gefüllt wird</translation>
     </message>
     <message>
         <source>Remove XLinks which pointed to nonexistent elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne XLinks die zu nicht vorhandenen Elementen zeigen</translation>
     </message>
     <message>
         <source>Group elements by style properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Gruppiere Elemente nach ihren Style-Eigenschaften</translation>
     </message>
     <message>
         <source>Merge style properties into &apos;style&apos; attribute</source>
-        <translation type="unfinished"></translation>
+        <translation>Führe Style-Eigenschaften in „style“-Attribut zusammen</translation>
     </message>
     <message>
         <source>Simplify transform matrices into short equivalent, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Vereinfache Transformations-Matrizen in die Kurzversion, wenn möglich</translation>
     </message>
     <message>
         <source>Apply transform matrices to gradients, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Wende Transformations-Matrizen auf Verläufe an, wenn möglich </translation>
     </message>
     <message>
         <source>Apply transform matrices to basic shapes, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Wende Transformations-Matrizen auf Grundformen an, wenn möglich</translation>
     </message>
     <message>
         <source>Convert absolute coordinates into relative ones</source>
-        <translation type="unfinished"></translation>
+        <translation>Wandle absolute Koordinaten in relative um</translation>
     </message>
     <message>
         <source>Remove unneeded symbols in &apos;d&apos; attribute</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne unnötige Zeichen im „d“-Attribut</translation>
     </message>
     <message>
         <source>Remove tiny or empty segments</source>
-        <translation type="unfinished"></translation>
+        <translation>ENtferne kleine oder leere Segmente</translation>
     </message>
     <message>
         <source>Convert segments into shorter equivalent, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Konvertiere Segmente in ihre Kurzvarianten, wenn möglich</translation>
     </message>
     <message>
         <source>Apply transform matrices, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Wende wenn möglich Transformations-Matrizen an</translation>
     </message>
     <message>
         <source>Convert &apos;height&apos; and &apos;width&apos; attributes into &apos;viewBox&apos; attribute</source>
-        <translation type="unfinished"></translation>
+        <translation>Wandle „height“-  und „width“-Attribute in „viewBox”-Attribute um</translation>
     </message>
     <message>
         <source>Convert colors into #RRGGBB format</source>
-        <translation type="unfinished"></translation>
+        <translation>Wandle Farbangaben in das Format #RGGBB</translation>
     </message>
     <message>
         <source>Convert #RRGGBB colors into #RGB format, when possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Wandle #RRGGBB Farbangaben in #RGB-Format, wenn möglich</translation>
     </message>
     <message>
         <source>Set rounding precision for transformations</source>
-        <translation type="unfinished"></translation>
+        <translation>Setze Rundungsgenauigkeit für Transformationen</translation>
     </message>
     <message>
         <source>Set rounding precision for coordinates</source>
-        <translation type="unfinished"></translation>
+        <translation>Setze Rundungsgenauigkeit für Koordinaten</translation>
     </message>
     <message>
         <source>Set rounding precision for attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Setze Rundungsgenauigkeit für Attribute</translation>
     </message>
     <message>
         <source>Save file with only required whitespace and newlines</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichere die Datei nur mit notwendigen Leerzeichen und Umbrüchen</translation>
     </message>
     <message>
         <source>Sort elements by name in &apos;defs&apos; element</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Complete&lt;/b&gt; preset are designed to create a file which will be used only for showing. This preset completely change file structure, what in most cases prevents future editing.&lt;br&gt;Should not damage your files. Otherwise, please send this file to our email.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortiere Elemente im „defs“-Element nach ihrem Namen</translation>
     </message>
     <message>
         <source>&lt;b&gt;Extreme&lt;/b&gt; preset does the same that &lt;b&gt;Complete&lt;/b&gt; do, but also enables some unstable features.&lt;br&gt;It will definitely change displaying of your file and could even damage it.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Extrem&lt;/b&gt; Konfiguration macht das gleiche wie &lt;b&gt;Alle&lt;/b&gt;, aktiviert jedoch einige unstabile Features.&lt;br&gt;Es veändert auf jeden Fall die Anzeige der Datei und kann sie sogar beschädigen.</translation>
     </message>
     <message>
         <source>&lt;b&gt;Custom&lt;/b&gt; preset is used to store your own cleaning options. By default all options are off.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Individuell&lt;/b&gt; Konfiguration speichert Ihre eigenen Bereinigungs-Einstellungen. Standardmäßig sind alle Optionen deaktiviert.</translation>
     </message>
     <message>
         <source>Remove XML prolog</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne den XML Prolog</translation>
     </message>
     <message>
         <source>Remove XML comments</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne XML-Kommentare</translation>
     </message>
     <message>
         <source>Remove XML processing instruction</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne XML-Verarbeitungsanweisungen</translation>
     </message>
     <message>
         <source>Remove non SVG elements</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Basic&lt;/b&gt; preset are designed to remove all unnecessary data from SVG file, without changing it structure. Allows you to continue editing of the file.&lt;br&gt;Сan not damage your files. Otherwise, please send this file to our email.</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne SVG fremde Elemente</translation>
     </message>
     <message>
         <source>Convert &apos;polygon&apos;, &apos;polyline&apos;, &apos;line&apos;, &apos;rect&apos; into paths</source>
-        <translation type="unfinished"></translation>
+        <translation>Wandle „polygon“, „polyline“, „line” oder „rect“ in Pfade</translation>
     </message>
     <message>
         <source>Remove Gaussian blur filters with deviation lower than</source>
-        <translation type="unfinished"></translation>
+        <translation>Entferne Gausschen Weichzeichner mit einer Abweichung unter</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Basic&lt;/b&gt; preset are designed to remove all unnecessary data from SVG file, without changing it structure. Allows you to continue editing of the file.&lt;br&gt;Сan not damage your files. Otherwise, please send this files to our email.</source>
+        <translation>&lt;b&gt;Basis&lt;/b&gt; Konfiguation wurde erstellt um alle unnötigen Daten aus der SVG Datei zu entfernen, ohne hre Struktur zu verändern. Erlaubt eine weitere Bearbeitung der Datei. &lt;br&gt;Die Datei kann nicht beschädigt werden. Andernfalls senden Sie uns die Dateien bitte per Email.</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Complete&lt;/b&gt; preset are designed to create a file which will be used only for showing. This preset completely change file structure, what in most cases prevents future editing.&lt;br&gt;Should not damage your files. Otherwise, please send this files to our email.</source>
+        <translation>&lt;b&gt;Komplett&lt;/b&gt; Konfiguration wurde erstellt um eine Datei zu erstellen die nur zum Darstellen geeignet ist. Diese Voreinstellung verändert die komplette STruktur der Datei und verhindert in den meisten Fällen eine weitere Bearbeitung.&lt;br&gt;Die Datei sollte nicht beschädigt werden, andernfalls senden Sie uns die Dateien bitte per Mail.</translation>
     </message>
 </context>
 <context>
@@ -422,47 +422,55 @@
     </message>
     <message>
         <source>Cleaned</source>
-        <translation type="unfinished"></translation>
+        <translation>Bereinigt</translation>
     </message>
     <message>
         <source>Sort by cleaning</source>
-        <translation type="unfinished"></translation>
+        <translation>Nach Bereinigung sortieren</translation>
     </message>
     <message>
         <source>Cleaning is not finished.
 Did you really want to exit?</source>
-        <translation type="unfinished"></translation>
+        <translation>Bereinigung ist nochnicht abgeschlossen. Möchten Sie das Programm wirklich beenden? </translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation>Warnung</translation>
+    </message>
+    <message>
+        <source>You can drop only svg(z) files or folders.</source>
+        <translation>Sie können nur svg(z)-Dateien oder Ordner einfügen.</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>B</source>
-        <translation type="unfinished">B</translation>
+        <translation>B</translation>
     </message>
     <message>
         <source>KiB</source>
-        <translation type="unfinished">KiB</translation>
+        <translation>KiB</translation>
     </message>
     <message>
         <source>MiB</source>
-        <translation type="unfinished">MiB</translation>
+        <translation>MiB</translation>
     </message>
     <message>
         <source>h</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>m</source>
-        <translation type="unfinished"></translation>
+        <translation>m</translation>
     </message>
     <message>
         <source>s</source>
-        <translation type="unfinished"></translation>
+        <translation>s</translation>
     </message>
     <message>
         <source>ms</source>
-        <translation type="unfinished"></translation>
+        <translation>ms</translation>
     </message>
 </context>
 <context>
@@ -485,7 +493,7 @@ Did you really want to exit?</source>
     </message>
     <message>
         <source>&lt;b&gt;Name:&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Name:&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
@@ -616,73 +624,79 @@ Did you really want to exit?</source>
     </message>
     <message>
         <source>For example</source>
-        <translation type="unfinished"></translation>
+        <translation>Zum Besispiel</translation>
     </message>
     <message>
         <source>Set an output folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Legen Sie einen Ausgabeordner fest</translation>
     </message>
     <message>
         <source>Saving method:</source>
-        <translation type="unfinished"></translation>
+        <translation>Speicher-Methode:</translation>
     </message>
     <message>
         <source>Add files</source>
-        <translation type="unfinished"></translation>
+        <translation>Dateien hinzufügen</translation>
     </message>
     <message>
         <source>Add folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordner hinzufügen</translation>
     </message>
     <message>
         <source>Preset:</source>
-        <translation type="unfinished"></translation>
+        <translation>Voreinstellung:</translation>
     </message>
     <message>
         <source>Basic</source>
-        <translation type="unfinished"></translation>
+        <translation>Basic</translation>
     </message>
     <message>
         <source>Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Komplett</translation>
     </message>
     <message>
         <source>Extreme</source>
-        <translation type="unfinished"></translation>
+        <translation>Extrem</translation>
     </message>
     <message>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Individuell</translation>
     </message>
     <message>
         <source>Files</source>
-        <translation type="unfinished">Dateien</translation>
+        <translation>Dateien</translation>
     </message>
     <message>
         <source>Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
         <source>Optimizations</source>
-        <translation type="unfinished"></translation>
+        <translation>Optimierungen</translation>
     </message>
     <message>
         <source>Additional:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zusätlich:</translation>
     </message>
     <message>
         <source>No files are selected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Es sind keine Dateien ausgewählt.</translation>
     </message>
     <message>
         <source>The &apos;svgcleaner-cli&apos; executable is not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die ausführbare Datei „svgcleander-cli“ wurde nicht gefunden.</translation>
     </message>
     <message>
         <source>The &apos;7za&apos; executable is not found.
 
 You will not be able to clean the SVGZ files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Ausführbare Datei „7za“ wurde nicht gefunden.
+
+Es ist nicht öglich die SVG-Dateien zu bereinigen.</translation>
+    </message>
+    <message>
+        <source>Options below do not increase cleaning value, but can be useful.</source>
+        <translation>Diese Optionen beeinflussen nicht die Bereinigungs-Leistung, können aber hilfreich sein.</translation>
     </message>
 </context>
 </TS>

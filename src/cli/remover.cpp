@@ -547,7 +547,8 @@ void Remover::removeElements()
                     } else if (    currTag == "image"
                                && !currElem.attribute("xlink:href").startsWith(QL1S("data")))
                         removeThisNode = true;
-                    else if (isElementInvisible(currElem))
+                    else if (!currElem.isUsed() && isElementInvisible(currElem)
+                             && !hasParent(currElem, "defs"))
                         removeThisNode = true;
                 }
             }
@@ -636,42 +637,6 @@ void Remover::removeElementsFinal()
     }
 }
 
-bool Remover::isElementInvisible2(SvgElement &elem)
-{
-    // if 'fill' or 'stroke' linked to non existing define - set attribute value to 'none'
-    if (elem.isContainer())
-        return false;
-
-    SvgElement parent = elem.parentElement();
-    bool hasWrongParent = false;
-    while (!parent.isNull()) {
-        if (parent.isTagName("defs") || parent.isTagName("switch")) {
-            hasWrongParent = true;
-            break;
-        }
-        parent = parent.parentElement();
-    }
-    if (!hasWrongParent) {
-        // elements with no 'fill' and 'stroke' are invisible
-        if (    findAttribute(elem, "fill") == "none"
-            && (   findAttribute(elem, "stroke") == "none"
-                || findAttribute(elem, "stroke").isEmpty())
-            && !elem.isUsed()) {
-            if (elem.hasAttribute("filter")) {
-                SvgElement filterElem = findDefElement(elem.defIdFromAttribute("filter"));
-                if (filterElem.childElementCount() == 1) {
-                    if (filterElem.firstChild().tagName() == "feGaussianBlur") {
-                        return true;
-                    }
-                }
-            } else {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 bool Remover::isElementInvisible(SvgElement &elem)
 {
     QString tagName = elem.tagName();
@@ -755,6 +720,42 @@ bool Remover::isElementInvisible(SvgElement &elem)
     return false;
 }
 
+bool Remover::isElementInvisible2(SvgElement &elem)
+{
+    // if 'fill' or 'stroke' linked to non existing define - set attribute value to 'none'
+    if (elem.isContainer())
+        return false;
+
+    SvgElement parent = elem.parentElement();
+    bool hasWrongParent = false;
+    while (!parent.isNull()) {
+        if (parent.isTagName("defs") || parent.isTagName("switch")) {
+            hasWrongParent = true;
+            break;
+        }
+        parent = parent.parentElement();
+    }
+    if (!hasWrongParent) {
+        // elements with no 'fill' and 'stroke' are invisible
+        if (    findAttribute(elem, "fill") == "none"
+            && (   findAttribute(elem, "stroke") == "none"
+                || findAttribute(elem, "stroke").isEmpty())
+            && !elem.isUsed()) {
+            if (elem.hasAttribute("filter")) {
+                SvgElement filterElem = findDefElement(elem.defIdFromAttribute("filter"));
+                if (filterElem.childElementCount() == 1) {
+                    if (filterElem.firstChild().tagName() == "feGaussianBlur") {
+                        return true;
+                    }
+                }
+            } else {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void Remover::removeAttributes()
 {
     QList<SvgElement> list = childElemList(document());
@@ -796,8 +797,12 @@ void Remover::removeAttributes()
                 // xlink:href could not contains uri with spaces
                 if (attrList.contains(QL1S("xlink:href"))) {
                     QString xlink = elem.attribute("xlink:href");
-                    if (xlink.indexOf(QLatin1Char(' ')) != -1 && !xlink.startsWith(QL1S("data:")))
-                        attrList.removeOne("xlink:href");
+                    if (!xlink.startsWith(QL1S("data:"))) {
+                        if (xlink.indexOf(QLatin1Char(' ')) != -1)
+                            attrList.removeOne("xlink:href");
+                        else if (!Props::elementsUsingXLink.contains(tagName))
+                            attrList.removeOne("xlink:href");
+                    }
                 }
                 if (!elem.isTagName("svg")) {
                     foreach (const QString &attrName, attrList) {
@@ -818,6 +823,7 @@ void Remover::removeAttributes()
                             bool removeAttr = true;
                             if (   attrName == QL1S("d")
                                 || attrName == QL1S("transform")
+                                || attrName == QL1S("filter")
                                 || attrName == QL1S("id"))
                                 removeAttr = false;
                             if (tagName == QL1S("use")
@@ -857,6 +863,11 @@ void Remover::removeAttributes()
                 }
             }
 
+            if (attrList.contains("d")
+                && tagName != "path"
+                && tagName != "glyph"
+                && tagName != "missing-glyph")
+                attrList.removeOne("d");
 
             if (tagName == "stop") {
                 if (elem.doubleAttribute("offset") < 0.0001)
@@ -885,10 +896,11 @@ void Remover::removeAttributes()
             while (!list2.isEmpty()) {
                 XMLNode *elem2 = list2.takeFirst();
                 QString tagName = QL1S(elem2->Value());
-                if (tagName == "tspan" || tagName == "flowPara") {
+                if (Props::textElements.contains(tagName)) {
                     if (elem2->FirstChild() != 0) {
                         if (elem2->FirstChild()->ToText() != 0) {
-                            if (QString(elem2->FirstChild()->ToText()->Value()).contains("  ")) {
+                            QString text = QString(elem2->FirstChild()->ToText()->Value());
+                            if (text.contains("  ") || text.startsWith(' ') || text.endsWith(' ')) {
                                 canRemove = false;
                                 break;
                             }
@@ -976,6 +988,7 @@ void Remover::cleanStyle(const SvgElement &elem, StringMap &hash)
     static bool isRemoveNotApplied = Keys.flag(Key::RemoveNotAppliedAttributes);
     static bool isConvertColors
             = (Keys.flag(Key::ConvertColorToRRGGBB) || Keys.flag(Key::ConvertRRGGBBToRGB));
+
 
     if (isRemoveNotApplied) {
         // remove style props which already defined in parent style
@@ -1146,8 +1159,31 @@ void Remover::removeGroups()
             } else if (   elem.isGroup()
                        && elem.parentElement().tagName() != "switch")
             {
-                if (!elem.firstChild().hasAttribute("mask"))
+                if (   !elem.isUsed()
+                    && parent.isGroup()
+                    && !elem.hasAttributes(illegalGAttrList))
                 {
+                    // merge parent group with current group
+                    SvgElement firstChild = elem.firstChild();
+                    if (elem.childElementCount() == 1
+                        && firstChild.tagName() != "switch")
+                    {
+                        // ungroup group with only one child
+                        parent.insertBefore(firstChild, elem);
+                        megreGroups(elem, firstChild, false);
+                        parent.removeChild(elem);
+                        isAnyGroupRemoved = true;
+                    } else if (    parent.childElementCount() == 1
+                               &&  parent.tagName() != "svg"
+                               && !parent.hasAttributes(illegalGAttrList))
+                    {
+                        megreGroups(elem, parent, true);
+                        foreach (SvgElement childElem, elem.childElemList())
+                            parent.insertBefore(childElem, elem);
+                        parent.removeChild(elem);
+                        isAnyGroupRemoved = true;
+                    }
+                } else {
                     bool isOnlyTransform = false;
                     int attrCount = elem.attributesCount();
                     if ((attrCount == 1 && elem.hasAttribute("transform"))
@@ -1168,6 +1204,7 @@ void Remover::removeGroups()
                         if (trAttrCount == elem.childElementCount())
                             isOnlyTransform = true;
                     }
+
                     if (!elem.hasImportantAttrs() || isOnlyTransform) {
                         // ungroup group without attributes
                         QString parentTransfrom = elem.attribute("transform");
@@ -1176,29 +1213,6 @@ void Remover::removeGroups()
                                 childElem.setTransform(parentTransfrom, true);
                             parent.insertBefore(childElem, elem);
                         }
-                        parent.removeChild(elem);
-                        isAnyGroupRemoved = true;
-                    }
-                } else if (   !elem.isUsed()
-                           && parent.isGroup()
-                           && !elem.hasAttributes(illegalGAttrList))
-                {
-                    SvgElement firstChild = elem.firstChild();
-                    if (elem.childElementCount() == 1
-                        && firstChild.tagName() != "switch")
-                    {
-                        // ungroup group with only one child
-                        parent.insertBefore(firstChild, elem);
-                        megreGroups(elem, firstChild, false);
-                        parent.removeChild(elem);
-                        isAnyGroupRemoved = true;
-                    } else if (    parent.childElementCount() == 1
-                               &&  parent.tagName() != "svg"
-                               && !parent.hasAttributes(illegalGAttrList))
-                    {
-                        megreGroups(elem, parent, true);
-                        foreach (SvgElement childElem, elem.childElemList())
-                            parent.insertBefore(childElem, elem);
                         parent.removeChild(elem);
                         isAnyGroupRemoved = true;
                     }

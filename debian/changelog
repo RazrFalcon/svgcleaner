@@ -1,3 +1,31 @@
+svgcleaner (0.6) natty; urgency=low
+
+  * 3 times faster and 10% better cleaning.
+  * Added replacing of equal elements with 'use'.
+  * Added removing of elements out of viewbox.
+  * Added transformation matrices applying.
+  * Added trimming of 'id' attribute.
+  * Added removing of equal 'filter' and 'clipPath' in 'defs'.
+  * Added removing of Sketch namespaced elements and attributes.
+  * Improved paths processing.
+  * Improved removing of equal gradients.
+  * Improved grouping of elements with similar attributes.
+  * Improved transform matrices processing.
+  * Improved ungrouping of containers.
+  * Improved merging of gradients.
+  * Improved rounding of numbers.
+  * Improved removing of invisible elements.
+  * New keys for CLI.
+  * CLI now depends only on QtCore.
+  * Moved from QtXml to TinyXML2.
+  * Added saving of last cleaning options to GUI.
+  * Added file tree to GUI.
+  * Removed preset files.
+  * A lot of fixes and speed optimizations.
+
+ -- Raizner Evgeniy <razrfalcon@gmail.com>  Tue, 28 Jan 2014 02:00:00 +0200
+
+
 svgcleaner (0.5.1) natty; urgency=low
 
   * Added a new function: "Group elements by style properties".

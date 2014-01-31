@@ -55,7 +55,7 @@ public:
     bool isUsed() const;
     double doubleAttribute(const char *name) const;
     double doubleAttribute(const QString &name) const;
-    bool hasChildWithTagName(const char *name) const;
+    bool hasChildWithTagName(const char *name, XMLElement *parent = 0) const;
     int attributesCount() const;
     int childElementCount() const;
     QList<SvgElement> childElemList() const;
@@ -105,7 +105,6 @@ public:
 
 private:
     XMLElement *m_elem;
-    bool _hasChildWithTagName(XMLElement *parent, const char *name) const;
 };
 
 #endif // SVGELEMENT_H

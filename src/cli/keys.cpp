@@ -281,7 +281,6 @@ QList<int> Keys::basicPresetKeys()
         << Key::RemoveNotAppliedAttributes
         << Key::RemoveDefaultAttributes
         << Key::RemoveUnusedXLinks
-        << Key::RemoveTinySegments
         << Key::ConvertColorToRRGGBB;
     return list;
 }
@@ -295,7 +294,8 @@ QList<int> Keys::completePresetKeys()
         << Key::RemoveUnneededSymbols
         << Key::RemoveTinySegments
         << Key::ConvertSegments
-        << optimizationsKeys();
+        << optimizationsKeys()
+        << Key::SortDefs;
     return list;
 }
 
@@ -327,7 +327,7 @@ QStringList &Keys::allKeys()
         << KeyStr::RemoveEmptyContainers
         << KeyStr::RemoveDuplicatedDefs
         << KeyStr::RemoveOutsideElements
-        << KeyStr::ReplaceEqualEltsWithUse
+        << KeyStr::ReplaceEqualEltsByUse
         << KeyStr::UngroupContainers
         << KeyStr::MergeGradients
         << KeyStr::RemoveTinyGaussianBlur
@@ -386,11 +386,11 @@ QString Keys::presetDescription(const QString &name)
         return tr("<b>Basic</b> preset are designed to remove all unnecessary data from SVG file, "
                   "without changing it structure. "
                   "Allows you to continue editing of the file.<br>"
-                  "Сan not damage your files. Otherwise, please send this file to our email.");
+                  "Сan not damage your files. Otherwise, please send this files to our email.");
     } else if (name == Preset::Complete) {
         return tr("<b>Complete</b> preset are designed to create a file which will be used only for showing. "
                   "This preset completely change file structure, what in most cases prevents future editing.<br>"
-                  "Should not damage your files. Otherwise, please send this file to our email.");
+                  "Should not damage your files. Otherwise, please send this files to our email.");
     } else if (name == Preset::Extreme) {
         return tr("<b>Extreme</b> preset does the same that <b>Complete</b> do, but also enables some unstable features.<br>"
                   "It will definitely change displaying of your file and could even damage it.");
@@ -448,7 +448,6 @@ void Keys::parseOptions(QStringList &list)
     m_attributesPrecision  = intNumber(Key::AttributesPrecision);
     m_coordinatesPrecision = intNumber(Key::CoordsPrecision);
 
-
     if (list.first().startsWith(QLatin1String("--preset"))) {
         QString preset = list.takeFirst();
         preset.remove(QLatin1String("--preset="));
@@ -458,6 +457,8 @@ void Keys::parseOptions(QStringList &list)
             setPreset(Preset::Basic);
         else if (preset == Preset::Extreme)
             setPreset(Preset::Extreme);
+        else if (preset == Preset::Custom)
+            setPreset(Preset::Custom);
     } else {
         setPreset(Preset::Custom);
     }

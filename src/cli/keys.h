@@ -124,7 +124,7 @@ namespace KeyStr {
     static const QString RemoveTinyGaussianBlur      = "--remove-gaussian-blur";
     static const QString RemoveDuplicatedDefs        = "--remove-duplicated-defs";
     static const QString RemoveOutsideElements       = "--remove-outside-elts";
-    static const QString ReplaceEqualEltsWithUse     = "--equal-elts-to-use";
+    static const QString ReplaceEqualEltsByUse       = "--equal-elts-to-use";
     static const QString UngroupContainers           = "--ungroup-containers";
     static const QString MergeGradients              = "--merge-gradients";
 

@@ -53,13 +53,3 @@ QString SomeUtils::prepareTime(const quint64 ms)
     timeStr += " " + t.toString("zzz") + QObject::tr("ms");
     return timeStr;
 }
-
-QString SomeUtils::zipPath()
-{
-#ifdef Q_OS_LINUX
-    static QString path = "/usr/bin/7za";
-#else
-    static QString path = QApplication::applicationDirPath() + "/7za";
-#endif
-    return path;
-}

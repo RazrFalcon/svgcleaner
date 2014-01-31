@@ -79,12 +79,12 @@
 <context>
     <name>FilesView</name>
     <message>
-        <location filename="../src/gui/filesview.cpp" line="515"/>
+        <location filename="../src/gui/filesview.cpp" line="536"/>
         <source>Warning</source>
         <translation>Застереження</translation>
     </message>
     <message>
-        <location filename="../src/gui/filesview.cpp" line="516"/>
+        <location filename="../src/gui/filesview.cpp" line="537"/>
         <source>You can drop only svg(z) files or folders.</source>
         <translation>Ви можете додавати тільки svg(z) файли або папки.</translation>
     </message>
@@ -363,13 +363,13 @@
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="386"/>
-        <source>&lt;b&gt;Basic&lt;/b&gt; preset are designed to remove all unnecessary data from SVG file, without changing it structure. Allows you to continue editing of the file.&lt;br&gt;Сan not damage your files. Otherwise, please send this file to our email.</source>
-        <translation>Передустановка &lt;b&gt; Базова &lt;/b&gt; призначена для видалення непотрібної інформації з SVG файлу, без зміни його структури. Надаючи можливість подальшого редагування файлу.&lt;br&gt; Не може зіпсувати Ваш файл. В іншому випадку, будь ласка, надішліть зіпсований файл нам на email.</translation>
+        <source>&lt;b&gt;Basic&lt;/b&gt; preset are designed to remove all unnecessary data from SVG file, without changing it structure. Allows you to continue editing of the file.&lt;br&gt;Сan not damage your files. Otherwise, please send this files to our email.</source>
+        <translation>Передустановка &lt;b&gt; Базова &lt;/b&gt; призначена для видалення непотрібної інформації з SVG файлу, без зміни його структури. Надаючи можливість подальшого редагування файлу.&lt;br&gt; Не може зіпсувати Ваш файл. В іншому випадку, будь ласка, надішліть зіпсовані файли нам на email.</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="391"/>
-        <source>&lt;b&gt;Complete&lt;/b&gt; preset are designed to create a file which will be used only for showing. This preset completely change file structure, what in most cases prevents future editing.&lt;br&gt;Should not damage your files. Otherwise, please send this file to our email.</source>
-        <translation>Передустановка &lt;b&gt; Повна &lt;/b&gt; призначена для створення файлу тільки для відображення. Дана предустановка повністю змінює структуру файлу, що, в більшості випадків, перешкоджає подальшому редагуванню.&lt;br&gt; Не повинна зіпсувати Ваш файл. В іншому випадку, будь ласка, надішліть зіпсований файл нам на email.</translation>
+        <source>&lt;b&gt;Complete&lt;/b&gt; preset are designed to create a file which will be used only for showing. This preset completely change file structure, what in most cases prevents future editing.&lt;br&gt;Should not damage your files. Otherwise, please send this files to our email.</source>
+        <translation>Передустановка &lt;b&gt; Повна &lt;/b&gt; призначена для створення файлу тільки для відображення. Дана предустановка повністю змінює структуру файлу, що, в більшості випадків, перешкоджає подальшому редагуванню.&lt;br&gt; Не повинна зіпсувати Ваш файл. В іншому випадку, будь ласка, надішліть зіпсовані файли нам на email.</translation>
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="395"/>
@@ -539,7 +539,17 @@
         <translation>Порівняння зображень: вимкнено</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow.cpp" line="410"/>
+        <location filename="../src/gui/mainwindow.cpp" line="407"/>
+        <source>Warning</source>
+        <translation>Застереження</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow.cpp" line="408"/>
+        <source>You can drop only svg(z) files or folders.</source>
+        <translation>Ви можете додавати тільки svg(z) файли або папки.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow.cpp" line="425"/>
         <source>Cleaning is not finished.
 Did you really want to exit?</source>
         <translation>Очищення ще не закінчилось.
@@ -620,219 +630,224 @@ Did you really want to exit?</source>
         <translation>Майстер - SVG Cleaner</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="98"/>
+        <location filename="../src/gui/wizarddialog.ui" line="107"/>
         <source>Set an output folder</source>
         <translation>Встановити папку для результаів</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="239"/>
+        <location filename="../src/gui/wizarddialog.ui" line="251"/>
         <source>Saving method:</source>
         <translation>Метод збереження:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="324"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="580"/>
+        <location filename="../src/gui/wizarddialog.ui" line="342"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="593"/>
         <source>Add files</source>
         <translation>Додати файли</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="353"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="595"/>
+        <location filename="../src/gui/wizarddialog.ui" line="377"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="608"/>
         <source>Add folder</source>
         <translation>Додати папку</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="406"/>
+        <location filename="../src/gui/wizarddialog.ui" line="430"/>
         <source>Preset:</source>
         <translation>Передустановка:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="414"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="291"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="426"/>
+        <location filename="../src/gui/wizarddialog.ui" line="438"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="293"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="435"/>
         <source>Basic</source>
         <translation>Базова</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="419"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="136"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="293"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="428"/>
+        <location filename="../src/gui/wizarddialog.ui" line="443"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="134"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="295"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="437"/>
         <source>Complete</source>
         <translation>Повна</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="424"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="295"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="430"/>
+        <location filename="../src/gui/wizarddialog.ui" line="448"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="297"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="439"/>
         <source>Extreme</source>
         <translation>Екстремальна</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="429"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="297"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="551"/>
+        <location filename="../src/gui/wizarddialog.ui" line="453"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="299"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="564"/>
         <source>Custom</source>
         <translation>Своя</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="470"/>
+        <location filename="../src/gui/wizarddialog.ui" line="494"/>
         <source>Compressing</source>
         <translation>Стиснення</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="485"/>
+        <location filename="../src/gui/wizarddialog.ui" line="509"/>
         <source>Compress level:</source>
         <translation>Рівень стиснення:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="502"/>
+        <location filename="../src/gui/wizarddialog.ui" line="526"/>
         <source>fastest</source>
         <translation>найшвидший</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="507"/>
+        <location filename="../src/gui/wizarddialog.ui" line="531"/>
         <source>fast</source>
         <translation>швидкий</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="512"/>
+        <location filename="../src/gui/wizarddialog.ui" line="536"/>
         <source>normal</source>
         <translation>звичайний</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="517"/>
+        <location filename="../src/gui/wizarddialog.ui" line="541"/>
         <source>maximum</source>
         <translation>максимальний</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="522"/>
+        <location filename="../src/gui/wizarddialog.ui" line="546"/>
         <source>ultra</source>
         <translation>ультра</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="539"/>
+        <location filename="../src/gui/wizarddialog.ui" line="563"/>
         <source>Compress all processed files</source>
         <translation>Стискати усі оброблені файли</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="558"/>
+        <location filename="../src/gui/wizarddialog.ui" line="582"/>
         <source>Compress processed .svgz files only</source>
         <translation>Стискати лише оброблені svgz-файли</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="580"/>
+        <location filename="../src/gui/wizarddialog.ui" line="604"/>
         <source>Multithreading</source>
         <translation>Багатопоточність</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="604"/>
+        <location filename="../src/gui/wizarddialog.ui" line="628"/>
         <source>The number of threads:</source>
         <translation>Кількість потоків:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="203"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="270"/>
+        <location filename="../src/gui/wizarddialog.ui" line="215"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="272"/>
         <source>filename</source>
         <translation>filename</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="216"/>
+        <location filename="../src/gui/wizarddialog.ui" line="228"/>
         <source>For example: </source>
         <translation>Наприклад: </translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="223"/>
+        <location filename="../src/gui/wizarddialog.ui" line="235"/>
         <source>Set prefix and/or suffix:</source>
         <translation>Додавати префікс та/або суфікс:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="261"/>
+        <location filename="../src/gui/wizarddialog.ui" line="273"/>
         <source>save cleaned files into the output folder</source>
         <translation>зберігати очищені файли у вхідній папці</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="274"/>
+        <location filename="../src/gui/wizarddialog.ui" line="286"/>
         <source>save cleaned files into the current folder</source>
         <translation>зберігати очищені файли у вихідній папці</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="287"/>
+        <location filename="../src/gui/wizarddialog.ui" line="299"/>
         <source>overwrite original files</source>
         <translation>переписати оригінальні файли</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="121"/>
+        <location filename="../src/gui/wizarddialog.ui" line="130"/>
         <source>Output folder:</source>
         <translation>Вихідна папка:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="308"/>
+        <location filename="../src/gui/wizarddialog.ui" line="320"/>
         <source>Search for SVG files in subfolders</source>
         <translation>Обробляти файли із вкладених папок</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.ui" line="311"/>
+        <location filename="../src/gui/wizarddialog.ui" line="323"/>
         <source>Recursive folder scanning</source>
         <translation>Рекурсивна перевірка папок</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="70"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="71"/>
         <source>prefix</source>
         <translation>префікс</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="71"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="72"/>
         <source>suffix</source>
         <translation>суфікс</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="79"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="80"/>
         <source>Files</source>
         <translation>Файли</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="80"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="81"/>
         <source>Preferences</source>
         <translation>Налаштування</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="81"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="82"/>
         <source>Elements</source>
         <translation>Елементи</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="82"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="83"/>
         <source>Attributes</source>
         <translation>Атрибути</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="83"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="84"/>
         <source>Paths</source>
         <translation>Шляхи</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="84"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="85"/>
         <source>Optimizations</source>
         <translation>Оптимізації</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="187"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="188"/>
         <source>Additional:</source>
         <translation>Додатково:</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="492"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="189"/>
+        <source>Options below do not increase cleaning value, but can be useful.</source>
+        <translation>Дані опції не покращують очищення, але можуть бути корисні.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/wizarddialog.cpp" line="501"/>
         <source>No files are selected.</source>
         <translation>Жодного файлу не вибрано.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="505"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="514"/>
         <source>The &apos;svgcleaner-cli&apos; executable is not found.</source>
         <translation>Виконуваний файл &apos;svgcleaner-cli&apos; не знайдений.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="508"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="521"/>
         <source>The &apos;7za&apos; executable is not found.
 
 You will not be able to clean the SVGZ files.</source>
@@ -841,32 +856,32 @@ You will not be able to clean the SVGZ files.</source>
 Ви не зможете обробляти SVGZ файли.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="269"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="271"/>
         <source>For example</source>
         <translation>Наприклад</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="481"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="490"/>
         <source>Select an output folder</source>
         <translation>Обрати вихідну папку</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="495"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="504"/>
         <source>An output folder is not selected.</source>
         <translation>Не обрано вихідну папку.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="498"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="507"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Необхідно задати префікс та/або суфікс.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="512"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="525"/>
         <source>Selected output folder is not writable.</source>
         <translation>Обрана вихідна папка недоступна для запису.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="520"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="533"/>
         <source>Warning</source>
         <translation>Застереження</translation>
     </message>

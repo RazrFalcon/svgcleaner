@@ -106,7 +106,7 @@ static const StringSet digitList = StringSet()
 
 static const StringSet filterDigitList = StringSet()
     << "stdDeviation" << "baseFrequency" << "k" << "k1" << "k2" << "k3" << "specularConstant"
-    << "dx" << "dy";
+    << "dx" << "dy" << "stroke-dasharray";
 
 static const StringSet defsList = StringSet()
     << "altGlyphDef" << "clipPath" << "cursor" << "filter" << "linearGradient"
@@ -118,7 +118,7 @@ static const StringSet referencedElements = StringSet()
     << "style" << "switch" << "text" << "view";
 
 static const StringSet textElements = StringSet()
-    << "text" << "tspan" << "flowRoot" << "flowPara" << "flowSpan";
+    << "text" << "tspan" << "flowRoot" << "flowPara" << "flowSpan" << "textPath";
 
 static const StringSet textAttributes = StringSet()
     << "font-style" << "font-variant" << "font-weight" << "font-weight" << "font-stretch"
@@ -145,6 +145,12 @@ static const StringSet svgElementList = StringSet()
     << "symbol" << "text" << "textPath" << "title" << "tref" << "flowRoot" << "flowRegion"
     << "flowPara" << "flowSpan" << "tspan" << "use" << "view" << "vkern";
 
+static const StringSet elementsUsingXLink = StringSet()
+    << "a" << "altGlyph" << "color-profile" << "cursor" << "feImage" << "filter" << "font-face-uri"
+    << "glyphRef" << "image" << "linearGradient" << "mpath" << "pattern" << "radialGradient"
+    << "script" << "textPath" << "use" << "animate" << "animateColor" << "animateMotion"
+    << "animateTransform" << "set" << "tref";
+
 static const StringSet containers = StringSet()
     << "a" << "defs" << "glyph" << "g" << "marker" /*<< "mask"*/ << "missing-glyph" /*<< "pattern"*/
     << "svg" << "switch" <<  "symbol";
@@ -157,9 +163,9 @@ static const StringSet lengthTypes = StringSet()
 }
 
 namespace CleanerAttr {
-    static const char* UsedElement = "used-element";
-    static const char* BoundingBox = "bbox";
-    static const char* BBoxTransform = "bbox-transform";
+    static const char * const UsedElement = "used-element";
+    static const char * const BoundingBox = "bbox";
+    static const char * const BBoxTransform = "bbox-transform";
 }
 
 #endif // TOOLS_H

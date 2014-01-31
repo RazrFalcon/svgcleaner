@@ -205,17 +205,22 @@ void processFile(const QString &inPath, const QString &outPath)
     if (Keys.flag(Key::TrimIds))
         replacer.trimIds();
     replacer.roundNumericAttributes();
+    // TODO: check only for xmlns:xlink
     remover.cleanSvgElementAttribute();
-    replacer.finalFixes();
-
-    if (Keys.flag(Key::JoinStyleAttributes))
-        replacer.joinStyleAttr();
     if (Keys.flag(Key::SortDefs))
         replacer.sortDefs();
+    replacer.finalFixes();
+    if (Keys.flag(Key::JoinStyleAttributes))
+        replacer.joinStyleAttr();
 
-    XMLError err = doc.SaveFile(outPath.toUtf8().constData(), Keys.flag(Key::CompactOutput));
-    if (err != XML_NO_ERROR)
+    QFile outFile(outPath);
+    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
         qFatal("Error: could not write output file");
+
+    SVGPrinter printer(0, Keys.flag(Key::CompactOutput));
+    doc.Print(&printer);
+    outFile.write(printer.CStr());
+    outFile.close();
 
     if (!Keys.flag(Key::ShortOutput))
         qDebug("The final file size is: %u", (int)QFile(outPath).size());

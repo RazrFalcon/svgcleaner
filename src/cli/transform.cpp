@@ -20,6 +20,7 @@
 ****************************************************************************/
 
 #include <cmath>
+#include <qnumeric.h>
 
 #include "tools.h"
 #include "transform.h"
@@ -225,7 +226,7 @@ void Transform::calcParameters(TransformMatrix &matrix)
     m_xSkew = atan(b)*(180.0/M_PI);
     m_ySkew = atan(c)*(180.0/M_PI);
     m_angle = atan(-b/a)*(180/M_PI);
-    if (isnan(m_angle)) {
+    if (qIsNaN(m_angle)) {
         qFatal("Error: rotation is NaN");
     }
     if (b < c)

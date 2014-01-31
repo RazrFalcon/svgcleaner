@@ -133,7 +133,8 @@ private:
     QStringList m_rootPaths;
 
     void scanFolder(const QString &path, TreeModel *model, TreeItem *parent = 0);
-    void scanModel(const QModelIndex &parent = QModelIndex());
+    bool scanModel(const QModelIndex &parent = QModelIndex());
+    int filesCount(const QModelIndex &parent = QModelIndex());
 
 private slots:
     void onRemovePath(const QModelIndex &index);

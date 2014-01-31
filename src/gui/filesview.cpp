@@ -399,19 +399,24 @@ void FilesView::onRemovePath(const QModelIndex &index)
     m_model->removeRootItem(index);
 }
 
-void FilesView::scanModel(const QModelIndex &parent)
+bool FilesView::scanModel(const QModelIndex &parent)
 {
     // remove folders without svg files in it
+    bool anyRemoved = false;
     for (int row = 0; row < m_model->rowCount(parent); ++row) {
         TreeItem *item = m_model->getItem(m_model->index(row, 0, parent));
         QModelIndex index = m_model->index(row,0, parent);
-        if (item->hasChildren())
-            scanModel(index);
-        else if (item->isFolder()) {
+        if (item->hasChildren()) {
+            if (scanModel(index)) {
+                scanModel(parent);
+            }
+        } else if (item->isFolder()) {
             m_model->removeRow(row, parent);
-            scanModel(index.parent());
+            anyRemoved = true;
+            scanModel(parent);
         }
     }
+    return anyRemoved;
 }
 
 void FilesView::addRootPath(const QString &path)
@@ -437,17 +442,23 @@ void FilesView::setRecursive(bool flag)
         addRootPath(path);
 }
 
-bool FilesView::hasFiles(const QModelIndex &parent)
+int FilesView::filesCount(const QModelIndex &parent)
 {
+    int count = 0;
     for (int row = 0; row < m_model->rowCount(parent); ++row) {
         TreeItem *item = m_model->getItem(m_model->index(row, 0, parent));
         QModelIndex index = m_model->index(row, 0, parent);
         if (item->hasChildren())
-            return hasFiles(index);
-        else if (item->checkState() == Qt::Checked)
-            return true;
+            count += filesCount(index);
+        else if (item->checkState() == Qt::Checked && !item->isFolder())
+            count++;
     }
-    return false;
+    return count;
+}
+
+bool FilesView::hasFiles(const QModelIndex &parent)
+{
+    return filesCount(parent) > 0;
 }
 
 QStringList FilesView::rootList()

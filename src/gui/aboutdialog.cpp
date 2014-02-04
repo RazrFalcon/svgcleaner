@@ -75,6 +75,7 @@ void AboutDialog::fillAuthors()
     textAuthors->append(tr("Translators:"));
     textAuthors->append("Czech - Pavel Fric " + genLink("pavelfric@seznam.cz"));
     textAuthors->append("German - Seb Adler " + genLink("seb.adler.bln@gmail.com"));
+    textAuthors->append("Italian - Daniele Pantaleo " + genLink("ozone89.dp@gmail.com"));
 }
 
 QString AboutDialog::genLink(const QString &link)

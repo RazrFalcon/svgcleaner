@@ -15,6 +15,7 @@ TR_PATH = ../../translations
 TRANSLATIONS += $$TR_PATH/svgcleaner_cs.ts \
                 $$TR_PATH/svgcleaner_ru.ts \
                 $$TR_PATH/svgcleaner_uk.ts \
+                $$TR_PATH/svgcleaner_it.ts \
                 $$TR_PATH/svgcleaner_de.ts
 
 CODECFORTR = UTF-8

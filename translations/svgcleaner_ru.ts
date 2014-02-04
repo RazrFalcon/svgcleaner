@@ -78,12 +78,12 @@
 <context>
     <name>FilesView</name>
     <message>
-        <location filename="../src/gui/filesview.cpp" line="536"/>
+        <location filename="../src/gui/filesview.cpp" line="547"/>
         <source>Warning</source>
         <translation>Предупреждение</translation>
     </message>
     <message>
-        <location filename="../src/gui/filesview.cpp" line="537"/>
+        <location filename="../src/gui/filesview.cpp" line="548"/>
         <source>You can drop only svg(z) files or folders.</source>
         <translation>Вы можете добавлять только svg(z) файлы или папки.</translation>
     </message>
@@ -640,13 +640,13 @@ Did you really want to exit?</source>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="342"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="593"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="599"/>
         <source>Add files</source>
         <translation>Добавить файлы</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="377"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="608"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="614"/>
         <source>Add folder</source>
         <translation>Добавить папку</translation>
     </message>
@@ -658,7 +658,7 @@ Did you really want to exit?</source>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="438"/>
         <location filename="../src/gui/wizarddialog.cpp" line="293"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="435"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="441"/>
         <source>Basic</source>
         <translation>Базовая</translation>
     </message>
@@ -666,21 +666,21 @@ Did you really want to exit?</source>
         <location filename="../src/gui/wizarddialog.ui" line="443"/>
         <location filename="../src/gui/wizarddialog.cpp" line="134"/>
         <location filename="../src/gui/wizarddialog.cpp" line="295"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="437"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="443"/>
         <source>Complete</source>
         <translation>Полная</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="448"/>
         <location filename="../src/gui/wizarddialog.cpp" line="297"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="439"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="445"/>
         <source>Extreme</source>
         <translation>Экстремальная</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="453"/>
         <location filename="../src/gui/wizarddialog.cpp" line="299"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="564"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="570"/>
         <source>Custom</source>
         <translation>Своя</translation>
     </message>
@@ -836,17 +836,17 @@ Did you really want to exit?</source>
         <translation>Данные опции не увеличивают степерь очистки, но могут быть полезны.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="501"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="507"/>
         <source>No files are selected.</source>
         <translation>Ни одного файла не выбрано.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="514"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="520"/>
         <source>The &apos;svgcleaner-cli&apos; executable is not found.</source>
         <translation>Исполняемый файл &apos;svgcleaner-cli&apos; не найден.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="521"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="527"/>
         <source>The &apos;7za&apos; executable is not found.
 
 You will not be able to clean the SVGZ files.</source>
@@ -860,27 +860,27 @@ You will not be able to clean the SVGZ files.</source>
         <translation>Пример</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="490"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="496"/>
         <source>Select an output folder</source>
         <translation>Выберите итоговую папку</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="504"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="510"/>
         <source>An output folder is not selected.</source>
         <translation>Не выбрана итоговая папка.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="507"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="513"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Необходимо установить префикс или суффикс.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="525"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="531"/>
         <source>Selected output folder is not writable.</source>
         <translation>Выбранная итоговая папка недоступна для записи.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="533"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="539"/>
         <source>Warning</source>
         <translation>Предупреждение</translation>
     </message>

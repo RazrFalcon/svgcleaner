@@ -257,12 +257,12 @@ bool SvgElement::attributeEqualTo(const char *attrName, const char *value)
 
 double SvgElement::doubleAttribute(const char *name) const
 {
-    return m_elem->DoubleAttribute(name);
+    return attribute(name).toDouble();
 }
 
 double SvgElement::doubleAttribute(const QString &name) const
 {
-    return m_elem->DoubleAttribute(ToChar(name));
+    return attribute(name).toDouble();
 }
 
 bool SvgElement::hasChildWithTagName(const char *name, XMLElement *parent) const

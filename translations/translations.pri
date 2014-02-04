@@ -3,9 +3,9 @@ isEmpty(QMAKE_LRELEASE) {
 }
 
 unix {
-    # fix for ArchLinux
-    DEP_CHECK = $$system(which lrelease)
-    contains($$DEP_CHECK, "no lrelease in") {
+    # fix for distros which already moved to qt5
+    !exists(/usr/bin/$$QMAKE_LRELEASE) {
+        message(/usr/bin/$$QMAKE_LRELEASE not found - replaced with /usr/bin/lrelease-qt4)
         QMAKE_LRELEASE = lrelease-qt4
     }
 }

@@ -18,6 +18,7 @@ unix:!mac {
                           bin/svgcleaner_ru.qm \
                           bin/svgcleaner_uk.qm \
                           bin/svgcleaner_it.qm \
+                          bin/svgcleaner_fr.qm \
                           bin/svgcleaner_de.qm
 
     bin.path            = $$PREFIX/bin

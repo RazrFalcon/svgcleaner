@@ -23,7 +23,6 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QStringList>
-
 #include <QtDebug>
 
 #include "remover.h"
@@ -82,7 +81,7 @@ void showHelp()
     qDebug() << "";
     qDebug() << "Presets:";
     printLine("--preset=basic",    "Basic cleaning");
-    printLine("--preset=complete", "Complete cleaning");
+    printLine("--preset=complete", "Complete cleaning [default]");
     printLine("--preset=extreme",  "Extreme cleaning");
     qDebug() << "";
     qDebug() << "Options:";
@@ -113,7 +112,7 @@ void showHelp()
         printLine(key, Keys.description(key));
     qDebug() << "";
     qDebug() << "Optimizations:";
-    foreach (const int &key, Keys.optimizationsKeys()) {
+    foreach (const int &key, Keys.optimizationsKeysId()) {
         if (   key == Key::TransformPrecision
             || key == Key::AttributesPrecision
             || key == Key::CoordsPrecision) {
@@ -123,7 +122,7 @@ void showHelp()
             printLine(key);
     }
     qDebug() << "Additional:";
-    foreach (const int &key, Keys.optimizationsUtilsKeys())
+    foreach (const int &key, Keys.optimizationsUtilsKeysId())
         printLine(key);
 }
 

@@ -242,7 +242,7 @@ void WizardDialog::initPathsPage()
 void WizardDialog::initOptimizationPage()
 {
     QVBoxLayout* lay = addPage();
-    foreach (const int &key, Keys::get().optimizationsKeys()) {
+    foreach (const int &key, Keys::get().optimizationsKeysId()) {
         if (   key != Key::TransformPrecision
             && key != Key::CoordsPrecision
             && key != Key::AttributesPrecision) {
@@ -258,7 +258,7 @@ void WizardDialog::initOptimizationPage()
         }
     }
     addUtilsLabel(lay);
-    foreach (const int &key, Keys::get().optimizationsUtilsKeys()) {
+    foreach (const int &key, Keys::get().optimizationsUtilsKeysId()) {
         QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
         chBox->setProperty("key", key);
         lay->addWidget(chBox);
@@ -346,25 +346,18 @@ QList<ToThread> WizardDialog::threadData()
     QStringList args = argsList(&ok);
 
     foreach (const QString &rootPath, treeView->rootList()) {
-        foreach (const QString &file, treeView->rootFiles(rootPath)) {
+        foreach (const QString &filePath, treeView->rootFiles(rootPath)) {
             ToThread tth;
-            QFileInfo fileInfo;
-            if (QFileInfo(rootPath).isDir())
-                fileInfo = QFileInfo(rootPath + "/" + file);
-            else
-                fileInfo = QFileInfo(file);
+            QFileInfo fileInfo(filePath);
             tth.inputFile = fileInfo.absoluteFilePath();
 
             if (radioBtn1->isChecked()) {
-                QString path;
-                if (QFileInfo(rootPath).isDir()) {
-                    path = QDir(lineEditOutDir->text()).absolutePath()
-                                + QString(fileInfo.absoluteFilePath())
-                                    .remove(QDir(rootPath).absolutePath());
-                } else {
-                    path = QFileInfo(QDir(lineEditOutDir->text()).absolutePath()
-                                     + "/" + fileInfo.fileName()).absoluteFilePath();
-                }
+                QString path = lineEditOutDir->text() + "/";
+                if (QFileInfo(rootPath).isDir())
+                    path += QDir(rootPath).dirName() + "/" + QDir(rootPath).relativeFilePath(filePath);
+                else
+                    path += fileInfo.fileName();
+                path = QFileInfo(path).absoluteFilePath();
                 if (path.endsWith("svgz"))
                     path.chop(1);
                 tth.outputFile = path;
@@ -392,7 +385,6 @@ QList<ToThread> WizardDialog::threadData()
             list << tth;
         }
     }
-
     return list;
 }
 

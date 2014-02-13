@@ -25,6 +25,7 @@
 #include <QStringList>
 #include <QHash>
 #include <QMap>
+#include <QSet>
 #include <QObject>
 
 typedef QMap<QString, QString> StringMap;
@@ -34,10 +35,10 @@ typedef QSet<const char *> CharSet;
 typedef QList<const char *> CharList;
 
 namespace Preset {
-    static const QString Basic    = "basic";
-    static const QString Complete = "complete";
-    static const QString Extreme  = "extreme";
-    static const QString Custom   = "custom";
+    extern const QString Basic;
+    extern const QString Complete;
+    extern const QString Extreme;
+    extern const QString Custom;
 }
 
 namespace Key {
@@ -107,67 +108,67 @@ namespace Key {
 }
 
 namespace KeyStr {
-    static const QString RemoveProlog                = "--remove-prolog";
-    static const QString RemoveComments              = "--remove-comments";
-    static const QString RemoveProcInstruction       = "--remove-proc-instr";
-    static const QString RemoveUnusedDefs            = "--remove-unused-defs";
-    static const QString RemoveNonSvgElements        = "--remove-nonsvg-elts";
-    static const QString RemoveMetadata              = "--remove-metadata-elts";
-    static const QString RemoveInkscapeElements      = "--remove-inkscape-elts";
-    static const QString RemoveSodipodiElements      = "--remove-sodipodi-elts";
-    static const QString RemoveAdobeElements         = "--remove-ai-elts";
-    static const QString RemoveCorelDrawElements     = "--remove-corel-elts";
-    static const QString RemoveMSVisioElements       = "--remove-msvisio-elts";
-    static const QString RemoveSketchElements        = "--remove-sketch-elts";
-    static const QString RemoveInvisibleElements     = "--remove-invisible-elts";
-    static const QString RemoveEmptyContainers       = "--remove-empty-containers";
-    static const QString RemoveTinyGaussianBlur      = "--remove-gaussian-blur";
-    static const QString RemoveDuplicatedDefs        = "--remove-duplicated-defs";
-    static const QString RemoveOutsideElements       = "--remove-outside-elts";
-    static const QString ReplaceEqualEltsByUse       = "--equal-elts-to-use";
-    static const QString UngroupContainers           = "--ungroup-containers";
-    static const QString MergeGradients              = "--merge-gradients";
+    extern const QString RemoveProlog;
+    extern const QString RemoveComments;
+    extern const QString RemoveProcInstruction;
+    extern const QString RemoveUnusedDefs;
+    extern const QString RemoveNonSvgElements;
+    extern const QString RemoveMetadata;
+    extern const QString RemoveInkscapeElements;
+    extern const QString RemoveSodipodiElements;
+    extern const QString RemoveAdobeElements;
+    extern const QString RemoveCorelDrawElements;
+    extern const QString RemoveMSVisioElements;
+    extern const QString RemoveSketchElements;
+    extern const QString RemoveInvisibleElements;
+    extern const QString RemoveEmptyContainers;
+    extern const QString RemoveTinyGaussianBlur;
+    extern const QString RemoveDuplicatedDefs;
+    extern const QString RemoveOutsideElements;
+    extern const QString ReplaceEqualEltsByUse;
+    extern const QString UngroupContainers;
+    extern const QString MergeGradients;
 
-    static const QString RemoveSvgVersion            = "--remove-version";
-    static const QString RemoveUnreferencedIds       = "--remove-unreferenced-ids";
-    static const QString TrimIds                     = "--trim-ids";
-    static const QString KeepNamedIds                = "--keep-named-ids";
-    static const QString RemoveNotAppliedAttributes  = "--remove-notappl-atts";
-    static const QString RemoveDefaultAttributes     = "--remove-default-atts";
-    static const QString RemoveInkscapeAttributes    = "--remove-inkscape-atts";
-    static const QString RemoveSodipodiAttributes    = "--remove-sodipodi-atts";
-    static const QString RemoveAdobeAttributes       = "--remove-ai-atts";
-    static const QString RemoveCorelDrawAttributes   = "--remove-corel-atts";
-    static const QString RemoveMSVisioAttributes     = "--remove-msvisio-atts";
-    static const QString RemoveSketchAttributes      = "--remove-sketch-atts";
-    static const QString RemoveStrokeProps           = "--remove-stroke-props";
-    static const QString RemoveFillProps             = "--remove-fill-props";
-    static const QString RemoveUnusedXLinks          = "--remove-unused-xlinks";
-    static const QString GroupElemByStyle            = "--group-elts-by-styles";
-    static const QString JoinStyleAttributes         = "--join-style-atts";
-    static const QString SimplifyTransformMatrix     = "--simplify-transform-matrix";
-    static const QString ApplyTransformsToDefs       = "--apply-transforms-to-defs";
-    static const QString ApplyTransformsToShapes     = "--apply-transforms-to-shapes";
+    extern const QString RemoveSvgVersion;
+    extern const QString RemoveUnreferencedIds;
+    extern const QString TrimIds;
+    extern const QString KeepNamedIds;
+    extern const QString RemoveNotAppliedAttributes;
+    extern const QString RemoveDefaultAttributes;
+    extern const QString RemoveInkscapeAttributes;
+    extern const QString RemoveSodipodiAttributes;
+    extern const QString RemoveAdobeAttributes;
+    extern const QString RemoveCorelDrawAttributes;
+    extern const QString RemoveMSVisioAttributes;
+    extern const QString RemoveSketchAttributes;
+    extern const QString RemoveStrokeProps;
+    extern const QString RemoveFillProps;
+    extern const QString RemoveUnusedXLinks;
+    extern const QString GroupElemByStyle;
+    extern const QString JoinStyleAttributes;
+    extern const QString SimplifyTransformMatrix;
+    extern const QString ApplyTransformsToDefs;
+    extern const QString ApplyTransformsToShapes;
     // TODO: remove bitmaps, as utility
 
-    static const QString ConvertToRelative           = "--convert-to-relative";
-    static const QString RemoveUnneededSymbols       = "--remove-unneeded-symbols";
-    static const QString RemoveTinySegments          = "--remove-tiny-segments";
-    static const QString ConvertSegments             = "--convert-segments";
-    static const QString ApplyTransformsToPaths      = "--apply-transforms-to-paths";
+    extern const QString ConvertToRelative;
+    extern const QString RemoveUnneededSymbols;
+    extern const QString RemoveTinySegments;
+    extern const QString ConvertSegments;
+    extern const QString ApplyTransformsToPaths;
 
-    static const QString CreateViewbox               = "--create-viewbox";
-    static const QString ConvertColorToRRGGBB        = "--colors-to-rrggbb";
-    static const QString ConvertRRGGBBToRGB          = "--rrggbb-to-rgb";
-    static const QString ConvertBasicShapes          = "--convert-basic-shapes";
-    static const QString TransformPrecision          = "--transform-precision";
-    static const QString CoordsPrecision             = "--coordinates-precision";
-    static const QString AttributesPrecision         = "--attributes-precision";
-    static const QString CompactOutput               = "--compact-output";
-    static const QString SortDefs                    = "--sort-defs";
+    extern const QString CreateViewbox;
+    extern const QString ConvertColorToRRGGBB;
+    extern const QString ConvertRRGGBBToRGB;
+    extern const QString ConvertBasicShapes;
+    extern const QString TransformPrecision;
+    extern const QString CoordsPrecision;
+    extern const QString AttributesPrecision;
+    extern const QString CompactOutput;
+    extern const QString SortDefs;
     // TODO: convert all shapes to path, as utility
 
-    static const QString ShortOutput                 = "--short-output";
+    extern const QString ShortOutput;
 }
 
 // singleton
@@ -193,15 +194,15 @@ public:
     QList<int> attributesKeysId();
     QList<int> attributesUtilsKeysId();
     QList<int> pathsKeysId();
-    QList<int> optimizationsKeys();
-    QList<int> optimizationsUtilsKeys();
+    QList<int> optimizationsKeysId();
+    QList<int> optimizationsUtilsKeysId();
     QList<int> basicPresetKeys();
     QList<int> completePresetKeys();
     QList<int> extremePresetKeys();
     void setPreset(const QString &name);
     QString preset();
     QStringList& allKeys();
-    QString keyName(const int &key);
+    QString keyName(const int &keyId);
     QString presetDescription(const QString &name);
 
 private:

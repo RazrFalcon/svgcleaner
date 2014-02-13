@@ -22,13 +22,9 @@
 #ifndef PATHS_H
 #define PATHS_H
 
-#include <QStringList>
-#include <QPointF>
 #include <QVector>
 
 #include "svgelement.h"
-#include "transform.h"
-#include "tools.h"
 
 namespace Command {
     static const QChar MoveTo           = 'm';

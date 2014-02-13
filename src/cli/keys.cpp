@@ -23,6 +23,75 @@
 
 #include "keys.h"
 
+namespace Preset {
+    const QString Basic    = "basic";
+    const QString Complete = "complete";
+    const QString Extreme  = "extreme";
+    const QString Custom   = "custom";
+}
+
+namespace KeyStr {
+    const QString RemoveProlog                = "--remove-prolog";
+    const QString RemoveComments              = "--remove-comments";
+    const QString RemoveProcInstruction       = "--remove-proc-instr";
+    const QString RemoveUnusedDefs            = "--remove-unused-defs";
+    const QString RemoveNonSvgElements        = "--remove-nonsvg-elts";
+    const QString RemoveMetadata              = "--remove-metadata-elts";
+    const QString RemoveInkscapeElements      = "--remove-inkscape-elts";
+    const QString RemoveSodipodiElements      = "--remove-sodipodi-elts";
+    const QString RemoveAdobeElements         = "--remove-ai-elts";
+    const QString RemoveCorelDrawElements     = "--remove-corel-elts";
+    const QString RemoveMSVisioElements       = "--remove-msvisio-elts";
+    const QString RemoveSketchElements        = "--remove-sketch-elts";
+    const QString RemoveInvisibleElements     = "--remove-invisible-elts";
+    const QString RemoveEmptyContainers       = "--remove-empty-containers";
+    const QString RemoveTinyGaussianBlur      = "--remove-gaussian-blur";
+    const QString RemoveDuplicatedDefs        = "--remove-duplicated-defs";
+    const QString RemoveOutsideElements       = "--remove-outside-elts";
+    const QString ReplaceEqualEltsByUse       = "--equal-elts-to-use";
+    const QString UngroupContainers           = "--ungroup-containers";
+    const QString MergeGradients              = "--merge-gradients";
+
+    const QString RemoveSvgVersion            = "--remove-version";
+    const QString RemoveUnreferencedIds       = "--remove-unreferenced-ids";
+    const QString TrimIds                     = "--trim-ids";
+    const QString KeepNamedIds                = "--keep-named-ids";
+    const QString RemoveNotAppliedAttributes  = "--remove-notappl-atts";
+    const QString RemoveDefaultAttributes     = "--remove-default-atts";
+    const QString RemoveInkscapeAttributes    = "--remove-inkscape-atts";
+    const QString RemoveSodipodiAttributes    = "--remove-sodipodi-atts";
+    const QString RemoveAdobeAttributes       = "--remove-ai-atts";
+    const QString RemoveCorelDrawAttributes   = "--remove-corel-atts";
+    const QString RemoveMSVisioAttributes     = "--remove-msvisio-atts";
+    const QString RemoveSketchAttributes      = "--remove-sketch-atts";
+    const QString RemoveStrokeProps           = "--remove-stroke-props";
+    const QString RemoveFillProps             = "--remove-fill-props";
+    const QString RemoveUnusedXLinks          = "--remove-unused-xlinks";
+    const QString GroupElemByStyle            = "--group-elts-by-styles";
+    const QString JoinStyleAttributes         = "--join-style-atts";
+    const QString SimplifyTransformMatrix     = "--simplify-transform-matrix";
+    const QString ApplyTransformsToDefs       = "--apply-transforms-to-defs";
+    const QString ApplyTransformsToShapes     = "--apply-transforms-to-shapes";
+
+    const QString ConvertToRelative           = "--convert-to-relative";
+    const QString RemoveUnneededSymbols       = "--remove-unneeded-symbols";
+    const QString RemoveTinySegments          = "--remove-tiny-segments";
+    const QString ConvertSegments             = "--convert-segments";
+    const QString ApplyTransformsToPaths      = "--apply-transforms-to-paths";
+
+    const QString CreateViewbox               = "--create-viewbox";
+    const QString ConvertColorToRRGGBB        = "--colors-to-rrggbb";
+    const QString ConvertRRGGBBToRGB          = "--rrggbb-to-rgb";
+    const QString ConvertBasicShapes          = "--convert-basic-shapes";
+    const QString TransformPrecision          = "--transform-precision";
+    const QString CoordsPrecision             = "--coordinates-precision";
+    const QString AttributesPrecision         = "--attributes-precision";
+    const QString CompactOutput               = "--compact-output";
+    const QString SortDefs                    = "--sort-defs";
+
+    const QString ShortOutput                 = "--short-output";
+}
+
 Keys::Keys(QObject *parent) : QObject(parent)
 {
     flags = new QSet<int>;
@@ -248,7 +317,7 @@ QList<int> Keys::pathsKeysId()
     return list;
 }
 
-QList<int> Keys::optimizationsKeys()
+QList<int> Keys::optimizationsKeysId()
 {
     static QList<int> list = QList<int>()
         << Key::CreateViewbox
@@ -263,7 +332,7 @@ QList<int> Keys::optimizationsKeys()
     return list;
 }
 
-QList<int> Keys::optimizationsUtilsKeys()
+QList<int> Keys::optimizationsUtilsKeysId()
 {
     static QList<int> list = QList<int>()
         << Key::SortDefs;
@@ -294,7 +363,7 @@ QList<int> Keys::completePresetKeys()
         << Key::RemoveUnneededSymbols
         << Key::RemoveTinySegments
         << Key::ConvertSegments
-        << optimizationsKeys()
+        << optimizationsKeysId()
         << Key::SortDefs;
     return list;
 }
@@ -375,9 +444,9 @@ QStringList &Keys::allKeys()
     return allKeys;
 }
 
-QString Keys::keyName(const int &key)
+QString Keys::keyName(const int &keyId)
 {
-    return allKeys().at(key);
+    return allKeys().at(keyId);
 }
 
 QString Keys::presetDescription(const QString &name)
@@ -447,6 +516,13 @@ void Keys::parseOptions(QStringList &list)
     m_transformPrecision   = intNumber(Key::TransformPrecision);
     m_attributesPrecision  = intNumber(Key::AttributesPrecision);
     m_coordinatesPrecision = intNumber(Key::CoordsPrecision);
+
+    foreach (const QString &key, list) {
+        if (key.isEmpty() || key.count(' ') != 0)
+            list.removeOne(key);
+    }
+    if (list.isEmpty())
+        return;
 
     if (list.first().startsWith(QLatin1String("--preset"))) {
         QString preset = list.takeFirst();

@@ -19,9 +19,119 @@
 **
 ****************************************************************************/
 
+#include <QVector>
 #include <cmath>
 
 #include "tools.h"
+
+namespace Props {
+const StringSet fillList = StringSet() << "fill" << "fill-rule" << "fill-opacity";
+const StringSet strokeList = StringSet()
+    << "stroke" << "stroke-width" << "stroke-linecap" << "stroke-linejoin" << "stroke-miterlimit"
+    << "stroke-dasharray" << "stroke-dashoffset" << "stroke-opacity";
+
+const StringSet presentationAttributes = StringSet()
+    << "alignment-baseline" << "baseline-shift" << "clip-path" << "clip-rule" << "clip"
+    << "color-interpolation-filters" << "color-interpolation" << "color-profile"
+    << "color-rendering" << "color" << "cursor" << "direction" << "display" << "dominant-baseline"
+    << "enable-background" << "fill-opacity" << "fill-rule" << "fill" << "filter" << "flood-color"
+    << "flood-opacity" << "font-family" << "font-size-adjust" << "font-size" << "font-stretch"
+    << "font-style" << "font-variant" << "font-weight" << "glyph-orientation-horizontal"
+    << "glyph-orientation-vertical" << "image-rendering" << "kerning" << "letter-spacing"
+    << "lighting-color" << "marker-end" << "marker-mid" << "marker-start" << "mask" << "opacity"
+    << "overflow" << "pointer-events" << "shape-rendering" << "stop-color" << "stop-opacity"
+    << "stroke-dasharray" << "stroke-dashoffset" << "stroke-linecap" << "stroke-linejoin"
+    << "stroke-miterlimit" << "stroke-opacity" << "stroke-width" << "stroke" << "text-anchor"
+    << "text-decoration" << "text-rendering" << "unicode-bidi" << "visibility" << "word-spacing"
+    << "writing-mode";
+
+const CharList linkableStyleAttributes = CharList()
+    << "clip-path" << "fill" << "mask" << "filter" << "stroke" << "marker-start"
+    << "marker-mid" << "marker-end";
+
+const QStringList linearGradient = QStringList()
+    << "gradientTransform" << "xlink:href" << "x1" << "y1" << "x2" << "y2"
+    << "gradientUnits" << "spreadMethod" << "externalResourcesRequired";
+
+const QStringList radialGradient = QStringList()
+    << "gradientTransform" << "xlink:href" << "cx" << "cy" << "r" << "fx" << "fy"
+    << "gradientUnits" << "spreadMethod" << "externalResourcesRequired";
+
+const QStringList filter = QStringList()
+    << "gradientTransform" << "xlink:href" << "x" << "y" << "width" << "height" << "filterRes"
+    << "filterUnits" << "primitiveUnits" << "externalResourcesRequired";
+
+const StringSet maskAttributes = StringSet()
+    << "x" << "y" << "width" << "height"
+    << "maskUnits" << "maskContentUnits" << "externalResourcesRequired";
+
+const StringSet digitList = StringSet()
+    << "x" << "y" << "x1" << "y1" << "x2" << "y2" << "width" << "height" << "r" << "rx" << "ry"
+    << "fx" << "fy" << "cx" << "cy" << "dx" << "dy" << "offset";
+
+const StringSet filterDigitList = StringSet()
+    << "stdDeviation" << "baseFrequency" << "k" << "k1" << "k2" << "k3" << "specularConstant"
+    << "dx" << "dy" << "stroke-dasharray";
+
+const StringSet defsList = StringSet()
+    << "altGlyphDef" << "clipPath" << "cursor" << "filter" << "linearGradient"
+    << "marker" << "mask" << "pattern" << "radialGradient"/* << "symbol"*/;
+
+const StringSet referencedElements = StringSet()
+    << "a" << "altGlyphDef" << "clipPath" << "color-profile" << "cursor" << "filter" << "font"
+    << "font-face" << "foreignObject" << "image" << "marker" << "mask" << "pattern" << "script"
+    << "style" << "switch" << "text" << "view";
+
+const StringSet textElements = StringSet()
+    << "text" << "tspan" << "flowRoot" << "flowPara" << "flowSpan" << "textPath";
+
+const StringSet textAttributes = StringSet()
+    << "font-style" << "font-variant" << "font-weight" << "font-weight" << "font-stretch"
+    << "font-size" << "font-size-adjust" << "kerning" << "letter-spacing" << "word-spacing"
+    << "text-decoration" << "writing-mode" << "glyph-orientation-vertical"
+    << "glyph-orientation-horizontal" << "direction" << "text-anchor" << "dominant-baseline"
+    << "alignment-baseline" << "baseline-shift";
+const QVariantHash defaultStyleValues = Tools::initDefaultStyleHash();
+
+const StringSet svgElementList = StringSet()
+    << "a" << "altGlyph" << "altGlyphDef" << "altGlyphItem" << "animate" << "animateColor"
+    << "animateMotion" << "animateTransform" << "circle" << "clipPath" << "color-profile"
+    << "cursor" << "defs" << "desc" << "ellipse" << "feBlend" << "feColorMatrix"
+    << "feComponentTransfer" << "feComposite" << "feConvolveMatrix" << "feDiffuseLighting"
+    << "feDisplacementMap" << "feDistantLight" << "feFlood" << "feFuncA" << "feFuncB" << "feFuncG"
+    << "feFuncR" << "feGaussianBlur" << "feImage" << "feMerge" << "feMergeNode" << "feMorphology"
+    << "feOffset" << "fePointLight" << "feSpecularLighting" << "feSpotLight" << "feTile"
+    << "feTurbulence" << "filter" << "font" << "font-face" << "font-face-format" << "font-face-name"
+    << "font-face-src" << "font-face-uri" << "foreignObject" << "g" << "glyph" << "glyphRef"
+    << "hkern" << "image" << "line" << "linearGradient" << "marker" << "mask" << "metadata"
+    << "missing-glyph" << "mpath" << "path" << "pattern" << "polygon" << "polyline"
+    << "radialGradient" << "rect" << "script" << "set" << "stop" << "style" << "svg" << "switch"
+    << "symbol" << "text" << "textPath" << "title" << "tref" << "flowRoot" << "flowRegion"
+    << "flowPara" << "flowSpan" << "tspan" << "use" << "view" << "vkern";
+
+const StringSet elementsUsingXLink = StringSet()
+    << "a" << "altGlyph" << "color-profile" << "cursor" << "feImage" << "filter" << "font-face-uri"
+    << "glyphRef" << "image" << "linearGradient" << "mpath" << "pattern" << "radialGradient"
+    << "script" << "textPath" << "use" << "animate" << "animateColor" << "animateMotion"
+    << "animateTransform" << "set" << "tref";
+
+const StringSet containers = StringSet()
+    << "a" << "defs" << "glyph" << "g" << "marker" /*<< "mask"*/ << "missing-glyph" /*<< "pattern"*/
+    << "svg" << "switch" <<  "symbol";
+
+const StringSet stopAttributes = StringSet()
+    << "offset" << "stop-color" << "stop-opacity";
+
+const StringSet lengthTypes = StringSet()
+    << "em" << "ex" << "px" << "in" << "cm" << "mm" << "pt" << "pc";
+}
+
+namespace CleanerAttr {
+    const char * const UsedElement = "used-element";
+    const char * const BoundingBox = "bbox";
+    const char * const BBoxTransform = "bbox-transform";
+}
+
 
 Q_CORE_EXPORT double qstrtod(const char *s00, char const **se, bool *ok);
 Q_CORE_EXPORT char *qdtoa(double d, int mode, int ndigits, int *decpt,
@@ -102,8 +212,12 @@ QString Tools::doubleToStr(const qreal value, int precision)
     }
     while (zeroAfterPoint--)
         *(--p) = m_zero;
-    if (decimalPointPos == 0)
+    if (decimalPointPos == 0) {
         *(--p) = QChar('.').unicode();
+        static const bool useStartingZero = !Keys::get().flag(Key::RemoveUnneededSymbols);
+        if (useStartingZero)
+            *(--p) = m_zero;
+    }
     if (value < 0)
         *(--p) = QChar('-').unicode();
     return QString(reinterpret_cast<QChar *>(p), 65 - (p - buff));

@@ -79,12 +79,12 @@
 <context>
     <name>FilesView</name>
     <message>
-        <location filename="../src/gui/filesview.cpp" line="547"/>
+        <location filename="../src/gui/filesview.cpp" line="546"/>
         <source>Warning</source>
         <translation>Застереження</translation>
     </message>
     <message>
-        <location filename="../src/gui/filesview.cpp" line="548"/>
+        <location filename="../src/gui/filesview.cpp" line="547"/>
         <source>You can drop only svg(z) files or folders.</source>
         <translation>Ви можете додавати тільки svg(z) файли або папки.</translation>
     </message>
@@ -92,292 +92,292 @@
 <context>
     <name>Keys</name>
     <message>
-        <location filename="../src/cli/keys.cpp" line="71"/>
+        <location filename="../src/cli/keys.cpp" line="140"/>
         <source>Remove unused elements in &apos;defs&apos; element</source>
         <translation>Видаляти елементи з секції &apos;defs&apos;, що не використовуються</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="65"/>
+        <location filename="../src/cli/keys.cpp" line="134"/>
         <source>Remove XML prolog</source>
         <translation>Видаляти пролог XML</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="67"/>
+        <location filename="../src/cli/keys.cpp" line="136"/>
         <source>Remove XML comments</source>
         <translation>Видаляти XML коментарі</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="69"/>
+        <location filename="../src/cli/keys.cpp" line="138"/>
         <source>Remove XML processing instruction</source>
         <translation>Видаляти інструкції обробки XML</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="73"/>
+        <location filename="../src/cli/keys.cpp" line="142"/>
         <source>Remove non SVG elements</source>
         <translation>Видаляти не SVG елементи</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="75"/>
+        <location filename="../src/cli/keys.cpp" line="144"/>
         <source>Remove metadata elements</source>
         <translation>Видаляти елементи метаданих</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="77"/>
+        <location filename="../src/cli/keys.cpp" line="146"/>
         <source>Remove Inkscape namespaced elements</source>
         <translation>Видаляти елементи з простору імен Inkscape</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="79"/>
+        <location filename="../src/cli/keys.cpp" line="148"/>
         <source>Remove SodiPodi namespaced elements</source>
         <translation>Видаляти елементи з простору імен SodiPodi</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="81"/>
+        <location filename="../src/cli/keys.cpp" line="150"/>
         <source>Remove Adobe Illustrator namespaced elements</source>
         <translation>Видаляти елементи з простору імен Adobe Illustrator</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="83"/>
+        <location filename="../src/cli/keys.cpp" line="152"/>
         <source>Remove CorelDRAW namespaced elements</source>
         <translation>Видаляти елементи з простору імен CorelDRAW</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="85"/>
+        <location filename="../src/cli/keys.cpp" line="154"/>
         <source>Remove MS Visio namespaced elements</source>
         <translation>Видаляти елементи з простору імен MS Visio</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="87"/>
+        <location filename="../src/cli/keys.cpp" line="156"/>
         <source>Remove Sketch namespaced elements</source>
         <translation>Видаляти елементи з простору імен Sketch</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="89"/>
+        <location filename="../src/cli/keys.cpp" line="158"/>
         <source>Remove invisible elements</source>
         <translation>Видаляти невидимі елементи</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="91"/>
+        <location filename="../src/cli/keys.cpp" line="160"/>
         <source>Remove empty containers elements</source>
         <translation>Видаляти порожні елементи-контейнери</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="93"/>
+        <location filename="../src/cli/keys.cpp" line="162"/>
         <source>Remove elements which is outside the viewbox</source>
         <translation>Видаляти елементи поза області видимості</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="95"/>
+        <location filename="../src/cli/keys.cpp" line="164"/>
         <source>Replace equal elements by the &apos;use&apos;</source>
         <translation>Замінювати ідентичні елементи на елемент &apos;use&apos;</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="97"/>
+        <location filename="../src/cli/keys.cpp" line="166"/>
         <source>Ungroup container elements, when possible</source>
         <translation>Розгруповувати елементи-контейнери, якщо можливо</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="99"/>
+        <location filename="../src/cli/keys.cpp" line="168"/>
         <source>Remove duplicate elements in the &apos;defs&apos; element</source>
         <translation>Видаляти елементи що повторюються в секції &apos;defs&apos;</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="101"/>
+        <location filename="../src/cli/keys.cpp" line="170"/>
         <source>Merge &apos;linearGradient&apos; into &apos;radialGradient&apos;, when possible</source>
         <translation>Об&apos;єднувати &apos;linearGradient&apos; та &apos;radialGradient&apos;, коли це можливо</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="103"/>
+        <location filename="../src/cli/keys.cpp" line="172"/>
         <source>Remove Gaussian blur filters with deviation lower than</source>
         <translation>Видаляти фільтри Гаусового розмивання, коли значення нище за</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="106"/>
+        <location filename="../src/cli/keys.cpp" line="175"/>
         <source>Remove SVG version</source>
         <translation>Видаляти версію SVG</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="108"/>
+        <location filename="../src/cli/keys.cpp" line="177"/>
         <source>Remove unreferenced id&apos;s</source>
         <translation>Видаляти зайві id у елементів</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="110"/>
+        <location filename="../src/cli/keys.cpp" line="179"/>
         <source>Trim &apos;id&apos; attributes</source>
         <translation>Скорочувати атрибут &apos;id&apos;</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="112"/>
+        <location filename="../src/cli/keys.cpp" line="181"/>
         <source>Keep unreferenced id&apos;s which contains only letters</source>
         <translation>Залишати атрибути &apos;id&apos;, що містять лише літери</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="114"/>
+        <location filename="../src/cli/keys.cpp" line="183"/>
         <source>Remove not applied attributes</source>
         <translation>Видаляти атрибути що не використовуються</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="116"/>
+        <location filename="../src/cli/keys.cpp" line="185"/>
         <source>Remove attributes with default values</source>
         <translation>Видаляти атрибути зі значеннями за замовчуванням</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="118"/>
+        <location filename="../src/cli/keys.cpp" line="187"/>
         <source>Remove Inkscape namespaced attributes</source>
         <translation>Видаляти атрибути з простору імен Inkscape</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="120"/>
+        <location filename="../src/cli/keys.cpp" line="189"/>
         <source>Remove SodiPodi namespaced attributes</source>
         <translation>Видаляти атрибути з простору імен SodiPodi</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="122"/>
+        <location filename="../src/cli/keys.cpp" line="191"/>
         <source>Remove Adobe Illustrator namespaced attributes</source>
         <translation>Видаляти атрибути з простору імен Adobe Illustrator</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="124"/>
+        <location filename="../src/cli/keys.cpp" line="193"/>
         <source>Remove CorelDRAW namespaced attributes</source>
         <translation>Видаляти атрибути з простору імен CorelDRAW</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="126"/>
+        <location filename="../src/cli/keys.cpp" line="195"/>
         <source>Remove MS Visio namespaced attributes</source>
         <translation>Видаляти атрибути з простору імен MS Visio</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="128"/>
+        <location filename="../src/cli/keys.cpp" line="197"/>
         <source>Remove Sketch namespaced attributes</source>
         <translation>Видаляти атрибути з простору імен Sketch</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="130"/>
+        <location filename="../src/cli/keys.cpp" line="199"/>
         <source>Remove stroke properties when no stroking</source>
         <translation>Видаляти властивості обведення, якщо його немає</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="132"/>
+        <location filename="../src/cli/keys.cpp" line="201"/>
         <source>Remove fill properties when no filling</source>
         <translation>Видаляти властивості заповнення, якщо його немає</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="134"/>
+        <location filename="../src/cli/keys.cpp" line="203"/>
         <source>Remove XLinks which pointed to nonexistent elements</source>
         <translation>Видаляти посилання, які вказують на неіснуючі елементи</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="136"/>
+        <location filename="../src/cli/keys.cpp" line="205"/>
         <source>Group elements by style properties</source>
         <translation>Групувати елементи з подібними стилями</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="138"/>
+        <location filename="../src/cli/keys.cpp" line="207"/>
         <source>Merge style properties into &apos;style&apos; attribute</source>
         <translation>Об&apos;єднувати властивості стилю в атрибут &apos;style&apos;</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="140"/>
+        <location filename="../src/cli/keys.cpp" line="209"/>
         <source>Simplify transform matrices into short equivalent, when possible</source>
         <translation>Спрощувати матриці трансформацій, коли це можливо</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="142"/>
+        <location filename="../src/cli/keys.cpp" line="211"/>
         <source>Apply transform matrices to gradients, when possible</source>
         <translation>Застосовувати матриці трансформацій до градиентів, коли це можливо</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="144"/>
+        <location filename="../src/cli/keys.cpp" line="213"/>
         <source>Apply transform matrices to basic shapes, when possible</source>
         <translation>Застосовувати матриці трансформацій до базових форм, коли це можливо</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="147"/>
+        <location filename="../src/cli/keys.cpp" line="216"/>
         <source>Convert absolute coordinates into relative ones</source>
         <translation>Переводити абсолютні координати у відносні</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="149"/>
+        <location filename="../src/cli/keys.cpp" line="218"/>
         <source>Remove unneeded symbols in &apos;d&apos; attribute</source>
         <translation>Видаляти непотрібні символи з атрибуту &apos;d&apos;</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="151"/>
+        <location filename="../src/cli/keys.cpp" line="220"/>
         <source>Remove tiny or empty segments</source>
         <translation>Видаляти крихітні або порожні сегменти</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="153"/>
+        <location filename="../src/cli/keys.cpp" line="222"/>
         <source>Convert segments into shorter equivalent, when possible</source>
         <translation>Переводити сегменти в короткі еквіваленти, коли це можливо</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="155"/>
+        <location filename="../src/cli/keys.cpp" line="224"/>
         <source>Apply transform matrices, when possible</source>
         <translation>Застосовувати матриці трансформацій, коли це можливо</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="158"/>
+        <location filename="../src/cli/keys.cpp" line="227"/>
         <source>Convert &apos;height&apos; and &apos;width&apos; attributes into &apos;viewBox&apos; attribute</source>
         <translation>Переводити атрибути &apos;height&apos; та &apos;width&apos; в атрибут &apos;viewBox&apos;</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="160"/>
+        <location filename="../src/cli/keys.cpp" line="229"/>
         <source>Convert colors into #RRGGBB format</source>
         <translation>Переводити кольори у формат # RRGGBB</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="162"/>
+        <location filename="../src/cli/keys.cpp" line="231"/>
         <source>Convert #RRGGBB colors into #RGB format, when possible</source>
         <translation>Переводити кольори у форматі #RRGGBB у формат #RGB, коли це можливо</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="164"/>
+        <location filename="../src/cli/keys.cpp" line="233"/>
         <source>Convert &apos;polygon&apos;, &apos;polyline&apos;, &apos;line&apos;, &apos;rect&apos; into paths</source>
         <translation>Переводити &apos;polygon&apos;, &apos;polyline&apos;, &apos;line&apos;, &apos;rect&apos; до елементу &apos;path&apos;</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="166"/>
+        <location filename="../src/cli/keys.cpp" line="235"/>
         <source>Set rounding precision for transformations</source>
         <translation>Точність округлення для трансформацій</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="168"/>
+        <location filename="../src/cli/keys.cpp" line="237"/>
         <source>Set rounding precision for coordinates</source>
         <translation>Точність округлення для координат</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="170"/>
+        <location filename="../src/cli/keys.cpp" line="239"/>
         <source>Set rounding precision for attributes</source>
         <translation>Точність округлення для атрибутів</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="172"/>
+        <location filename="../src/cli/keys.cpp" line="241"/>
         <source>Save file with only required whitespace and newlines</source>
         <translation>Зберегти файл тільки з необхідними пробілами і символами нового рядка</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="174"/>
+        <location filename="../src/cli/keys.cpp" line="243"/>
         <source>Sort elements by name in &apos;defs&apos; element</source>
         <translation>Відсортувати елементи в секції &apos;defs&apos;</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="386"/>
+        <location filename="../src/cli/keys.cpp" line="455"/>
         <source>&lt;b&gt;Basic&lt;/b&gt; preset are designed to remove all unnecessary data from SVG file, without changing it structure. Allows you to continue editing of the file.&lt;br&gt;Сan not damage your files. Otherwise, please send this files to our email.</source>
         <translation>Передустановка &lt;b&gt; Базова &lt;/b&gt; призначена для видалення непотрібної інформації з SVG файлу, без зміни його структури. Надаючи можливість подальшого редагування файлу.&lt;br&gt; Не може зіпсувати Ваш файл. В іншому випадку, будь ласка, надішліть зіпсовані файли нам на email.</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="391"/>
+        <location filename="../src/cli/keys.cpp" line="460"/>
         <source>&lt;b&gt;Complete&lt;/b&gt; preset are designed to create a file which will be used only for showing. This preset completely change file structure, what in most cases prevents future editing.&lt;br&gt;Should not damage your files. Otherwise, please send this files to our email.</source>
         <translation>Передустановка &lt;b&gt; Повна &lt;/b&gt; призначена для створення файлу тільки для відображення. Дана предустановка повністю змінює структуру файлу, що, в більшості випадків, перешкоджає подальшому редагуванню.&lt;br&gt; Не повинна зіпсувати Ваш файл. В іншому випадку, будь ласка, надішліть зіпсовані файли нам на email.</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="395"/>
+        <location filename="../src/cli/keys.cpp" line="464"/>
         <source>&lt;b&gt;Extreme&lt;/b&gt; preset does the same that &lt;b&gt;Complete&lt;/b&gt; do, but also enables some unstable features.&lt;br&gt;It will definitely change displaying of your file and could even damage it.</source>
         <translation>Передустановка &lt;b&gt; Екстремальна &lt;/b&gt; робить теж що і &lt;b&gt; Повна &lt;/b&gt;, але додатково задіює експерементальні можливості.&lt;br&gt; Файл швидше за все буде викривлений і може навіть повністю зіпсуватися.</translation>
     </message>
     <message>
-        <location filename="../src/cli/keys.cpp" line="398"/>
+        <location filename="../src/cli/keys.cpp" line="467"/>
         <source>&lt;b&gt;Custom&lt;/b&gt; preset is used to store your own cleaning options. By default all options are off.</source>
         <translation>Передустановка &lt;b&gt; Своя &lt;/b&gt; призначена для зберігання власних настройок очищення. За замовчуванням всі опції відключені.</translation>
     </message>
@@ -641,13 +641,13 @@ Did you really want to exit?</source>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="342"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="599"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="591"/>
         <source>Add files</source>
         <translation>Додати файли</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="377"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="614"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="606"/>
         <source>Add folder</source>
         <translation>Додати папку</translation>
     </message>
@@ -659,7 +659,7 @@ Did you really want to exit?</source>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="438"/>
         <location filename="../src/gui/wizarddialog.cpp" line="293"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="441"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="433"/>
         <source>Basic</source>
         <translation>Базова</translation>
     </message>
@@ -667,21 +667,21 @@ Did you really want to exit?</source>
         <location filename="../src/gui/wizarddialog.ui" line="443"/>
         <location filename="../src/gui/wizarddialog.cpp" line="134"/>
         <location filename="../src/gui/wizarddialog.cpp" line="295"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="443"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="435"/>
         <source>Complete</source>
         <translation>Повна</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="448"/>
         <location filename="../src/gui/wizarddialog.cpp" line="297"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="445"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="437"/>
         <source>Extreme</source>
         <translation>Екстремальна</translation>
     </message>
     <message>
         <location filename="../src/gui/wizarddialog.ui" line="453"/>
         <location filename="../src/gui/wizarddialog.cpp" line="299"/>
-        <location filename="../src/gui/wizarddialog.cpp" line="570"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="562"/>
         <source>Custom</source>
         <translation>Своя</translation>
     </message>
@@ -837,17 +837,17 @@ Did you really want to exit?</source>
         <translation>Дані опції не покращують очищення, але можуть бути корисні.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="507"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="499"/>
         <source>No files are selected.</source>
         <translation>Жодного файлу не вибрано.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="520"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="512"/>
         <source>The &apos;svgcleaner-cli&apos; executable is not found.</source>
         <translation>Виконуваний файл &apos;svgcleaner-cli&apos; не знайдений.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="527"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="519"/>
         <source>The &apos;7za&apos; executable is not found.
 
 You will not be able to clean the SVGZ files.</source>
@@ -861,27 +861,27 @@ You will not be able to clean the SVGZ files.</source>
         <translation>Наприклад</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="496"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="488"/>
         <source>Select an output folder</source>
         <translation>Обрати вихідну папку</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="510"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="502"/>
         <source>An output folder is not selected.</source>
         <translation>Не обрано вихідну папку.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="513"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="505"/>
         <source>You have to set a prefix or a suffix for this save method.</source>
         <translation>Необхідно задати префікс та/або суфікс.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="531"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="523"/>
         <source>Selected output folder is not writable.</source>
         <translation>Обрана вихідна папка недоступна для запису.</translation>
     </message>
     <message>
-        <location filename="../src/gui/wizarddialog.cpp" line="539"/>
+        <location filename="../src/gui/wizarddialog.cpp" line="531"/>
         <source>Warning</source>
         <translation>Застереження</translation>
     </message>

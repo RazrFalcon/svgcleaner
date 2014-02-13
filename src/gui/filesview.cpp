@@ -476,12 +476,11 @@ QStringList FilesView::rootFiles(const QString &path)
     QStringList list;
     for (int row = 0; row < m_model->rowCount(QModelIndex()); ++row) {
         TreeItem *item = m_model->getItem(m_model->index(row, 0, QModelIndex()));
-        if (item->data() == path) {
+        if (item->data() == path && item->checkState() == Qt::Checked) {
             QModelIndex index = m_model->index(row, 0, QModelIndex());
-            if (item->hasChildren()) {
+            if (item->hasChildren())
                 list = fileList(index);
-                list.replaceInStrings(path, "");
-            } else
+            else
                 list << item->data();
             break;
         }

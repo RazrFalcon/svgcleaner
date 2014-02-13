@@ -25,6 +25,117 @@
 #include "tools.h"
 #include "transform.h"
 
+TransformMatrix::TransformMatrix()
+{
+    setToIdentity();
+}
+
+TransformMatrix::TransformMatrix(qreal a, qreal b, qreal c, qreal d, qreal e, qreal f)
+{
+    setToIdentity();
+    m[0][0] = a;
+    m[1][0] = c;
+    m[2][0] = e;
+
+    m[0][1] = b;
+    m[1][1] = d;
+    m[2][1] = f;
+}
+
+void TransformMatrix::setToIdentity()
+{
+    for (int col = 0; col < 3; ++col) {
+        for (int row = 0; row < 3; ++row) {
+            if (row == col)
+                m[col][row] = 1.0f;
+            else
+                m[col][row] = 0.0f;
+        }
+    }
+}
+
+qreal TransformMatrix::determinant()
+{
+    return _determinant(*this, 3);
+}
+
+void TransformMatrix::invert()
+{
+    qreal det = determinant();
+    TransformMatrix invMat;
+    const int n = 3;
+    for(int i = 0; i < n; ++i) {
+        for(int j = 0; j < n; ++j) {
+            int mm = n - 1;
+            invMat(j,i) = pow(-1.0, i + j + 2) * _determinant(subMatrix(*this, n, i, j), mm) / det;
+        }
+    }
+    *this = invMat;
+}
+
+TransformMatrix TransformMatrix::operator *(const TransformMatrix &matrix)
+{
+    TransformMatrix result;
+    for (int row = 0; row < 3; ++row) {
+        for (int col = 0; col < 3; ++col) {
+            qreal sum(0.0f);
+            for (int j = 0; j < 3; ++j)
+                sum += m[j][row] * matrix.m[col][j];
+            result.m[col][row] = sum;
+        }
+    }
+    return result;
+}
+
+qreal TransformMatrix::operator()(int row, int column) const
+{
+    Q_ASSERT(row >= 0 && row < 3 && column >= 0 && column < 3);
+    return m[column][row];
+}
+
+TransformMatrix TransformMatrix::subMatrix(const TransformMatrix &matrix, int n, int indRow, int indCol)
+{
+    TransformMatrix tmpMatrix;
+    int ki = 0;
+    for (int i = 0; i < n; i++) {
+        if (i != indRow) {
+            for (int j = 0, kj = 0; j < n; ++j){
+                if (j != indCol) {
+                    tmpMatrix(ki,kj) = matrix(i,j);
+                    kj++;
+                }
+            }
+            ki++;
+        }
+    }
+    return tmpMatrix;
+}
+
+qreal TransformMatrix::_determinant(const TransformMatrix &matrix, int n)
+{
+    qreal tmpDet = 0;
+    if (n == 1) {
+        tmpDet = matrix(0,0);
+    } else if (n == 2) {
+        tmpDet = matrix(0,0) * matrix(1,1) - matrix(1,0) * matrix(0,1);
+    } else {
+        double k = 1;
+        for (int i = 0; i < n; i++) {
+            int mm = n - 1;
+            tmpDet = tmpDet + k * matrix(0,i) * _determinant(subMatrix(matrix, n, 0, i), mm);
+            k = -k;
+        }
+    }
+    return tmpDet;
+}
+
+qreal &TransformMatrix::operator()(int row, int column)
+{
+    Q_ASSERT(row >= 0 && row < 3 && column >= 0 && column < 3);
+    return m[column][row];
+}
+
+
 // http://www.w3.org/TR/SVG/coords.html#EstablishingANewUserSpace
 Transform::Transform(const QString &text)
 {

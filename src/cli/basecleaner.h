@@ -22,8 +22,9 @@
 #ifndef BASECLEANER_H
 #define BASECLEANER_H
 
+#include <QRectF>
+
 #include "svgelement.h"
-#include "transform.h"
 #include "tools.h"
 
 #define Keys Keys::get()

@@ -853,15 +853,16 @@ bool Replacer::nodeByTagNameSort(const SvgElement &node1, const SvgElement &node
 void Replacer::roundNumericAttributes()
 {
     QList<SvgElement> list = svgElement().childElemList();
+    QStringList listBasedAttrList;
+    listBasedAttrList << "stdDeviation" << "baseFrequency" << "dx" << "dy" << "stroke-dasharray";
     while (!list.isEmpty()) {
         SvgElement elem = list.takeFirst();
         QStringList attrList = elem.attributesList();
         foreach (const QString &attr, Props::filterDigitList) {
-            if (attrList.contains(attr)) {
+            if (attrList.contains(attr) && elem.attribute(attr) != "none") {
                 QString value = elem.attribute(attr);
                 // process list based attributes
-                if (   attr == "stdDeviation" || attr == "baseFrequency"
-                    || attr == "dx" || attr == "dy" || attr == "stroke-dasharray") {
+                if (listBasedAttrList.contains(attr)) {
                     // TODO: get rid of regex
                     QStringList tmpList = value.split(QRegExp("(,|) |,"), QString::SkipEmptyParts);
                     QString tmpStr;
@@ -898,7 +899,7 @@ void Replacer::roundNumericAttributes()
                 }
             }
         }
-        if (Keys.flag(Key::ApplyTransformsToDefs)) {
+        if (Keys.flag(Key::SimplifyTransformMatrix)) {
             if (attrList.contains("gradientTransform")) {
                 Transform ts(elem.attribute("gradientTransform"));
                 QString transform = ts.simplified();
@@ -958,7 +959,7 @@ void Replacer::convertBasicShapes()
                     Segment seg;
                     seg.command = Command::MoveTo;
                     seg.absolute = true;
-                    seg.srcCmd = false;
+                    seg.srcCmd = segmentList.isEmpty();
                     seg.x = Tools::getNum(str);
                     seg.y = Tools::getNum(str);
                     segmentList.append(seg);
@@ -966,8 +967,8 @@ void Replacer::convertBasicShapes()
                 if (ctag == "polygon") {
                     Segment seg;
                     seg.command = Command::ClosePath;
-                    seg.absolute = false;
-                    seg.srcCmd = true;
+                    seg.absolute = true;
+                    seg.srcCmd = segmentList.isEmpty();
                     segmentList.append(seg);
                 }
                 dAttr = Path().segmentsToPath(segmentList);

@@ -19,11 +19,8 @@
 **
 ****************************************************************************/
 
-#include <QStringBuilder>
-
 #include <cmath>
 
-#include "transform.h"
 #include "tools.h"
 #include "paths.h"
 
@@ -671,6 +668,8 @@ void Path::processSegments(QList<Segment> &segList)
                     segList[i].command = Command::VerticalLineTo;
                 else if (seg.x != prevSeg.x && isZero(seg.y - prevSeg.y))
                     segList[i].command = Command::HorizontalLineTo;
+                segList[i].srcCmd = true;
+
                 // TODO: useful, but do not work well with subpaths
 //                else if (prevSeg.command == Command::MoveTo) {
 //                    segList[i].command = Command::MoveTo;
@@ -766,6 +765,10 @@ QString Path::segmentsToPath(QList<Segment> &segList)
                     && !(segment.srcCmd && cmd == Command::MoveTo))
                     writeCmd = false;
             }
+        } else {
+            // remove only commands which is not set in original path
+            if (!segment.srcCmd)
+                writeCmd = false;
         }
 
         if (writeCmd) {

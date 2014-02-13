@@ -22,8 +22,6 @@
 #ifndef SVGELEMENT_H
 #define SVGELEMENT_H
 
-#include <QStringList>
-
 #include "transform.h"
 #include "keys.h"
 #include "tinyxml2.h"

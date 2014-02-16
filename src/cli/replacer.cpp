@@ -967,7 +967,7 @@ void Replacer::convertBasicShapes()
                 if (ctag == "polygon") {
                     Segment seg;
                     seg.command = Command::ClosePath;
-                    seg.absolute = true;
+                    seg.absolute = false;
                     seg.srcCmd = segmentList.isEmpty();
                     segmentList.append(seg);
                 }

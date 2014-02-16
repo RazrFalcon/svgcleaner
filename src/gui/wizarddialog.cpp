@@ -32,6 +32,7 @@
 
 #include "spinbox.h"
 #include "someutils.h"
+#include "settings.h"
 #include "wizarddialog.h"
 
 WizardDialog::WizardDialog(QWidget *parent) :
@@ -41,7 +42,17 @@ WizardDialog::WizardDialog(QWidget *parent) :
     setupUi(this);
     initGUI();
     loadSettings();
-    adjustSize();
+
+    QSize windowSize = Settings().value(SettingKey::GUI::WizardSize).toSize();
+    if (windowSize.isEmpty())
+        adjustSize();
+    else
+        resize(windowSize);
+}
+
+WizardDialog::~WizardDialog()
+{
+    Settings().setValue(SettingKey::GUI::WizardSize, size());
 }
 
 void WizardDialog::initGUI()
@@ -120,7 +131,7 @@ void WizardDialog::loadSettings()
     lineEditSuffix->setText(settings.string(SettingKey::Wizard::Suffix, "_cleaned"));
 
     foreach (const QString &path, settings.value(SettingKey::Wizard::LastInPaths).toStringList())
-        treeView->addRootPath(path);
+        treeView->addRootPath(path, false);
 
     gBoxCompress->setChecked(settings.flag(SettingKey::Wizard::Compress));
     cmbBoxCompress->setCurrentIndex(settings.integer(SettingKey::Wizard::CompressLevel,
@@ -469,7 +480,7 @@ void WizardDialog::resetFields()
 {
     chBoxRecursive->setChecked(false);
     cmbBoxCompress->setCurrentIndex(4);
-    cmbBoxPreset->setCurrentIndex(0);
+    cmbBoxPreset->setCurrentIndex(cmbBoxPreset->findText(tr("Complete")));
     gBoxCompress->setChecked(true);
     treeView->clear(true);
     lineEditOutDir->setText(QDir::homePath());

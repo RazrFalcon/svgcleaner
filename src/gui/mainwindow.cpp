@@ -31,6 +31,7 @@
 #include "someutils.h"
 #include "thumbwidget.h"
 #include "wizarddialog.h"
+#include "settings.h"
 #include "mainwindow.h"
 
 // FIXME: processing files like image.svg and image.svgz from different threads causes problems
@@ -86,8 +87,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QShortcut *quitShortcut = new QShortcut(QKeySequence::Quit, this);
     connect(quitShortcut, SIGNAL(activated()), qApp, SLOT(quit()));
 
-    // TODO: store last size
-    resize(1000, 650);
+    QSize windowSize = settings.value(SettingKey::GUI::MainSize).toSize();
+    if (windowSize.isEmpty())
+        resize(1000, 650);
+    else
+        resize(windowSize);
 }
 
 void MainWindow::on_actionWizard_triggered()
@@ -429,4 +433,5 @@ void MainWindow::closeEvent(QCloseEvent *event)
         else
             event->ignore();
     }
+    Settings().setValue(SettingKey::GUI::MainSize, size());
 }

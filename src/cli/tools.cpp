@@ -214,8 +214,8 @@ QString Tools::doubleToStr(const qreal value, int precision)
         *(--p) = m_zero;
     if (decimalPointPos == 0) {
         *(--p) = QChar('.').unicode();
-        static const bool useStartingZero = !Keys::get().flag(Key::RemoveUnneededSymbols);
-        if (useStartingZero)
+        static const bool useLeadingZero = !Keys::get().flag(Key::RemoveUnneededSymbols);
+        if (useLeadingZero)
             *(--p) = m_zero;
     }
     if (value < 0)

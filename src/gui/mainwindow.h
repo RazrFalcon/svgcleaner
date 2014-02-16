@@ -23,7 +23,6 @@
 #define MAINWINDOW_H
 
 #include <QtCore>
-
 #include <QtGui/QComboBox>
 #include <QtGui/QMainWindow>
 

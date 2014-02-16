@@ -703,14 +703,10 @@ void Path::processSegments(QList<Segment> &segList)
                             || (isZero(seg.x1 - prevSeg.x1)
                                 && isZero(prevSeg.x - prevSeg.x2)))
                         && (qFuzzyCompare(seg.y1, (prevSeg.y - prevSeg.y2))
-                            || (isZero(seg.y1 - prevSeg.y1) && isZero(prevSeg.y - prevSeg.y2))))
+                            || (isZero(seg.y1 - prevSeg.y1) && isZero(prevSeg.y - prevSeg.y2)))
+                        && prevSeg.command == Command::CurveTo)
                 {
                     segList[i].command = Command::SmoothCurveTo;
-//                } else if (   isZero(seg.x1 - prevSeg.x1)
-//                           && isZero(seg.y1 - prevSeg.y1)
-//                           && prevSeg.command == Command::MoveTo)
-//                {
-//                    segList[i].command = Command::SmoothCurveTo;
                 }
             }
         }

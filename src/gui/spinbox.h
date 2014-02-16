@@ -26,7 +26,6 @@
 #include <QLabel>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
-#include <QHBoxLayout>
 
 class SpinBox : public QWidget
 {
@@ -41,7 +40,6 @@ public:
     void setStep(const qreal value);
 
 private:
-    QHBoxLayout *m_lay;
     QLabel *m_lbl;
     QSpinBox *m_spin;
     QDoubleSpinBox *m_doubleSpin;

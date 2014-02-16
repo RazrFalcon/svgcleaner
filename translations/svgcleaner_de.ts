@@ -71,6 +71,18 @@
         <source>You can drop only svg(z) files or folders.</source>
         <translation>Sie können hier nur svg(z)-Dateien oder Ordner einfügen.</translation>
     </message>
+    <message>
+        <source>Selected folder is already exist in folder tree.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selected folder does not contains any svg(z) files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selected file is already exist in files tree.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Keys</name>
@@ -311,7 +323,7 @@
     <name>LineEdit</name>
     <message>
         <source>%1 files</source>
-        <translation>%1 Datei(en)</translation>
+        <translation type="obsolete">%1 Datei(en)</translation>
     </message>
 </context>
 <context>

@@ -22,7 +22,7 @@
 #ifndef SOMEUTILS_H
 #define SOMEUTILS_H
 
-#include "settings.h"
+#include <QString>
 
 class SomeUtils
 {

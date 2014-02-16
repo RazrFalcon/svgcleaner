@@ -12,7 +12,6 @@ SOURCES += \
     cleaner.cpp \
     filesview.cpp \
     iconswidget.cpp \
-    lineedit.cpp \
     mainwindow.cpp \
     settings.cpp \
     someutils.cpp \
@@ -27,7 +26,6 @@ HEADERS += \
     cleaner.h \
     filesview.h \
     iconswidget.h \
-    lineedit.h \
     mainwindow.h \
     settings.h \
     someutils.h \
@@ -42,9 +40,9 @@ FORMS += \
     thumbwidget.ui \
     wizarddialog.ui
 
-RESOURCES   += ../../icons/icons.qrc
-CODECFORSRC  = UTF-8
+RESOURCES    += ../../icons/icons.qrc
+CODECFORSRC   = UTF-8
 win32:RC_FILE = ../../icons/icon.rc
-mac:ICON        = ../../icons/svgcleaner.icns
+mac:ICON      = ../../icons/svgcleaner.icns
 
 include(../../translations/translations.pri)

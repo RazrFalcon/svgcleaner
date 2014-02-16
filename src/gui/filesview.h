@@ -115,11 +115,10 @@ class FilesView : public QTreeView
 
 public:
     explicit FilesView(QWidget *parent = 0);
-    void addRootPath(const QString &path);
+    void addRootPath(const QString &path, bool isFromGui = true);
     bool hasFiles(const QModelIndex &parent = QModelIndex());
     QStringList rootList();
     QStringList rootFiles(const QString &path);
-    QStringList fileList(const QModelIndex &parent = QModelIndex());
     QString lastPath();
     void clear(bool clearPathList = false);
 
@@ -132,9 +131,12 @@ private:
     QString m_lastPath;
     QStringList m_rootPaths;
 
-    void scanFolder(const QString &path, TreeModel *model, TreeItem *parent = 0);
+    QStringList fileList(const QModelIndex &parent = QModelIndex());
+    quint32 scanFolder(const QString &path, TreeModel *model, TreeItem *parent = 0);
     bool scanModel(const QModelIndex &parent = QModelIndex());
     int filesCount(const QModelIndex &parent = QModelIndex());
+    bool isFolderExistInTree(const QString &path, const QModelIndex &parent = QModelIndex());
+    bool isFileExistInTree(const QString &path, const QModelIndex &parent = QModelIndex());
 
 private slots:
     void onRemovePath(const QModelIndex &index);

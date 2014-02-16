@@ -19,14 +19,7 @@
 **
 ****************************************************************************/
 
-#include <QtCore/QLibraryInfo>
-#include <QtCore/QTextCodec>
-#include <QtCore/QTranslator>
-#include <QtCore/QDir>
-#include <QtGui/QApplication>
 #include <QtGui/QPixmapCache>
-
-#include <QtDebug>
 
 #include "someutils.h"
 #include "mainwindow.h"

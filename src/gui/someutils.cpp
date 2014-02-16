@@ -22,8 +22,6 @@
 #include <QtCore/QTime>
 #include <QtCore/QStringList>
 
-#include <QtGui/QApplication>
-
 #include "someutils.h"
 
 QString SomeUtils::prepareSize(const quint32 bytes)

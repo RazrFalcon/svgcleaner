@@ -368,12 +368,14 @@ FilesView::FilesView(QWidget *parent) :
     header()->setDefaultSectionSize(header()->minimumSectionSize());
 }
 
-void FilesView::scanFolder(const QString &path, TreeModel *model, TreeItem *parent)
+quint32 FilesView::scanFolder(const QString &path, TreeModel *model, TreeItem *parent)
 {
+    quint32 filesCount = 0;
     QDir dir(path);
     if (!dir.exists())
-        return;
-    QStringList fileList = dir.entryList(QStringList() << "*.svg" << "*.svgz",  QDir::Files, QDir::Name);
+        return filesCount;
+    static const QStringList filesFilter = QStringList() << "*.svg" << "*.svgz";
+    QStringList fileList = dir.entryList(filesFilter,  QDir::Files, QDir::Name);
     QStringList folderList = dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot, QDir::Name);
     TreeItem *rootFolder = 0;
     if (!fileList.isEmpty() || !folderList.isEmpty()) {
@@ -385,12 +387,15 @@ void FilesView::scanFolder(const QString &path, TreeModel *model, TreeItem *pare
 
     if (m_isRecursive && !folderList.isEmpty()) {
         foreach (const QString &subdir, folderList)
-            scanFolder(path + "/" + subdir, model, rootFolder);
+            filesCount += scanFolder(path + "/" + subdir, model, rootFolder);
     }
     if (!fileList.isEmpty()) {
-        foreach (const QString &file, fileList)
+        foreach (const QString &file, fileList) {
             model->addFile(QDir(path).absoluteFilePath(file), rootFolder);
+            filesCount++;
+        }
     }
+    return filesCount;
 }
 
 void FilesView::onRemovePath(const QModelIndex &index)
@@ -419,14 +424,34 @@ bool FilesView::scanModel(const QModelIndex &parent)
     return anyRemoved;
 }
 
-void FilesView::addRootPath(const QString &path)
+void FilesView::addRootPath(const QString &path, bool isFromGui)
 {
     if (QFileInfo(path).isDir()) {
-        scanFolder(path, m_model);
+        if (isFolderExistInTree(path)) {
+            QMessageBox::warning(this, tr("Warning"),
+                                 tr("Selected folder is already exist in folder tree."));
+            return;
+        }
+        quint32 filesAdded = scanFolder(path, m_model);
         scanModel();
+        if (isFromGui) {
+            if (filesAdded == 0) {
+                QMessageBox::warning(this, tr("Warning"),
+                                     tr("Selected folder does not contains any svg(z) files."));
+                return;
+            }
+        }
     } else {
-        if (QFile(path).exists())
+        if (QFile(path).exists()) {
+            if (isFileExistInTree(path)) {
+                QMessageBox::warning(this, tr("Warning"),
+                                     tr("Selected file is already exist in files tree."));
+                return;
+            }
             m_model->addFile(path);
+        } else {
+            return;
+        }
     }
     m_rootPaths << path;
     m_lastPath = path;
@@ -439,7 +464,7 @@ void FilesView::setRecursive(bool flag)
     clear();
     m_rootPaths.clear();
     foreach (const QString &path, list)
-        addRootPath(path);
+        addRootPath(path, false);
 }
 
 int FilesView::filesCount(const QModelIndex &parent)
@@ -454,6 +479,42 @@ int FilesView::filesCount(const QModelIndex &parent)
             count++;
     }
     return count;
+}
+
+bool FilesView::isFolderExistInTree(const QString &path, const QModelIndex &parent)
+{
+    bool exist = false;
+    for (int row = 0; row < m_model->rowCount(parent); ++row) {
+        TreeItem *item = m_model->getItem(m_model->index(row, 0, parent));
+        QModelIndex index = m_model->index(row,0, parent);
+        if (item->isFolder()) {
+            if (item->data() == path)
+                exist = true;
+            else
+                exist = isFolderExistInTree(path, index);
+        }
+        if (exist)
+            break;
+    }
+    return exist;
+}
+
+bool FilesView::isFileExistInTree(const QString &path, const QModelIndex &parent)
+{
+    bool exist = false;
+    for (int row = 0; row < m_model->rowCount(parent); ++row) {
+        TreeItem *item = m_model->getItem(m_model->index(row, 0, parent));
+        QModelIndex index = m_model->index(row,0, parent);
+        if (item->isFolder()) {
+            exist = isFileExistInTree(path, index);
+        } else {
+            if (item->data() == path)
+                exist = true;
+        }
+        if (exist)
+            break;
+    }
+    return exist;
 }
 
 bool FilesView::hasFiles(const QModelIndex &parent)

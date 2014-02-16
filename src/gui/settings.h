@@ -26,22 +26,24 @@
 
 namespace SettingKey {
     namespace GUI {
-        static const QString CompareView = "GUI/CompareView";
+        extern const QString CompareView;
+        extern const QString MainSize;
+        extern const QString WizardSize;
     }
     namespace Wizard {
-        static const QString SaveMode = "Wizard/SaveMode";
-        static const QString RecursiveScan = "Wizard/RecursiveScan";
-        static const QString LastInPaths = "Wizard/LastInPaths";
-        static const QString LastOutDir = "Wizard/LastOutDir";
-        static const QString Prefix = "Wizard/Prefix";
-        static const QString Suffix = "Wizard/Suffix";
-        static const QString Compress = "Wizard/Compress";
-        static const QString CompressLevel = "Wizard/CompressLevel";
-        static const QString CompressType = "Wizard/CompressType";
-        static const QString Preset = "Wizard/Preset";
-        static const QString ThreadingEnabled = "Wizard/ThreadingEnabled";
-        static const QString ThreadsCount = "Wizard/ThreadCount";
-        static const QString LastKeys = "Wizard/LastKeys";
+        extern const QString SaveMode;
+        extern const QString RecursiveScan;
+        extern const QString LastInPaths;
+        extern const QString LastOutDir;
+        extern const QString Prefix;
+        extern const QString Suffix;
+        extern const QString Compress;
+        extern const QString CompressLevel;
+        extern const QString CompressType;
+        extern const QString Preset;
+        extern const QString ThreadingEnabled;
+        extern const QString ThreadsCount;
+        extern const QString LastKeys;
     }
 }
 

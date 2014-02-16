@@ -870,8 +870,10 @@ void Remover::removeAttributes()
                 attrList.removeOne("d");
 
             if (tagName == "stop") {
-                if (elem.doubleAttribute("offset") < 0.0001)
-                    attrList.removeOne("offset");
+                if (!elem.attribute("offset").contains("%")) {
+                    if (elem.doubleAttribute("offset") < 0.0001)
+                        attrList.removeOne("offset");
+                }
             }
 
             // TODO: 'display' attr remove

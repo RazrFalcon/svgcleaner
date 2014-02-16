@@ -21,6 +21,29 @@
 
 #include "settings.h"
 
+namespace SettingKey {
+    namespace GUI {
+        const QString CompareView = "GUI/CompareView";
+        const QString MainSize    = "GUI/MainSize";
+        const QString WizardSize  = "GUI/WizardSize";
+    }
+    namespace Wizard {
+        const QString SaveMode         = "Wizard/SaveMode";
+        const QString RecursiveScan    = "Wizard/RecursiveScan";
+        const QString LastInPaths      = "Wizard/LastInPaths";
+        const QString LastOutDir       = "Wizard/LastOutDir";
+        const QString Prefix           = "Wizard/Prefix";
+        const QString Suffix           = "Wizard/Suffix";
+        const QString Compress         = "Wizard/Compress";
+        const QString CompressLevel    = "Wizard/CompressLevel";
+        const QString CompressType     = "Wizard/CompressType";
+        const QString Preset           = "Wizard/Preset";
+        const QString ThreadingEnabled = "Wizard/ThreadingEnabled";
+        const QString ThreadsCount     = "Wizard/ThreadCount";
+        const QString LastKeys         = "Wizard/LastKeys";
+    }
+}
+
 Settings::Settings(QObject *parent) :
     QSettings(QSettings::IniFormat, QSettings::UserScope, "svgcleaner", "config", parent)
 {

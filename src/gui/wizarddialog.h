@@ -33,6 +33,7 @@ class WizardDialog : public QDialog, private Ui::WizardDialog
 
 public:
     explicit WizardDialog(QWidget *parent = 0);
+    ~WizardDialog();
     void setPathList(const QStringList &list);
     QList<ToThread> threadData();
 

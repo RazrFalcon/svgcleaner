@@ -19,27 +19,29 @@
 **
 ****************************************************************************/
 
+#include <QHBoxLayout>
+
 #include "spinbox.h"
 
 SpinBox::SpinBox(bool isDouble, QWidget *parent) :
     QWidget(parent)
 {
-    m_lay = new QHBoxLayout(this);
-    m_lay->setContentsMargins(0,0,0,0);
+    QHBoxLayout *lay = new QHBoxLayout(this);
+    lay->setContentsMargins(0,0,0,0);
 
     m_lbl = new QLabel(this);
     m_lbl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    m_lay->addWidget(m_lbl);
+    lay->addWidget(m_lbl);
     if (isDouble) {
         m_spin = 0;
         m_doubleSpin = new QDoubleSpinBox(this);
         m_doubleSpin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        m_lay->addWidget(m_doubleSpin);
+        lay->addWidget(m_doubleSpin);
     } else {
         m_spin = new QSpinBox(this);
         m_spin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         m_doubleSpin = 0;
-        m_lay->addWidget(m_spin);
+        lay->addWidget(m_spin);
     }
 }
 

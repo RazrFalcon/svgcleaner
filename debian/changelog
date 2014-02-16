@@ -1,3 +1,12 @@
+svgcleaner (0.6.2) natty; urgency=low
+
+  * Fixed folder scanning in Wizard.
+  * Some cleaning fixes.
+  * Added French translation.
+
+ -- Raizner Evgeniy <razrfalcon@gmail.com>  Sun, 16 Feb 2014 02:00:00 +0200
+
+
 svgcleaner (0.6.1) natty; urgency=low
 
   * Fixed cleaning on locales with decimal mark ','.

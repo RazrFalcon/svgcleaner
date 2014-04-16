@@ -262,7 +262,7 @@ void WizardDialog::initOptimizationPage()
             lay->addWidget(chBox);
         } else {
             SpinBox *spinBox = new SpinBox(false, this);
-            spinBox->setRange(1, 8);
+            spinBox->setRange(0, 8);
             spinBox->setText(Keys::get().description(key));
             spinBox->setProperty("key", key);
             lay->addWidget(spinBox);

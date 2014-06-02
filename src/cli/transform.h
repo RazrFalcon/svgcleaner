@@ -26,24 +26,7 @@
 #include <QString>
 #include <QRect>
 
-class TransformMatrix
-{
-public:
-    explicit TransformMatrix();
-    TransformMatrix(qreal a, qreal b, qreal c, qreal d, qreal e, qreal f);
-    void setToIdentity();
-    void invert();
-    TransformMatrix operator *(const TransformMatrix &matrix);
-    qreal& operator()(int row, int column);
-    qreal operator()(int row, int column) const;
-
-private:
-    qreal m[3][3];
-
-    TransformMatrix subMatrix(const TransformMatrix &matrix, int n, int indRow, int indCol);
-    qreal determinant();
-    qreal _determinant(const TransformMatrix &matrix, int n);
-};
+class TransformMatrix;
 
 class Transform
 {
@@ -73,6 +56,15 @@ public:
     };
     Q_DECLARE_FLAGS(Types, TsType)
     Types type();
+
+    bool operator ==(const Transform &t) {
+        return (   a == t.a
+                && b == t.b
+                && c == t.c
+                && d == t.d
+                && e == t.e
+                && f == t.f);
+    }
 
 private:
     qreal oldX;

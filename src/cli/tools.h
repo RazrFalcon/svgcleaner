@@ -22,68 +22,37 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
-#include <QVariantHash>
+#include <QtDebug>
 
+#include "enums.h"
 #include "keys.h"
 
-#define QL1S(x) QLatin1String(x)
+namespace Round {
+    enum RoundType { Coordinate, Transform, Attribute };
+}
+
+bool isZero(qreal value);
+bool isZeroTs(qreal value);
+QString roundNumber(qreal value, Round::RoundType type = Round::Coordinate);
+QString roundNumber(qreal value, int precision);
+qreal getNum(const QChar *&str);
+qreal strToDouble(const QString &str);
+QString doubleToStr(const qreal value, int precision = 6);
+bool isSpace(ushort ch);
 
 class Tools
 {
 public:
-    explicit Tools() {}
-    enum RoundType { COORDINATE, TRANSFORM, ATTRIBUTE };
-    static bool isZero(qreal value);
-    static bool isZeroTs(qreal value);
     static QString convertUnitsToPx(const QString &text, qreal baseValue = 0);
-    static QString roundNumber(qreal value, RoundType type = COORDINATE);
-    static QString roundNumber(qreal value, int precision);
     static QString trimColor(const QString &color);
     static QVariantHash initDefaultStyleHash();
-    static StringHash splitStyle(const QString &style);
-    static QString removeEdgeSpaces(const QString &str);
-    static qreal getNum(const QChar *&str);
-    static qreal strToDouble(const QString &str);
-    static QString doubleToStr(const qreal value, int precision = 6);
-
-private:
-    static bool isDigit(ushort ch);
-    static qreal toDouble(const QChar *&str);
-    static QString replaceColorName(const QString &color);
     static int numbersBeforePoint(qreal value);
     static int zerosAfterPoint(qreal value);
+    static bool isDigit(ushort ch);
+    static qreal toDouble(const QChar *&str);
+
+private:
+    static QString replaceColorName(const QString &color);
 };
-
-// TODO: maybe add namespace with static string with usual elem/attr names,
-// to prevent QString::fromLatin1_helper executing
-
-namespace Props {
-    extern const StringSet fillList;
-    extern const StringSet strokeList;
-    extern const StringSet presentationAttributes;
-    extern const CharList linkableStyleAttributes;
-    extern const QStringList linearGradient;
-    extern const QStringList radialGradient;
-    extern const QStringList filter;
-    extern const StringSet maskAttributes;
-    extern const StringSet digitList;
-    extern const StringSet filterDigitList;
-    extern const StringSet defsList;
-    extern const StringSet referencedElements;
-    extern const StringSet textElements;
-    extern const StringSet textAttributes;
-    extern const QVariantHash defaultStyleValues;
-    extern const StringSet svgElementList;
-    extern const StringSet elementsUsingXLink;
-    extern const StringSet containers;
-    extern const StringSet stopAttributes;
-    extern const StringSet lengthTypes;
-}
-
-namespace CleanerAttr {
-    extern const char * const UsedElement;
-    extern const char * const BoundingBox;
-    extern const char * const BBoxTransform;
-}
 
 #endif // TOOLS_H

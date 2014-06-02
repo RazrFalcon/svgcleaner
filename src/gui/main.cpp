@@ -27,13 +27,13 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    app.setApplicationVersion("0.6.2");
+    app.setApplicationVersion("0.7.0");
 
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 
-    // load translation for SVG Cleaner
+    // load translation
     QString locale = QLocale::system().name();
 #ifdef Q_OS_LINUX
     app.addLibraryPath("/usr/share/svgcleaner/translations");

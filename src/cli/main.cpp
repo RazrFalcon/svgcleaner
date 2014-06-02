@@ -19,11 +19,7 @@
 **
 ****************************************************************************/
 
-#include <QCoreApplication>
-#include <QFileInfo>
 #include <QDir>
-#include <QStringList>
-#include <QtDebug>
 
 #include "remover.h"
 #include "replacer.h"
@@ -131,29 +127,20 @@ void processFile(const QString &inPath, const QString &outPath)
     if (!Keys.flag(Key::ShortOutput))
         qDebug("The initial file size is: %u", (int)QFile(inPath).size());
 
-    XMLDocument doc;
-    doc.LoadFile(inPath.toUtf8().constData());
-    if (BaseCleaner::svgElement(&doc).isNull()) {
-        QFile inputFile(inPath);
-        if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text))
-            qFatal("Error: cannot open input file");
-        QTextStream inputStream(&inputFile);
-        QString svgText = inputStream.readAll();
-        svgText.replace("<svg:", "<");
-        svgText.replace("</svg:", "</");
-        doc.Clear();
-        doc.Parse(svgText.toUtf8().constData());
-        if (BaseCleaner::svgElement(&doc).isNull())
-            qFatal("Error: invalid svg file");
-    }
+    SvgDocument doc;
+    bool flag = doc.loadFile(inPath);
+    if (!flag)
+        qFatal("%s", qPrintable(doc.lastError()));
+    if (BaseCleaner::svgElement(doc).isNull())
+        qFatal("Error: invalid svg file");
 
-    Replacer replacer(&doc);
-    Remover remover(&doc);
+    Replacer replacer(doc);
+    Remover remover(doc);
 
     replacer.calcElemAttrCount("initial");
 
     // mandatory fixes used to simplify subsequent functions
-    replacer.splitStyleAttr();
+    replacer.splitStyleAttributes();
     // TODO: add key
     replacer.convertCDATAStyle();
     replacer.convertUnits();
@@ -216,9 +203,10 @@ void processFile(const QString &inPath, const QString &outPath)
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
         qFatal("Error: could not write output file");
 
-    SVGPrinter printer(0, Keys.flag(Key::CompactOutput));
-    doc.Print(&printer);
-    outFile.write(printer.CStr());
+    int indent = 1;
+    if (Keys.flag(Key::CompactOutput))
+        indent = -1;
+    outFile.write(doc.toString(indent).toUtf8());
     outFile.close();
 
     if (!Keys.flag(Key::ShortOutput))
@@ -227,17 +215,103 @@ void processFile(const QString &inPath, const QString &outPath)
     replacer.calcElemAttrCount("final");
 }
 
+// the code underneath is from QtCore module (qcorecmdlineargs_p.h) (LGPLv2 license)
+#ifdef Q_OS_WIN
+#include "windows.h"
+template<typename Char>
+static QVector<Char*> qWinCmdLine(Char *cmdParam, int length, int &argc)
+{
+    QVector<Char*> argv(8);
+    Char *p = cmdParam;
+    Char *p_end = p + length;
+
+    argc = 0;
+
+    while (*p && p < p_end) {
+        while (QChar((short)(*p)).isSpace())
+            p++;
+        if (*p && p < p_end) {
+            int quote;
+            Char *start, *r;
+            if (*p == Char('\"') || *p == Char('\'')) {
+                quote = *p;
+                start = ++p;
+            } else {
+                quote = 0;
+                start = p;
+            }
+            r = start;
+            while (*p && p < p_end) {
+                if (quote) {
+                    if (*p == quote) {
+                        p++;
+                        if (QChar((short)(*p)).isSpace())
+                            break;
+                        quote = 0;
+                    }
+                }
+                if (*p == '\\') {
+                    if (*(p+1) == quote)
+                        p++;
+                } else {
+                    if (!quote && (*p == Char('\"') || *p == Char('\''))) {
+                        quote = *p++;
+                        continue;
+                    } else if (QChar((short)(*p)).isSpace() && !quote)
+                        break;
+                }
+                if (*p)
+                    *r++ = *p++;
+            }
+            if (*p && p < p_end)
+                p++;
+            *r = Char('\0');
+
+            if (argc >= (int)argv.size()-1)
+                argv.resize(argv.size()*2);
+            argv[argc++] = start;
+        }
+    }
+    argv[argc] = 0;
+
+    return argv;
+}
+
+QStringList arguments(int &argc, char **argv)
+{
+    Q_UNUSED(argv);
+    QStringList list;
+    argc = 0;
+    QString cmdLine = QString::fromWCharArray(GetCommandLine());
+    QVector<wchar_t*> argvVec = qWinCmdLine<wchar_t>((wchar_t *)cmdLine.utf16(), cmdLine.length(), argc);
+    for (int a = 0; a < argc; ++a)
+        list << QString::fromWCharArray(argvVec[a]);
+    return list;
+}
+#else
+QStringList arguments(int &argc, char **argv)
+{
+    QStringList list;
+    const int ac = argc;
+    char ** const av = argv;
+    for (int a = 0; a < ac; ++a)
+        list << QString::fromLocal8Bit(av[a]);
+    return list;
+}
+#endif
+
 int main(int argc, char *argv[])
 {
-    // TODO: maybe get rid of QCoreApplication
-    QCoreApplication app(argc, argv);
+#ifdef Q_OS_UNIX
+    setlocale(LC_ALL, "");
+#endif
 
-    QStringList argList = app.arguments();
+    QStringList argList = arguments(argc, argv);
     // remove executable path
     argList.removeFirst();
 
     if (argList.contains("-v") || argList.contains("--version")) {
-        qDebug() << 0.6;
+        qDebug() << "0.7.0";
         return 0;
     }
 

@@ -25,6 +25,35 @@
 #include "tools.h"
 #include "transform.h"
 
+namespace TransformType {
+    static const QString Matrix    = "matrix";
+    static const QString Translate = "translate";
+    static const QString Scale     = "scale";
+    static const QString Rotate    = "rotate";
+    static const QString SkewX     = "skewX";
+    static const QString SkewY     = "skewY";
+}
+
+
+class TransformMatrix
+{
+public:
+    explicit TransformMatrix();
+    TransformMatrix(qreal a, qreal b, qreal c, qreal d, qreal e, qreal f);
+    void setToIdentity();
+    void invert();
+    TransformMatrix operator *(const TransformMatrix &matrix);
+    qreal& operator()(int row, int column);
+    qreal operator()(int row, int column) const;
+
+private:
+    qreal m[3][3];
+
+    TransformMatrix subMatrix(const TransformMatrix &matrix, int n, int indRow, int indCol);
+    qreal determinant();
+    qreal _determinant(const TransformMatrix &matrix, int n);
+};
+
 TransformMatrix::TransformMatrix()
 {
     setToIdentity();
@@ -231,8 +260,8 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
             ++str;
 
         QString transformType;
-        while (*str != QLatin1Char('(')) {
-            if (*str != QLatin1Char(' '))
+        while (*str != QL1C('(')) {
+            if (*str != QL1C(' '))
                 transformType += *str;
             ++str;
         }
@@ -241,41 +270,41 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
         qreal cx = 0;
         qreal cy = 0;
         TransformMatrix matrix;
-        if (transformType == QL1S("matrix")) {
-            matrix(0,0) = Tools::getNum(str);
-            matrix(1,0) = Tools::getNum(str);
-            matrix(0,1) = Tools::getNum(str);
-            matrix(1,1) = Tools::getNum(str);
-            matrix(0,2) = Tools::getNum(str);
-            matrix(1,2) = Tools::getNum(str);
-        } else if (transformType == QL1S("translate")) {
-            matrix(0,2) = Tools::getNum(str);
+        if (transformType == TransformType::Matrix) {
+            matrix(0,0) = getNum(str);
+            matrix(1,0) = getNum(str);
+            matrix(0,1) = getNum(str);
+            matrix(1,1) = getNum(str);
+            matrix(0,2) = getNum(str);
+            matrix(1,2) = getNum(str);
+        } else if (transformType == TransformType::Translate) {
+            matrix(0,2) = getNum(str);
             while (str->isSpace())
                 ++str;
-            if (*str != QLatin1Char(')'))
-                matrix(1,2) = Tools::getNum(str);
+            if (*str != QL1C(')'))
+                matrix(1,2) = getNum(str);
             else
                 matrix(1,2) = 0;
-        } else if (transformType == QL1S("scale")) {
-            matrix(0,0) = Tools::getNum(str);
+        } else if (transformType == TransformType::Scale) {
+            matrix(0,0) = getNum(str);
             while (str->isSpace())
                 ++str;
-            if (*str != QLatin1Char(')'))
-                matrix(1,1) = Tools::getNum(str);
+            if (*str != QL1C(')'))
+                matrix(1,1) = getNum(str);
             else
                 matrix(1,1) = matrix(0,0);
-        } else if (transformType == QL1S("rotate")) {
-            qreal val = Tools::getNum(str);
-            cx = Tools::getNum(str);
-            cy = Tools::getNum(str);
+        } else if (transformType == TransformType::Rotate) {
+            qreal val = getNum(str);
+            cx = getNum(str);
+            cy = getNum(str);
             matrix(0,0) = cos((val/180)*M_PI);
             matrix(1,0) = sin((val/180)*M_PI);
             matrix(0,1) = -sin((val/180)*M_PI);
             matrix(1,1) = cos((val/180)*M_PI);
-        } else if (transformType == QL1S("skewX")) {
-            matrix(0,1) = tan(Tools::getNum(str));
-        } else if (transformType == QL1S("skewY")) {
-            matrix(1,0) = tan(Tools::getNum(str));
+        } else if (transformType == TransformType::SkewX) {
+            matrix(0,1) = tan(getNum(str));
+        } else if (transformType == TransformType::SkewY) {
+            matrix(1,0) = tan(getNum(str));
         } else {
             qFatal("Error: wrong transform matrix: %s", qPrintable(text.toString()));
         }
@@ -293,9 +322,9 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
             list << matrix;
         }
 
-        while (*str != QLatin1Char(')'))
+        while (*str != QL1C(')'))
             ++str;
-        if (*str == QLatin1Char(')'))
+        if (*str == QL1C(')'))
             ++str;
         while (str->isSpace())
             ++str;
@@ -315,47 +344,48 @@ void Transform::calcMatrixes(const QString &text)
 
 void Transform::calcParameters(TransformMatrix &matrix)
 {
-    a = 0; b = 0; c = 0; d = 0; e = 0; f = 0;
+    a = b = c = d = e = f = 0;
 
-    if (!Tools::isZeroTs(matrix(0,0)))
+    if (!isZeroTs(matrix(0,0)))
         a = matrix(0,0);
-    if (!Tools::isZeroTs(matrix(1,0)))
+    if (!isZeroTs(matrix(1,0)))
         b = matrix(1,0);
-    if (!Tools::isZeroTs(matrix(0,1)))
+    if (!isZeroTs(matrix(0,1)))
         c = matrix(0,1);
-    if (!Tools::isZeroTs(matrix(1,1)))
+    if (!isZeroTs(matrix(1,1)))
         d = matrix(1,1);
-    if (!Tools::isZero(matrix(0,2)))
+    if (!isZero(matrix(0,2)))
         e = matrix(0,2);
-    if (!Tools::isZero(matrix(1,2)))
+    if (!isZero(matrix(1,2)))
         f = matrix(1,2);
 
 //    qDebug() << "abc" << a << b << c << d << e << f;
 
-    m_xScale = sqrt(pow(a, 2) + pow(c, 2));
-    m_yScale = sqrt(pow(b, 2) + pow(d, 2));
+    m_xScale = sqrt(a*a + c*c);
+    m_yScale = sqrt(b*b + d*d);
     m_xSkew = atan(b)*(180.0/M_PI);
     m_ySkew = atan(c)*(180.0/M_PI);
     m_angle = atan(-b/a)*(180/M_PI);
-    if (qIsNaN(m_angle)) {
+    if (qIsNaN(m_angle))
         qFatal("Error: rotation is NaN");
-    }
+
     if (b < c)
         m_angle = -m_angle;
 
 //    qDebug() << "calc" << m_xScale << m_yScale << m_xSkew << m_ySkew << m_angle;
 
+    // detect all the transformations inside the matrix
+
     if (f != 0 || e != 0)
         m_types |= Translate;
 
-    if (   (Tools::isZeroTs(qAbs(b) - qAbs(c)) && b != 0)
-        || !Tools::isZero(m_angle))
+    if ((isZeroTs(qAbs(b) - qAbs(c)) && b != 0) || !isZero(m_angle))
         m_types |= Rotate;
 
     if (m_xScale != 1 || m_yScale != 1)
         m_types |= Scale;
 
-    if (Tools::isZeroTs(m_xScale - m_yScale))
+    if (isZeroTs(m_xScale - m_yScale))
         m_types |= ProportionalScale;
 
     if (m_xSkew != 0 || m_ySkew != 0)
@@ -371,13 +401,13 @@ void Transform::calcParameters(TransformMatrix &matrix)
 QString Transform::simplified() const
 {
     if (!Keys::get().flag(Key::SimplifyTransformMatrix)) {
-        QString ts = "matrix(";
-        ts += Tools::roundNumber(a, Tools::TRANSFORM) + " ";
-        ts += Tools::roundNumber(b, Tools::TRANSFORM) + " ";
-        ts += Tools::roundNumber(c, Tools::TRANSFORM) + " ";
-        ts += Tools::roundNumber(d, Tools::TRANSFORM) + " ";
-        ts += Tools::roundNumber(e, Tools::COORDINATE) + " ";
-        ts += Tools::roundNumber(f, Tools::COORDINATE);
+        QString ts = TransformType::Matrix + "(";
+        ts += roundNumber(a, Round::Transform) + " ";
+        ts += roundNumber(b, Round::Transform) + " ";
+        ts += roundNumber(c, Round::Transform) + " ";
+        ts += roundNumber(d, Round::Transform) + " ";
+        ts += roundNumber(e, Round::Coordinate) + " ";
+        ts += roundNumber(f, Round::Coordinate);
         ts += ")";
         return ts;
     }
@@ -395,62 +425,61 @@ QString Transform::simplified() const
         if (f != 0) {
             if (e == 0 && f == 0)
                 return "";
-            newPoints << Tools::roundNumber(e, Tools::COORDINATE);
-            newPoints << Tools::roundNumber(f, Tools::COORDINATE);
+            newPoints << roundNumber(e, Round::Coordinate);
+            newPoints << roundNumber(f, Round::Coordinate);
         } else if (f == 0) {
-            if (Tools::isZero(e))
+            if (isZero(e))
                 return "";
-            newPoints << Tools::roundNumber(e, Tools::COORDINATE);
+            newPoints << roundNumber(e, Round::Coordinate);
         }
-        transform = "translate";
+        transform = TransformType::Translate;
     } // [sx 0 0 sy 0 0] = scale
     else if (type == Scale)
     {
         if (a != d) {
-            if (   Tools::isZeroTs(a)
-                && Tools::isZeroTs(d))
+            if (isZeroTs(a) && isZeroTs(d))
                 return "";
-            newPoints << Tools::roundNumber(a, Tools::TRANSFORM);
-            newPoints << Tools::roundNumber(d, Tools::TRANSFORM);
+            newPoints << roundNumber(a, Round::Transform);
+            newPoints << roundNumber(d, Round::Transform);
         } else {
-            if (Tools::isZeroTs(a))
+            if (isZeroTs(a))
                 return "";
-            newPoints << Tools::roundNumber(a, Tools::TRANSFORM);
+            newPoints << roundNumber(a, Round::Transform);
         }
-        transform = "scale";
+        transform = TransformType::Scale;
     } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
     else if (type == Rotate)
     {
         if (m_angle == 0)
             return "";
-        transform = "rotate";
-        newPoints << Tools::roundNumber(m_angle, Tools::TRANSFORM);
+        transform = TransformType::Rotate;
+        newPoints << roundNumber(m_angle, Round::Transform);
     } // [1 0 tan(a) 1 0 0] = skewX, [1 tan(a) 0 1 0 0] = skewY
     else if (type == Skew)
     {
         if (m_xSkew == 0 && m_ySkew == 0)
             return "";
         if (m_xSkew != 0) {
-            transform = "skewX";
-            newPoints << Tools::roundNumber(m_xSkew, Tools::TRANSFORM);
+            transform = TransformType::SkewX;
+            newPoints << roundNumber(m_xSkew, Round::Transform);
         } else {
-            transform = "skewY";
-            newPoints << Tools::roundNumber(m_ySkew, Tools::TRANSFORM);
+            transform = TransformType::SkewY;
+            newPoints << roundNumber(m_ySkew, Round::Transform);
         }
     }
     else if (type == HorizontalMirror)
     {
-        transform = "scale";
+        transform = TransformType::Scale;
         newPoints << "-1" << "1";
     }
     else if (type == VertiacalMirror)
     {
-        transform = "scale";
+        transform = TransformType::Scale;
         newPoints << "1" << "-1";
     }
     else if (type == (HorizontalMirror | VertiacalMirror))
     {
-        transform = "scale";
+        transform = TransformType::Scale;
         newPoints << "-1" << "-1";
     }
     else
@@ -463,14 +492,14 @@ QString Transform::simplified() const
             && f == 0)
             return "";
 
-        transform = "matrix";
+        transform = TransformType::Matrix;
         newPoints.reserve(6);
-        newPoints << Tools::roundNumber(a, Tools::TRANSFORM);
-        newPoints << Tools::roundNumber(b, Tools::TRANSFORM);
-        newPoints << Tools::roundNumber(c, Tools::TRANSFORM);
-        newPoints << Tools::roundNumber(d, Tools::TRANSFORM);
-        newPoints << Tools::roundNumber(e, Tools::COORDINATE);
-        newPoints << Tools::roundNumber(f, Tools::COORDINATE);
+        newPoints << roundNumber(a, Round::Transform);
+        newPoints << roundNumber(b, Round::Transform);
+        newPoints << roundNumber(c, Round::Transform);
+        newPoints << roundNumber(d, Round::Transform);
+        newPoints << roundNumber(e, Round::Coordinate);
+        newPoints << roundNumber(f, Round::Coordinate);
     }
 
     transform += "(";
@@ -479,7 +508,7 @@ QString Transform::simplified() const
         if (i != 0) {
             if (isTrim) {
                 if ((!newPoints.at(i-1).contains('.')
-                     && newPoints.at(i).startsWith(QLatin1Char('.')))
+                     && newPoints.at(i).startsWith(QL1C('.')))
                         || newPoints.at(i).at(0).isDigit())
                     transform += " ";
             } else {

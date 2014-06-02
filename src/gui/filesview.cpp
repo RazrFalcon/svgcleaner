@@ -30,8 +30,6 @@
 
 #include "filesview.h"
 
-// TODO: check is path already in tree
-
 // ButtonDelegate class
 
 void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,

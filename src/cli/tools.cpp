@@ -24,132 +24,35 @@
 
 #include "tools.h"
 
-namespace Props {
-const StringSet fillList = StringSet() << "fill" << "fill-rule" << "fill-opacity";
-const StringSet strokeList = StringSet()
-    << "stroke" << "stroke-width" << "stroke-linecap" << "stroke-linejoin" << "stroke-miterlimit"
-    << "stroke-dasharray" << "stroke-dashoffset" << "stroke-opacity";
-
-const StringSet presentationAttributes = StringSet()
-    << "alignment-baseline" << "baseline-shift" << "clip-path" << "clip-rule" << "clip"
-    << "color-interpolation-filters" << "color-interpolation" << "color-profile"
-    << "color-rendering" << "color" << "cursor" << "direction" << "display" << "dominant-baseline"
-    << "enable-background" << "fill-opacity" << "fill-rule" << "fill" << "filter" << "flood-color"
-    << "flood-opacity" << "font-family" << "font-size-adjust" << "font-size" << "font-stretch"
-    << "font-style" << "font-variant" << "font-weight" << "glyph-orientation-horizontal"
-    << "glyph-orientation-vertical" << "image-rendering" << "kerning" << "letter-spacing"
-    << "lighting-color" << "marker-end" << "marker-mid" << "marker-start" << "mask" << "opacity"
-    << "overflow" << "pointer-events" << "shape-rendering" << "stop-color" << "stop-opacity"
-    << "stroke-dasharray" << "stroke-dashoffset" << "stroke-linecap" << "stroke-linejoin"
-    << "stroke-miterlimit" << "stroke-opacity" << "stroke-width" << "stroke" << "text-anchor"
-    << "text-decoration" << "text-rendering" << "unicode-bidi" << "visibility" << "word-spacing"
-    << "writing-mode";
-
-const CharList linkableStyleAttributes = CharList()
-    << "clip-path" << "fill" << "mask" << "filter" << "stroke" << "marker-start"
-    << "marker-mid" << "marker-end";
-
-const QStringList linearGradient = QStringList()
-    << "gradientTransform" << "xlink:href" << "x1" << "y1" << "x2" << "y2"
-    << "gradientUnits" << "spreadMethod" << "externalResourcesRequired";
-
-const QStringList radialGradient = QStringList()
-    << "gradientTransform" << "xlink:href" << "cx" << "cy" << "r" << "fx" << "fy"
-    << "gradientUnits" << "spreadMethod" << "externalResourcesRequired";
-
-const QStringList filter = QStringList()
-    << "gradientTransform" << "xlink:href" << "x" << "y" << "width" << "height" << "filterRes"
-    << "filterUnits" << "primitiveUnits" << "externalResourcesRequired";
-
-const StringSet maskAttributes = StringSet()
-    << "x" << "y" << "width" << "height"
-    << "maskUnits" << "maskContentUnits" << "externalResourcesRequired";
-
-const StringSet digitList = StringSet()
-    << "x" << "y" << "x1" << "y1" << "x2" << "y2" << "width" << "height" << "r" << "rx" << "ry"
-    << "fx" << "fy" << "cx" << "cy" << "dx" << "dy" << "offset";
-
-const StringSet filterDigitList = StringSet()
-    << "stdDeviation" << "baseFrequency" << "k" << "k1" << "k2" << "k3" << "specularConstant"
-    << "dx" << "dy" << "stroke-dasharray";
-
-const StringSet defsList = StringSet()
-    << "altGlyphDef" << "clipPath" << "cursor" << "filter" << "linearGradient"
-    << "marker" << "mask" << "pattern" << "radialGradient"/* << "symbol"*/;
-
-const StringSet referencedElements = StringSet()
-    << "a" << "altGlyphDef" << "clipPath" << "color-profile" << "cursor" << "filter" << "font"
-    << "font-face" << "foreignObject" << "image" << "marker" << "mask" << "pattern" << "script"
-    << "style" << "switch" << "text" << "view";
-
-const StringSet textElements = StringSet()
-    << "text" << "tspan" << "flowRoot" << "flowPara" << "flowSpan" << "textPath";
-
-const StringSet textAttributes = StringSet()
-    << "font-style" << "font-variant" << "font-weight" << "font-weight" << "font-stretch"
-    << "font-size" << "font-size-adjust" << "kerning" << "letter-spacing" << "word-spacing"
-    << "text-decoration" << "writing-mode" << "glyph-orientation-vertical"
-    << "glyph-orientation-horizontal" << "direction" << "text-anchor" << "dominant-baseline"
-    << "alignment-baseline" << "baseline-shift";
-const QVariantHash defaultStyleValues = Tools::initDefaultStyleHash();
-
-const StringSet svgElementList = StringSet()
-    << "a" << "altGlyph" << "altGlyphDef" << "altGlyphItem" << "animate" << "animateColor"
-    << "animateMotion" << "animateTransform" << "circle" << "clipPath" << "color-profile"
-    << "cursor" << "defs" << "desc" << "ellipse" << "feBlend" << "feColorMatrix"
-    << "feComponentTransfer" << "feComposite" << "feConvolveMatrix" << "feDiffuseLighting"
-    << "feDisplacementMap" << "feDistantLight" << "feFlood" << "feFuncA" << "feFuncB" << "feFuncG"
-    << "feFuncR" << "feGaussianBlur" << "feImage" << "feMerge" << "feMergeNode" << "feMorphology"
-    << "feOffset" << "fePointLight" << "feSpecularLighting" << "feSpotLight" << "feTile"
-    << "feTurbulence" << "filter" << "font" << "font-face" << "font-face-format" << "font-face-name"
-    << "font-face-src" << "font-face-uri" << "foreignObject" << "g" << "glyph" << "glyphRef"
-    << "hkern" << "image" << "line" << "linearGradient" << "marker" << "mask" << "metadata"
-    << "missing-glyph" << "mpath" << "path" << "pattern" << "polygon" << "polyline"
-    << "radialGradient" << "rect" << "script" << "set" << "stop" << "style" << "svg" << "switch"
-    << "symbol" << "text" << "textPath" << "title" << "tref" << "flowRoot" << "flowRegion"
-    << "flowPara" << "flowSpan" << "tspan" << "use" << "view" << "vkern";
-
-const StringSet elementsUsingXLink = StringSet()
-    << "a" << "altGlyph" << "color-profile" << "cursor" << "feImage" << "filter" << "font-face-uri"
-    << "glyphRef" << "image" << "linearGradient" << "mpath" << "pattern" << "radialGradient"
-    << "script" << "textPath" << "use" << "animate" << "animateColor" << "animateMotion"
-    << "animateTransform" << "set" << "tref";
-
-const StringSet containers = StringSet()
-    << "a" << "defs" << "glyph" << "g" << "marker" /*<< "mask"*/ << "missing-glyph" /*<< "pattern"*/
-    << "svg" << "switch" <<  "symbol";
-
-const StringSet stopAttributes = StringSet()
-    << "offset" << "stop-color" << "stop-opacity";
-
-const StringSet lengthTypes = StringSet()
-    << "em" << "ex" << "px" << "in" << "cm" << "mm" << "pt" << "pc";
-}
-
-namespace CleanerAttr {
-    const char * const UsedElement = "used-element";
-    const char * const BoundingBox = "bbox";
-    const char * const BBoxTransform = "bbox-transform";
-}
-
-
 Q_CORE_EXPORT double qstrtod(const char *s00, char const **se, bool *ok);
 Q_CORE_EXPORT char *qdtoa(double d, int mode, int ndigits, int *decpt,
                           int *sign, char **rve, char **digits_str);
 
-QString Tools::roundNumber(qreal value, RoundType type)
+bool isZero(qreal value)
+{
+    static qreal minValue = 1 / pow(10, Keys::get().coordinatesPrecision());
+    return (qAbs(value) < minValue);
+}
+
+bool isZeroTs(qreal value)
+{
+    static qreal minValue = 1 / pow(10, Keys::get().transformPrecision());
+    return (qAbs(value) < minValue);
+}
+
+QString roundNumber(qreal value, Round::RoundType type)
 {
     int precision;
-    if (type == COORDINATE)
+    if (type == Round::Coordinate)
         precision = Keys::get().coordinatesPrecision();
-    else if (type == ATTRIBUTE)
+    else if (type == Round::Attribute)
         precision = Keys::get().attributesPrecision();
     else
         precision = Keys::get().transformPrecision();
     return roundNumber(value, precision);
 }
 
-QString Tools::roundNumber(qreal value, int precision)
+QString roundNumber(qreal value, int precision)
 {
     double fractpart, intpart;
     fractpart = modf(value, &intpart);
@@ -167,7 +70,7 @@ QString Tools::roundNumber(qreal value, int precision)
     return doubleToStr(value, precision);
 }
 
-QString Tools::doubleToStr(const qreal value, int precision)
+QString doubleToStr(const qreal value, int precision)
 {
     uint multiplier = 1;
     while (precision--)
@@ -175,17 +78,19 @@ QString Tools::doubleToStr(const qreal value, int precision)
     qreal tmpValue = qRound64(qAbs(value) * multiplier);
 
     if (qFuzzyCompare(tmpValue, 0.0))
-        return "0";
+        return DefaultValue::V_null;
 
     qreal newValue = tmpValue/multiplier;
 
-    int decimalPointPos = numbersBeforePoint(newValue);
-    int zeroAfterPoint = zerosAfterPoint(newValue);
+    int decimalPointPos = Tools::numbersBeforePoint(newValue);
+    int zeroAfterPoint = Tools::zerosAfterPoint(newValue);
 
     qulonglong l = tmpValue;
     ushort buff[65];
     ushort *p = buff + 65;
     static ushort m_zero = QChar('0').unicode();
+    static ushort m_point = QChar('.').unicode();
+    static ushort m_sign = QChar('-').unicode();
     int pos = 0;
     while (l != 0) {
         pos++;
@@ -205,7 +110,7 @@ QString Tools::doubleToStr(const qreal value, int precision)
         pos--;
         if (pos == decimalPointPos && decimalPointPos != 0) {
             if (charCount > 0)
-                *(--p) = QChar('.').unicode();
+                *(--p) = m_point;
             isTrailingZero = false;
         }
         l /= 10;
@@ -213,13 +118,13 @@ QString Tools::doubleToStr(const qreal value, int precision)
     while (zeroAfterPoint--)
         *(--p) = m_zero;
     if (decimalPointPos == 0) {
-        *(--p) = QChar('.').unicode();
+        *(--p) = m_point;
         static const bool useLeadingZero = !Keys::get().flag(Key::RemoveUnneededSymbols);
         if (useLeadingZero)
             *(--p) = m_zero;
     }
     if (value < 0)
-        *(--p) = QChar('-').unicode();
+        *(--p) = m_sign;
     return QString(reinterpret_cast<QChar *>(p), 65 - (p - buff));
 }
 
@@ -245,22 +150,37 @@ int Tools::zerosAfterPoint(qreal value)
     return count;
 }
 
-qreal Tools::getNum(const QChar *&str)
+qreal getNum(const QChar *&str)
 {
-    while (str->isSpace())
+    while (isSpace(str->unicode()))
         ++str;
-    qreal num = toDouble(str);
-    while (str->isSpace())
+    qreal num = Tools::toDouble(str);
+    while (isSpace(str->unicode()))
         ++str;
-    if (*str == QLatin1Char(','))
+    if (*str == QL1C(','))
         ++str;
     return num;
 }
 
-qreal Tools::strToDouble(const QString &str)
+qreal strToDouble(const QString &str)
 {
     const QChar *ch = str.constData();
-    return toDouble(ch);
+    return Tools::toDouble(ch);
+}
+
+// check is space or non printable character
+bool isSpace(ushort ch)
+{
+    // '9'  is character tabulation
+    // '10' is line feed (LF)
+    // '11' is line tabulation
+    // '12' is form feed (FF)
+    // '13' is carriage return (CR)
+    // '32' is UTF-8 space
+    if ((ch >= 9 && ch <= 13) || ch == 32) {
+        return true;
+    }
+    return false;
 }
 
 // the isDigit code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
@@ -278,17 +198,17 @@ qreal Tools::toDouble(const QChar *&str)
     char temp[maxLen+1];
     int pos = 0;
 
-    if (*str == QLatin1Char('-')) {
+    if (*str == QL1C('-')) {
         temp[pos++] = '-';
         ++str;
-    } else if (*str == QLatin1Char('+')) {
+    } else if (*str == QL1C('+')) {
         ++str;
     }
     while (isDigit(str->unicode()) && pos < maxLen) {
         temp[pos++] = str->toLatin1();
         ++str;
     }
-    if (*str == QLatin1Char('.') && pos < maxLen) {
+    if (*str == QL1C('.') && pos < maxLen) {
         temp[pos++] = '.';
         ++str;
     }
@@ -297,11 +217,11 @@ qreal Tools::toDouble(const QChar *&str)
         ++str;
     }
     bool exponent = false;
-    if ((*str == QLatin1Char('e') || *str == QLatin1Char('E')) && pos < maxLen) {
+    if ((*str == QL1C('e') || *str == QL1C('E')) && pos < maxLen) {
         exponent = true;
         temp[pos++] = 'e';
         ++str;
-        if ((*str == QLatin1Char('-') || *str == QLatin1Char('+')) && pos < maxLen) {
+        if ((*str == QL1C('-') || *str == QL1C('+')) && pos < maxLen) {
             temp[pos++] = str->toLatin1();
             ++str;
         }
@@ -318,19 +238,19 @@ qreal Tools::toDouble(const QChar *&str)
         int ival = 0;
         const char *t = temp;
         bool neg = false;
-        if(*t == '-') {
+        if (*t == '-') {
             neg = true;
             ++t;
         }
-        while(*t && *t != '.') {
+        while (*t && *t != '.') {
             ival *= 10;
             ival += (*t) - '0';
             ++t;
         }
-        if(*t == '.') {
+        if (*t == '.') {
             ++t;
             int div = 1;
-            while(*t) {
+            while (*t) {
                 ival *= 10;
                 ival += (*t) - '0';
                 div *= 10;
@@ -343,21 +263,15 @@ qreal Tools::toDouble(const QChar *&str)
         if (neg)
             val = -val;
     } else {
-#if defined(Q_WS_QWS) && !defined(Q_OS_VXWORKS)
-        if(sizeof(qreal) == sizeof(float))
-            val = strtof(temp, 0);
-        else
-#endif
-        {
-            bool ok = false;
-            val = qstrtod(temp, 0, &ok);
-        }
+        bool ok = false;
+        val = qstrtod(temp, 0, &ok);
     }
     return val;
 }
 
 QString Tools::trimColor(const QString &color)
 {
+    static const QChar sharpChar = QL1C('#');
     QString newColor = color.toLower();
 
     // convert 'rgb (255, 255, 255)' to #RRGGBB
@@ -368,37 +282,37 @@ QString Tools::trimColor(const QString &color)
             QVector<qreal> nums;
             nums.reserve(3);
             while (str != end) {
-                while (str->isSpace() || *str != QLatin1Char('('))
+                while (isSpace(str->unicode()) || *str != QL1C('('))
                     ++str;
                 ++str;
                 for (int i = 0; i < 3; ++i) {
                     nums << getNum(str);
-                    if (*str == QLatin1Char('%'))
+                    if (*str == LengthType::percent)
                         ++str;
-                    if (*str == QLatin1Char(','))
+                    if (*str == QL1C(','))
                         ++str;
                 }
-                while (*str != QLatin1Char(')'))
+                while (*str != QL1C(')'))
                     ++str;
                 ++str;
             }
             // convert 'rgb (100%, 100%, 100%)' to 'rgb (255, 255, 255)'
-            if (newColor.contains(QLatin1Char('%'))) {
+            if (newColor.contains(LengthType::percent)) {
                 for (int i = 0; i < 3; ++i)
                     nums[i] = nums.at(i) * 255 / 100;
             }
-            newColor = QLatin1Char('#');
+            newColor = sharpChar;
             foreach (const qreal &value, nums)
-                newColor += QString::number((int)value, 16).rightJustified(2, QLatin1Char('0'));
+                newColor += QString::number((int)value, 16).rightJustified(2, QL1C('0'));
         }
 
         // check is color set by name
-        if (!newColor.contains(QLatin1Char('#')))
+        if (!newColor.contains(sharpChar))
             newColor = replaceColorName(newColor);
     }
 
     if (Keys::get().flag(Key::ConvertRRGGBBToRGB)) {
-        if (newColor.startsWith(QLatin1Char('#'))) {
+        if (newColor.startsWith(sharpChar)) {
             // try to convert #rrggbb to #rgb
             if (newColor.size() == 7) { // #000000
                 int inter = 0;
@@ -407,13 +321,14 @@ QString Tools::trimColor(const QString &color)
                         inter++;
                 }
                 if (inter == 3)
-                    newColor = QLatin1Char('#') + newColor.at(1) + newColor.at(3) + newColor.at(5);
+                    newColor = sharpChar + newColor.at(1) + newColor.at(3) + newColor.at(5);
             }
         }
     }
     return newColor;
 }
 
+// TODO: maybe replase with if...else
 QString Tools::replaceColorName(const QString &color)
 {
     static QHash<QString, QString> colors;
@@ -562,96 +477,6 @@ QString Tools::replaceColorName(const QString &color)
     return colors.value(color);
 }
 
-QVariantHash Tools::initDefaultStyleHash()
-{
-    static QVariantHash hash;
-    if (!hash.isEmpty())
-        return hash;
-    hash.insert("alignment-baseline", "auto");
-    hash.insert("baseline-shift", "baseline");
-    hash.insert("block-progression", "tb");
-    hash.insert("clip", "auto");
-    hash.insert("clip-path", "none");
-    hash.insert("clip-rule", "nonzero");
-    hash.insert("direction", "ltr");
-    hash.insert("display", "inline");
-    hash.insert("dominant-baseline", "auto");
-    hash.insert("enable-background", "accumulate");
-    hash.insert("fill-opacity", 1.0);
-    hash.insert("fill-rule", "nonzero");
-    hash.insert("filter", "none");
-    hash.insert("flood-color", "black");
-    hash.insert("font-size-adjust", "none");
-    hash.insert("font-size", "medium");
-    hash.insert("font-stretch", "normal");
-    hash.insert("font-style", "normal");
-    hash.insert("font-variant", "normal");
-    hash.insert("font-weight", "normal");
-    hash.insert("glyph-orientation-horizontal", "0deg");
-    hash.insert("glyph-orientation-vertical", "auto");
-    hash.insert("kerning", "auto");
-    hash.insert("letter-spacing", "normal");
-    hash.insert("marker-start", "none");
-    hash.insert("marker-mid", "none");
-    hash.insert("marker-end", "none");
-    hash.insert("mask", "none");
-    hash.insert("opacity", 1.0);
-    hash.insert("overflow", "visible");
-    hash.insert("pointer-events", "visiblePainted");
-    hash.insert("stop-opacity", 1.0);
-    hash.insert("stroke-dasharray", "none");
-    hash.insert("stroke-dashoffset", 0);
-    hash.insert("stroke-linecap", "butt");
-    hash.insert("stroke-linejoin", "miter");
-    hash.insert("stroke-miterlimit", 4.0);
-    hash.insert("stroke", "none");
-    hash.insert("stroke-opacity", 1.0);
-    hash.insert("stroke-width", 1.0);
-    hash.insert("text-anchor", "start");
-    hash.insert("text-decoration", "none");
-    hash.insert("visibility", "visible");
-    hash.insert("word-spacing", "normal");
-    hash.insert("writing-mode", "lr-tb");
-    return hash;
-}
-
-QString Tools::removeEdgeSpaces(const QString &str)
-{
-    QString tmpstr = str;
-    while (tmpstr.at(0) == QLatin1Char(' '))
-        tmpstr.remove(0,1);
-    while (tmpstr.at(tmpstr.size()-1) == QLatin1Char(' '))
-        tmpstr.remove(tmpstr.size()-1,1);
-    return tmpstr;
-}
-
-StringHash Tools::splitStyle(const QString &style)
-{
-    StringHash hash;
-    if (style.isEmpty())
-        return hash;
-    QStringList list = removeEdgeSpaces(style).split(";", QString::SkipEmptyParts);
-    for (int i = 0; i < list.count(); ++i) {
-        QString attr = list.at(i);
-        int pos = attr.indexOf(QLatin1Char(':'));
-        if (pos != -1)
-            hash.insert(removeEdgeSpaces(attr.mid(0, pos)), removeEdgeSpaces(attr.mid(pos+1)));
-    }
-    return hash;
-}
-
-bool Tools::isZero(qreal value)
-{
-    static qreal minValue = 1 / pow(10, Keys::get().coordinatesPrecision());
-    return (qAbs(value) < minValue);
-}
-
-bool Tools::isZeroTs(qreal value)
-{
-    static qreal minValue = 1 / pow(10, Keys::get().transformPrecision());
-    return (qAbs(value) < minValue);
-}
-
 // http://www.w3.org/TR/SVG11/coords.html#Units
 QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
 {
@@ -661,42 +486,42 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
     const QChar *end = str + text.size();
     while (str != end) {
         number = getNum(str);
-        while ((str->isLetter() || *str == QLatin1Char('%')) && str != end) {
+        while ((str->isLetter() || *str == LengthType::percent) && str != end) {
             unit += *str;
             ++str;
         }
     }
 
-    if (unit == QL1S("px"))
-        return roundNumber(number, Tools::ATTRIBUTE);
+    if (unit == LengthType::px)
+        return roundNumber(number, Round::Attribute);
 
     // fix string parsing, getNum func detect 'e' char as exponent...
     if (unit == QL1S("x"))
-        unit = QL1S("ex");
+        unit = LengthType::ex;
     else if (unit == QL1S("m"))
-        unit = QL1S("em");
+        unit = LengthType::em;
 
     // note that all relative units depends on users screen dpi
     // and cleaner use 90dpi as default
 
-    if (unit == QL1S("pt"))
+    if (unit == LengthType::pt)
         number = number * 1.25;
-    else if (unit == QL1S("pc"))
+    else if (unit == LengthType::pc)
         number = number * 15;
-    else if (unit == QL1S("mm"))
+    else if (unit == LengthType::mm)
         number = number * 3.543307;
-    else if (unit == QL1S("cm"))
+    else if (unit == LengthType::cm)
         number = number * 35.43307;
-    else if (unit == QL1S("in"))
+    else if (unit == LengthType::in)
         number = number * 90;
-    else if (unit == QL1S("%"))
+    else if (unit == LengthType::percent)
         number = number * baseValue / 100;
-    else if (unit == QL1S("em"))
+    else if (unit == LengthType::em)
         number = number * baseValue;
-    else if (unit == QL1S("ex"))
+    else if (unit == LengthType::ex)
         number = number * baseValue / 2;
     else
         return text;
 
-    return roundNumber(number, Tools::ATTRIBUTE);
+    return roundNumber(number, Round::Attribute);
 }

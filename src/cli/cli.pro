@@ -9,24 +9,24 @@ TEMPLATE = app
 DEFINES *= QT_USE_QSTRINGBUILDER
 
 SOURCES += \
-    main.cpp \
     basecleaner.cpp \
+    enums.cpp \
     keys.cpp \
+    main.cpp \
     paths.cpp \
     remover.cpp \
     replacer.cpp \
-    svgelement.cpp \
-    tinyxml2.cpp \
+    svgdom.cpp \
     tools.cpp \
     transform.cpp
 
 HEADERS += \
     basecleaner.h \
+    enums.h \
     keys.h \
     paths.h \
     remover.h \
     replacer.h \
-    svgelement.h \
-    tinyxml2.h \
+    svgdom.h \
     tools.h \
     transform.h

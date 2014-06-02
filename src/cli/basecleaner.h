@@ -24,36 +24,39 @@
 
 #include <QRectF>
 
-#include "svgelement.h"
+#include "transform.h"
+#include "svgdom.h"
 #include "tools.h"
 
 #define Keys Keys::get()
 
+using namespace Element;
+using namespace Attribute;
+using namespace DefaultValue;
+
 class BaseCleaner
 {
 public:
-    BaseCleaner(XMLDocument *doc);
+    BaseCleaner(SvgDocument doc);
     virtual ~BaseCleaner() {}
-    XMLDocument* document() const;
+    SvgDocument document() const;
     SvgElement svgElement() const;
     SvgElement defsElement() const;
     void updateXLinks(const StringHash &hash);
-    SvgElement findDefElement(const QString &id);
-    SvgElement findElement(const QString &id, XMLElement *parent = 0);
+    SvgElement findInDefs(const QString &id);
+    SvgElement findElement(const QString &id, SvgElement parent = SvgElement());
     bool hasParent(const SvgElement &elem, const QString &tagName);
-    QString findAttribute(const SvgElement &elem, const char *attrName);
+    QString findAttribute(const SvgElement &elem, const QString &attrName);
     QString absoluteTransform(const SvgElement &elem);
     QRectF viewBoxRect();
-    static SvgElement svgElement(XMLDocument *doc);
-    static QList<XMLNode *> childNodeList(XMLNode *node);
-    static QList<SvgElement> childElemList(XMLDocument *doc);
+    static SvgElement svgElement(SvgDocument doc);
 
 private:
-    XMLDocument *m_doc;
+    SvgDocument m_doc;
     SvgElement m_svgElem;
     SvgElement m_defsElem;
 
-    SvgElement defsElement(XMLDocument *doc, SvgElement &svgElem);
+    SvgElement defsElement(SvgDocument doc, SvgElement &svgElem);
 };
 
 #endif // BASECLEANER_H

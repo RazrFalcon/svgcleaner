@@ -28,12 +28,6 @@
 #include <QSet>
 #include <QObject>
 
-typedef QMap<QString, QString> StringMap;
-typedef QHash<QString, QString> StringHash;
-typedef QSet<QString> StringSet;
-typedef QSet<const char *> CharSet;
-typedef QList<const char *> CharList;
-
 namespace Preset {
     extern const QString Basic;
     extern const QString Complete;

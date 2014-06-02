@@ -20,15 +20,16 @@
 ****************************************************************************/
 
 #include "basecleaner.h"
+#include "transform.h"
 
-BaseCleaner::BaseCleaner(XMLDocument *doc)
+BaseCleaner::BaseCleaner(SvgDocument doc)
 {
     m_doc = doc;
     m_svgElem = svgElement(doc);
     m_defsElem = defsElement(doc, m_svgElem);
 }
 
-XMLDocument* BaseCleaner::document() const
+SvgDocument BaseCleaner::document() const
 {
     return m_doc;
 }
@@ -43,118 +44,91 @@ SvgElement BaseCleaner::defsElement() const
     return m_defsElem;
 }
 
-SvgElement BaseCleaner::defsElement(XMLDocument *doc, SvgElement &svgElem)
+SvgElement BaseCleaner::defsElement(SvgDocument doc, SvgElement &svgElem)
 {
-    XMLElement *child;
-    for (child = svgElem.xmlElement()->FirstChildElement(); child;
-         child = child->NextSiblingElement()) {
-        if (strcmp(child->Name(), "defs") == 0) {
-            break;
+    QList<SvgNode> list = svgElem.childNodes();
+    while (!list.isEmpty()) {
+        SvgNode node = list.takeFirst();
+        if (node.isElement()) {
+            if (node.toElement().tagName() == E_defs)
+                return node.toElement();
         }
     }
-    if (child == 0) {
-        XMLElement* element = doc->NewElement("defs");
-        svgElem.xmlElement()->InsertFirstChild(element);
-        child = element;
-    }
-    return SvgElement(child);
-}
-
-QList<XMLNode *> BaseCleaner::childNodeList(XMLNode *node)
-{
-    QList<XMLNode *> list;
-    for (XMLNode *child = node->FirstChild(); child; child = child->NextSibling())
-        list << child;
-    return list;
-}
-
-QList<SvgElement> BaseCleaner::childElemList(XMLDocument *doc)
-{
-    QList<SvgElement> list;
-    for (XMLElement *child = doc->FirstChildElement(); child; child = child->NextSiblingElement())
-        list << SvgElement(child);
-    return list;
+    SvgElement newDefs = doc.createElement(E_defs);
+    svgElem.insertBefore(newDefs, svgElem.firstChild());
+    return newDefs;
 }
 
 void BaseCleaner::updateXLinks(const StringHash &hash)
 {
-    CharList xlinkStyles;
-    xlinkStyles << "fill" << "stroke" << "filter" << "clip-path";
+    QStringList xlinkStyles;
+    xlinkStyles << A_fill << A_stroke << A_filter << A_clip_path;
 
-    QList<SvgElement> list = svgElement().childElemList();
-    while (!list.isEmpty()) {
-        SvgElement currElem = list.takeFirst();
+    element_loop(svgElement()) {
         for (int i = 0; i < xlinkStyles.size(); ++i) {
-            if (currElem.hasAttribute(xlinkStyles.at(i))) {
-                QString attrValue = currElem.attribute(xlinkStyles.at(i));
-                if (attrValue.startsWith(QL1S("url"))) {
+            if (elem.hasAttribute(xlinkStyles.at(i))) {
+                QString attrValue = elem.attribute(xlinkStyles.at(i));
+                if (attrValue.startsWith(UrlPrefix)) {
                     QString url = attrValue.mid(5, attrValue.size()-6);
                     if (hash.contains(url)) {
-                        currElem.setAttribute(xlinkStyles.at(i),
+                        elem.setAttribute(xlinkStyles.at(i),
                                               QString("url(#" + hash.value(url) + ")"));
                     }
                 }
             }
         }
-        if (currElem.hasAttribute("xlink:href")) {
-            QString value = currElem.xlinkId();
-            QString elemId = currElem.id();
+        if (elem.hasAttribute(A_xlink_href)) {
+            QString value = elem.xlinkId();
+            QString elemId = elem.id();
             foreach (const QString &key, hash.keys()) {
                 if (value == key) {
                     if (hash.value(key) != elemId)
-                        currElem.setAttribute("xlink:href", QString("#" + hash.value(key)));
+                        elem.setAttribute(A_xlink_href, QString("#" + hash.value(key)));
                     else
-                        currElem.removeAttribute("xlink:href");
+                        elem.removeAttribute(A_xlink_href);
                     break;
                 }
             }
         }
-        if (currElem.hasChildren())
-            list << currElem.childElemList();
+        nextElement(elem, root);
     }
 }
 
-SvgElement BaseCleaner::svgElement(XMLDocument *doc)
+SvgElement BaseCleaner::svgElement(SvgDocument doc)
 {
-    XMLElement *child;
-    for (child = doc->FirstChildElement(); child; child = child->NextSiblingElement()) {
-        if (strcmp(child->Name(), "svg") == 0) {
-            break;
+    QList<SvgNode> list = doc.childNodes();
+    while (!list.isEmpty()) {
+        SvgNode node = list.takeFirst();
+        if (node.isElement()) {
+            if (node.toElement().tagName() == E_svg)
+                return node.toElement();
         }
-    }
-    return SvgElement(child);
-}
 
-SvgElement BaseCleaner::findDefElement(const QString &id)
-{
-    for (XMLElement *child = defsElement().xmlElement()->FirstChildElement(); child;
-         child = child->NextSiblingElement()) {
-        if (child->Attribute("id") != 0)
-            if (!strcmp(child->Attribute("id"), id.toLatin1()))
-                return SvgElement(child);
     }
     return SvgElement();
 }
 
-SvgElement BaseCleaner::findElement(const QString &id, XMLElement *parent)
+SvgElement BaseCleaner::findInDefs(const QString &id)
 {
-    if (!parent)
-        parent = svgElement().xmlElement();
-    SvgElement elem;
-    for (XMLElement *child = parent->FirstChildElement(); child;
-         child = child->NextSiblingElement()) {
-        if (child->Attribute("id") != 0)
-            if (!strcmp(child->Attribute("id"), id.toLatin1())) {
-                elem = SvgElement(child);
-                break;
-            }
-        if (!child->NoChildren()) {
-            elem = findElement(id, child);
-            if (!elem.isNull())
-                break;
-        }
+    SvgElement elem = defsElement().firstChildElement();
+    while (!elem.isNull()) {
+        if (elem.id() == id)
+            return elem;
+        elem = elem.nextSiblingElement();
     }
-    return elem;
+    return SvgElement();
+}
+
+SvgElement BaseCleaner::findElement(const QString &id, SvgElement parent)
+{
+    if (parent.isNull())
+        parent = svgElement();
+    element_loop(parent) {
+        if (elem.id() == id)
+            return elem;
+        nextElement(elem, root);
+    }
+    return SvgElement();
 }
 
 bool BaseCleaner::hasParent(const SvgElement &elem, const QString &tagName)
@@ -168,7 +142,7 @@ bool BaseCleaner::hasParent(const SvgElement &elem, const QString &tagName)
     return false;
 }
 
-QString BaseCleaner::findAttribute(const SvgElement &elem, const char *attrName)
+QString BaseCleaner::findAttribute(const SvgElement &elem, const QString &attrName)
 {
     SvgElement parent = elem;
     while (!parent.isNull()) {
@@ -184,7 +158,7 @@ QString BaseCleaner::absoluteTransform(const SvgElement &elem)
     QString transform;
     SvgElement parent = elem;
     while (!parent.isNull()) {
-        transform += parent.attribute("transform") + " ";
+        transform += parent.attribute(A_transform) + " ";
         parent = parent.parentElement();
     }
     return Transform(transform).simplified();
@@ -193,13 +167,13 @@ QString BaseCleaner::absoluteTransform(const SvgElement &elem)
 QRectF BaseCleaner::viewBoxRect()
 {
     QRectF rect;
-    if (svgElement().hasAttribute("viewBox")) {
-        QStringList list = svgElement().attribute("viewBox").split(" ", QString::SkipEmptyParts);
+    if (svgElement().hasAttribute(A_viewBox)) {
+        QStringList list = svgElement().attribute(A_viewBox).split(" ", QString::SkipEmptyParts);
         rect.setRect(list.at(0).toDouble(), list.at(1).toDouble(),
                      list.at(2).toDouble(), list.at(3).toDouble());
-    } else if (svgElement().hasAttribute("width") && svgElement().hasAttribute("height")) {
-        rect.setRect(0, 0, svgElement().doubleAttribute("width"),
-                           svgElement().doubleAttribute("height"));
+    } else if (svgElement().hasAttribute(A_width) && svgElement().hasAttribute(A_height)) {
+        rect.setRect(0, 0, svgElement().doubleAttribute(A_width),
+                           svgElement().doubleAttribute(A_height));
     }
     return rect;
 }

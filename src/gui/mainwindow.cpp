@@ -87,11 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QShortcut *quitShortcut = new QShortcut(QKeySequence::Quit, this);
     connect(quitShortcut, SIGNAL(activated()), qApp, SLOT(quit()));
 
-    QSize windowSize = settings.value(SettingKey::GUI::MainSize).toSize();
-    if (windowSize.isEmpty())
-        resize(1000, 650);
-    else
-        resize(windowSize);
+    resize(settings.value(SettingKey::GUI::MainSize, QSize(1000, 650)).toSize());
 }
 
 void MainWindow::on_actionWizard_triggered()

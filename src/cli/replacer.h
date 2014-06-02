@@ -22,26 +22,27 @@
 #ifndef REPLACER_H
 #define REPLACER_H
 
+#include "transform.h"
 #include "basecleaner.h"
 
 struct LineGradStruct {
     SvgElement elem;
     QString id;
-    StringMap attrs;
-    QList<StringMap> stopAttrs;
+    StringHash attrs;
+    QList<StringHash> stopAttrs;
 };
 
 class Replacer : public BaseCleaner
 {
 public:
-    explicit Replacer(XMLDocument *doc) : BaseCleaner(doc) {}
+    explicit Replacer(SvgDocument &doc) : BaseCleaner(doc) {}
     void convertSizeToViewbox();
     void processPaths();
     void fixWrongAttr();
     void convertUnits();
     void convertCDATAStyle();
     void prepareDefs();
-    void splitStyleAttr();
+    void splitStyleAttributes();
     void joinStyleAttr();
     void sortDefs();
     void roundNumericAttributes();
@@ -61,7 +62,6 @@ public:
 
 private:
     QHash<QString,int> calcDefsUsageCount();
-    SvgElement findLinearGradient(const QString &id);
     bool isPathValidToTransform(SvgElement &pathElem, QHash<QString, int> &defsIdHash);
     bool isBlurFilter(const QString &id);
     void updateLinkedDefTransform(SvgElement &elem);

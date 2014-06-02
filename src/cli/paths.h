@@ -24,7 +24,8 @@
 
 #include <QVector>
 
-#include "svgelement.h"
+#include "transform.h"
+#include "svgdom.h"
 
 namespace Command {
     static const QChar MoveTo           = 'm';
@@ -98,7 +99,6 @@ private:
     void splitToSegments(const QStringRef &path, QList<Segment> &segList);
     void processSegments(QList<Segment> &segList);
     void segmentsToRelative(QList<Segment> &segList, bool onlyIfSourceWasRelative);
-    bool isZero(double value);
     void calcNewStrokeWidth(const Transform &transform);
     bool applyTransform(QList<Segment> &segList);
     bool isTsPathShorter();

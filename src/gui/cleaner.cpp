@@ -46,9 +46,9 @@ SVGInfo Cleaner::cleanFile(const ToThread &data)
     args.reserve(data.args.size() + 3);
     args << inFile << data.outputFile  << data.args << "--short-output";
     QProcess proc;
+    static QString cliPath = QApplication::applicationDirPath() + "/svgcleaner-cli";
     QElapsedTimer cleaningTime;
     cleaningTime.start();
-    static QString cliPath = QApplication::applicationDirPath() + "/svgcleaner-cli";
     proc.start(cliPath, args);
     proc.waitForFinished(300000); // 5min
     info.time = cleaningTime.elapsed();

@@ -42,12 +42,7 @@ WizardDialog::WizardDialog(QWidget *parent) :
     setupUi(this);
     initGUI();
     loadSettings();
-
-    QSize windowSize = Settings().value(SettingKey::GUI::WizardSize).toSize();
-    if (windowSize.isEmpty())
-        adjustSize();
-    else
-        resize(windowSize);
+    resize(Settings().value(SettingKey::GUI::WizardSize, QSize(600, 550)).toSize());
 }
 
 WizardDialog::~WizardDialog()

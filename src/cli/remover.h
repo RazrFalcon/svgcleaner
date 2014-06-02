@@ -29,7 +29,7 @@ struct DefsElemStruct
     SvgElement elem;
     QString tagName;
     bool hasChildren;
-    StringMap attrMap;
+    StringHash attrMap;
     QStringList attrList;
     QString id;
 };
@@ -37,7 +37,7 @@ struct DefsElemStruct
 class Remover : public BaseCleaner
 {
 public:
-    explicit Remover(XMLDocument *doc) : BaseCleaner(doc) {}
+    explicit Remover(SvgDocument &doc) : BaseCleaner(doc) {}
     void removeUnreferencedIds();
     void removeUnusedDefs();
     void removeUnusedXLinks();
@@ -53,15 +53,15 @@ public:
     void removeElementsOutsideTheViewbox();
 
 private:
-    QList<StringMap> styleHashList;
-    StringMap parentHash;
+    QList<StringHash> styleHashList;
+    StringHash parentHash;
     StringSet parentAttrs;
 
-    void cleanStyle(const SvgElement &elem, StringMap &hash);
-    void removeDefaultValue(StringMap &hash, const QString &name);
+    void cleanStyle(const SvgElement &elem, StringHash &hash);
+    void removeDefaultValue(StringHash &hash, const QString &name);
     bool isElementInvisible(SvgElement &elem);
     bool isElementInvisible2(SvgElement &elem);
-    void megreGroups(SvgElement parentElem, SvgElement childElem, bool isParentToChild);
+    void megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem, bool isParentToChild);
     bool isDoctype(const QString &str);
     bool isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2);
     void prepareViewBoxRect(QRectF &viewBox);

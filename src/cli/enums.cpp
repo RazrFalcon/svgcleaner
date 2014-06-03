@@ -23,8 +23,6 @@
 
 const QString UrlPrefix = QL1S("url(");
 
-// TODO: maybe declare only often used elements and attributes
-
 namespace Element {
     const QString E_a                   = QL1S("a");
     const QString E_altGlyph            = QL1S("altGlyph");
@@ -112,8 +110,12 @@ namespace Attribute {
     const QString A_alignment_baseline           = QL1S("alignment-baseline");
     const QString A_baseFrequency                = QL1S("baseFrequency");
     const QString A_baseline_shift               = QL1S("baseline-shift");
+    const QString A_bbox                         = QL1S("bbox");
+    const QString A_bbox_transform               = QL1S("bbox-transform");
     const QString A_block_progression            = QL1S("block-progression");
+    const QString A_class                        = QL1S("class");
     const QString A_clip_path                    = QL1S("clip-path");
+    const QString A_clipPathUnits                = QL1S("clipPathUnits");
     const QString A_clip                         = QL1S("clip");
     const QString A_clip_rule                    = QL1S("clip-rule");
     const QString A_color_interpolation_filters  = QL1S("color-interpolation-filters");
@@ -155,9 +157,14 @@ namespace Attribute {
     const QString A_height                       = QL1S("height");
     const QString A_id                           = QL1S("id");
     const QString A_image_rendering              = QL1S("image-rendering");
+    const QString A_k1                           = QL1S("k1");
+    const QString A_k2                           = QL1S("k2");
+    const QString A_k3                           = QL1S("k3");
     const QString A_kerning                      = QL1S("kerning");
+    const QString A_k                            = QL1S("k");
     const QString A_letter_spacing               = QL1S("letter-spacing");
     const QString A_lighting_color               = QL1S("lighting-color");
+    const QString A_line_height                  = QL1S("line-height");
     const QString A_marker_end                   = QL1S("marker-end");
     const QString A_marker_mid                   = QL1S("marker-mid");
     const QString A_marker                       = QL1S("marker");
@@ -173,6 +180,7 @@ namespace Attribute {
     const QString A_rx                           = QL1S("rx");
     const QString A_ry                           = QL1S("ry");
     const QString A_shape_rendering              = QL1S("shape-rendering");
+    const QString A_specularConstant             = QL1S("specularConstant");
     const QString A_spreadMethod                 = QL1S("spreadMethod");
     const QString A_stdDeviation                 = QL1S("stdDeviation");
     const QString A_stop_color                   = QL1S("stop-color");
@@ -186,12 +194,14 @@ namespace Attribute {
     const QString A_stroke                       = QL1S("stroke");
     const QString A_stroke_width                 = QL1S("stroke-width");
     const QString A_style                        = QL1S("style");
+    const QString A_text_align                   = QL1S("text-align");
     const QString A_text_anchor                  = QL1S("text-anchor");
     const QString A_text_decoration              = QL1S("text-decoration");
     const QString A_text                         = QL1S("text");
     const QString A_text_rendering               = QL1S("text-rendering");
     const QString A_transform                    = QL1S("transform");
     const QString A_unicode_bidi                 = QL1S("unicode-bidi");
+    const QString A_used_element                 = QL1S("used-element");
     const QString A_viewBox                      = QL1S("viewBox");
     const QString A_visibility                   = QL1S("visibility");
     const QString A_width                        = QL1S("width");
@@ -226,23 +236,45 @@ const StringSet presentationAttributes = StringSet()
     << A_text_decoration << A_text_rendering << A_unicode_bidi << A_visibility << A_word_spacing
     << A_writing_mode;
 
-const StringSet linkableStyleAttributes = StringSet()
-    << A_clip_path << A_fill << A_mask << A_filter << A_stroke << A_marker_start
-    << A_marker_mid << A_marker_end;
+const QList<int> presentationAttributesIds = QList<int>()
+    << AttrId::alignment_baseline << AttrId::baseline_shift << AttrId::clip_path
+    << AttrId::clip_rule << AttrId::clip << AttrId::color_interpolation_filters
+    << AttrId::color_interpolation << AttrId::color_profile << AttrId::color_rendering
+    << AttrId::color << AttrId::cursor << AttrId::direction << AttrId::display
+    << AttrId::dominant_baseline << AttrId::enable_background << AttrId::fill_opacity
+    << AttrId::fill_rule << AttrId::fill << AttrId::filter << AttrId::flood_color
+    << AttrId::flood_opacity << AttrId::font_family << AttrId::font_size_adjust << AttrId::font_size
+    << AttrId::font_stretch << AttrId::font_style << AttrId::font_variant << AttrId::font_weight
+    << AttrId::glyph_orientation_horizontal << AttrId::glyph_orientation_vertical
+    << AttrId::image_rendering << AttrId::kerning << AttrId::letter_spacing
+    << AttrId::lighting_color << AttrId::marker_end << AttrId::marker_mid << AttrId::marker_start
+    << AttrId::mask << AttrId::opacity << AttrId::overflow << AttrId::pointer_events
+    << AttrId::shape_rendering << AttrId::stop_color << AttrId::stop_opacity
+    << AttrId::stroke_dasharray << AttrId::stroke_dashoffset << AttrId::stroke_linecap
+    << AttrId::stroke_linejoin << AttrId::stroke_miterlimit << AttrId::stroke_opacity
+    << AttrId::stroke_width << AttrId::stroke << AttrId::text_anchor << AttrId::text_decoration
+    << AttrId::text_rendering << AttrId::unicode_bidi << AttrId::visibility << AttrId::word_spacing
+    << AttrId::writing_mode;
 
-const StringSet digitList = StringSet()
-    << A_x << A_y << A_x1 << A_y1 << A_x2 << A_y2 << A_width << A_height << A_r << A_rx << A_ry
-    << A_fx << A_fy << A_cx << A_cy << A_dx << A_dy << A_offset;
+const QList<int> linkableStyleAttributesIds = QList<int>()
+    << AttrId::clip_path << AttrId::fill << AttrId::mask << AttrId::filter << AttrId::stroke
+    << AttrId::marker_start << AttrId::marker_mid << AttrId::marker_end;
+
+const QList<int> digitListIds = QList<int>()
+    << AttrId::x << AttrId::y << AttrId::x1 << AttrId::y1 << AttrId::x2 << AttrId::y2
+    << AttrId::width << AttrId::height << AttrId::r << AttrId::rx << AttrId::ry << AttrId::fx
+    << AttrId::fy << AttrId::cx << AttrId::cy << AttrId::dx << AttrId::dy << AttrId::offset;
+
+const QList<int> textAttributesIds = QList<int>()
+    << AttrId::font_style << AttrId::font_variant << AttrId::font_weight << AttrId::font_weight
+    << AttrId::font_stretch << AttrId::font_size << AttrId::font_size_adjust << AttrId::kerning
+    << AttrId::letter_spacing << AttrId::word_spacing << AttrId::text_decoration
+    << AttrId::writing_mode << AttrId::glyph_orientation_vertical
+    << AttrId::glyph_orientation_horizontal << AttrId::direction << AttrId::text_anchor
+    << AttrId::dominant_baseline << AttrId::alignment_baseline << AttrId::baseline_shift;
 
 const StringSet textElements = StringSet()
     << E_text << E_tspan << E_flowRoot << E_flowPara << E_flowSpan << E_textPath;
-
-const StringSet textAttributes = StringSet()
-    << A_font_style << A_font_variant << A_font_weight << A_font_weight << A_font_stretch
-    << A_font_size << A_font_size_adjust << A_kerning << A_letter_spacing << A_word_spacing
-    << A_text_decoration << A_writing_mode << A_glyph_orientation_vertical
-    << A_glyph_orientation_horizontal << A_direction << A_text_anchor << A_dominant_baseline
-    << A_alignment_baseline << A_baseline_shift;
 
 const StringSet elementsUsingXLink = StringSet()
     << E_a << E_altGlyph << E_color_profile << E_cursor << E_feImage << E_filter << E_font_face_uri
@@ -268,65 +300,190 @@ namespace LengthType {
     const QChar percent = QL1C('%');
 }
 
-namespace CleanerAttr {
-    const QString UsedElement = "used-element";
-    const QString BoundingBox = "bbox";
-    const QString BBoxTransform = "bbox-transform";
-}
-
-QVariantHash initDefaultStyleHash()
+QHash<int,QVariant> initDefaultStyleHash()
 {
-    static QVariantHash hash;
+    static QHash<int,QVariant> hash;
     if (!hash.isEmpty())
         return hash;
 
     using namespace Attribute;
 
-    hash.insert(A_alignment_baseline, "auto");
-    hash.insert(A_baseline_shift, "baseline");
-    hash.insert(A_block_progression, "tb");
-    hash.insert(A_clip, "auto");
-    hash.insert(A_clip_path, "none");
-    hash.insert(A_clip_rule, "nonzero");
-    hash.insert(A_direction, "ltr");
-    hash.insert(A_display, "inline");
-    hash.insert(A_dominant_baseline, "auto");
-    hash.insert(A_enable_background, "accumulate");
-    hash.insert(A_fill_opacity, 1.0);
-    hash.insert(A_fill_rule, "nonzero");
-    hash.insert(A_filter, "none");
-    hash.insert(A_flood_color, "black");
-    hash.insert(A_font_size_adjust, "none");
-    hash.insert(A_font_size, "medium");
-    hash.insert(A_font_stretch, "normal");
-    hash.insert(A_font_style, "normal");
-    hash.insert(A_font_variant, "normal");
-    hash.insert(A_font_weight, "normal");
-    hash.insert(A_glyph_orientation_horizontal, "0deg");
-    hash.insert(A_glyph_orientation_vertical, "auto");
-    hash.insert(A_kerning, "auto");
-    hash.insert(A_letter_spacing, "normal");
-    hash.insert(A_marker_start, "none");
-    hash.insert(A_marker_mid, "none");
-    hash.insert(A_marker_end, "none");
-    hash.insert(A_mask, "none");
-    hash.insert(A_opacity, 1.0);
+    hash.insert(AttrId::alignment_baseline, "auto");
+    hash.insert(AttrId::baseline_shift, "baseline");
+    hash.insert(AttrId::block_progression, "tb");
+    hash.insert(AttrId::clip, "auto");
+    hash.insert(AttrId::clip_path, "none");
+    hash.insert(AttrId::clip_rule, "nonzero");
+    hash.insert(AttrId::direction, "ltr");
+    hash.insert(AttrId::display, "inline");
+    hash.insert(AttrId::dominant_baseline, "auto");
+    hash.insert(AttrId::enable_background, "accumulate");
+    hash.insert(AttrId::fill_opacity, 1.0);
+    hash.insert(AttrId::fill_rule, "nonzero");
+    hash.insert(AttrId::filter, "none");
+    hash.insert(AttrId::flood_color, "black");
+    hash.insert(AttrId::font_size_adjust, "none");
+    hash.insert(AttrId::font_size, "medium");
+    hash.insert(AttrId::font_stretch, "normal");
+    hash.insert(AttrId::font_style, "normal");
+    hash.insert(AttrId::font_variant, "normal");
+    hash.insert(AttrId::font_weight, "normal");
+    hash.insert(AttrId::glyph_orientation_horizontal, "0deg");
+    hash.insert(AttrId::glyph_orientation_vertical, "auto");
+    hash.insert(AttrId::kerning, "auto");
+    hash.insert(AttrId::letter_spacing, "normal");
+    hash.insert(AttrId::marker_start, "none");
+    hash.insert(AttrId::marker_mid, "none");
+    hash.insert(AttrId::marker_end, "none");
+    hash.insert(AttrId::mask, "none");
+    hash.insert(AttrId::opacity, 1.0);
     // TODO: 'overflow' propery does not have default value
-    hash.insert(A_overflow, "visible");
-    hash.insert(A_pointer_events, "visiblePainted");
-    hash.insert(A_stop_opacity, 1.0);
-    hash.insert(A_stroke_dasharray, "none");
-    hash.insert(A_stroke_dashoffset, 0);
-    hash.insert(A_stroke_linecap, "butt");
-    hash.insert(A_stroke_linejoin, "miter");
-    hash.insert(A_stroke_miterlimit, 4.0);
-    hash.insert(A_stroke, "none");
-    hash.insert(A_stroke_opacity, 1.0);
-    hash.insert(A_stroke_width, 1.0);
-    hash.insert(A_text_anchor, "start");
-    hash.insert(A_text_decoration, "none");
-    hash.insert(A_visibility, "visible");
-    hash.insert(A_word_spacing, "normal");
-    hash.insert(A_writing_mode, "lr-tb");
+    hash.insert(AttrId::overflow, "visible");
+    hash.insert(AttrId::pointer_events, "visiblePainted");
+    hash.insert(AttrId::stop_opacity, 1.0);
+    hash.insert(AttrId::stroke_dasharray, "none");
+    hash.insert(AttrId::stroke_dashoffset, 0);
+    hash.insert(AttrId::stroke_linecap, "butt");
+    hash.insert(AttrId::stroke_linejoin, "miter");
+    hash.insert(AttrId::stroke_miterlimit, 4.0);
+    hash.insert(AttrId::stroke, "none");
+    hash.insert(AttrId::stroke_opacity, 1.0);
+    hash.insert(AttrId::stroke_width, 1.0);
+    hash.insert(AttrId::text_anchor, "start");
+    hash.insert(AttrId::text_decoration, "none");
+    hash.insert(AttrId::visibility, "visible");
+    hash.insert(AttrId::word_spacing, "normal");
+    hash.insert(AttrId::writing_mode, "lr-tb");
     return hash;
+}
+
+QHash<QString,int> allAttributesHash()
+{
+    using namespace Attribute;
+    static QHash<QString,int> hash;
+    if (!hash.isEmpty())
+        return hash;
+    hash.insert(A_alignment_baseline, AttrId::alignment_baseline);
+    hash.insert(A_baseFrequency, AttrId::baseFrequency);
+    hash.insert(A_baseline_shift, AttrId::baseFrequency);
+    hash.insert(A_bbox, AttrId::bbox);
+    hash.insert(A_bbox_transform, AttrId::bbox_transform);
+    hash.insert(A_block_progression, AttrId::block_progression);
+    hash.insert(A_class, AttrId::class_);
+    hash.insert(A_clip, AttrId::clip);
+    hash.insert(A_clip_path, AttrId::clip_path);
+    hash.insert(A_clipPathUnits, AttrId::clipPathUnits);
+    hash.insert(A_clip_rule, AttrId::clip_rule);
+    hash.insert(A_color, AttrId::color);
+    hash.insert(A_color_interpolation, AttrId::color_interpolation);
+    hash.insert(A_color_interpolation_filters, AttrId::color_interpolation_filters);
+    hash.insert(A_color_profile, AttrId::color_profile);
+    hash.insert(A_color_rendering, AttrId::color_rendering);
+    hash.insert(A_cursor, AttrId::cursor);
+    hash.insert(A_cx, AttrId::cx);
+    hash.insert(A_cy, AttrId::cy);
+    hash.insert(A_d, AttrId::d);
+    hash.insert(A_direction, AttrId::direction);
+    hash.insert(A_display, AttrId::display);
+    hash.insert(A_dominant_baseline, AttrId::dominant_baseline);
+    hash.insert(A_dx, AttrId::dx);
+    hash.insert(A_dy, AttrId::dy);
+    hash.insert(A_enable_background, AttrId::enable_background);
+    hash.insert(A_externalResourcesRequired, AttrId::externalResourcesRequired);
+    hash.insert(A_fill, AttrId::fill);
+    hash.insert(A_fill_opacity, AttrId::fill_opacity);
+    hash.insert(A_fill_rule, AttrId::fill_rule);
+    hash.insert(A_filter, AttrId::filter);
+    hash.insert(A_flood_color, AttrId::flood_color);
+    hash.insert(A_flood_opacity, AttrId::flood_opacity);
+    hash.insert(A_font, AttrId::font);
+    hash.insert(A_font_family, AttrId::font_family);
+    hash.insert(A_font_size_adjust, AttrId::font_size_adjust);
+    hash.insert(A_font_size, AttrId::font_size);
+    hash.insert(A_font_stretch, AttrId::font_stretch);
+    hash.insert(A_font_style, AttrId::font_style);
+    hash.insert(A_font_variant, AttrId::font_variant);
+    hash.insert(A_font_weight, AttrId::font_weight);
+    hash.insert(A_fx, AttrId::fx);
+    hash.insert(A_fy, AttrId::fy);
+    hash.insert(A_glyph_orientation_horizontal, AttrId::glyph_orientation_horizontal);
+    hash.insert(A_glyph_orientation_vertical, AttrId::glyph_orientation_vertical);
+    hash.insert(A_gradientTransform, AttrId::gradientTransform);
+    hash.insert(A_gradientUnits, AttrId::gradientUnits);
+    hash.insert(A_height, AttrId::height);
+    hash.insert(A_id, AttrId::id);
+    hash.insert(A_image_rendering, AttrId::image_rendering);
+    hash.insert(A_k1, AttrId::k1);
+    hash.insert(A_k2, AttrId::k2);
+    hash.insert(A_k3, AttrId::k3);
+    hash.insert(A_k, AttrId::k);
+    hash.insert(A_kerning, AttrId::kerning);
+    hash.insert(A_letter_spacing, AttrId::letter_spacing);
+    hash.insert(A_lighting_color, AttrId::lighting_color);
+    hash.insert(A_line_height, AttrId::line_height);
+    hash.insert(A_marker, AttrId::marker);
+    hash.insert(A_marker_end, AttrId::marker_end);
+    hash.insert(A_marker_mid, AttrId::marker_mid);
+    hash.insert(A_marker_start, AttrId::marker_start);
+    hash.insert(A_mask, AttrId::mask);
+    hash.insert(A_offset, AttrId::offset);
+    hash.insert(A_opacity, AttrId::opacity);
+    hash.insert(A_overflow, AttrId::overflow);
+    hash.insert(A_pointer_events, AttrId::pointer_events);
+    hash.insert(A_points, AttrId::points);
+    hash.insert(A_primitiveUnits, AttrId::primitiveUnits);
+    hash.insert(A_r, AttrId::r);
+    hash.insert(A_rx, AttrId::rx);
+    hash.insert(A_ry, AttrId::ry);
+    hash.insert(A_shape_rendering, AttrId::shape_rendering);
+    hash.insert(A_specularConstant, AttrId::specularConstant);
+    hash.insert(A_spreadMethod, AttrId::spreadMethod);
+    hash.insert(A_stdDeviation, AttrId::stdDeviation);
+    hash.insert(A_stop_color, AttrId::stop_color);
+    hash.insert(A_stop_opacity, AttrId::stop_opacity);
+    hash.insert(A_stroke, AttrId::stroke);
+    hash.insert(A_stroke_dasharray, AttrId::stroke_dasharray);
+    hash.insert(A_stroke_dashoffset, AttrId::stroke_dashoffset);
+    hash.insert(A_stroke_linecap, AttrId::stroke_linecap);
+    hash.insert(A_stroke_linejoin, AttrId::stroke_linejoin);
+    hash.insert(A_stroke_miterlimit, AttrId::stroke_miterlimit);
+    hash.insert(A_stroke_opacity, AttrId::stroke_opacity);
+    hash.insert(A_stroke_width, AttrId::stroke_width);
+    hash.insert(A_style, AttrId::style);
+    hash.insert(A_text_align, AttrId::text_align);
+    hash.insert(A_text_anchor, AttrId::text_anchor);
+    hash.insert(A_text, AttrId::text);
+    hash.insert(A_text_decoration, AttrId::text_decoration);
+    hash.insert(A_text_rendering, AttrId::text_rendering);
+    hash.insert(A_transform, AttrId::transform);
+    hash.insert(A_unicode_bidi, AttrId::unicode_bidi);
+    hash.insert(A_used_element, AttrId::used_element);
+    hash.insert(A_viewBox, AttrId::viewBox);
+    hash.insert(A_visibility, AttrId::visibility);
+    hash.insert(A_width, AttrId::width);
+    hash.insert(A_word_spacing, AttrId::word_spacing);
+    hash.insert(A_writing_mode, AttrId::writing_mode);
+    hash.insert(A_x1, AttrId::x1);
+    hash.insert(A_x2, AttrId::x2);
+    hash.insert(A_x, AttrId::x);
+    hash.insert(A_xlink_href, AttrId::xlink_href);
+    hash.insert(A_y1, AttrId::y1);
+    hash.insert(A_y2, AttrId::y2);
+    hash.insert(A_y, AttrId::y);
+    return hash;
+}
+
+QString attrIdToStr(int id)
+{
+    return allAttributesHash().key(id);
+}
+
+int attrStrToId(const QString &name)
+{
+    return allAttributesHash().value(name, -1);
+}
+
+bool isDefaultAttribute(const QString &name)
+{
+    return allAttributesHash().contains(name);
 }

@@ -61,8 +61,8 @@ SvgElement BaseCleaner::defsElement(SvgDocument doc, SvgElement &svgElem)
 
 void BaseCleaner::updateXLinks(const StringHash &hash)
 {
-    QStringList xlinkStyles;
-    xlinkStyles << A_fill << A_stroke << A_filter << A_clip_path;
+    IntList xlinkStyles;
+    xlinkStyles << AttrId::fill << AttrId::stroke << AttrId::filter << AttrId::clip_path;
 
     element_loop(svgElement()) {
         for (int i = 0; i < xlinkStyles.size(); ++i) {
@@ -77,15 +77,15 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
                 }
             }
         }
-        if (elem.hasAttribute(A_xlink_href)) {
+        if (elem.hasAttribute(AttrId::xlink_href)) {
             QString value = elem.xlinkId();
             QString elemId = elem.id();
             foreach (const QString &key, hash.keys()) {
                 if (value == key) {
                     if (hash.value(key) != elemId)
-                        elem.setAttribute(A_xlink_href, QString("#" + hash.value(key)));
+                        elem.setAttribute(AttrId::xlink_href, QString("#" + hash.value(key)));
                     else
-                        elem.removeAttribute(A_xlink_href);
+                        elem.removeAttribute(AttrId::xlink_href);
                     break;
                 }
             }
@@ -142,12 +142,12 @@ bool BaseCleaner::hasParent(const SvgElement &elem, const QString &tagName)
     return false;
 }
 
-QString BaseCleaner::findAttribute(const SvgElement &elem, const QString &attrName)
+QString BaseCleaner::findAttribute(const SvgElement &elem, int attrId) const
 {
     SvgElement parent = elem;
     while (!parent.isNull()) {
-        if (parent.hasAttribute(attrName))
-            return parent.attribute(attrName);
+        if (parent.hasAttribute(attrId))
+            return parent.attribute(attrId);
         parent = parent.parentElement();
     }
     return "";
@@ -158,7 +158,7 @@ QString BaseCleaner::absoluteTransform(const SvgElement &elem)
     QString transform;
     SvgElement parent = elem;
     while (!parent.isNull()) {
-        transform += parent.attribute(A_transform) + " ";
+        transform += parent.attribute(AttrId::transform) + " ";
         parent = parent.parentElement();
     }
     return Transform(transform).simplified();
@@ -167,13 +167,13 @@ QString BaseCleaner::absoluteTransform(const SvgElement &elem)
 QRectF BaseCleaner::viewBoxRect()
 {
     QRectF rect;
-    if (svgElement().hasAttribute(A_viewBox)) {
-        QStringList list = svgElement().attribute(A_viewBox).split(" ", QString::SkipEmptyParts);
+    if (svgElement().hasAttribute(AttrId::viewBox)) {
+        QStringList list = svgElement().attribute(AttrId::viewBox).split(' ', QString::SkipEmptyParts);
         rect.setRect(list.at(0).toDouble(), list.at(1).toDouble(),
                      list.at(2).toDouble(), list.at(3).toDouble());
-    } else if (svgElement().hasAttribute(A_width) && svgElement().hasAttribute(A_height)) {
-        rect.setRect(0, 0, svgElement().doubleAttribute(A_width),
-                           svgElement().doubleAttribute(A_height));
+    } else if (svgElement().hasAttribute(AttrId::width) && svgElement().hasAttribute(AttrId::height)) {
+        rect.setRect(0, 0, svgElement().doubleAttribute(AttrId::width),
+                           svgElement().doubleAttribute(AttrId::height));
     }
     return rect;
 }

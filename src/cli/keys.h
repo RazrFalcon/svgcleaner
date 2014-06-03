@@ -35,6 +35,8 @@ namespace Preset {
     extern const QString Custom;
 }
 
+// TODO: merge Sodipodi with Inkscape
+
 namespace Key {
 enum Key {
     RemoveProlog,
@@ -175,15 +177,15 @@ public:
         static Keys instance;
         return instance;
     }
-    bool flag(const int &key) const;
-    int intNumber(const int &key) const;
+    bool flag(int key) const;
+    int intNumber(int key) const;
     int coordinatesPrecision() const;
     int attributesPrecision() const;
     int transformPrecision() const;
-    double doubleNumber(const int &key) const;
+    double doubleNumber(int key) const;
     void parseOptions(QStringList &list);
     void prepareDescription();
-    QString description(const int &key);
+    QString description(int key);
     QList<int> elementsKeysId();
     QList<int> attributesKeysId();
     QList<int> attributesUtilsKeysId();
@@ -196,7 +198,7 @@ public:
     void setPreset(const QString &name);
     QString preset();
     QStringList& allKeys();
-    QString keyName(const int &keyId);
+    QString keyName(int keyId);
     QString presetDescription(const QString &name);
 
 private:

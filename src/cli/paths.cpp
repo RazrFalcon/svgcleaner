@@ -290,10 +290,10 @@ void Segment::coords(QVector<qreal> &points)
 
 void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathApplyed)
 {
-    const QString inPath = elem.attribute(A_d);
+    const QString inPath = elem.attribute(AttrId::d);
 
     if (inPath.contains("nan")) {
-        elem.setAttribute(A_d, "");
+        elem.setAttribute(AttrId::d, "");
         return;
     }
     m_elem = elem;
@@ -303,7 +303,7 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     // paths without segments or with first segment not 'moveto' are invalid
     if (segList.isEmpty() || segList.first().command != Command::MoveTo) {
         if (Keys.flag(Key::RemoveInvisibleElements))
-            elem.setAttribute(A_d, "");
+            elem.setAttribute(AttrId::d, "");
         return;
     }
 
@@ -315,7 +315,7 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
         isOnlyAbsolute = true;
 
     if (Keys.flag(Key::RemoveOutsideElements)) {
-        if (!elem.hasAttribute(CleanerAttr::BoundingBox))
+        if (!elem.hasAttribute(AttrId::bbox))
             calcBoundingBox(segList);
     }
 
@@ -333,17 +333,17 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     // set old path, if new is longer
     if (outPath.size() > inPath.size())
         outPath = inPath;
-    elem.setAttribute(A_d, outPath);
+    elem.setAttribute(AttrId::d, outPath);
 
     if (canApplyTransform && !isOnlyAbsolute) {
         if (isTsPathShorter()) {
             *isPathApplyed = true;
-            elem.setAttribute(A_d, elem.attribute("dts"));
+            elem.setAttribute(AttrId::d, elem.attribute("dts"));
             QString newStroke = elem.attribute("stroke-width-new");
             if (!newStroke.isEmpty() && newStroke != "1")
-                elem.setAttribute(A_stroke_width, newStroke);
+                elem.setAttribute(AttrId::stroke_width, newStroke);
             else
-                elem.removeAttribute(A_stroke_width);
+                elem.removeAttribute(AttrId::stroke_width);
         }
         elem.removeAttribute("stroke-width-new");
         elem.removeAttribute("dts");
@@ -462,9 +462,9 @@ void Path::calcNewStrokeWidth(const Transform &transform)
     SvgElement parentElem = m_elem;
     bool hasParentStrokeWidth = false;
     while (!parentElem.isNull()) {
-        if (parentElem.hasAttribute(A_stroke_width)) {
+        if (parentElem.hasAttribute(AttrId::stroke_width)) {
             qreal strokeWidth
-                    = Tools::convertUnitsToPx(parentElem.attribute(A_stroke_width)).toDouble();
+                    = Tools::convertUnitsToPx(parentElem.attribute(AttrId::stroke_width)).toDouble();
             QString sw = roundNumber(strokeWidth * transform.scaleFactor(), Round::Attribute);
             m_elem.setAttribute("stroke-width-new", sw);
             hasParentStrokeWidth = true;
@@ -480,7 +480,7 @@ void Path::calcNewStrokeWidth(const Transform &transform)
 
 bool Path::applyTransform(QList<Segment> &segList)
 {
-    QString transStr = m_elem.attribute(A_transform);
+    QString transStr = m_elem.attribute(AttrId::transform);
     QList<Segment> tsSegList = segList;
     Transform ts(transStr);
     for (int i = 1; i < tsSegList.count(); ++i) {
@@ -511,14 +511,14 @@ bool Path::isTsPathShorter()
         afterTransform += 17;
     }
 
-    quint32 beforeTransform = m_elem.attribute(A_d).size();
-    if (m_elem.hasAttribute(A_transform)) {
-        beforeTransform += m_elem.attribute(A_transform).size();
+    quint32 beforeTransform = m_elem.attribute(AttrId::d).size();
+    if (m_elem.hasAttribute(AttrId::transform)) {
+        beforeTransform += m_elem.attribute(AttrId::transform).size();
         // char count in ' transform=\"\" '
         beforeTransform += 14;
     }
-    if (m_elem.hasAttribute(A_stroke_width)) {
-        beforeTransform += m_elem.attribute(A_stroke_width).size();
+    if (m_elem.hasAttribute(AttrId::stroke_width)) {
+        beforeTransform += m_elem.attribute(AttrId::stroke_width).size();
         // char count in ' stroke-width=\"\" '
         beforeTransform += 17;
     }
@@ -554,14 +554,14 @@ void Path::segmentsToRelative(QList<Segment> &segList, bool onlyIfSourceWasRelat
     }
 }
 
-QString Path::findAttribute(const QString &attrName)
+QString Path::findAttribute(const int &attrId)
 {
     if (m_elem.isNull())
         return "";
     SvgElement parent = m_elem;
     while (!parent.isNull()) {
-        if (parent.hasAttribute(attrName))
-            return parent.attribute(attrName);
+        if (parent.hasAttribute(attrId))
+            return parent.attribute(attrId);
         parent = parent.parentElement();
     }
     return "";
@@ -572,7 +572,7 @@ void Path::processSegments(QList<Segment> &segList)
     if (Keys.flag(Key::RemoveUnneededSymbols)) {
         // remove 'z' command if start point equal to last
         // except 'stroke-linejoin' is not default, because it causes render error
-        QString stroke = findAttribute(A_stroke);
+        QString stroke = findAttribute(AttrId::stroke);
         if (stroke.isEmpty() || stroke == V_none) {
             QPointF prevM(segList.first().x, segList.first().y);
             for (int i = 1; i < segList.size(); ++i) {
@@ -624,7 +624,7 @@ void Path::processSegments(QList<Segment> &segList)
             if (cmd == Command::MoveTo) {
                 // removing MoveTo from path with blur filter change render
                 if ((isZero(seg.x - prevSeg.x) && isZero(seg.y - prevSeg.y))
-                    && findAttribute(A_filter).isEmpty()
+                    && findAttribute(AttrId::filter).isEmpty()
                     && prevSeg.command == Command::MoveTo) {
                     segList.removeAt(i--);
                 } else if (i == segList.size()-1 && prevSeg.command != Command::MoveTo) {
@@ -747,6 +747,7 @@ QString Path::segmentsToPath(QList<Segment> &segList)
     static const QChar space = QL1C(' ');
 
     QString outPath;
+    outPath.reserve(100);
     QChar prevCom;
     bool isPrevComAbs = false;
     const bool isTrim = Keys.flag(Key::RemoveUnneededSymbols);
@@ -936,7 +937,7 @@ void Path::calcBoundingBox(const QList<Segment> &segList)
             curveBBox(bezier, bbox);
         }
     }
-    m_elem.setAttribute(CleanerAttr::BoundingBox,
+    m_elem.setAttribute(AttrId::bbox,
                                   roundNumber(bbox.minx)
                           + " " + roundNumber(bbox.miny)
                           + " " + roundNumber(bbox.maxx - bbox.minx)

@@ -24,7 +24,7 @@
 #include "remover.h"
 #include "replacer.h"
 
-void printLine(const int &keyId, const QString &desc = QString())
+void printLine(int keyId, const QString &desc = QString())
 {
     if (desc.isEmpty())
         qDebug("  %s %s", qPrintable(Keys.keyName(keyId).leftJustified(35, ' ')),
@@ -283,7 +283,8 @@ QStringList arguments(int &argc, char **argv)
     QStringList list;
     argc = 0;
     QString cmdLine = QString::fromWCharArray(GetCommandLine());
-    QVector<wchar_t*> argvVec = qWinCmdLine<wchar_t>((wchar_t *)cmdLine.utf16(), cmdLine.length(), argc);
+    QVector<wchar_t*> argvVec = qWinCmdLine<wchar_t>((wchar_t *)cmdLine.utf16(),
+                                                     cmdLine.length(), argc);
     for (int a = 0; a < argc; ++a)
         list << QString::fromWCharArray(argvVec[a]);
     return list;

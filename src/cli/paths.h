@@ -103,7 +103,7 @@ private:
     bool applyTransform(QList<Segment> &segList);
     bool isTsPathShorter();
     void fixRelative(QList<Segment> &segList);
-    QString findAttribute(const QString &attrName);
+    QString findAttribute(const int &attrId);
 };
 
 #endif // PATHS_H

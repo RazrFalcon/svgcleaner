@@ -45,10 +45,12 @@ class SvgText;
 class SvgDocument;
 
 typedef QHash<QString,QString> StringHash;
+typedef QHash<int,QString> IntHash;
 typedef QMap<QString,QString> StringMap;
 typedef QSet<QString> StringSet;
 typedef QList<SvgElement> SvgElementList;
 typedef QList<SvgNode> SvgNodeList;
+typedef QList<int> IntList;
 
 #define element_loop(_x) \
     SvgElement elem = _x; \
@@ -64,15 +66,15 @@ class SvgNode
 {
 public:
     SvgNode();
-    SvgNode(const SvgNode&);
-    SvgNode& operator= (const SvgNode&);
-    bool operator== (const SvgNode&) const;
-    bool operator!= (const SvgNode&) const;
+    SvgNode(const SvgNode &);
+    SvgNode& operator= (const SvgNode &);
+    bool operator== (const SvgNode &) const;
+    bool operator!= (const SvgNode &) const;
     ~SvgNode();
 
-    SvgNode insertBefore(const SvgNode& newChild, const SvgNode& refChild);
-    SvgNode removeChild(const SvgNode& oldChild);
-    SvgNode appendChild(const SvgNode& newChild);
+    SvgNode insertBefore(const SvgNode &newChild, const SvgNode &refChild);
+    SvgNode removeChild(const SvgNode &oldChild);
+    SvgNode appendChild(const SvgNode &newChild);
     bool hasChildren() const;
 
     QString nodeName() const;
@@ -112,7 +114,7 @@ private:
     friend class SvgDocument;
     friend class SvgElement;
 
-    void save(QTextStream&, int) const;
+    void save(QTextStream &, int) const;
 };
 
 class SvgDocument : public SvgNode
@@ -123,14 +125,14 @@ public:
     SvgDocument& operator= (const SvgDocument&);
     ~SvgDocument() {}
 
-    SvgElement createElement(const QString& tagName);
-    SvgComment createComment(const QString& data);
-    SvgDeclaration createDeclaration(const QString& data);
-    SvgText createText(const QString& text);
+    SvgElement createElement(const QString &tagName);
+    SvgComment createComment(const QString &data);
+    SvgDeclaration createDeclaration(const QString &data);
+    SvgText createText(const QString &text);
 
     SvgElement documentElement() const;
 
-    bool loadFile(const QString& filePath);
+    bool loadFile(const QString &filePath);
     QString toString(int = 1) const;
     QString lastError() const;
 
@@ -144,14 +146,21 @@ class SvgElement : public SvgNode
 {
 public:
     SvgElement() : SvgNode() {}
-    SvgElement(const SvgElement& x) : SvgNode(x) {}
-    SvgElement& operator= (const SvgElement&);
+    SvgElement(const SvgElement &x) : SvgNode(x) {}
+    SvgElement& operator= (const SvgElement &);
 
-    QString attribute(const QString& name, const QString& defValue = QString()) const;
-    void setAttribute(const QString& name, const QString& value);
-    void setAttributeHash(const StringHash &hash);
-    void removeAttribute(const QString& name);
-    bool hasAttribute(const QString& name) const;
+    QString attribute(const int &attrId, const QString &defValue = QString()) const;
+    QString attribute(const QString &name, const QString &defValue = QString()) const;
+    QString extAttribute(const QString &name, const QString &defValue = QString()) const;
+    void setAttribute(const int &attrId, const QString &value);
+    void setAttribute(const QString &name, const QString& value);
+    void setAttributeHash(const IntHash &baseHash, const StringHash &extHash);
+    void removeAttribute(int attrId);
+    void removeAttribute(const QVariant &name);
+    bool hasAttribute(int attrId) const;
+    bool hasAttribute(const QString &name) const;
+    bool hasExtAttribute(const QString &name) const;
+    bool hasAttributes(const IntList &list) const;
     bool hasAttributes(const QStringList &list) const;
     bool hasAttributes() const;
     QString xlinkId() const;
@@ -160,15 +169,16 @@ public:
     bool hasChildElement() const;
     int childElementCount() const;
     StringHash attributesHash(bool ignoreId) const;
+    void removeAttributeIf(int attrId, const QString &value);
     void removeAttributeIf(const QString &name, const QString &value);
-    double doubleAttribute(const QString& name);
+    double doubleAttribute(int attrId);
+    IntList baseAttributesList() const;
+    QStringList extAttributesList() const;
     QStringList attributesList() const;
     SvgElement parentElement() const;
     SvgElementList childElements() const;
     SvgElement firstChildElement() const;
-    QStringList styleAttributesList() const;
-    QStringList attributesListBySet(const StringSet &set) const;
-    StringHash attributes() const;
+    IntList styleAttributesList() const;
 
     bool hasLinkedDef() const;
     bool isContainer() const;
@@ -179,15 +189,14 @@ public:
     bool hasChildWithTagName(const QString &name) const;
     bool hasTextChild() const;
     int attributesCount() const;
-    QString defIdFromAttribute(const QString &name);
-    StringMap styleMap() const;
-    StringHash styleHash() const;
+    QString defIdFromAttribute(const int &attrId);
+    IntHash styleHash() const;
     void removeAttributes(const QStringList &list);
-    void setStylesFromHash(const StringHash &hash);
+    void setStylesFromHash(const IntHash &hash);
     void setTransform(const QString &transform, bool fromParent = false);
 
     QString tagName() const;
-    void setTagName(const QString& name);
+    void setTagName(const QString &name);
 
     QString text() const;
 
@@ -202,8 +211,8 @@ class SvgComment : public SvgNode
 {
 public:
     SvgComment() : SvgNode() {}
-    SvgComment(const SvgComment& x) : SvgNode(x) {}
-    SvgComment& operator= (const SvgComment&);
+    SvgComment(const SvgComment &x) : SvgNode(x) {}
+    SvgComment& operator= (const SvgComment &);
 
 private:
     SvgComment(SvgCommentPrivate*);
@@ -216,8 +225,8 @@ class SvgText : public SvgNode
 {
 public:
     SvgText() : SvgNode() {}
-    SvgText(const SvgText& x) : SvgNode(x) {}
-    SvgText& operator= (const SvgText&);
+    SvgText(const SvgText &x) : SvgNode(x) {}
+    SvgText& operator= (const SvgText &);
     QString text() const;
     void setDtd(bool flag);
 
@@ -232,10 +241,10 @@ class SvgDeclaration : public SvgNode
 {
 public:
     SvgDeclaration() : SvgNode() {}
-    SvgDeclaration(const SvgDeclaration& x) : SvgNode(x) {}
-    SvgDeclaration& operator= (const SvgDeclaration&);
+    SvgDeclaration(const SvgDeclaration &x) : SvgNode(x) {}
+    SvgDeclaration& operator= (const SvgDeclaration &);
     QString data() const;
-    void setData(const QString& d);
+    void setData(const QString &d);
 
 private:
     SvgDeclaration(SvgDeclarationPrivate*);

@@ -88,9 +88,9 @@ QString doubleToStr(const qreal value, int precision)
     qulonglong l = tmpValue;
     ushort buff[65];
     ushort *p = buff + 65;
-    static ushort m_zero = QChar('0').unicode();
+    static ushort m_zero  = QChar('0').unicode();
     static ushort m_point = QChar('.').unicode();
-    static ushort m_sign = QChar('-').unicode();
+    static ushort m_sign  = QChar('-').unicode();
     int pos = 0;
     while (l != 0) {
         pos++;
@@ -177,9 +177,8 @@ bool isSpace(ushort ch)
     // '12' is form feed (FF)
     // '13' is carriage return (CR)
     // '32' is UTF-8 space
-    if ((ch >= 9 && ch <= 13) || ch == 32) {
+    if ((ch >= 9 && ch <= 13) || ch == 32)
         return true;
-    }
     return false;
 }
 

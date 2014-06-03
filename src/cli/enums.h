@@ -120,9 +120,13 @@ namespace Attribute {
     extern const QString A_alignment_baseline;
     extern const QString A_baseFrequency;
     extern const QString A_baseline_shift;
+    extern const QString A_bbox;
+    extern const QString A_bbox_transform;
     extern const QString A_block_progression;
+    extern const QString A_class;
     extern const QString A_clip;
     extern const QString A_clip_path;
+    extern const QString A_clipPathUnits;
     extern const QString A_clip_rule;
     extern const QString A_color;
     extern const QString A_color_interpolation;
@@ -163,16 +167,20 @@ namespace Attribute {
     extern const QString A_height;
     extern const QString A_id;
     extern const QString A_image_rendering;
+    extern const QString A_k;
+    extern const QString A_k1;
+    extern const QString A_k2;
+    extern const QString A_k3;
     extern const QString A_kerning;
     extern const QString A_letter_spacing;
     extern const QString A_lighting_color;
+    extern const QString A_line_height;
     extern const QString A_marker;
     extern const QString A_marker_end;
     extern const QString A_marker_mid;
     extern const QString A_marker_start;
     extern const QString A_mask;
     extern const QString A_offset;
-    extern const QString A_opacity;
     extern const QString A_opacity;
     extern const QString A_overflow;
     extern const QString A_pointer_events;
@@ -182,6 +190,7 @@ namespace Attribute {
     extern const QString A_rx;
     extern const QString A_ry;
     extern const QString A_shape_rendering;
+    extern const QString A_specularConstant;
     extern const QString A_spreadMethod;
     extern const QString A_stdDeviation;
     extern const QString A_stop_color;
@@ -192,16 +201,17 @@ namespace Attribute {
     extern const QString A_stroke_linecap;
     extern const QString A_stroke_linejoin;
     extern const QString A_stroke_miterlimit;
-    extern const QString A_stroke_miterlimit;
     extern const QString A_stroke_opacity;
     extern const QString A_stroke_width;
     extern const QString A_style;
     extern const QString A_text;
+    extern const QString A_text_align;
     extern const QString A_text_anchor;
     extern const QString A_text_decoration;
     extern const QString A_text_rendering;
     extern const QString A_transform;
     extern const QString A_unicode_bidi;
+    extern const QString A_used_element;
     extern const QString A_viewBox;
     extern const QString A_visibility;
     extern const QString A_width;
@@ -214,6 +224,118 @@ namespace Attribute {
     extern const QString A_y;
     extern const QString A_y1;
     extern const QString A_y2;
+}
+
+namespace AttrId {
+enum {
+    alignment_baseline,
+    baseFrequency,
+    baseline_shift,
+    bbox,
+    bbox_transform,
+    block_progression,
+    class_,
+    clip,
+    clip_path,
+    clipPathUnits,
+    clip_rule,
+    color,
+    color_interpolation,
+    color_interpolation_filters,
+    color_profile,
+    color_rendering,
+    cursor,
+    cx,
+    cy,
+    d,
+    direction,
+    display,
+    dominant_baseline,
+    dx,
+    dy,
+    enable_background,
+    externalResourcesRequired,
+    fill,
+    fill_opacity,
+    fill_rule,
+    filter,
+    flood_color,
+    flood_opacity,
+    font,
+    font_family,
+    font_size,
+    font_size_adjust,
+    font_stretch,
+    font_style,
+    font_variant,
+    font_weight,
+    fx,
+    fy,
+    glyph_orientation_horizontal,
+    glyph_orientation_vertical,
+    gradientTransform,
+    gradientUnits,
+    height,
+    id,
+    image_rendering,
+    k,
+    k1,
+    k2,
+    k3,
+    kerning,
+    letter_spacing,
+    lighting_color,
+    line_height,
+    marker,
+    marker_end,
+    marker_mid,
+    marker_start,
+    mask,
+    offset,
+    opacity,
+    overflow,
+    pointer_events,
+    points,
+    primitiveUnits,
+    r,
+    rx,
+    ry,
+    shape_rendering,
+    specularConstant,
+    spreadMethod,
+    stdDeviation,
+    stop_color,
+    stop_opacity,
+    stroke,
+    stroke_dasharray,
+    stroke_dashoffset,
+    stroke_linecap,
+    stroke_linejoin,
+    stroke_miterlimit,
+    stroke_opacity,
+    stroke_width,
+    style,
+    text,
+    text_align,
+    text_anchor,
+    text_decoration,
+    text_rendering,
+    transform,
+    unicode_bidi,
+    used_element,
+    viewBox,
+    visibility,
+    width,
+    word_spacing,
+    writing_mode,
+    x,
+    x1,
+    x2,
+    xlink_href,
+    y,
+    y1,
+    y2
+};
 }
 
 namespace DefaultValue {
@@ -235,19 +357,17 @@ namespace LengthType {
 
 namespace Properties {
     extern const StringSet presentationAttributes;
-    extern const StringSet linkableStyleAttributes;
-    extern const StringSet digitList;
+    extern const QList<int> presentationAttributesIds;
+    extern const QList<int> linkableStyleAttributesIds;
+    extern const QList<int> digitListIds;
     extern const StringSet textElements;
-    extern const StringSet textAttributes;
+    extern const QList<int> textAttributesIds;
     extern const StringSet elementsUsingXLink;
 }
 
-namespace CleanerAttr {
-    extern const QString UsedElement;
-    extern const QString BoundingBox;
-    extern const QString BBoxTransform;
-}
-
-QVariantHash initDefaultStyleHash();
+QString attrIdToStr(int id);
+int attrStrToId(const QString &name);
+bool isDefaultAttribute(const QString &name);
+QHash<int, QVariant> initDefaultStyleHash();
 
 #endif // ENUMS_H

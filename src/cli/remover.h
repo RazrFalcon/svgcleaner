@@ -47,18 +47,18 @@ public:
     void removeNonElementAttributes();
     void cleanSvgElementAttribute();
     void removeAttributes();
-    void cleanPresentationAttributes(SvgElement elem = SvgElement());
+    void cleanPresentationAttributes(SvgElement parent = SvgElement());
     void removeGroups();
     void ungroupAElement();
     void removeElementsOutsideTheViewbox();
 
 private:
-    QList<StringHash> styleHashList;
-    StringHash parentHash;
-    StringSet parentAttrs;
+    QList<IntHash> styleHashList;
+    IntHash parentHash;
+    QSet<int> parentAttrs;
 
-    void cleanStyle(const SvgElement &elem, StringHash &hash);
-    void removeDefaultValue(StringHash &hash, const QString &name);
+    void cleanStyle(const SvgElement &elem, IntHash &hash);
+    void removeDefaultValue(IntHash &hash, int attrId);
     bool isElementInvisible(SvgElement &elem);
     bool isElementInvisible2(SvgElement &elem);
     void megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem, bool isParentToChild);

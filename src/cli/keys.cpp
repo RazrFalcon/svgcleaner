@@ -96,17 +96,17 @@ Keys::Keys(QObject *parent) : QObject(parent)
     setPreset(Preset::Complete);
 }
 
-bool Keys::flag(const int &key) const
+bool Keys::flag(int key) const
 {
     return flags->contains(key);
 }
 
-int Keys::intNumber(const int &key) const
+int Keys::intNumber(int key) const
 {
     return numHash.value(key);
 }
 
-double Keys::doubleNumber(const int &key) const
+double Keys::doubleNumber(int key) const
 {
     return numHash.value(key);
 }
@@ -241,7 +241,7 @@ void Keys::prepareDescription()
                     tr("Sort elements by name in 'defs' element"));
 }
 
-QString Keys::description(const int &key)
+QString Keys::description(int key)
 {
     return descHash.value(key);
 }
@@ -442,7 +442,7 @@ QStringList &Keys::allKeys()
     return allKeys;
 }
 
-QString Keys::keyName(const int &keyId)
+QString Keys::keyName(int keyId)
 {
     return allKeys().at(keyId);
 }

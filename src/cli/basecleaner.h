@@ -46,7 +46,7 @@ public:
     SvgElement findInDefs(const QString &id);
     SvgElement findElement(const QString &id, SvgElement parent = SvgElement());
     bool hasParent(const SvgElement &elem, const QString &tagName);
-    QString findAttribute(const SvgElement &elem, const QString &attrName);
+    QString findAttribute(const SvgElement &elem, int attrId) const;
     QString absoluteTransform(const SvgElement &elem);
     QRectF viewBoxRect();
     static SvgElement svgElement(SvgDocument doc);

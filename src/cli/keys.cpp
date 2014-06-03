@@ -53,7 +53,6 @@ namespace KeyStr {
     const QString RemoveSvgVersion            = "--remove-version";
     const QString RemoveUnreferencedIds       = "--remove-unreferenced-ids";
     const QString TrimIds                     = "--trim-ids";
-    const QString KeepNamedIds                = "--keep-named-ids";
     const QString RemoveNotAppliedAttributes  = "--remove-notappl-atts";
     const QString RemoveDefaultAttributes     = "--remove-default-atts";
     const QString RemoveInkscapeAttributes    = "--remove-inkscape-atts";
@@ -70,6 +69,8 @@ namespace KeyStr {
     const QString SimplifyTransformMatrix     = "--simplify-transform-matrix";
     const QString ApplyTransformsToDefs       = "--apply-transforms-to-defs";
     const QString ApplyTransformsToShapes     = "--apply-transforms-to-shapes";
+    const QString KeepNamedIds                = "--keep-named-ids";
+    const QString DisableDigitId              = "--disable-digit-ids";
 
     const QString ConvertToRelative           = "--convert-to-relative";
     const QString RemoveUnneededSymbols       = "--remove-unneeded-symbols";
@@ -209,6 +210,8 @@ void Keys::prepareDescription()
                     tr("Apply transform matrices to gradients, when possible"));
     descHash.insert(Key::ApplyTransformsToShapes,
                     tr("Apply transform matrices to basic shapes, when possible"));
+    descHash.insert(Key::DisableDigitId,
+                    tr("Disable creation of the 'id' attributes, which starts with digit."));
 
     descHash.insert(Key::ConvertToRelative,
                     tr("Convert absolute coordinates into relative ones"));
@@ -300,7 +303,8 @@ QList<int> Keys::attributesUtilsKeysId()
 {
     static QList<int> list = QList<int>()
         << Key::JoinStyleAttributes
-        << Key::KeepNamedIds;
+        << Key::KeepNamedIds
+        << Key::DisableDigitId;
     return list;
 }
 
@@ -420,6 +424,7 @@ QStringList &Keys::allKeys()
 
         << KeyStr::JoinStyleAttributes
         << KeyStr::KeepNamedIds
+        << KeyStr::DisableDigitId
 
         << KeyStr::ConvertToRelative
         << KeyStr::RemoveUnneededSymbols
@@ -455,11 +460,14 @@ QString Keys::presetDescription(const QString &name)
                   "Allows you to continue editing of the file.<br>"
                   "Сan not damage your files. Otherwise, please send this files to our email.");
     } else if (name == Preset::Complete) {
-        return tr("<b>Complete</b> preset are designed to create a file which will be used only for showing. "
-                  "This preset completely change file structure, what in most cases prevents future editing.<br>"
+        return tr("<b>Complete</b> preset are designed to create a file which will be used only for "
+                  "showing. "
+                  "This preset completely change file structure, what in most cases prevents future "
+                  "editing.<br>"
                   "Should not damage your files. Otherwise, please send this files to our email.");
     } else if (name == Preset::Extreme) {
-        return tr("<b>Extreme</b> preset does the same that <b>Complete</b> do, but also enables some unstable features.<br>"
+        return tr("<b>Extreme</b> preset does the same that <b>Complete</b> do, but also enables "
+                  "some unstable features.<br>"
                   "It will definitely change displaying of your file and could even damage it.");
     } else if (name == Preset::Custom) {
         return tr("<b>Custom</b> preset is used to store your own cleaning options. "

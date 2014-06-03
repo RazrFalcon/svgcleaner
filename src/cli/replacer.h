@@ -65,7 +65,6 @@ private:
     bool isPathValidToTransform(SvgElement &pathElem, QHash<QString, int> &defsIdHash);
     bool isBlurFilter(const QString &id);
     void updateLinkedDefTransform(SvgElement &elem);
-    static void plusOne(QList<int> &list, int offset = 0);
     static bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2);
     void calcNewStrokeWidth(SvgElement &elem, const Transform &transform);
 };

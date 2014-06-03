@@ -81,6 +81,7 @@ enum Key {
 
     JoinStyleAttributes,
     KeepNamedIds,
+    DisableDigitId,
 
     ConvertToRelative,
     RemoveUnneededSymbols,
@@ -128,7 +129,6 @@ namespace KeyStr {
     extern const QString RemoveSvgVersion;
     extern const QString RemoveUnreferencedIds;
     extern const QString TrimIds;
-    extern const QString KeepNamedIds;
     extern const QString RemoveNotAppliedAttributes;
     extern const QString RemoveDefaultAttributes;
     extern const QString RemoveInkscapeAttributes;
@@ -145,6 +145,8 @@ namespace KeyStr {
     extern const QString SimplifyTransformMatrix;
     extern const QString ApplyTransformsToDefs;
     extern const QString ApplyTransformsToShapes;
+    extern const QString KeepNamedIds;
+    extern const QString DisableDigitId;
     // TODO: remove bitmaps, as utility
 
     extern const QString ConvertToRelative;

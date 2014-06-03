@@ -757,48 +757,72 @@ void Replacer::finalFixes()
     }
 }
 
-void Replacer::plusOne(QList<int> &list, int offset)
+void plusOne(QList<int> &list, int offset = 0)
 {
-    if (offset > list.size()-1)
-        list << 0;
     // 62 is charList size
-    if (list.at(offset) + 1 == 62) {
+    static const int magic = 62;
+
+    if (offset > list.size()-1) {
+        for (int i = 0; i < list.size(); ++i)
+            list[i] = 0;
+        list << 0;
+        return;
+    }
+    if (list.at(offset) + 1 == magic) {
         list[offset] = 0;
         plusOne(list, offset+1);
-    } else
+    } else {
         list[offset]++;
+    }
 }
 
 // convert id names to short one using custom numeral system
 void Replacer::trimIds()
 {
-    QStringList charList;
-    for (int i = 48; i < 58; ++i) // 0-9
-        charList << QChar(i);
-    for (int i = 65; i < 91; ++i) // A-Z
-        charList << QChar(i);
+    QList<QChar> charList;
     for (int i = 97; i < 123; ++i) // a-z
+        charList << QChar(i);
+    for (int i = 65; i < 91; ++i)  // A-Z
+        charList << QChar(i);
+    for (int i = 48; i < 58; ++i)  // 0-9
         charList << QChar(i);
 
     int pos = 0;
     StringHash idHash;
+    QList<int> numList = QList<int>() << 0;
+    bool isSkipped = true;
+    bool disableDigitId = Keys.flag(Key::DisableDigitId);
     element_loop(svgElement()) {
-        if (elem.hasAttribute(AttrId::id)) {
-            QString newId;
-            // gen new id
-            QList<int> intList;
-            intList.reserve(3);
-            for (int j = 0; j < pos; ++j)
-                plusOne(intList);
-            while (!intList.isEmpty())
-                newId += charList.at(intList.takeLast());
-            if (newId.isEmpty())
-                newId = V_null;
-
-            idHash.insert(elem.id(), newId);
-            elem.setAttribute(AttrId::id, newId);
-            pos++;
+        if (!elem.hasAttribute(AttrId::id)) {
+            nextElement(elem, root);
+            continue;
         }
+
+        // by XML spec 'id' attribute could not start with digit
+        // so we need skip it
+        if (disableDigitId) {
+            QChar c = charList.at(numList.last());
+            while (c.isDigit() || c == 'Z') {
+                plusOne(numList);
+                c = charList.at(numList.last());
+                isSkipped = true;
+            }
+        }
+
+        // gen new id`
+        if (!isSkipped)
+            plusOne(numList);
+        QString newId;
+        for (int i = numList.size()-1; i >= 0 ; --i)
+            newId += charList.at(numList.at(i));
+
+        Q_ASSERT(newId.at(0).isDigit() == false);
+
+        idHash.insert(elem.id(), newId);
+        elem.setAttribute(AttrId::id, newId);
+
+        pos++;
+        isSkipped = false;
         nextElement(elem, root);
     }
 
@@ -813,10 +837,10 @@ void Replacer::trimIds()
             }
         }
         if (elem.hasAttribute(AttrId::xlink_href)) {
-            QString id = elem.attribute(AttrId::xlink_href);
-            if (!id.startsWith(QL1S("data:"))) {
-                id.remove(0,1);
-                elem.setAttribute(AttrId::xlink_href, QString("#" + idHash.value(id)));
+            QString link = elem.attribute(AttrId::xlink_href);
+            if (!link.startsWith(QL1S("data:"))) {
+                link.remove(0,1);
+                elem.setAttribute(AttrId::xlink_href, QString("#" + idHash.value(link)));
             }
         }
         nextElement(elem, root);

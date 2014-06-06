@@ -54,6 +54,13 @@ QString roundNumber(qreal value, Round::RoundType type)
 
 QString roundNumber(qreal value, int precision)
 {
+    QVarLengthArray<ushort> array;
+    doubleToVarArr(array, value, precision);
+    return QString(reinterpret_cast<QChar *>(array.data()), array.size());
+}
+
+void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision)
+{
     double fractpart, intpart;
     fractpart = modf(value, &intpart);
 
@@ -67,18 +74,17 @@ QString roundNumber(qreal value, int precision)
         qreal fractpart2 = qRound(fractpart * v) / v;
         value = intpart + fractpart2;
     }
-    return doubleToStr(value, precision);
-}
 
-QString doubleToStr(const qreal value, int precision)
-{
     uint multiplier = 1;
     while (precision--)
         multiplier *= 10;
     qreal tmpValue = qRound64(qAbs(value) * multiplier);
 
-    if (qFuzzyCompare(tmpValue, 0.0))
-        return DefaultValue::V_null;
+    static ushort m_zero  = QChar('0').unicode();
+    if (qFuzzyCompare(tmpValue, 0.0)) {
+        arr.append(m_zero);
+        return;
+    }
 
     qreal newValue = tmpValue/multiplier;
 
@@ -88,7 +94,6 @@ QString doubleToStr(const qreal value, int precision)
     qulonglong l = tmpValue;
     ushort buff[65];
     ushort *p = buff + 65;
-    static ushort m_zero  = QChar('0').unicode();
     static ushort m_point = QChar('.').unicode();
     static ushort m_sign  = QChar('-').unicode();
     int pos = 0;
@@ -125,7 +130,8 @@ QString doubleToStr(const qreal value, int precision)
     }
     if (value < 0)
         *(--p) = m_sign;
-    return QString(reinterpret_cast<QChar *>(p), 65 - (p - buff));
+
+    arr.append(p, 65 - (p - buff));
 }
 
 int Tools::numbersBeforePoint(qreal value)

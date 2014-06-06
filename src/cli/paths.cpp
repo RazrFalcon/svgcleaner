@@ -743,15 +743,15 @@ QString Path::segmentsToPath(QList<Segment> &segList)
     if (segList.size() == 1 || segList.isEmpty())
         return "";
 
-    static const QChar dot = QL1C('.');
-    static const QChar space = QL1C(' ');
+    static const ushort dot   = QL1C('.').unicode();
+    static const ushort space = QL1C(' ').unicode();
 
-    QString outPath;
-    outPath.reserve(100);
+    QVarLengthArray<ushort> array;
+
     QChar prevCom;
     bool isPrevComAbs = false;
     const bool isTrim = Keys.flag(Key::RemoveUnneededSymbols);
-    QString prevPos;
+    bool isPrevPosHasDot = false;
     for (int i = 0; i < segList.count(); ++i) {
         Segment segment = segList.at(i);
         const QChar cmd = segment.command;
@@ -771,11 +771,11 @@ QString Path::segmentsToPath(QList<Segment> &segList)
 
         if (writeCmd) {
             if (segment.absolute)
-                outPath += segment.command.toUpper();
+                array += segment.command.toUpper().unicode();
             else
-                outPath += segment.command;
+                array += segment.command.unicode();
             if (!isTrim)
-                outPath += space;
+                array += space;
         }
 
         QVector<qreal> points;
@@ -794,42 +794,49 @@ QString Path::segmentsToPath(QList<Segment> &segList)
             if (cmd == Command::EllipticalArc)
                round = false;
             for (int j = 0; j < points.size(); ++j) {
-                QString currPos;
+                const int pos = array.size()-1;
                 if (round)
-                    currPos = roundNumber(points.at(j));
+                    doubleToVarArr(array, points.at(j), Keys.coordinatesPrecision());
                 else
-                    currPos = roundNumber(points.at(j), 6);
+                    doubleToVarArr(array, points.at(j), 6);
 
                 bool useSep = false;
                 if (cmd == Command::EllipticalArc)
                     useSep = true;
-                else if (!prevPos.contains(dot) && currPos.startsWith(dot))
+                else if (!isPrevPosHasDot && array.at(pos+1) == dot)
                     useSep = true;
-                else if (currPos.at(0).isDigit())
+                else if (QChar(array.at(pos+1)).isDigit())
                     useSep = true;
 
                 if (j == 0 && writeCmd)
                     useSep = false;
 
                 if (useSep)
-                    outPath += space;
-                outPath += currPos;
-                prevPos = currPos;
+                    array.insert(pos+1, space);
+                isPrevPosHasDot = false;
+                for (int i = pos; i < array.size(); ++i) {
+                    if (array.at(i) == dot) {
+                        isPrevPosHasDot = true;
+                        break;
+                    }
+                }
             }
         } else {
-            QStringList list;
-            for (int j = 0; j < points.size(); ++j)
-                list << roundNumber(points.at(j));
-            outPath += list.join(space);
+            for (int j = 0; j < points.size(); ++j) {
+                doubleToVarArr(array, points.at(j), Keys.coordinatesPrecision());
+                if (j != points.size()-1)
+                    array += space;
+            }
             if (cmd != Command::ClosePath)
-                outPath += space;
+                array += space;
         }
         prevCom = cmd;
         isPrevComAbs = segment.absolute;
     }
     if (!isTrim)
-        outPath.chop(1);
-    return outPath;
+        array.resize(array.size()-1); // remove last char
+    // convert ushort array to QString
+    return QString(reinterpret_cast<QChar *>(array.data()), array.size());
 }
 
 // path bounding box calculating part

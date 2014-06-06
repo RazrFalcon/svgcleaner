@@ -23,6 +23,7 @@
 #define TOOLS_H
 
 #include <QtDebug>
+#include <QVarLengthArray>
 
 #include "enums.h"
 #include "keys.h"
@@ -37,7 +38,7 @@ QString roundNumber(qreal value, Round::RoundType type = Round::Coordinate);
 QString roundNumber(qreal value, int precision);
 qreal getNum(const QChar *&str);
 qreal strToDouble(const QString &str);
-QString doubleToStr(const qreal value, int precision = 6);
+void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision = 6);
 bool isSpace(ushort ch);
 
 class Tools

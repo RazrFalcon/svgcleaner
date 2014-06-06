@@ -400,6 +400,8 @@ void Transform::calcParameters(TransformMatrix &matrix)
 
 QString Transform::simplified() const
 {
+    // TODO: rewrite to QVarLengthArray
+
     if (!Keys::get().flag(Key::SimplifyTransformMatrix)) {
         QString ts = TransformType::Matrix + "(";
         ts += roundNumber(a, Round::Transform) + " ";

@@ -252,7 +252,7 @@
     </message>
     <message>
         <source>Convert colors into #RRGGBB format</source>
-        <translation>Wandle Farbangaben in das Format #RGGBB</translation>
+        <translation>Wandle Farbangaben in das Format #RRGGBB</translation>
     </message>
     <message>
         <source>Convert #RRGGBB colors into #RGB format, when possible</source>

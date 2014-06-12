@@ -49,6 +49,7 @@ public:
     void removeAttributes();
     void cleanPresentationAttributes(SvgElement parent = SvgElement());
     void removeGroups();
+    void ungroupSwitchElement();
     void ungroupAElement();
     void removeElementsOutsideTheViewbox();
 
@@ -61,7 +62,7 @@ private:
     void removeDefaultValue(IntHash &hash, int attrId);
     bool isElementInvisible(SvgElement &elem);
     bool isElementInvisible2(SvgElement &elem);
-    void megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem, bool isParentToChild);
+    void megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem, bool isParentToChild) const;
     bool isDoctype(const QString &str);
     bool isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2);
     void prepareViewBoxRect(QRectF &viewBox);

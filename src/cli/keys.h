@@ -36,6 +36,7 @@ namespace Preset {
 }
 
 // TODO: merge Sodipodi with Inkscape
+// TODO: add Indent key
 
 namespace Key {
 enum Key {

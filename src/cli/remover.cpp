@@ -686,7 +686,7 @@ bool Remover::isElementInvisible(SvgElement &elem)
         }
     }
 
-    // TODO: ungroup flowPara with only A_id attr
+    // TODO: ungroup flowPara with only id attr
     // ryanlerch_OCAL_Introduction.svg
 //    if (tagName == "flowPara") {
 //        if (!elem.hasText() && !elem.hasChildren())
@@ -1188,94 +1188,85 @@ void Remover::removeDefaultValue(IntHash &hash, int attrId)
     }
 }
 
-// TODO: works bad on applications-education-school.svg
-// FIXME: rewrite
 void Remover::removeGroups()
 {
-    QStringList illegalGAttrList;
-    illegalGAttrList << A_mask << A_clip_path << A_filter;
+    IntList illegalGAttrList = IntList() << AttrId::mask << AttrId::clip_path << AttrId::filter;
 
     bool isAnyGroupRemoved = true;
     while (isAnyGroupRemoved) {
         isAnyGroupRemoved = false;
-        SvgElementList list = svgElement().childElements();
-        while (!list.isEmpty()) {
-            SvgElement elem = list.takeFirst();
-            SvgElement parent = elem.parentElement();
-            if (elem.isGroup() && elem.childElementCount() == 0) {
-                // remove empty group
-                parent.removeChild(elem);
-            } else if (   elem.isGroup()
-                       && elem.parentElement().tagName() != E_switch)
-            {
-                if (   parent.isGroup()
-                    && !elem.isUsed()
-                    && !elem.hasAttributes(illegalGAttrList))
-                {
-                    // merge parent group with current group
-                    SvgElement firstChild = elem.firstChildElement();
-                    if (elem.childElementCount() == 1
-                        && firstChild.tagName() != E_switch)
-                    {
-                        // ungroup group with only one child group
-                        parent.insertBefore(firstChild, elem);
-                        megreGroupWithChild(elem, firstChild, false);
-                        parent.removeChild(elem);
-                        isAnyGroupRemoved = true;
-                    } else if (    parent.childElementCount() == 1
-//                               &&  parent.tagName() != E_svg
-                               && !parent.hasAttributes(illegalGAttrList))
-                    {
-                        // TODO: why this branch need for?
-                        megreGroupWithChild(elem, parent, true);
-                        foreach (const SvgElement &childElem, elem.childElements())
-                            parent.insertBefore(childElem, elem);
-                        parent.removeChild(elem);
-                        isAnyGroupRemoved = true;
-                    }
-                } else {
-                    bool isOnlyTransform = false;
-                    int attrCount = elem.attributesCount();
-                    if (   (   attrCount == 1
-                            && elem.hasAttribute(AttrId::transform))
-                        || (   attrCount == 2
-                            && elem.hasAttribute(AttrId::transform)
-                            && elem.hasAttribute(AttrId::id)
-                            && Keys.flag(Key::RemoveUnreferencedIds)))
-                    {
-                        int trAttrCount = 0;
-                        foreach (const SvgElement &childElem, elem.childElements()) {
-                            if (   childElem.isUsed()
-                                || childElem.tagName() == E_use
-                                || childElem.isGroup())
-                                break;
-                            if (childElem.hasAttribute(AttrId::transform))
-                                trAttrCount++;
-                        }
-                        if (trAttrCount == elem.childElementCount())
-                            isOnlyTransform = true;
-                    }
+        element_loop(svgElement()) {
+            nextElement(elem, root);
+            if (!elem.isGroup() || (elem.isGroup() && elem.attribute(AttrId::display) == V_none)) {
+                continue;
+            }
 
-                    if (!elem.hasImportantAttrs() || isOnlyTransform) {
-                        // ungroup group without attributes
-                        QString parentTransfrom = elem.attribute(AttrId::transform);
-                        foreach (SvgElement childElem, elem.childElements()) {
-                            if (isOnlyTransform)
-                                childElem.setTransform(parentTransfrom, true);
-                            parent.insertBefore(childElem, elem);
-                        }
-                        parent.removeChild(elem);
-                        isAnyGroupRemoved = true;
+            SvgElement parent = elem.parentElement();
+
+            // if group do not have any child elements - remove it
+            if (elem.childElementCount() == 0) {
+                elem = parent.removeChild(elem, true);
+                continue;
+            }
+
+            /* if group has only one child
+             * before:
+             * <g id="1">
+             *   <rect id="2"/>
+             * </g>
+             *
+             * after:
+             * <rect id="2"/>
+            */
+            if (    elem.childElementCount() == 1
+                && !elem.isUsed()
+                && !elem.firstChildElement().isUsed()
+                && !elem.hasAttributes(illegalGAttrList))
+            {
+                SvgElement child = elem.firstChildElement();
+                parent.insertBefore(child, elem);
+                megreGroupWithChild(elem, child, false);
+                elem = parent.removeChild(elem, true);
+                isAnyGroupRemoved = true;
+                continue;
+            }
+
+            bool isOnlyTransform = false;
+            if (elem.hasAttribute(AttrId::transform)) {
+                if (!elem.hasImportantAttrs(IntList() << AttrId::transform)) {
+                    int trAttrCount = 0;
+                    SvgElement childElem = elem.firstChildElement();
+                    while (!childElem.isNull()) {
+                        if (   childElem.isUsed()
+                            || childElem.tagName() == E_use
+                            || childElem.isGroup())
+                            break;
+                        if (childElem.hasAttribute(AttrId::transform))
+                            trAttrCount++;
+                        childElem = childElem.nextSiblingElement();
                     }
+                    if (trAttrCount == elem.childElementCount())
+                        isOnlyTransform = true;
                 }
             }
-            if (elem.hasChildElement())
-                list << elem.childElements();
+
+            // if group do not have any important attributes
+            // or all children has transform attribute
+            if (!elem.hasImportantAttrs() || isOnlyTransform) {
+                QString parentTransfrom = elem.attribute(AttrId::transform);
+                foreach (SvgElement childElem, elem.childElements()) {
+                    if (isOnlyTransform)
+                        childElem.setTransform(parentTransfrom, true);
+                    parent.insertBefore(childElem, elem);
+                }
+                elem = parent.removeChild(elem, true);
+                isAnyGroupRemoved = true;
+                continue;
+            }
         }
     }
 }
-
-void Remover::megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem, bool isParentToChild)
+void Remover::megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem, bool isParentToChild) const
 {
     QStringList ignoreAttrList = QStringList() << A_id;
     if (!isParentToChild)
@@ -1294,6 +1285,47 @@ void Remover::megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem, 
             }
         } else if (!ignoreAttrList.contains(attrName) || !childElem.hasAttribute(attrName)) {
             childElem.setAttribute(attrName, groupElem.attribute(attrName));
+        }
+    }
+}
+
+void Remover::ungroupSwitchElement()
+{
+    element_loop(svgElement()) {
+        nextElement(elem, root);
+        if (elem.tagName() != E_switch)
+            continue;
+
+        if (!elem.hasImportantAttrs()) {
+            SvgElement gElem = elem.firstChildElement();
+            SvgElement switchElem = gElem.parentElement();
+            SvgElement pp = switchElem.parentElement();
+            SvgElement newElem;
+
+            // remove all elements ins 'switch' except first
+            SvgElementList list = switchElem.childElements();
+            while (!list.isEmpty()) {
+                SvgElement child = list.takeFirst();
+                if (child == gElem)
+                    newElem = pp.insertBefore(child, switchElem).toElement();
+                else
+                    switchElem.removeChild(child);
+            }
+            pp.removeChild(switchElem);
+            elem = newElem;
+        } else if (elem.hasChildren()) {
+            SvgElementList list = elem.childElements();
+            if (!list.isEmpty())
+                list.takeFirst();
+            while (!list.isEmpty())
+                elem.removeChild(list.takeFirst());
+            SvgElement child = elem.firstChildElement();
+            megreGroupWithChild(elem, child, true);
+            SvgElement tmpElem = elem.parentElement().insertBefore(child, elem).toElement();
+            elem.parentElement().removeChild(elem, true);
+            elem = tmpElem;
+        } else if (!elem.hasChildren()) {
+            elem = elem.parentElement().removeChild(elem, true);
         }
     }
 }
@@ -1364,6 +1396,7 @@ void Remover::prepareViewBoxRect(QRectF &viewBox)
 }
 
 // TODO: add blur support
+// TODO: better element removing (skadge_SVG_widgets_for_diagrams.svg)
 void Remover::removeElementsOutsideTheViewbox()
 {
     QRectF viewBox = viewBoxRect();

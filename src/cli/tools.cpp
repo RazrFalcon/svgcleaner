@@ -333,7 +333,6 @@ QString Tools::trimColor(const QString &color)
     return newColor;
 }
 
-// TODO: maybe replase with if...else
 QString Tools::replaceColorName(const QString &color)
 {
     static QHash<QString, QString> colors;

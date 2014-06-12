@@ -982,7 +982,7 @@ SvgText SvgNode::toText() const
 }
 
 SvgElementPrivate::SvgElementPrivate(SvgDocumentPrivate *d, SvgNodePrivate *p,
-                                          const QString &tagname)
+                                     const QString &tagname)
     : SvgNodePrivate(d, p)
 {
     name = tagname;
@@ -1003,14 +1003,15 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
     static const QString endChar   = QL1S(">");
     static const QString startAttr = QL1S("=\"");
     static const QString quoteChar = QL1S("\"");
-    static const QChar spaceChar   = QL1C(' ');
+    static const QChar   spaceChar = QL1C(' ');
 
-    if (!(prev && prev->hasValue()) && !hasValue() && name != tspanElem)
+//    if (!(prev && prev->hasValue()) && !hasValue() && name != tspanElem)
+    if (this->name != tspanElem)
         s << QString(indent < 1 ? 0 : depth * indent, spaceChar);
 
     s << startChar << name;
 
-    if (!attrs.isEmpty()) {
+    if (!attrs.isEmpty() || !attrsExt.isEmpty()) {
         // save default attributes
         IntHash::const_iterator it = attrs.constBegin();
         for (; it != attrs.constEnd(); ++it) {
@@ -1029,6 +1030,21 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
                 s << it2.key() << startAttr << it2.value() << quoteChar;
             }
         }
+
+//        // sorted
+//        StringMap map;
+//        foreach (const int &attrId, attrs.keys())
+//            map.insert(attrIdToStr(attrId), attrs.value(attrId));
+//        foreach (const QString &attrName, attrsExt.keys())
+//            map.insert(attrName, attrsExt.value(attrName));
+
+//        StringMap::const_iterator it3 = map.constBegin();
+//        for (; it3 != map.constEnd(); ++it3) {
+//            if (!it3.value().isEmpty()) {
+//                s << spaceChar;
+//                s << it3.key() << startAttr << it3.value() << quoteChar;
+//            }
+//        }
     }
 
     if (last) {
@@ -1237,6 +1253,25 @@ QString SvgElement::id() const
     return IMPL->id;
 }
 
+SvgElement SvgElement::removeChild(const SvgElement &oldChild, bool returnPreviousElement)
+{
+    if (!impl)
+        return SvgElement();
+
+    if (oldChild.isNull())
+        return SvgElement();
+
+    SvgElement ret;
+    if (returnPreviousElement) {
+        ret = prevElement(oldChild);
+        ((SvgNodePrivate*)impl)->removeChild(oldChild.impl);
+    } else {
+        ret = SvgNode(((SvgNodePrivate*)impl)->removeChild(oldChild.impl)).toElement();
+    }
+
+    return ret;
+}
+
 bool SvgElement::hasChildElement() const
 {
     if (!impl)
@@ -1257,7 +1292,8 @@ int SvgElement::childElementCount() const
     SvgNodePrivate* p = impl->first;
     int count = 0;
     while (p) {
-        count++;
+        if (p->isElement())
+            count++;
         p = p->next;
     }
     return count;
@@ -1386,7 +1422,7 @@ bool SvgElement::hasLinkedDef() const
 {
     if (!impl)
         return false;
-    // TODO: is filter needed?
+    // TODO: is 'filter' needed?
     static const IntList illegalAttrList = IntList()
         << AttrId::clip_path << AttrId::mask << AttrId::filter;
     foreach (const int &id, illegalAttrList) {
@@ -1415,13 +1451,18 @@ bool SvgElement::isGroup() const
     return (tagName() == E_g);
 }
 
-bool SvgElement::hasImportantAttrs()
+bool SvgElement::hasImportantAttrs(const IntList &ignoreList)
 {
     int attrCount = attributesCount();
     if (attrCount == 0)
         return false;
+    QStringList list = attributesList();
+    foreach (const int &attrId, ignoreList)
+        list.removeOne(attrIdToStr(attrId));
+    if (list.isEmpty())
+        return false;
     if (Keys::get().flag(Key::RemoveUnreferencedIds)) {
-        if (attrCount == 1 && hasAttribute(AttrId::id))
+        if (list.size() == 1 && hasAttribute(AttrId::id))
             return false;
     }
     return true;
@@ -1556,12 +1597,12 @@ SvgCommentPrivate::SvgCommentPrivate(SvgDocumentPrivate *d, SvgNodePrivate *pare
 
 void SvgCommentPrivate::save(QTextStream &s, int depth, int indent) const
 {
-    // We don't output whitespace if we would pollute a text node.
-    if (!(prev && !prev->value.isEmpty()))
-        s << QString(indent < 1 ? 0 : depth * indent, QL1C(' '));
-
     if (indent != -1)
         s << endl;
+
+    // We don't output whitespace if we would pollute a text node.
+    if (!(prev && prev->isElement() && !prev->value.isEmpty()))
+        s << QString(indent < 1 ? 0 : depth * indent, QL1C(' '));
 
     s << "<!--" << value;
     if (value.endsWith(QL1C('-')))
@@ -1830,7 +1871,7 @@ SvgElement prevElement(const SvgElement &elem)
 {
     if (!elem.previousSiblingElement().isNull())
         return elem.previousSiblingElement();
-    SvgElement pElem = elem;
+    SvgElement pElem = elem.parentElement();
     while (pElem.isNull())
         pElem = pElem.parentElement();
     return pElem;

@@ -62,6 +62,7 @@ typedef QList<int> IntList;
     root = elem; \
     while (!elem.isNull())
 
+
 class SvgNode
 {
 public:
@@ -165,7 +166,7 @@ public:
     bool hasAttributes() const;
     QString xlinkId() const;
     QString id() const;
-
+    SvgElement removeChild(const SvgElement &oldChild, bool returnPreviousElement = false);
     bool hasChildElement() const;
     int childElementCount() const;
     StringHash attributesHash(bool ignoreId) const;
@@ -183,7 +184,7 @@ public:
     bool hasLinkedDef() const;
     bool isContainer() const;
     bool isGroup() const;
-    bool hasImportantAttrs();
+    bool hasImportantAttrs(const IntList &ignoreList = IntList());
     bool hasLinkedStyle();
     bool isUsed() const;
     bool hasChildWithTagName(const QString &name) const;

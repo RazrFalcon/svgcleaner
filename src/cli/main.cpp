@@ -175,6 +175,7 @@ void processFile(const QString &inPath, const QString &outPath)
         replacer.convertBasicShapes();
     if (Keys.flag(Key::UngroupContainers)) {
         remover.ungroupAElement();
+        remover.ungroupSwitchElement();
         remover.removeGroups();
     }
     replacer.processPaths();

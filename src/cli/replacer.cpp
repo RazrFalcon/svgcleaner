@@ -507,15 +507,14 @@ IntHash splitStyle(const QString &style)
 }
 
 // TODO: style can be set in ENTITY
+// TODO: rewrite parsing (atlas.svg)
 void Replacer::convertCDATAStyle()
 {
     QStringList styleList;
-    SvgElement elem = document().documentElement();
-    SvgElement root = elem;
-    while (!elem.isNull()) {
+    element_loop(document().documentElement()) {
         if (elem.tagName() == E_style) {
             styleList << elem.text();
-            elem.parentNode().removeChild(elem);
+            elem = elem.parentElement().removeChild(elem, true);
         }
         nextElement(elem, root);
     }
@@ -544,30 +543,34 @@ void Replacer::convertCDATAStyle()
         QStringList classList = text.split(QRegExp(" +(\\.|@)"), QString::SkipEmptyParts);
         foreach (const QString &currClass, classList) {
             QStringList tmpList = currClass.split(QRegExp("( +|)\\{"));
-            if (tmpList.size() == 2)
-                classHash.insert(tmpList.at(0), QString(tmpList.at(1)).remove(QRegExp("\\}.*")));
+            if (tmpList.size() == 2) {
+                classHash.insert(tmpList.at(0).trimmed(),
+                                 QString(tmpList.at(1)).remove(QRegExp("\\}.*")));
+            }
         }
     }
 
-    elem = document().documentElement();
-    root = elem;
-    while (!elem.isNull()) {
-        if (elem.hasAttribute(AttrId::class_)) {
-            IntHash newHash;
-            QStringList classList = elem.attribute(AttrId::class_).split(" ", QString::SkipEmptyParts);
-            for (int i = 0; i < classList.count(); ++i) {
-                if (classHash.contains(classList.at(i))) {
-                    IntHash tempHash = splitStyle(classHash.value(classList.at(i)));
-                    foreach (const int &key, tempHash.keys())
-                        newHash.insert(key, tempHash.value(key));
-                }
-            }
-            IntHash oldHash = elem.styleHash();
-            foreach (const int &attrId, oldHash.keys())
-                newHash.insert(attrId, oldHash.value(attrId));
-            elem.setStylesFromHash(newHash);
-            elem.removeAttribute(AttrId::class_);
+    element_loop_next(document().documentElement()) {
+        if (!elem.hasAttribute(AttrId::class_)) {
+            nextElement(elem, root);
+            continue;
         }
+
+        IntHash newHash;
+        QStringList classList = elem.attribute(AttrId::class_).split(" ", QString::SkipEmptyParts);
+        foreach (const QString &classStr, classList) {
+            if (classHash.contains(classStr)) {
+                IntHash tempHash = splitStyle(classHash.value(classStr));
+                foreach (const int &key, tempHash.keys())
+                    newHash.insert(key, tempHash.value(key));
+            }
+        }
+        IntHash oldHash = elem.styleHash();
+        foreach (const int &attrId, oldHash.keys())
+            newHash.insert(attrId, oldHash.value(attrId));
+        elem.setStylesFromHash(newHash);
+        elem.removeAttribute(AttrId::class_);
+
         nextElement(elem, root);
     }
 }
@@ -970,6 +973,7 @@ void Replacer::roundNumericAttributes()
 
 // TODO: try to convert thin rect to line-to path
 // view-calendar-list.svg
+// TODO: check converting without default attributes
 
 // http://www.w3.org/TR/SVG/shapes.html
 void Replacer::convertBasicShapes()
@@ -980,8 +984,8 @@ void Replacer::convertBasicShapes()
             QString dAttr;
             if (ctag == E_line) {
                 dAttr = QString("M %1,%2 %3,%4")
-                        .arg(elem.attribute(AttrId::x1), elem.attribute(AttrId::y1),
-                             elem.attribute(AttrId::x2), elem.attribute(AttrId::y2));
+                        .arg(elem.attribute(AttrId::x1, "0"), elem.attribute(AttrId::y1, "0"),
+                             elem.attribute(AttrId::x2, "0"), elem.attribute(AttrId::y2, "0"));
                 elem.removeAttributes(QStringList() << A_x1 << A_y1 << A_x2 << A_y2);
             } else if (ctag == E_rect) {
                 if (elem.doubleAttribute(AttrId::rx) == 0 || elem.doubleAttribute(AttrId::ry) == 0) {
@@ -1245,7 +1249,7 @@ void Replacer::calcElementsBoundingBox()
 //       demo.svg
 // TODO: group non successively used attributes
 //       Anonymous_City_flag_of_Gijon_Asturies_Spain.svg
-// TODO: group tspan styles to text element
+// TODO: group 'tspan' styles to 'text' element
 void Replacer::groupElementsByStyles(SvgElement parentElem)
 {
     // first start

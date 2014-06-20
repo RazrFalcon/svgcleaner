@@ -30,6 +30,7 @@
 //       a single color using the color and opacity of the last gradient stop.
 // TODO: merge "tspan" elements with similar styles
 // TODO: try to recalculate 'userSpaceOnUse' to 'objectBoundingBox'
+// TODO: maybe move frequently used styles to CDATA
 
 void Replacer::convertSizeToViewbox()
 {
@@ -57,9 +58,10 @@ void Replacer::convertSizeToViewbox()
 }
 
 // TODO: join paths with only style different
-//       Anonymous_Chesspiece_-_bishop.svg
+//       Anonymous_Chesspiece_-_bishop.svg, dune73_Firewall-2D.svg
 // TODO: replace paths with use, when paths has only first segment different
 //       Anonymous_Flag_of_South_Korea.svg
+// TODO: join paths with equal styles to one 'd' attr
 void Replacer::processPaths()
 {
     bool skip = true;
@@ -492,21 +494,67 @@ IntHash splitStyle(const QString &style)
     IntHash hash;
     if (style.isEmpty())
         return hash;
+
     static const QChar signChar = QL1C('-');
-    QStringList list = style.trimmed().split(QL1C(';'), QString::SkipEmptyParts);
-    for (int i = 0; i < list.count(); ++i) {
-        QString attr = list.at(i);
-        int pos = attr.indexOf(QL1C(':'));
-        QString key = attr.mid(0, pos).trimmed();
-        // ignore attributes like "-inkscape-font-specification"
-        // qt render prefer property attributes instead of A_style attribute
-        if (key.at(0) != signChar && pos != -1)
-            hash.insert(attrStrToId(key), attr.mid(pos+1).trimmed());
+    static const QChar colonChar = QL1C(':');
+    static const QChar semicolonChar = QL1C(';');
+    static const QChar asteriskChar = QL1C('*');
+    static const QChar andChar = QL1C('&');
+
+    const QChar *str = style.constData();
+    const QChar *end = str + style.size();
+
+    while (str && str != end) {
+        int length = 0;
+        while (str->isSpace())
+            str++;
+
+        // skip comments inside attribute value
+        if (*str == '/') {
+            str += 2; // skip /*
+            while (str != end && *str != asteriskChar)
+                str++;
+            str += 2; // skip */
+            while (str->isSpace())
+                str++;
+        }
+
+        // parse name
+        while (str != end && *str != colonChar) {
+            length++;
+            str++;
+        }
+        QString name = QString(str-length, length);
+        str++;  // skip ':'
+        length = 0;
+
+        // do not process styles which is linked to data in ENTITY
+        // like: '&st0;'
+        if (!name.isEmpty() && name.at(0) == andChar)
+            break;
+
+        while (str->isSpace())
+            str++;
+
+        // parse value
+        while (str != end && *str != semicolonChar) {
+            length++;
+            str++;
+        }
+        QString value = QString(str-length, length);
+        if (str != end)
+            str++; // skip ';'
+        while (str->isSpace())
+            str++;
+
+        // add to hash
+        if (!name.isEmpty() && name.at(0) != signChar)
+            hash.insert(attrStrToId(name), value);
     }
     return hash;
 }
 
-// TODO: style can be set in ENTITY
+// TODO: style can be set in ENTITY (adobe_2.svg)
 // TODO: rewrite parsing (atlas.svg)
 void Replacer::convertCDATAStyle()
 {
@@ -819,7 +867,8 @@ void Replacer::trimIds()
         for (int i = numList.size()-1; i >= 0 ; --i)
             newId += charList.at(numList.at(i));
 
-        Q_ASSERT(newId.at(0).isDigit() == false);
+        if (disableDigitId)
+            Q_ASSERT(newId.at(0).isDigit() == false);
 
         idHash.insert(elem.id(), newId);
         elem.setAttribute(AttrId::id, newId);
@@ -1015,7 +1064,7 @@ void Replacer::convertBasicShapes()
                     Segment seg;
                     seg.command = Command::ClosePath;
                     seg.absolute = false;
-                    seg.srcCmd = segmentList.isEmpty();
+                    seg.srcCmd = true;
                     segmentList.append(seg);
                 }
                 dAttr = Path().segmentsToPath(segmentList);
@@ -1038,15 +1087,7 @@ void Replacer::splitStyleAttributes()
     while (!elem.isNull()) {
         if (!elem.tagName().contains(E_feFlood)) {
             if (elem.hasAttribute(AttrId::style)) {
-                QString style = elem.attribute(AttrId::style);
-                int commentPos = 0;
-                while (commentPos != -1) {
-                    commentPos = style.indexOf("/*");
-                    if (commentPos != -1)
-                        style.remove(commentPos, style.indexOf("*/") - commentPos + 2);
-                }
-                style.remove("\n");
-                IntHash hash = splitStyle(style);
+                IntHash hash = splitStyle(elem.attribute(AttrId::style));
                 foreach (const int &keyId, hash.keys())
                     elem.setAttribute(keyId, hash.value(keyId));
                 elem.removeAttribute(AttrId::style);

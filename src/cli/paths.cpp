@@ -35,12 +35,25 @@ using namespace DefaultValue;
 //       fjudy2001_02.svg
 //       warszawianka_Betel.svg
 
+namespace Command {
+    const QChar MoveTo           = 'm';
+    const QChar LineTo           = 'l';
+    const QChar HorizontalLineTo = 'h';
+    const QChar VerticalLineTo   = 'v';
+    const QChar CurveTo          = 'c';
+    const QChar SmoothCurveTo    = 's';
+    const QChar Quadratic        = 'q';
+    const QChar SmoothQuadratic  = 't';
+    const QChar EllipticalArc    = 'a';
+    const QChar ClosePath        = 'z';
+}
+
 Segment::Segment()
 {
     absolute = false;
-    srcCmd = false;
+    srcCmd   = false;
     largeArc = false;
-    sweep = false;
+    sweep    = false;
 }
 
 void Segment::setTransform(Transform &ts)
@@ -567,65 +580,124 @@ QString Path::findAttribute(const int &attrId)
     return "";
 }
 
-void Path::processSegments(QList<Segment> &segList)
+bool isLineBasedSegment(const Segment &seg)
 {
-    if (Keys.flag(Key::RemoveUnneededSymbols)) {
-        // remove 'z' command if start point equal to last
-        // except 'stroke-linejoin' is not default, because it causes render error
-        QString stroke = findAttribute(AttrId::stroke);
-        if (stroke.isEmpty() || stroke == V_none) {
-            QPointF prevM(segList.first().x, segList.first().y);
-            for (int i = 1; i < segList.size(); ++i) {
-                Segment prevSeg = segList.at(i-1);
-                if (segList.at(i).command == Command::ClosePath) {
-                    if (isZero(prevM.x() - prevSeg.x) && isZero(prevM.y() - prevSeg.y)
-                        /*&& !isZero(segList.first().x - prevSeg.x)
-                        && !isZero(segList.first().y - prevSeg.y)*/) {
-                        segList.removeAt(i--);
+    return    seg.command == Command::LineTo
+           || seg.command == Command::HorizontalLineTo
+           || seg.command == Command::VerticalLineTo;
+}
+
+bool Path::removeZSegments(QList<Segment> &segList)
+{
+    if (segList.isEmpty())
+        return false;
+
+    // remove 'z' segment if last 'm' segment equal to segment before 'z'
+
+    bool isRemoved = false;
+    QString stroke = findAttribute(AttrId::stroke);
+    QString strokeLinecap = findAttribute(AttrId::stroke_linecap);
+    bool hasStroke = (!stroke.isEmpty() && stroke != V_none);
+    bool isDefaultLinecap = (strokeLinecap.isEmpty() || strokeLinecap == QL1S("butt"));
+
+    int lastMIdx = 0;
+    QPointF prevM(segList.first().x, segList.first().y);
+    for (int i = 1; i < segList.size(); ++i) {
+        if (segList.at(i).command != Command::ClosePath)
+            continue;
+
+        Segment prevSeg = segList.at(i-1);
+        if (isZero(prevM.x() - prevSeg.x) && isZero(prevM.y() - prevSeg.y)) {
+            // Remove previous segment before 'z' segment if it's line like segment,
+            // because 'z' actually will be replaced with the same line while rendering.
+            // In path like: M 80 90 L 200 90 L 80 90 Z
+            // segment 'L 80 90' is useless.
+            if (isLineBasedSegment(prevSeg))
+            {
+                segList.removeAt(i-1);
+                i--;
+                isRemoved = true;
+
+                Segment seg = segList.at(i);
+                if (isDefaultLinecap && isLineBasedSegment(seg)) {
+                    // remove 'z' segment if we have path like:
+                    // M 80 90 L 200 90 Z
+                    // but only when 'stroke-linecap' = 'butt'
+                    // in other cases it will change rendering of the path
+                    if (segList.size() == 3 || (i - lastMIdx == 2)) {
+                        segList.removeAt(i);
+                        i--;
                     }
-                    if (i != segList.size()-1)
-                        prevM = QPointF(segList.at(i+1).x, segList.at(i+1).y);
                 }
+            } else if (!hasStroke) {
+                segList.removeAt(i--);
+                isRemoved = true;
             }
         }
+        if (i != segList.size()-1) {
+            prevM = QPointF(segList.at(i+1).x, segList.at(i+1).y);
+            lastMIdx = i+1;
+        }
+    }
+    return isRemoved;
+}
 
-        // remove unneeded moveto commands
-        for (int i = 1; i < segList.count(); ++i) {
-            Segment prevSeg = segList.at(i-1);
-            Segment seg = segList.at(i);
-            if (seg.command == Command::MoveTo) {
-                if (prevSeg.command == Command::MoveTo && seg.absolute) {
-                    segList.removeAt(i-1);
-                    i--;
-                }
+bool Path::removeUnneededMoveToSegments(QList<Segment> &segList)
+{
+    if (segList.isEmpty())
+        return false;
+
+    // remove repeated MoveTo segments, if it was absolute in original path
+    bool isRemoved = false;
+    for (int i = 1; i < segList.count(); ++i) {
+        Segment prevSeg = segList.at(i-1);
+        Segment seg = segList.at(i);
+        if (seg.command == Command::MoveTo) {
+            if (prevSeg.command == Command::MoveTo && seg.absolute) {
+                segList.removeAt(i-1);
+                i--;
+                isRemoved = true;
+            }
+        }
+    }
+    return isRemoved;
+}
+
+bool Path::removeTinySegments(QList<Segment> &segList)
+{
+    if (segList.isEmpty())
+        return false;
+
+    const int oldSize = segList.size();
+    static qreal minValue = 1 / pow(10, Keys.coordinatesPrecision());
+
+    // if current segment too close to previous - remove it
+    for (int i = 0; i < segList.count()-1; ++i) {
+        Segment seg = segList.at(i);
+        Segment nextSeg = segList.at(i+1);
+        if (   seg.command == nextSeg.command
+            && seg.command != Command::ClosePath
+            && seg.command != Command::EllipticalArc)
+        {
+            if (   qAbs(nextSeg.x - seg.x) < minValue
+                && qAbs(nextSeg.y - seg.y) < minValue) {
+                segList.removeAt(i+1);
+                i--;
             }
         }
     }
 
-    if (Keys.flag(Key::RemoveTinySegments)) {
-        // remove tiny segments
-        static qreal minValue = 1 / pow(10, Keys.coordinatesPrecision());
-        for (int i = 0; i < segList.count()-1; ++i) {
-            Segment seg = segList.at(i);
-            Segment nextSeg = segList.at(i+1);
-            if (seg.command == nextSeg.command && seg.command != Command::ClosePath
-                    && seg.command != Command::EllipticalArc) {
-                if (qAbs(nextSeg.x - seg.x) < minValue && qAbs(nextSeg.y - seg.y) < minValue) {
-                    segList.removeAt(i+1);
-                    i--;
-                }
-            }
-        }
-
-        for (int i = 1; i < segList.count(); ++i) {
-            Segment prevSeg = segList.at(i-1);
-            Segment seg = segList.at(i);
-            const QChar cmd = seg.command;
+    bool isElemHasFilter = !findAttribute(AttrId::filter).isEmpty();
+    for (int i = 1; i < segList.count(); ++i) {
+        Segment prevSeg = segList.at(i-1);
+        Segment seg = segList.at(i);
+        const QChar cmd = seg.command;
+        const int tsize = segList.size();
+        if (isZero(seg.x - prevSeg.x) && isZero(seg.y - prevSeg.y)) {
             if (cmd == Command::MoveTo) {
-                // removing MoveTo from path with blur filter change render
-                if ((isZero(seg.x - prevSeg.x) && isZero(seg.y - prevSeg.y))
-                    && findAttribute(AttrId::filter).isEmpty()
-                    && prevSeg.command == Command::MoveTo) {
+                // removing MoveTo from path with blur filter breaks render
+                if (!isElemHasFilter && prevSeg.command == Command::MoveTo)
+                {
                     segList.removeAt(i--);
                 } else if (i == segList.size()-1 && prevSeg.command != Command::MoveTo) {
                     segList.removeAt(i--);
@@ -633,109 +705,227 @@ void Path::processSegments(QList<Segment> &segList)
             }
             else if (cmd == Command::CurveTo) {
                 if (   isZero(seg.x1 - prevSeg.x1) && isZero(seg.y1 - prevSeg.y1)
-                    && isZero(seg.x2 - prevSeg.x2) && isZero(seg.y2 - prevSeg.y2)
-                    && isZero(seg.x - prevSeg.x)   && isZero(seg.y - prevSeg.y))
+                    && isZero(seg.x2 - prevSeg.x2) && isZero(seg.y2 - prevSeg.y2))
+                {
                     segList.removeAt(i--);
+                }
             }
-            if (   cmd == Command::LineTo
-                     || cmd == Command::SmoothQuadratic) {
-                if (isZero(seg.x - prevSeg.x) && isZero(seg.y - prevSeg.y))
-                    segList.removeAt(i--);
+            else if (cmd == Command::LineTo || cmd == Command::SmoothQuadratic) {
+                segList.removeAt(i--);
             }
             else if (cmd == Command::SmoothCurveTo) {
-                if (   (isZero(seg.x2 - prevSeg.x2) && isZero(seg.y2 - prevSeg.y2))
-                    && (isZero(seg.x - prevSeg.x)   && isZero(seg.y - prevSeg.y)))
+                if (isZero(seg.x2 - prevSeg.x2) && isZero(seg.y2 - prevSeg.y2))
                     segList.removeAt(i--);
             }
             else if (cmd == Command::Quadratic) {
-                if (   isZero(seg.x1 - prevSeg.x1) && isZero(seg.y1 - prevSeg.y1)
-                    && isZero(seg.x - prevSeg.x)   && isZero(seg.y - prevSeg.y))
-                    segList.removeAt(i--);
-            }
-            else if (cmd == Command::ClosePath) {
-                // remove paths like mz
-                if (i == segList.size()-1 && i == 1)
+                if (isZero(seg.x1 - prevSeg.x1) && isZero(seg.y1 - prevSeg.y1))
                     segList.removeAt(i--);
             }
         }
+        if (cmd == Command::ClosePath) {
+            // remove paths like 'mz'
+            if (i == segList.size()-1 && i == 1)
+                segList.removeAt(i--);
+        }
+        if (tsize != segList.size()) {
+            if (i < segList.size()-1)
+                segList[i+1].srcCmd = true;
+        }
     }
+    return (segList.size() != oldSize);
+}
 
+bool Path::convertSegments(QList<Segment> &segList)
+{
+    if (segList.isEmpty())
+        return false;
     // TODO: add other commands conv
-    if (Keys.flag(Key::ConvertSegments)) {
-        for (int i = 1; i < segList.size(); ++i) {
-            Segment prevSeg = segList.at(i-1);
-            Segment seg = segList.at(i);
-            const QChar cmd = seg.command;
-            if (cmd == Command::LineTo) {
-                if (isZero(seg.x - prevSeg.x) && seg.y != prevSeg.y)
-                    segList[i].command = Command::VerticalLineTo;
-                else if (seg.x != prevSeg.x && isZero(seg.y - prevSeg.y))
-                    segList[i].command = Command::HorizontalLineTo;
-                segList[i].srcCmd = true;
 
-                // TODO: useful, but do not work well with subpaths
-//                else if (prevSeg.command == Command::MoveTo) {
-//                    segList[i].command = Command::MoveTo;
-//                    segList[i].srcCmd = false;
-//                }
-            } else if (cmd == Command::CurveTo) {
-                if (   isZero(seg.x1 - prevSeg.x1)
-                    && isZero(seg.y1 - prevSeg.y1)
-                    && isZero(seg.x2 - prevSeg.x2)
-                    && isZero(seg.x - prevSeg.x)
-                    && qFuzzyCompare(seg.y2, seg.y))
-                {
-                    segList[i].command = Command::VerticalLineTo;
-                }
-                else if (   isZero(seg.x1 - prevSeg.x1)
-                         && isZero(seg.y1 - prevSeg.y1)
-                         && isZero(seg.y2 - prevSeg.y2)
-                         && isZero(seg.y - prevSeg.y)
-                         && qFuzzyCompare(seg.x2, seg.x))
-                {
-                    segList[i].command = Command::HorizontalLineTo;
-                }
-                else if (   isZero(seg.x1 - prevSeg.x1)
-                         && isZero(seg.y1 - prevSeg.y1)
-                         && qFuzzyCompare(seg.y2, seg.y)
-                         && qFuzzyCompare(seg.x2, seg.x))
-                {
-                    segList[i].command = Command::LineTo;
-                }
-                else if (  (qFuzzyCompare(seg.x1, (prevSeg.x - prevSeg.x2))
-                            || (isZero(seg.x1 - prevSeg.x1)
-                                && isZero(prevSeg.x - prevSeg.x2)))
-                        && (qFuzzyCompare(seg.y1, (prevSeg.y - prevSeg.y2))
-                            || (isZero(seg.y1 - prevSeg.y1) && isZero(prevSeg.y - prevSeg.y2)))
-                        && prevSeg.command == Command::CurveTo)
-                {
+    bool isAnyChanged = false;
+    for (int i = 1; i < segList.size(); ++i) {
+        Segment prevSeg = segList.at(i-1);
+        Segment seg = segList.at(i);
+        const QChar cmd = seg.command;
+        bool isChanged = false;
+        if (cmd == Command::LineTo) {
+            if (isZero(seg.x - prevSeg.x) && seg.y != prevSeg.y) {
+                segList[i].command = Command::VerticalLineTo;
+                isChanged = true;
+            }
+            else if (seg.x != prevSeg.x && isZero(seg.y - prevSeg.y)) {
+                segList[i].command = Command::HorizontalLineTo;
+                isChanged = true;
+            }
+
+            // TODO: useful, but do not work well with subpaths
+//            else if (prevSeg.command == Command::MoveTo) {
+//                segList[i].command = Command::MoveTo;
+//                segList[i].srcCmd = false;
+//            }
+        } else if (cmd == Command::CurveTo) {
+            bool isXY1Equal = isZero(seg.x1 - prevSeg.x1) && isZero(seg.y1 - prevSeg.y1);
+            if (   isXY1Equal
+                && isZero(seg.x2 - prevSeg.x2)
+                && isZero(seg.x - prevSeg.x)
+                && qFuzzyCompare(seg.y2, seg.y))
+            {
+                segList[i].command = Command::VerticalLineTo;
+                isChanged = true;
+            }
+            else if (   isXY1Equal
+                     && isZero(seg.y2 - prevSeg.y2)
+                     && isZero(seg.y - prevSeg.y)
+                     && qFuzzyCompare(seg.x2, seg.x))
+            {
+                segList[i].command = Command::HorizontalLineTo;
+                isChanged = true;
+            }
+            else if (   isXY1Equal
+                     && qFuzzyCompare(seg.y2, seg.y)
+                     && qFuzzyCompare(seg.x2, seg.x))
+            {
+                segList[i].command = Command::LineTo;
+                isChanged = true;
+            }
+            else if (prevSeg.command == Command::CurveTo)
+            {
+                bool flag1 = qFuzzyCompare(seg.x1, (prevSeg.x - prevSeg.x2))
+                                 || (isZero(seg.x1 - prevSeg.x1) && isZero(prevSeg.x - prevSeg.x2));
+                bool flag2 = qFuzzyCompare(seg.y1, (prevSeg.y - prevSeg.y2))
+                                 || (isZero(seg.y1 - prevSeg.y1) && isZero(prevSeg.y - prevSeg.y2));
+                if (flag1 && flag2) {
                     segList[i].command = Command::SmoothCurveTo;
+                    isChanged = true;
                 }
             }
         }
-    }
+        if (isChanged) {
+            // mark current and next segment as source segment to force it adding to path
+            segList[i].srcCmd = true;
+            if (i < segList.size()-1)
+                segList[i+1].srcCmd = true;
 
-    if (Keys.flag(Key::RemoveUnneededSymbols)) {
-        for (int i = 1; i < segList.count(); ++i) {
-            Segment prevSeg = segList.at(i-1);
-            Segment seg = segList.at(i);
-            if (seg.command == prevSeg.command) {
-                if (seg.command == Command::MoveTo) {
-                    segList[i] = seg;
-                    segList.removeAt(i-1);
+            isAnyChanged = true;
+        }
+    }
+    return isAnyChanged;
+}
+
+bool isPointOnLine(const QPointF &p1, const QPointF &p2, const QPointF &point)
+{
+    float a = (p2.y() - p1.y()) / (p2.x() - p1.x());
+    float b = p1.y() - a * p1.x();
+    float c = fabs(point.y() - (a * point.x() + b));
+    if (isZero(c))
+        return true;
+    return false;
+}
+
+bool Path::joinSegments(QList<Segment> &segList)
+{
+    if (segList.isEmpty())
+        return false;
+
+    const int oldSize = segList.size();
+    Segment firstSeg;
+    if (!segList.isEmpty())
+        firstSeg = segList.first();
+
+    for (int i = 1; i < segList.count(); ++i) {
+        Segment prevSeg = segList.at(i-1);
+        Segment seg = segList.at(i);
+        const int tSize = segList.size();
+
+        if (seg.command == prevSeg.command) {
+            if (   seg.command == Command::MoveTo
+                || seg.command == Command::VerticalLineTo
+                || seg.command == Command::HorizontalLineTo)
+            {
+                segList[i] = seg;
+                segList.removeAt(i-1);
+                i--;
+            }
+        }
+        if (seg.command == Command::LineTo) {
+            // check is current line segment lies on another line segment
+            // if true - we don't need it
+            if (i < segList.size()-1 && segList.at(i+1).command == Command::LineTo)
+            {
+                Segment nextSeg = segList.at(i+1);
+                bool flag = isPointOnLine(QPointF(prevSeg.x, prevSeg.y),
+                                          QPointF(nextSeg.x, nextSeg.y),
+                                          QPointF(seg.x,     seg.y));
+                if (flag) {
+                    segList.removeAt(i);
                     i--;
-//                } else if (seg.command == Command::VerticalLineTo) {
-//                    segList[i] = seg;
-//                    segList.removeAt(i-1);
-//                    i--;
-//                } else if (seg.command == Command::HorizontalLineTo) {
-//                    segList[i] = seg;
-//                    segList.removeAt(i-1);
-//                    i--;
                 }
             }
         }
+        if (tSize != segList.size()) {
+            if (i < segList.size()-1)
+                segList[i+1].srcCmd = true;
+        }
     }
+    return (segList.size() != oldSize);
+}
+
+void Path::removeStrokeLinecap(QList<Segment> &segList)
+{
+    if (segList.isEmpty())
+        return;
+
+    bool allSubpathsAreClosed = false;
+    QPointF prevM(segList.first().x, segList.first().y);
+    for (int i = 1; i < segList.size(); ++i) {
+        if (segList.at(i).command == Command::ClosePath) {
+            if (i != segList.size()-1) {
+                prevM = QPointF(segList.at(i+1).x, segList.at(i+1).y);
+            } else if (i == segList.size()-1) {
+                allSubpathsAreClosed = true;
+            }
+        }
+    }
+    // 'stroke-linecap' attribute is useless when no open subpaths in path
+    if (allSubpathsAreClosed && findAttribute(AttrId::stroke_dasharray).isEmpty())
+        m_elem.removeAttribute(AttrId::stroke_linecap);
+}
+
+void Path::processSegments(QList<Segment> &segList)
+{
+    removeStrokeLinecap(segList);
+    bool isPathChanged = true;
+    while (isPathChanged)
+    {
+        // TODO: add new key for it
+        if (Keys.flag(Key::RemoveUnneededSymbols)) {
+            isPathChanged = removeZSegments(segList);
+            if (isPathChanged)
+                continue;
+
+            isPathChanged = removeUnneededMoveToSegments(segList);
+            if (isPathChanged)
+                continue;
+
+            isPathChanged = joinSegments(segList);
+            if (isPathChanged)
+                continue;
+        }
+
+        if (Keys.flag(Key::RemoveTinySegments)) {
+            isPathChanged = removeTinySegments(segList);
+            if (isPathChanged)
+                continue;
+        }
+
+        if (Keys.flag(Key::ConvertSegments)) {
+            isPathChanged = convertSegments(segList);
+            if (isPathChanged)
+                continue;
+        }
+
+        isPathChanged = false;
+    }
+    removeStrokeLinecap(segList);
 }
 
 QString Path::segmentsToPath(QList<Segment> &segList)
@@ -755,6 +945,7 @@ QString Path::segmentsToPath(QList<Segment> &segList)
     for (int i = 0; i < segList.count(); ++i) {
         Segment segment = segList.at(i);
         const QChar cmd = segment.command;
+
         // check is previous command is the same as next
         bool writeCmd = true;
         if (isTrim) {
@@ -778,6 +969,15 @@ QString Path::segmentsToPath(QList<Segment> &segList)
                 array += space;
         }
 
+        bool round = true;
+        if (i+1 < segList.size() && round) {
+            if ((cmd == Command::MoveTo || cmd == Command::EllipticalArc)
+                && segList.at(i+1).command == Command::EllipticalArc)
+                round = false;
+        }
+        if (cmd == Command::EllipticalArc)
+           round = false;
+
         QVector<qreal> points;
         segment.coords(points);
         if (isTrim) {
@@ -785,14 +985,6 @@ QString Path::segmentsToPath(QList<Segment> &segList)
             // m 30     to  m30
             // 10,-30   to  10-30
             // 15.1,.5  to  15.1.5
-            bool round = true;
-            if (i+1 < segList.size() && round) {
-                if ((cmd == Command::MoveTo || cmd == Command::EllipticalArc)
-                    && segList.at(i+1).command == Command::EllipticalArc)
-                    round = false;
-            }
-            if (cmd == Command::EllipticalArc)
-               round = false;
             for (int j = 0; j < points.size(); ++j) {
                 const int pos = array.size()-1;
                 if (round)
@@ -823,7 +1015,10 @@ QString Path::segmentsToPath(QList<Segment> &segList)
             }
         } else {
             for (int j = 0; j < points.size(); ++j) {
-                doubleToVarArr(array, points.at(j), Keys.coordinatesPrecision());
+                if (round)
+                    doubleToVarArr(array, points.at(j), Keys.coordinatesPrecision());
+                else
+                    doubleToVarArr(array, points.at(j), 6);
                 if (j != points.size()-1)
                     array += space;
             }

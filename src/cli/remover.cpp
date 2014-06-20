@@ -86,34 +86,56 @@ void Remover::cleanSvgElementAttribute()
 void Remover::removeUnusedDefs()
 {
     StringSet defsIdList;
-    foreach (const SvgElement &elem, defsElement().childElements())
-        if (elem.tagName() != E_clipPath)
-            defsIdList << elem.id();
 
-    StringSet currDefsIdList = defsIdList;
-    while (!currDefsIdList.isEmpty()) {
-        currDefsIdList = defsIdList;
-        QList<SvgElement> list = svgElement().childElements();
-        while (!list.isEmpty()) {
-            SvgElement elem = list.takeFirst();
+    SvgElement dElem = defsElement().firstChildElement();
+    while (!dElem.isNull()) {
+        // 'clipPath' can be unused, but elements in it can be used
+        // so we need to check it too
+        if (dElem.tagName() == E_clipPath && dElem.hasChildren()) {
+            SvgElement child = dElem.firstChildElement();
+            while (!child.isNull()) {
+                defsIdList << child.id();
+                child = child.nextSiblingElement();
+            }
+        }
+        defsIdList << dElem.id();
+        dElem = dElem.nextSiblingElement();
+    }
+
+    StringSet unusedIdList = defsIdList;
+    while (!unusedIdList.isEmpty()) {
+        unusedIdList = defsIdList;
+
+        SvgElement elem = svgElement();
+        SvgElement root = elem;
+        while (!elem.isNull()) {
             if (elem.hasAttribute(AttrId::xlink_href))
-                currDefsIdList.remove(elem.xlinkId());
+                unusedIdList.remove(elem.xlinkId());
             foreach (const int &attrId, Properties::linkableStyleAttributesIds) {
                 if (elem.hasAttribute(attrId)) {
                     QString url = elem.attribute(attrId);
                     if (url.startsWith(UrlPrefix))
-                        currDefsIdList.remove(url.mid(5, url.size()-6));
+                        unusedIdList.remove(url.mid(5, url.size()-6));
                 }
             }
-            if (elem.hasChildElement())
-                list << elem.childElements();
+            nextElement(elem, root);
         }
 
-        foreach (const SvgElement &elem, defsElement().childElements()) {
-            if (currDefsIdList.contains(elem.id())) {
-                defsIdList.remove(elem.id());
-                defsElement().removeChild(elem);
+        SvgElementList list = defsElement().childElements();
+        while (!list.isEmpty()) {
+            SvgElement elem = list.takeFirst();
+            if (elem.hasChildren())
+                list << elem.childElements();
+            if (!unusedIdList.contains(elem.id()))
+                continue;
+
+            // ungroup 'clipPath' before remove
+            if (elem.tagName() == E_clipPath) {
+                foreach (const SvgElement &clipChild, elem.childElements())
+                    list << defsElement().insertBefore(clipChild, elem.nextSibling()).toElement();
             }
+            defsIdList.remove(elem.id());
+            defsElement().removeChild(elem);
         }
     }
 }
@@ -611,7 +633,6 @@ void Remover::removeElements()
         }
     }
 
-    // TODO: add switch element ungroup
     // TODO: move to separate func
     qreal stdDevLimit = Keys.doubleNumber(Key::RemoveTinyGaussianBlur);
     if (stdDevLimit == 0)
@@ -893,19 +914,10 @@ void Remover::removeAttributes()
                     if (elem.hasAttribute(attrId))
                         elem.removeAttribute(attrId);
                 }
-//                foreach (const QVariant &attr, attrList) {
-//                    QString attrName;
-//                    if (attr.type() == QVariant::String)
-//                        attrName = attr.toString();
-//                    else
-//                        attrName = attrIdToStr(attr.toInt());
-//                    if (   attrName.contains(A_font)
-//                        || attrName.contains(A_text)
-//                        || Properties::textAttributesIds.contains(attrName))
-//                    {
-//                        attrList.removeOne(attr);
-//                    }
-//                }
+                foreach (const int &attrId, elem.baseAttributesList()) {
+                    if (Properties::textAttributesIds.contains(attrId))
+                        elem.removeAttribute(attrId);
+                }
                 elem.removeAttribute(QL1S("writing-mode"));
                 elem.removeAttribute(QL1S("line-height"));
                 elem.removeAttribute(QL1S("block-progression"));
@@ -1076,14 +1088,24 @@ void Remover::cleanStyle(const SvgElement &elem, IntHash &hash)
         }
     }
 
-    // remove all fill properties if fill is off
+
     if (Keys.flag(Key::RemoveFillProps)
         && parentAttrs.contains(AttrId::fill)
         && parentHash.value(AttrId::fill) == V_none
         && (hash.value(AttrId::fill) == V_none || hash.value(AttrId::fill_opacity) == V_null))
     {
+        // TODO: is this case needed?
+
         static const IntList fillList
             = IntList() << AttrId::fill << AttrId::fill_rule << AttrId::fill_opacity;
+        foreach (const int &attrId, fillList)
+            hash.remove(attrId);
+    } else if (Keys.flag(Key::RemoveFillProps)
+               && hash.value(AttrId::fill) == V_none)
+    {
+        // remove all fill properties if fill is off
+        static const IntList fillList
+            = IntList() << AttrId::fill_rule << AttrId::fill_opacity;
         foreach (const int &attrId, fillList)
             hash.remove(attrId);
     } else if (isConvertColors) {

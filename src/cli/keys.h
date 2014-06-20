@@ -150,6 +150,7 @@ namespace KeyStr {
     extern const QString DisableDigitId;
     // TODO: remove bitmaps, as utility
 
+    // TODO: ConvertToAbsolute
     extern const QString ConvertToRelative;
     extern const QString RemoveUnneededSymbols;
     extern const QString RemoveTinySegments;

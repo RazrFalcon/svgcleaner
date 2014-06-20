@@ -58,8 +58,7 @@ typedef QList<int> IntList;
     while (!elem.isNull())
 
 #define element_loop_next(_x) \
-    elem = _x; \
-    root = elem; \
+    elem = root = _x; \
     while (!elem.isNull())
 
 

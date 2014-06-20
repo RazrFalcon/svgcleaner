@@ -139,6 +139,8 @@ void processFile(const QString &inPath, const QString &outPath)
 
     replacer.calcElemAttrCount("initial");
 
+    // TODO: fix double clean issues
+
     // mandatory fixes used to simplify subsequent functions
     replacer.splitStyleAttributes();
     // TODO: add key
@@ -191,6 +193,9 @@ void processFile(const QString &inPath, const QString &outPath)
         replacer.applyTransformToDefs();
     if (Keys.flag(Key::TrimIds))
         replacer.trimIds();
+    // some defs can be released by previous functions, so we check it again
+    if (Keys.flag(Key::RemoveUnusedDefs))
+        remover.removeUnusedDefs();
     replacer.roundNumericAttributes();
     // TODO: check only for xmlns:xlink
     remover.cleanSvgElementAttribute();

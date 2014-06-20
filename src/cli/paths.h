@@ -28,16 +28,16 @@
 #include "svgdom.h"
 
 namespace Command {
-    static const QChar MoveTo           = 'm';
-    static const QChar LineTo           = 'l';
-    static const QChar HorizontalLineTo = 'h';
-    static const QChar VerticalLineTo   = 'v';
-    static const QChar CurveTo          = 'c';
-    static const QChar SmoothCurveTo    = 's';
-    static const QChar Quadratic        = 'q';
-    static const QChar SmoothQuadratic  = 't';
-    static const QChar EllipticalArc    = 'a';
-    static const QChar ClosePath        = 'z';
+    extern const QChar MoveTo;
+    extern const QChar LineTo;
+    extern const QChar HorizontalLineTo;
+    extern const QChar VerticalLineTo;
+    extern const QChar CurveTo;
+    extern const QChar SmoothCurveTo;
+    extern const QChar Quadratic;
+    extern const QChar SmoothQuadratic;
+    extern const QChar EllipticalArc;
+    extern const QChar ClosePath;
 }
 
 struct ArcStruct
@@ -104,6 +104,14 @@ private:
     bool isTsPathShorter();
     void fixRelative(QList<Segment> &segList);
     QString findAttribute(const int &attrId);
+
+    // segments processing
+    bool removeZSegments(QList<Segment> &segList);
+    bool removeUnneededMoveToSegments(QList<Segment> &segList);
+    bool removeTinySegments(QList<Segment> &segList);
+    bool convertSegments(QList<Segment> &segList);
+    bool joinSegments(QList<Segment> &segList);
+    void removeStrokeLinecap(QList<Segment> &segList);
 };
 
 #endif // PATHS_H

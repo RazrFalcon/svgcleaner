@@ -163,7 +163,7 @@ public:
                 length++;
                 str++;
             }
-            m_value = getString(length);
+            m_value = QString(str-length, length);
         } else if (token == DTD) {
             // DTD stored as text element
             clearTextBuffer();
@@ -251,15 +251,6 @@ private:
             return true;
         return false;
     }
-    inline QString getString(int size)
-    {
-        for (int i = 0; i < size; ++i)
-            str--;
-        QString string = QString(str, size);
-        for (int i = 0; i < size; ++i)
-            str++;
-        return string;
-    }
     inline void parseElement()
     {
         bool hasAttributes = true;
@@ -270,7 +261,7 @@ private:
             EndTagType endType = isEndTag(false);
             if (endType != NotEnd) {
                 hasAttributes = false;
-                m_name = getString(nameLength);
+                m_name = QString(str-nameLength, nameLength);
                 if (endType == EndType1)
                     str++;
                 else if (endType == EndType2) {
@@ -281,7 +272,7 @@ private:
             }
             // if char is space than node name is ended
             if (isSpace(str->unicode())) {
-                m_name = getString(nameLength);
+                m_name = QString(str-nameLength, nameLength);
 
                 // check is element has end char after spaces
                 // and not attributes
@@ -318,7 +309,7 @@ private:
                 ++str;
             }
             // ignore spaces in attribute name
-            attrName = getString(nameLength).trimmed();
+            attrName = QString(str-nameLength, nameLength).trimmed();
 
             // skip '='
             str++;
@@ -335,7 +326,7 @@ private:
                 nameLength++;
                 str++;
             }
-            attrValue = getString(nameLength);
+            attrValue = QString(str-nameLength, nameLength);
             // skip quote char
             str++;
             skipSpaces();
@@ -806,9 +797,11 @@ bool SvgNode::hasNextSibling() const
 {
     if (!impl)
         return false;
-    for (SvgNode sib = nextSibling(); !sib.isNull(); sib = sib.nextSibling()) {
-        if (sib.isElement())
+    SvgNodePrivate *p = impl->next;
+    while (p) {
+        if (p->isElement())
             return true;
+        p = p->next;
     }
     return false;
 }
@@ -930,9 +923,13 @@ SvgElement SvgNode::firstChildElement() const
 
 SvgElement SvgNode::nextSiblingElement() const
 {
-    for (SvgNode sib = nextSibling(); !sib.isNull(); sib = sib.nextSibling()) {
-        if (sib.isElement())
-            return sib.toElement();
+    if (!impl)
+        return SvgElement();
+    SvgNodePrivate *p = impl->next;
+    while (p) {
+        if (p->isElement())
+            return SvgElement(((SvgElementPrivate*)p));
+        p = p->next;
     }
     return SvgElement();
 }
@@ -1399,7 +1396,7 @@ SvgElement SvgElement::firstChildElement() const
     SvgNodePrivate* p = impl->first;
     while (p) {
         if (p->isElement())
-            return SvgNode(p).toElement();
+            return SvgElement(((SvgElementPrivate*)p));
         p = p->next;
     }
     return SvgElement();

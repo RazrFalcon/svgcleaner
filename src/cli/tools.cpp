@@ -30,13 +30,13 @@ Q_CORE_EXPORT char *qdtoa(double d, int mode, int ndigits, int *decpt,
 
 bool isZero(qreal value)
 {
-    static qreal minValue = 1 / pow(10, Keys::get().coordinatesPrecision());
+    static qreal minValue = 1.0 / pow(10, Keys::get().coordinatesPrecision());
     return (qAbs(value) < minValue);
 }
 
 bool isZeroTs(qreal value)
 {
-    static qreal minValue = 1 / pow(10, Keys::get().transformPrecision());
+    static qreal minValue = 1.0 / pow(10, Keys::get().transformPrecision());
     return (qAbs(value) < minValue);
 }
 

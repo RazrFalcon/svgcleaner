@@ -1087,11 +1087,11 @@ void curveExtremum(qreal a, qreal b, qreal c, const Bezier &bezier, Box &bbox)
     qreal t1 = (-b + sqrt(b * b - 4 * a * c)) / 2 / a;
     qreal t2 = (-b - sqrt(b * b - 4 * a * c)) / 2 / a;
 
-    if (t1 > 0 && t1 < 1) {
+    if (t1 > 0.0 && t1 < 1.0) {
         QPointF p = findDotOnCurve(bezier, t1);
         updateBBox(bbox, p.x(), p.y());
     }
-    if (t2 > 0 && t2 < 1) {
+    if (t2 > 0.0 && t2 < 1.0) {
         QPointF p = findDotOnCurve(bezier, t2);
         updateBBox(bbox, p.x(), p.y());
     }

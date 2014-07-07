@@ -72,7 +72,7 @@ void ThumbWidget::refill(const SVGInfo &info, bool compare)
 
 void ThumbWidget::resizeEvent(QResizeEvent *)
 {
-    QFont font = QFont().defaultFamily();
+    QFont font = this->font();
     font.setBold(true);
     QFontMetrics fm(font);
     int w = lblName->width();

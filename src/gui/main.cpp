@@ -19,6 +19,9 @@
 **
 ****************************************************************************/
 
+#include <QtCore/QTextCodec>
+#include <QtCore/QTranslator>
+#include <QtCore/QLibraryInfo>
 #include <QtGui/QPixmapCache>
 
 #include "someutils.h"

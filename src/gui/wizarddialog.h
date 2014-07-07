@@ -35,16 +35,17 @@ public:
     explicit WizardDialog(QWidget *parent = 0);
     ~WizardDialog();
     void setPathList(const QStringList &list);
-    QList<ToThread> threadData();
+    ThreadData threadData() const;
+    QList<StringPair> files() const;
 
 private:
     QList<QWidget *> m_pageList;
 
 private:
     bool checkForWarnings();
-    QString compressValue();
+    QString compressValue() const;
     QString findLabel(const QString &accessibleName);
-    QStringList argsList(bool *isCustom);
+    QStringList argsList(bool *isCustom) const;
     void createWarning(const QString &text);
     void loadSettings();
     void resetFields();

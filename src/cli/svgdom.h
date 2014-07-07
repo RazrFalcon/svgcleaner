@@ -19,8 +19,8 @@
 **
 ****************************************************************************/
 
-#ifndef Svg_H
-#define Svg_H
+#ifndef SVGDOM_H
+#define SVGDOM_H
 
 #include <QtCore/QString>
 #include <QtCore/QMap>
@@ -166,7 +166,7 @@ public:
     QString xlinkId() const;
     QString id() const;
     SvgElement removeChild(const SvgElement &oldChild, bool returnPreviousElement = false);
-    bool hasChildElement() const;
+    bool hasChildrenElement() const;
     int childElementCount() const;
     StringHash attributesHash(bool ignoreId) const;
     void removeAttributeIf(int attrId, const QString &value);
@@ -257,4 +257,4 @@ SvgElement prevElement(const SvgElement &elem);
 void nextElement(SvgElement &elem, const SvgElement &root, bool ignoreChild = false);
 
 
-#endif // Svg_H
+#endif // SVGDOM_H

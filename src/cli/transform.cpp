@@ -42,14 +42,14 @@ public:
     TransformMatrix(qreal a, qreal b, qreal c, qreal d, qreal e, qreal f);
     void setToIdentity();
     void invert();
-    TransformMatrix operator *(const TransformMatrix &matrix);
+    TransformMatrix operator *(const TransformMatrix &matrix) const;
     qreal& operator()(int row, int column);
     qreal operator()(int row, int column) const;
 
 private:
     qreal m[3][3];
 
-    TransformMatrix subMatrix(const TransformMatrix &matrix, int n, int indRow, int indCol);
+    static TransformMatrix subMatrix(const TransformMatrix &matrix, int n, int indRow, int indCol);
     qreal determinant();
     qreal _determinant(const TransformMatrix &matrix, int n);
 };
@@ -102,7 +102,7 @@ void TransformMatrix::invert()
     *this = invMat;
 }
 
-TransformMatrix TransformMatrix::operator *(const TransformMatrix &matrix)
+TransformMatrix TransformMatrix::operator *(const TransformMatrix &matrix) const
 {
     TransformMatrix result;
     for (int row = 0; row < 3; ++row) {

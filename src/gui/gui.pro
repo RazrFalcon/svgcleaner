@@ -7,11 +7,11 @@ unix:!mac:TARGET = svgcleaner-gui
 DEFINES *= QT_USE_QSTRINGBUILDER
 
 SOURCES += \
-    main.cpp \
     aboutdialog.cpp \
-    cleaner.cpp \
+    cleanerthread.cpp \
     filesview.cpp \
     iconswidget.cpp \
+    main.cpp \
     mainwindow.cpp \
     settings.cpp \
     someutils.cpp \
@@ -23,7 +23,7 @@ SOURCES += \
 HEADERS += \
     aboutdialog.h \
     arguments.h \
-    cleaner.h \
+    cleanerthread.h \
     filesview.h \
     iconswidget.h \
     mainwindow.h \
@@ -44,5 +44,7 @@ RESOURCES    += ../../icons/icons.qrc
 CODECFORSRC   = UTF-8
 win32:RC_FILE = ../../icons/icon.rc
 mac:ICON      = ../../icons/svgcleaner.icns
+
+include(../3rdparty/systemsemaphore/systemsemaphore.pri)
 
 include(../../translations/translations.pri)

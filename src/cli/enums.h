@@ -173,6 +173,7 @@ namespace Attribute {
     extern const QString A_k3;
     extern const QString A_kerning;
     extern const QString A_letter_spacing;
+    extern const QString A_lengthAdjust;
     extern const QString A_lighting_color;
     extern const QString A_line_height;
     extern const QString A_marker;
@@ -187,6 +188,7 @@ namespace Attribute {
     extern const QString A_points;
     extern const QString A_primitiveUnits;
     extern const QString A_r;
+    extern const QString A_rotate;
     extern const QString A_rx;
     extern const QString A_ry;
     extern const QString A_shape_rendering;
@@ -208,6 +210,7 @@ namespace Attribute {
     extern const QString A_text_align;
     extern const QString A_text_anchor;
     extern const QString A_text_decoration;
+    extern const QString A_textLength;
     extern const QString A_text_rendering;
     extern const QString A_transform;
     extern const QString A_unicode_bidi;
@@ -284,6 +287,7 @@ enum {
     k3,
     kerning,
     letter_spacing,
+    lengthAdjust,
     lighting_color,
     line_height,
     marker,
@@ -298,6 +302,7 @@ enum {
     points,
     primitiveUnits,
     r,
+    rotate,
     rx,
     ry,
     shape_rendering,
@@ -319,6 +324,7 @@ enum {
     text_align,
     text_anchor,
     text_decoration,
+    textLength,
     text_rendering,
     transform,
     unicode_bidi,

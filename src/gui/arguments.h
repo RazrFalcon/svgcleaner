@@ -23,16 +23,18 @@
 #define ARGUMENTS_H
 
 #include <QtCore/QString>
+#include <QtCore/QPair>
 #include <QtCore/QStringList>
 
-struct ToThread
+typedef QPair<QString,QString> StringPair;
+
+struct ThreadData
 {
-    QString inputFile;
-    QString outputFile;
+    enum CompressType { None, CompressAsOrig, CompressAll };
+    QString id;
     QStringList args;
     QString compressLevel;
-    bool compress;
-    bool decompress;
+    CompressType compressType;
 };
 
 struct SVGInfo
@@ -44,7 +46,7 @@ struct SVGInfo
     int elemInitial;
     int inSize;
     int outSize;
-    quint32 time;
+    quint64 time;
     QString errString;
     QString inPath;
     QString outPath;

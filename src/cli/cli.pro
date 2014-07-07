@@ -30,3 +30,5 @@ HEADERS += \
     svgdom.h \
     tools.h \
     transform.h
+
+include(../3rdparty/systemsemaphore/systemsemaphore.pri)

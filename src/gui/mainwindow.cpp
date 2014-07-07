@@ -19,15 +19,19 @@
 **
 ****************************************************************************/
 
+#include <QtCore/QFileInfo>
+#include <QtCore/QThreadPool>
+#include <QtCore/QTimer>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPixmapCache>
 #include <QtGui/QMenu>
 #include <QtGui/QMessageBox>
 #include <QtGui/QShortcut>
 #include <QtGui/QWheelEvent>
+#include <QtDebug>
 
 #include "aboutdialog.h"
-#include "cleaner.h"
+#include "cleanerthread.h"
 #include "someutils.h"
 #include "thumbwidget.h"
 #include "wizarddialog.h"
@@ -35,6 +39,7 @@
 #include "mainwindow.h"
 
 // FIXME: processing files like image.svg and image.svgz from different threads causes problems
+// TODO: add cleaning stat for each cleaning option
 
 int MainWindow::m_sortType = -1;
 
@@ -50,6 +55,8 @@ MainWindow::MainWindow(QWidget *parent) :
     progressBar->hide();
     itemsScroll->hide();
     actionPause->setVisible(false);
+
+    m_isExitNow = false;
 
     // load settings
     Settings settings;
@@ -70,10 +77,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(cmbSort, SIGNAL(currentIndexChanged(int)), this, SLOT(sortingChanged(int)));
     toolBar->addWidget(cmbSort);
 
-    m_cleaningWatcher = new QFutureWatcher<SVGInfo>(this);
-    connect(m_cleaningWatcher, SIGNAL(resultReadyAt(int)), SLOT(onFileCleaned(int)));
-    connect(m_cleaningWatcher, SIGNAL(finished()), SLOT(onFinished()));
-
     QString suffix = "<br><span style=\"color:#808080;\">%1</span>";
     actionWizard->setToolTip(tr("Open the wizard") + suffix.arg("Ctrl+W"));
     actionStart->setToolTip(tr("Start processing") + suffix.arg("Ctrl+R"));
@@ -88,13 +91,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(quitShortcut, SIGNAL(activated()), qApp, SLOT(quit()));
 
     resize(settings.value(SettingKey::GUI::MainSize, QSize(1000, 650)).toSize());
+
+    QTimer::singleShot(10, actionWizard, SLOT(trigger()));
 }
 
 void MainWindow::on_actionWizard_triggered()
 {
     WizardDialog wizard;
     if (wizard.exec()) {
-        arguments = wizard.threadData();
+        m_threadData = wizard.threadData();
+        m_files = wizard.files();
         actionStart->setEnabled(true);
     }
 }
@@ -102,14 +108,16 @@ void MainWindow::on_actionWizard_triggered()
 void MainWindow::prepareStart()
 {
     QPixmapCache::clear();
+    m_isStop = false;
     m_data.compressMax = 0;
     m_data.compressMin = 99;
     m_data.timeMax = 0;
-    m_data.timeMin = 999999999;
+    m_data.timeMin = ULONG_MAX;
     m_data.inputSize = 0;
     m_data.timeFull = 0;
     m_data.outputSize = 0;
     m_data.pos = 0;
+    m_data.cleaned = 0;
     m_data.crashed = 0;
     removeThumbs();
     enableButtons(false);
@@ -117,7 +125,7 @@ void MainWindow::prepareStart()
     itemsScroll->setMaximum(0);
     itemsScroll->setValue(0);
     itemList.clear();
-    itemList.reserve(arguments.size());
+    itemList.reserve(m_files.size());
     progressBar->setValue(0);
     progressBar->setMaximum(100);
     itemLayout->addStretch(100);
@@ -129,7 +137,7 @@ void MainWindow::prepareStart()
         lbl->setText("0%");
     foreach (QLabel *lbl, gBoxTime->findChildren<QLabel *>(QRegExp("^lblI.*")))
         lbl->setText("000ms");
-    lblITotalFiles->setText(QString::number(arguments.size()));
+    lblITotalFiles->setText(QString::number(m_files.size()));
 }
 
 void MainWindow::on_actionStart_triggered()
@@ -146,32 +154,72 @@ void MainWindow::on_actionStart_triggered()
         enableButtons(false);
         actionPause->setVisible(true);
         actionStart->setVisible(false);
-        m_cleaningWatcher->resume();
+        m_isStop = false;
+
+        foreach (CleanerThread *cleaner, cleanerList)
+            cleaner->invokeStartNext(m_files.at(m_data.pos++));
+
         return;
     }
 
-    if (!arguments.first().args.isEmpty()) {
+    if (!m_threadData.args.isEmpty()) {
         qDebug() << "with keys:";
-        foreach (const QString &key, arguments.first().args)
+        foreach (const QString &key, m_threadData.args)
             qDebug() << key;
     }
 
+    int threadCount = 1;
     Settings settings;
-    if (settings.flag(SettingKey::Wizard::ThreadingEnabled)) {
-        QThreadPool::globalInstance()->setMaxThreadCount(
-                        settings.integer(SettingKey::Wizard::ThreadsCount,
-                                         QThread::idealThreadCount()));
-    } else
-        QThreadPool::globalInstance()->setMaxThreadCount(1);
-    m_cleaningWatcher->setFuture(QtConcurrent::mapped(arguments, &Cleaner::cleanFile));
+    if (settings.flag(SettingKey::Wizard::ThreadingEnabled))
+        threadCount = settings.integer(SettingKey::Wizard::ThreadsCount, QThread::idealThreadCount());
+    QThreadPool::globalInstance()->setMaxThreadCount(threadCount);
+
+    progressBar->setMaximum(m_files.size());
+    for (int i = 0; i < threadCount; ++i) {
+        ThreadData tth = m_threadData;
+        tth.id = QString::number(i);
+
+        QThread *thread = new QThread(this);
+        thread->setObjectName("CleanerThread" + QString::number(i));
+        CleanerThread *cleaner = new CleanerThread(tth);
+        cleanerList << cleaner;
+        connect(cleaner, SIGNAL(cleaned(SVGInfo)), this, SLOT(onFileCleaned(SVGInfo)),
+                Qt::QueuedConnection);
+        cleaner->moveToThread(thread);
+        thread->start();
+        cleaner->invokeStartNext(m_files.at(m_data.pos++));
+    }
 }
 
-void MainWindow::onFileCleaned(int value)
+void MainWindow::onFileCleaned(const SVGInfo &info)
 {
-    SVGInfo info = m_cleaningWatcher->resultAt(value);
-    m_data.pos++;
-    if ((int)(((qreal)m_data.pos/arguments.size()) * 100) > progressBar->value())
-        progressBar->setValue(progressBar->value()+1);
+    if (m_data.pos < m_files.size()) {
+        if (!m_isStop) {
+            CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
+            if (cleaner)
+                cleaner->invokeStartNext(m_files.at(m_data.pos++));
+            else
+                qDebug() << "Warning: sender() is null";
+        }
+    } else {
+        CleanerThread *cleaner = qobject_cast<CleanerThread *>(sender());
+        if (cleaner) {
+#ifdef USE_IPC
+            connect(cleaner, SIGNAL(finished()), this, SLOT(removeCleaner()));
+            QMetaObject::invokeMethod(cleaner, "exit", Qt::QueuedConnection);
+#else
+            removeCleaner(cleaner);
+#endif
+        } else {
+            qDebug() << "Warning: sender() is null";
+        }
+    }
+
+    m_data.cleaned++;
+    if (m_data.cleaned == m_files.size())
+        onFinished();
+
+    progressBar->setValue(progressBar->value()+1);
 
     itemList.append(info);
     if (!info.errString.isEmpty()) {
@@ -204,7 +252,7 @@ void MainWindow::onFileCleaned(int value)
 void MainWindow::createStatistics()
 {
     // files
-    int files = m_data.pos - m_data.crashed;
+    int files = m_data.cleaned - m_data.crashed;
     lblICleaned->setText(QString::number(files));
     lblITotalSizeBefore->setText(SomeUtils::prepareSize(m_data.inputSize));
     lblITotalSizeAfter->setText(SomeUtils::prepareSize(m_data.outputSize));
@@ -217,11 +265,11 @@ void MainWindow::createStatistics()
     lblIMinCompress->setText(QString::number(100-m_data.compressMax, 'f', 2) + "%");
 
     // time
-    lblIFullTime->setText(SomeUtils::prepareTime(totalTime.elapsed()));
+    lblIFullTime->setText(SomeUtils::prepareTime(totalTime.nsecsElapsed()));
     lblIMaxTime->setText(SomeUtils::prepareTime(m_data.timeMax));
     if (files != 0)
-        lblIAverageTime->setText(SomeUtils::prepareTime(m_data.timeFull/files));
-    if (m_data.timeMin != 999999999)
+        lblIAverageTime->setText(SomeUtils::prepareTime(quint64(m_data.timeFull)/files));
+    if (m_data.timeMin != ULONG_MAX)
         lblIMinTime->setText(SomeUtils::prepareTime(m_data.timeMin));
 }
 
@@ -232,7 +280,7 @@ void MainWindow::onFinished()
 
 void MainWindow::on_actionPause_triggered()
 {
-    m_cleaningWatcher->pause();
+    m_isStop = true;
     actionPause->setVisible(false);
     actionStart->setVisible(true);
 }
@@ -242,8 +290,25 @@ void MainWindow::on_actionStop_triggered()
     if (!actionStop->isEnabled())
         return;
     actionPause->setVisible(false);
-    m_cleaningWatcher->cancel();
-    enableButtons(true);
+    m_isStop = true;
+    foreach (CleanerThread *cleaner, cleanerList) {
+        cleaner->forceStop();
+        removeCleaner(cleaner);
+    }
+    onFinished();
+}
+
+void MainWindow::removeCleaner(CleanerThread *cleaner)
+{
+    if (!cleaner)
+        cleaner = qobject_cast<CleanerThread *>(sender());
+    if (!cleaner)
+        return;
+    cleanerList.removeOne(cleaner);
+    cleaner->thread()->quit();
+    cleaner->thread()->wait();
+    delete cleaner->thread();
+    delete cleaner;
 }
 
 void MainWindow::removeThumbs()
@@ -413,21 +478,25 @@ void MainWindow::dropEvent(QDropEvent *event)
     WizardDialog wizard;
     wizard.setPathList(paths);
     if (wizard.exec()) {
-        arguments = wizard.threadData();
+        m_threadData = wizard.threadData();
         actionStart->setEnabled(true);
     }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (m_cleaningWatcher->isRunning()) {
+    if (!cleanerList.isEmpty()) {
         int ans = QMessageBox::question(this, "SVG Cleaner",
-                                    tr("Cleaning is not finished.\nDid you really want to exit?"),
-                                    QMessageBox::Yes | QMessageBox::No);
-        if (ans == QMessageBox::Yes)
-            m_cleaningWatcher->cancel();
-        else
+                                        tr("Cleaning is not finished.\nDid you really want to exit?"),
+                                        QMessageBox::Yes | QMessageBox::No);
+        if (ans == QMessageBox::Yes) {
+            foreach (CleanerThread *cleaner, cleanerList) {
+                cleaner->forceStop();
+                removeCleaner(cleaner);
+            }
+        } else {
             event->ignore();
+        }
     }
     Settings().setValue(SettingKey::GUI::MainSize, size());
 }

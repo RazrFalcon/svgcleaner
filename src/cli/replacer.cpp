@@ -22,13 +22,11 @@
 #include "paths.h"
 #include "replacer.h"
 
-// TODO: remove spaces at end of line in text elem
 // TODO: replace equal 'fill', 'stroke', 'stop-color', 'flood-color' and 'lighting-color' attr
 //       with 'color' attr
 //       addon_the_couch.svg
 // TODO: If 'x1' = 'x2' and 'y1' = 'y2', then the area to be painted will be painted as
 //       a single color using the color and opacity of the last gradient stop.
-// TODO: merge "tspan" elements with similar styles
 // TODO: try to recalculate 'userSpaceOnUse' to 'objectBoundingBox'
 // TODO: maybe move frequently used styles to CDATA
 
@@ -102,7 +100,7 @@ void Replacer::processPaths()
         }
 
         if (!removed) {
-            if (elem.hasChildElement())
+            if (elem.hasChildrenElement())
                 list << elem.childElements();
         }
     }
@@ -226,7 +224,7 @@ public:
     QString tagName;
     IntHash attrHash;
     SvgElement elem;
-    bool operator ==(const EqElement &elem) {
+    bool operator ==(const EqElement &elem) const {
         return elem.elem == this->elem;
     }
 };
@@ -273,7 +271,7 @@ void Replacer::replaceEqualElementsByUse()
             e.elem = elem;
             elemList << e;
         }
-        if (elem.hasChildElement())
+        if (elem.hasChildrenElement())
             list << elem.childElements();
     }
 
@@ -342,7 +340,7 @@ void Replacer::moveStyleFromUsedElemToUse()
         SvgElement elem = list.takeFirst();
         if (elem.tagName() == E_use)
             elemXLink.insertMulti(elem.xlinkId(), elem);
-        if (elem.hasChildElement())
+        if (elem.hasChildrenElement())
             list << elem.childElements();
     }
 
@@ -399,7 +397,7 @@ void Replacer::moveStyleFromUsedElemToUse()
             }
         }
 
-        if (elem.hasChildElement())
+        if (elem.hasChildrenElement())
             list << elem.childElements();
     }
 }
@@ -548,13 +546,126 @@ IntHash splitStyle(const QString &style)
             str++;
 
         // add to hash
-        if (!name.isEmpty() && name.at(0) != signChar)
-            hash.insert(attrStrToId(name), value);
+        if (!name.isEmpty() && name.at(0) != signChar) {
+            int attrId = attrStrToId(name);
+            if (attrId != -1)
+                hash.insert(attrStrToId(name), value);
+        }
     }
     return hash;
 }
 
-// TODO: style can be set in ENTITY (adobe_2.svg)
+/*
+ * 'xmlns' links and element styles can be set in DTD, ENTITY.
+ * Mostly used by Adobe Illustrator.
+ *
+ * For example:
+ *     <!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+ *     <!ENTITY st1 "fill:url(#SVGID_1_);">
+ *
+ * Only link and style supported.
+ */
+void Replacer::convertEntityData()
+{
+    SvgNodeList nodeList = document().childNodes();
+    QString text;
+    while (!nodeList.isEmpty()) {
+        SvgNode node = nodeList.takeFirst();
+        if (node.isText()) {
+            QString dtdText = node.toText().text();
+            if (!dtdText.startsWith("<!DOCTYPE"))
+                break;
+            text = dtdText;
+            break;
+        }
+    }
+    if (text.isEmpty() || !text.contains('['))
+        return;
+
+    const QChar *str = text.constData();
+    const QChar *end = str + text.size();
+
+    StringHash entityHash;
+
+    // jump to '['
+    while (*str != '[')
+        str++;
+    str++;
+    while (isSpace(str->unicode()))
+        str++;
+
+    while (str && str != end) {
+        if (*str != '<')
+            break;
+
+        // skip '!ENTITY'
+        while (!isSpace(str->unicode()))
+            str++;
+        str++;
+
+        // parse name
+        int len = 0;
+        while (!isSpace(str->unicode())) {
+            len++;
+            str++;
+        }
+        QString name = QString(str-len, len);
+
+        // skip unnecessary data
+        while (isSpace(str->unicode()))
+            str++;
+        if (*str != '\"')
+            break;
+        str++;
+
+        // parse data
+        len = 0;
+        while (*str != '\"') {
+            len++;
+            str++;
+        }
+        QString data = QString(str-len, len);
+
+        // skip unnecessary data
+        str++;
+        while (isSpace(str->unicode()))
+            str++;
+        if (*str != '>')
+            break;
+        str++;
+        while (isSpace(str->unicode()))
+            str++;
+
+        entityHash.insert("&" + name + ";", data);
+    }
+
+    if (entityHash.isEmpty())
+        return;
+
+    // replace styles
+    element_loop(svgElement()) {
+        if (elem.hasAttribute(AttrId::style)) {
+            QString value = elem.attribute(AttrId::style);
+            foreach (const QString &name, entityHash.keys()) {
+                if (value.contains(name)) {
+                    value.replace(name, entityHash.value(name));
+                }
+            }
+            elem.setAttribute(AttrId::style, value);
+        }
+        nextElement(elem, root);
+    }
+
+    // replace links
+    foreach (const QString &attrName, svgElement().extAttributesList()) {
+        if (attrName.startsWith("xmlns")) {
+            QString value = svgElement().attribute(attrName);
+            if (entityHash.keys().contains(value))
+                svgElement().setAttribute(attrName, entityHash.value(value));
+        }
+    }
+}
+
 // TODO: rewrite parsing (atlas.svg)
 void Replacer::convertCDATAStyle()
 {
@@ -675,15 +786,17 @@ void Replacer::prepareDefs()
 
 void Replacer::fixWrongAttr()
 {
-    // fix bad Adobe Illustrator SVG exporting
-    if (svgElement().attribute("xmlns") == "&ns_svg;")
-        svgElement().setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    if (svgElement().attribute("xmlns:xlink") == "&ns_xlink;")
-        svgElement().setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-
     IntList tmpList = IntList() << AttrId::fill << AttrId::stroke;
     element_loop(svgElement()) {
         QString currTag = elem.tagName();
+
+        // remove single quotes from 'font-family' value
+        if (elem.hasAttribute(AttrId::font_family)) {
+            if (elem.attribute(AttrId::font_family).contains('\'')) {
+                elem.setAttribute(AttrId::font_family,
+                                  elem.attribute(AttrId::font_family).remove('\''));
+            }
+        }
 
         // remove wrong fill and stroke attributes like:
         // fill="url(#radialGradient001) rgb(0, 0, 0)"
@@ -702,7 +815,7 @@ void Replacer::fixWrongAttr()
 
         // gradient with stop elements does not need xlink:href attribute
         if (currTag == E_linearGradient || currTag == E_radialGradient) {
-            if (elem.hasChildElement() && elem.hasAttribute(AttrId::xlink_href))
+            if (elem.hasChildrenElement() && elem.hasAttribute(AttrId::xlink_href))
                 elem.removeAttribute(AttrId::xlink_href);
         }
 
@@ -796,7 +909,7 @@ void Replacer::finalFixes()
         if (Keys.flag(Key::RemoveInvisibleElements)) {
             // remove empty defs
             if (elem.tagName() == E_defs) {
-                if (!elem.hasChildElement()) {
+                if (!elem.hasChildrenElement()) {
                     SvgElement tElem = prevElement(elem);
                     elem.parentElement().removeChild(elem);
                     elem = tElem;
@@ -917,6 +1030,151 @@ void Replacer::calcElemAttrCount(const QString &text)
     } else {
         qDebug("%u", elemCount);
         qDebug("%u", attrCount);
+    }
+}
+
+struct AttrData {
+    int count;
+    QString value;
+};
+
+// TODO: remove 'tspan' without attributes
+void Replacer::groupTextElementsStyles()
+{
+    IntList importantAttrs;
+    importantAttrs << AttrId::x << AttrId::y << AttrId::dx << AttrId::dy << AttrId::rotate
+                   << AttrId::textLength << AttrId::lengthAdjust;
+
+    element_loop(svgElement()) {
+        nextElement(elem, root);
+
+        if (elem.tagName() != E_text && elem.tagName() != E_textPath)
+            continue;
+        if (!elem.hasChildren()) {
+            // remove 'text' element without children
+            elem = elem.parentElement().removeChild(elem, true);
+            continue;
+        }
+
+        // 'text' with only 'tspan' children is supported
+        bool isOnlyTspan = true;
+        SvgElement tspan = elem.firstChildElement();
+        SvgElement tspan_root = elem;
+        while (!tspan.isNull()) {
+            if (tspan.tagName() != E_tspan) {
+                isOnlyTspan = false;
+                break;
+            }
+            nextElement(tspan, tspan_root);
+        }
+        if (!isOnlyTspan)
+            continue;
+
+        // apply transform
+        if (elem.hasAttribute(AttrId::transform) && elem.tagName() == E_text) {
+            Transform ts(elem.attribute(AttrId::transform));
+            Transform::Types tsType = ts.type();
+            tsType &= ~(Transform::ProportionalScale);
+            if (tsType == Transform::Translate) {
+                ts.setOldXY(elem.doubleAttribute(AttrId::x), elem.doubleAttribute(AttrId::y));
+                elem.setAttribute(AttrId::x, roundNumber(ts.newX()));
+                elem.setAttribute(AttrId::y, roundNumber(ts.newY()));
+                elem.removeAttribute(AttrId::transform);
+
+                tspan = elem.firstChildElement();
+                tspan_root = elem;
+                while (!tspan.isNull()) {
+                    ts.setOldXY(tspan.doubleAttribute(AttrId::x), tspan.doubleAttribute(AttrId::y));
+                    tspan.setAttribute(AttrId::x, roundNumber(ts.newX()));
+                    tspan.setAttribute(AttrId::y, roundNumber(ts.newY()));
+                    nextElement(tspan, tspan_root);
+                }
+            }
+        }
+
+        if (elem.hasText())
+            continue;
+
+        // if first 'tspan' has the same position as parent 'text'
+        // remove it from 'tspan'
+        SvgElement firstTspan = elem.firstChildElement();
+        if (elem.tagName() == E_text) {
+            if (firstTspan.attribute(AttrId::x) == elem.attribute(AttrId::x))
+                firstTspan.removeAttribute(AttrId::x);
+            if (firstTspan.attribute(AttrId::y) == elem.attribute(AttrId::y))
+                firstTspan.removeAttribute(AttrId::y);
+        }
+
+        // if 'text' element has only one 'tspan' child - remove this 'tspan'
+        // and move text and attributes to parent 'text' element
+        if (   elem.childElementCount() == 1
+            && firstTspan.tagName() == E_tspan
+            && !firstTspan.hasChildrenElement())
+        {
+            foreach (const int &attrId, firstTspan.baseAttributesList())
+                elem.setAttribute(attrId, firstTspan.attribute(attrId));
+
+            SvgText textElem = document().createText(firstTspan.text());
+            elem.appendChild(textElem);
+            elem.removeChild(firstTspan);
+            if (elem.tagName() == E_text)
+                continue;
+        }
+
+        int tspanCount = 0;
+
+        // find all uniq styles and calc it's count
+        tspan = elem.firstChildElement();
+        tspan_root = elem;
+        QHash<int,AttrData> attrCountHash;
+        while (!tspan.isNull()) {
+            tspanCount++;
+            foreach (const int &attrId, tspan.baseAttributesList()) {
+                if (importantAttrs.contains(attrId))
+                    continue;
+
+                if (   attrCountHash.contains(attrId)
+                    && attrCountHash.value(attrId).value == tspan.attribute(attrId))
+                {
+                    AttrData data = attrCountHash.value(attrId);
+                    data.count++;
+                    attrCountHash.insert(attrId, data);
+                } else {
+                    AttrData data;
+                    data.count = 1;
+                    data.value = tspan.attribute(attrId);
+                    attrCountHash.insert(attrId, data);
+                }
+            }
+            nextElement(tspan, tspan_root);
+        }
+
+        // if all 'tspan' elements has equal attribute - move it to parent 'text' element
+        foreach (const int &attrId, attrCountHash.keys()) {
+            if (attrCountHash.value(attrId).count == tspanCount) {
+                tspan = elem.firstChildElement();
+                tspan_root = elem;
+                elem.setAttribute(attrId, tspan.attribute(attrId));
+                while (!tspan.isNull()) {
+                    tspan.removeAttribute(attrId);
+                    nextElement(tspan, tspan_root);
+                }
+                attrCountHash.remove(attrId);
+            }
+        }
+
+        // check is 'text' has only one 'textPath' child
+        if (elem.tagName() == E_textPath) {
+            if (elem.parentElement().childElementCount() == 1) {
+                SvgElement parentElem = elem.parentElement();
+                foreach (const int &attrId, elem.baseAttributesList()) {
+                    if (attrId == AttrId::xlink_href)
+                        continue;
+                    parentElem.setAttribute(attrId, elem.attribute(attrId));
+                    elem.removeAttribute(attrId);
+                }
+            }
+        }
     }
 }
 
@@ -1138,7 +1396,7 @@ void Replacer::mergeGradients()
                     linkList << id;
             }
         }
-        if (currElem.hasChildElement())
+        if (currElem.hasChildrenElement())
             list << currElem.childElements();
     }
 
@@ -1147,12 +1405,12 @@ void Replacer::mergeGradients()
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if ((currElem.tagName() == E_radialGradient || currElem.tagName() == E_linearGradient)
-                && currElem.hasAttribute(AttrId::xlink_href) && !currElem.hasChildElement()) {
+                && currElem.hasAttribute(AttrId::xlink_href) && !currElem.hasChildrenElement()) {
             QString currLink = currElem.xlinkId();
             if (linkList.count(currLink) == 1) {
                 SvgElement lineGradElem = findElement(currLink);
                 if (!lineGradElem.isNull()) {
-                    if (lineGradElem.hasChildElement()) {
+                    if (lineGradElem.hasChildrenElement()) {
                         foreach (const SvgElement &elem, lineGradElem.childElements())
                             currElem.appendChild(elem);
                         xlinkHash.insert(lineGradElem.id(), currElem.id());
@@ -1193,7 +1451,7 @@ void Replacer::mergeGradientsWithEqualStopElem()
     while (!list.isEmpty()) {
         SvgElement currElem = list.takeFirst();
         if ((currElem.tagName() == E_linearGradient || currElem.tagName() == E_radialGradient)
-            && currElem.hasChildElement()) {
+            && currElem.hasChildrenElement()) {
             LineGradStruct lgs;
             lgs.elem = currElem;
             lgs.id = currElem.id();
@@ -1262,7 +1520,7 @@ void Replacer::calcElementsBoundingBox()
         }
         // all other basic shapes bounding boxes are calculated in Paths class
 
-        if (elem.hasChildElement())
+        if (elem.hasChildrenElement())
             list << elem.childElements();
     }
 }
@@ -1469,7 +1727,7 @@ QHash<QString,int> Replacer::calcDefsUsageCount()
                 idHash.insert(xlink, 1);
         }
 
-        if (elem.hasChildElement())
+        if (elem.hasChildrenElement())
             list << elem.childElements();
     }
     return idHash;
@@ -1516,13 +1774,15 @@ void Replacer::applyTransformToDefs()
                 }
             }
         }
-        if (elem.hasChildElement())
+        if (elem.hasChildrenElement())
             list << elem.childElements();
     }
 }
 
 void Replacer::applyTransformToShapes()
 {
+    // TODO: add another shapes
+
     QHash<QString,int> defsHash = calcDefsUsageCount();
 
     SvgElementList list = svgElement().childElements();
@@ -1588,7 +1848,7 @@ void Replacer::applyTransformToShapes()
             }
         }
 
-        if (elem.hasChildElement())
+        if (elem.hasChildrenElement())
             list << elem.childElements();
     }
 }

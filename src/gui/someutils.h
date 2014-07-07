@@ -29,6 +29,6 @@ class SomeUtils
 public:
     explicit SomeUtils() {}
     static QString prepareSize(const quint32 bytes);
-    static QString prepareTime(const quint64 ms);
+    static QString prepareTime(const quint64 nsec);
 };
 #endif // SOMEUTILS_H

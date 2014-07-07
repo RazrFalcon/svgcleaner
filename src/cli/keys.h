@@ -75,6 +75,7 @@ enum Key {
     RemoveStrokeProps,
     RemoveFillProps,
     RemoveUnusedXLinks,
+    GroupTextStyles,
     GroupElemByStyle,
     SimplifyTransformMatrix,
     ApplyTransformsToDefs,
@@ -141,6 +142,7 @@ namespace KeyStr {
     extern const QString RemoveStrokeProps;
     extern const QString RemoveFillProps;
     extern const QString RemoveUnusedXLinks;
+    extern const QString GroupTextStyles;
     extern const QString GroupElemByStyle;
     extern const QString JoinStyleAttributes;
     extern const QString SimplifyTransformMatrix;

@@ -37,7 +37,7 @@
 IconsWidget::IconsWidget(QWidget *parent) :
     QWidget(parent)
 {
-    toolTip = new QLabel();
+    toolTip = new QLabel(this);
     toolTip->setWindowFlags(Qt::ToolTip);
     setMouseTracking(true);
     setFixedHeight(100);

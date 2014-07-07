@@ -1015,6 +1015,8 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
             // do not save attributes with empty value
             if (!it.value().isEmpty()) {
                 s << spaceChar;
+                Q_ASSERT(attrIdToStr(it.key()).isEmpty() == false);
+                Q_ASSERT(it.value().isEmpty() == false);
                 s << attrIdToStr(it.key()) << startAttr << it.value() << quoteChar;
             }
         }
@@ -1024,6 +1026,8 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
             // do not save attributes with empty value
             if (!it2.value().isEmpty()) {
                 s << spaceChar;
+                Q_ASSERT(it2.key().isEmpty() == false);
+                Q_ASSERT(it2.value().isEmpty() == false);
                 s << it2.key() << startAttr << it2.value() << quoteChar;
             }
         }
@@ -1135,6 +1139,7 @@ QString SvgElement::extAttribute(const QString &name, const QString &defValue) c
 
 void SvgElement::setAttribute(const int &attrId, const QString &value)
 {
+    Q_ASSERT(attrId != -1);
     if (!impl)
         return;
     if (attrId == AttrId::id)
@@ -1269,7 +1274,7 @@ SvgElement SvgElement::removeChild(const SvgElement &oldChild, bool returnPrevio
     return ret;
 }
 
-bool SvgElement::hasChildElement() const
+bool SvgElement::hasChildrenElement() const
 {
     if (!impl)
         return false;
@@ -1816,9 +1821,9 @@ SvgText SvgDocument::createText(const QString &text)
 
 #undef IMPL
 
-inline void nextElement(SvgElement &elem, const SvgElement &root, bool ignoreChild)
+void nextElement(SvgElement &elem, const SvgElement &root, bool ignoreChild)
 {
-    if (elem.hasChildElement() && !ignoreChild) {
+    if (elem.hasChildrenElement() && !ignoreChild) {
         elem = elem.firstChildElement();
         return;
     }

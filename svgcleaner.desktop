@@ -1,6 +1,5 @@
 [Desktop Entry]
 Name=SVG Cleaner
-Version=0.6
 GenericName=SVG Cleaning Program
 Comment=Batch, tunable, crossplatform SVG cleaning program
 Exec=svgcleaner-gui

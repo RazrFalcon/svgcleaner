@@ -40,6 +40,7 @@ public:
     void processPaths();
     void fixWrongAttr();
     void convertUnits();
+    void convertEntityData();
     void convertCDATAStyle();
     void prepareDefs();
     void splitStyleAttributes();
@@ -51,6 +52,7 @@ public:
     void finalFixes();
     void trimIds();
     void calcElemAttrCount(const QString &text);
+    void groupTextElementsStyles();
     void groupElementsByStyles(SvgElement parentElem = SvgElement());
     void markUsedElements();
     void applyTransformToDefs();

@@ -22,22 +22,24 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtCore>
+#include <QtCore/QElapsedTimer>
 #include <QtGui/QComboBox>
 #include <QtGui/QMainWindow>
 
+#include "cleanerthread.h"
 #include "arguments.h"
 #include "ui_mainwindow.h"
 
 struct ProcessData {
-    quint32 timeFull;
-    quint32 pos;
+    int pos;
+    int cleaned;
     float compressMax;
     float compressMin;
     quint32 inputSize;
     quint32 outputSize;
-    quint32 timeMax;
-    quint32 timeMin;
+    quint64 timeFull;
+    quint64 timeMax;
+    quint64 timeMin;
     quint32 crashed;
 };
 
@@ -49,12 +51,15 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 
 private:
+    bool m_isStop;
+    bool m_isExitNow;
     ProcessData m_data;
     QComboBox *cmbSort;
     QList<SVGInfo> itemList;
     QElapsedTimer totalTime;
-    QList<ToThread> arguments;
-    QFutureWatcher<SVGInfo> *m_cleaningWatcher;
+    ThreadData m_threadData;
+    QList<StringPair> m_files;
+    QList<CleanerThread *> cleanerList;
     static int m_sortType;
 
     void createStatistics();
@@ -72,12 +77,13 @@ private slots:
     void on_itemsScroll_valueChanged(int value);
     void prepareStart();
     void sortingChanged(int value);
-    void onFileCleaned(int value);
+    void onFileCleaned(const SVGInfo &info);
     void onFinished();
+    void removeCleaner(CleanerThread *cleaner = 0);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
-    void closeEvent(QCloseEvent *);
+    void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent *);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);

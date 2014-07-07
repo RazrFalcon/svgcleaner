@@ -344,18 +344,34 @@ void WizardDialog::on_buttonBox_clicked(QAbstractButton *button)
     }
 }
 
-QList<ToThread> WizardDialog::threadData()
+ThreadData WizardDialog::threadData() const
 {
-    QList<ToThread> list;
-    QString compressLevel = compressValue();
-    bool ok = false;
-    QStringList args = argsList(&ok);
+    ThreadData thData;
+    bool isCustom = false;
+    thData.args = argsList(&isCustom);
+    thData.compressLevel = compressValue();
 
+    thData.compressType = ThreadData::None;
+    if (gBoxCompress->isChecked()) {
+        if (rBtnSaveSuffix->isChecked()) {
+            thData.compressType = ThreadData::CompressAsOrig;
+        } else if (rBtnCompressAll->isChecked()) {
+            thData.compressType = ThreadData::CompressAll;
+        }
+    }
+    return thData;
+}
+
+QList<StringPair> WizardDialog::files() const
+{
+    QList<StringPair> list;
     foreach (const QString &rootPath, treeView->rootList()) {
         foreach (const QString &filePath, treeView->rootFiles(rootPath)) {
-            ToThread tth;
+            QString inputFile;
+            QString outputFile;
+
             QFileInfo fileInfo(filePath);
-            tth.inputFile = fileInfo.absoluteFilePath();
+            inputFile = fileInfo.absoluteFilePath();
 
             if (radioBtn1->isChecked()) {
                 QString path = lineEditOutDir->text() + "/";
@@ -366,35 +382,23 @@ QList<ToThread> WizardDialog::threadData()
                 path = QFileInfo(path).absoluteFilePath();
                 if (path.endsWith("svgz"))
                     path.chop(1);
-                tth.outputFile = path;
+                outputFile = path;
             } else if (radioBtn2->isChecked()) {
-                tth.outputFile = fileInfo.absolutePath()
+                outputFile = fileInfo.absolutePath()
                                  + "/" + lineEditPrefix->text()
                                  + fileInfo.baseName() + lineEditSuffix->text() + ".svg";
             } else if (radioBtn3->isChecked()) {
-                tth.outputFile = tth.inputFile;
-                if (tth.outputFile.endsWith("svgz"))
-                    tth.outputFile.chop(1);
+                outputFile = inputFile;
+                if (outputFile.endsWith("svgz"))
+                    outputFile.chop(1);
             }
-            tth.compress = false;
-            if (gBoxCompress->isChecked()) {
-                if (rBtnSaveSuffix->isChecked()) {
-                    if (fileInfo.suffix().toLower() == "svgz")
-                        tth.compress = true;
-                } else if (rBtnCompressAll->isChecked()) {
-                    tth.compress = true;
-                }
-            }
-            tth.decompress    = tth.inputFile.endsWith("svgz");
-            tth.args          = args;
-            tth.compressLevel = compressLevel;
-            list << tth;
+            list << qMakePair(inputFile, outputFile);
         }
     }
     return list;
 }
 
-QStringList WizardDialog::argsList(bool *isCustom)
+QStringList WizardDialog::argsList(bool *isCustom) const
 {
     QStringList tmpList;
 
@@ -458,7 +462,7 @@ QStringList WizardDialog::argsList(bool *isCustom)
     return tmpList;
 }
 
-QString WizardDialog::compressValue()
+QString WizardDialog::compressValue() const
 {
     int currPos = cmbBoxCompress->currentIndex();
     switch (currPos) {

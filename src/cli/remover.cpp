@@ -22,7 +22,6 @@
 #include "remover.h"
 
 // TODO: remove elements not included in selected spec, like flow* elements
-// TODO: remove "tspan" without attributes
 // TODO: remove "symbol"
 // TODO: remove elem from defs if it used only by one use elem
 
@@ -312,7 +311,7 @@ void Remover::removeDuplicatedDefs()
                 }
             }
 
-            DefsElemStruct es = { elem, tagName, elem.hasChildElement(), map, tmpList, elem.id() };
+            DefsElemStruct es = { elem, tagName, elem.hasChildrenElement(), map, tmpList, elem.id() };
             elemStructList << es;
         }
     }
@@ -549,7 +548,7 @@ void Remover::removeElements()
                 QString currTag = currElem.tagName();
                 if (   (currElem.isContainer()
                         || currTag == E_flowRegion)
-                    && !currElem.hasChildElement()
+                    && !currElem.hasChildrenElement()
                     && currTag != E_glyph
                     && currTag != E_defs
                     && Keys.flag(Key::RemoveEmptyContainers))
@@ -599,7 +598,7 @@ void Remover::removeElements()
                         removeThisNode = true;
                     else if ((     currTag == E_linearGradient
                                 || currTag == E_radialGradient)
-                             && !currElem.hasChildElement()
+                             && !currElem.hasChildrenElement()
                              && !currElem.hasAttribute(AttrId::xlink_href)) {
                         removeThisNode = true;
                     } else if (    currTag == E_image
@@ -768,7 +767,7 @@ bool Remover::isElementInvisible(SvgElement &elem)
             return true;
 
     // remove "switch" with no attributes or with only A_id attribute
-    if (tagName == E_switch && !elem.hasChildElement()) {
+    if (tagName == E_switch && !elem.hasChildrenElement()) {
         if (elem.attributesCount() == 0)
             return true;
         else if (elem.hasAttribute(AttrId::id) && elem.attributesCount() == 1)
@@ -853,6 +852,13 @@ void Remover::removeAttributes()
             // TODO: svg do not have 'desc' attribute, check why it's needed
 //                if (attrList.contains(AttrId::desc))
 //                    attrList.removeOne(AttrId::desc);
+
+            // 'text-align' is not svg attribute
+            if (elem.hasAttribute(AttrId::text_align)) {
+                if (!elem.hasAttribute(AttrId::text_anchor))
+                    elem.setAttribute(AttrId::text_anchor, elem.attribute(AttrId::text_align));
+                elem.removeAttribute(AttrId::text_align);
+            }
 
             // xlink:href could not contains uri with spaces
             if (elem.hasAttribute(AttrId::xlink_href)) {
@@ -1020,7 +1026,7 @@ void Remover::cleanPresentationAttributes(SvgElement parent)
         }
         foreach (const int &attrId, hash.keys())
             elem.setAttribute(attrId, hash.value(attrId));
-        if (elem.hasChildElement())
+        if (elem.hasChildrenElement())
             cleanPresentationAttributes(elem);
         elem = elem.nextSiblingElement();
     }
@@ -1364,7 +1370,7 @@ void Remover::ungroupAElement()
             elem.clear();
         }
         if (!elem.isNull())
-            if (elem.hasChildElement())
+            if (elem.hasChildrenElement())
                 list << elem.childElements();
     }
 }
@@ -1383,7 +1389,7 @@ void _setupTransformForBBox(const SvgElement &elem, const QStringList &trList)
             if (child.hasAttribute(AttrId::transform))
                 tmpTrList << child.attribute(AttrId::transform);
             child.setAttribute(AttrId::bbox_transform, tmpTrList.join(" "));
-        } else if (child.hasChildElement())
+        } else if (child.hasChildrenElement())
             _setupTransformForBBox(child, trList);
         child = child.nextSiblingElement();
     }
@@ -1471,7 +1477,7 @@ void Remover::removeElementsOutsideTheViewbox()
             elem.removeAttribute(AttrId::bbox_transform);
         }
         if (!elem.isNull())
-            if (elem.hasChildElement())
+            if (elem.hasChildrenElement())
                 list << elem.childElements();
     }
 }

@@ -64,6 +64,7 @@ namespace KeyStr {
     const QString RemoveStrokeProps           = "--remove-stroke-props";
     const QString RemoveFillProps             = "--remove-fill-props";
     const QString RemoveUnusedXLinks          = "--remove-unused-xlinks";
+    const QString GroupTextStyles             = "--group-text-styles";
     const QString GroupElemByStyle            = "--group-elts-by-styles";
     const QString JoinStyleAttributes         = "--join-style-atts";
     const QString SimplifyTransformMatrix     = "--simplify-transform-matrix";
@@ -200,6 +201,8 @@ void Keys::prepareDescription()
                     tr("Remove fill properties when no filling"));
     descHash.insert(Key::RemoveUnusedXLinks,
                     tr("Remove XLinks which pointed to nonexistent elements"));
+    descHash.insert(Key::GroupTextStyles,
+                    tr("Group text style attributes"));
     descHash.insert(Key::GroupElemByStyle,
                     tr("Group elements by style properties"));
     descHash.insert(Key::JoinStyleAttributes,
@@ -292,6 +295,7 @@ QList<int> Keys::attributesKeysId()
         << Key::RemoveStrokeProps
         << Key::RemoveFillProps
         << Key::RemoveUnusedXLinks
+        << Key::GroupTextStyles
         << Key::GroupElemByStyle
         << Key::SimplifyTransformMatrix
         << Key::ApplyTransformsToDefs
@@ -417,6 +421,7 @@ QStringList &Keys::allKeys()
         << KeyStr::RemoveStrokeProps
         << KeyStr::RemoveFillProps
         << KeyStr::RemoveUnusedXLinks
+        << KeyStr::GroupTextStyles
         << KeyStr::GroupElemByStyle
         << KeyStr::SimplifyTransformMatrix
         << KeyStr::ApplyTransformsToDefs

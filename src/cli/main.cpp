@@ -21,6 +21,12 @@
 
 #include <QDir>
 
+#ifdef USE_IPC
+#include <QSharedMemory>
+#include <QBuffer>
+#include "../3rdparty/systemsemaphore/systemsemaphore.h"
+#endif
+
 #include "remover.h"
 #include "replacer.h"
 
@@ -142,6 +148,7 @@ void processFile(const QString &inPath, const QString &outPath)
     // TODO: fix double clean issues
 
     // mandatory fixes used to simplify subsequent functions
+    replacer.convertEntityData();
     replacer.splitStyleAttributes();
     // TODO: add key
     replacer.convertCDATAStyle();
@@ -187,6 +194,8 @@ void processFile(const QString &inPath, const QString &outPath)
         replacer.moveStyleFromUsedElemToUse();
     if (Keys.flag(Key::RemoveOutsideElements))
         remover.removeElementsOutsideTheViewbox();
+    if (Keys.flag(Key::GroupTextStyles))
+        replacer.groupTextElementsStyles();
     if (Keys.flag(Key::GroupElemByStyle))
         replacer.groupElementsByStyles();
     if (Keys.flag(Key::ApplyTransformsToDefs))
@@ -307,6 +316,32 @@ QStringList arguments(int &argc, char **argv)
 }
 #endif
 
+#ifdef USE_IPC
+SystemSemaphore *semaphore2 = 0;
+QString m_log;
+void slaveMessageOutput(QtMsgType type, const char *msg)
+{
+    switch (type) {
+    case QtDebugMsg:
+        m_log += QString(msg) + "\n";
+        break;
+    case QtWarningMsg:
+        m_log += QString(msg) + "\n";
+        break;
+    case QtCriticalMsg:
+        m_log += QString(msg) + "\n";
+        break;
+    case QtFatalMsg:
+        fprintf(stderr, "%s\n", msg);
+        // emit to 'gui' that we crashed
+        // crash will be detected by timeout, but this way is much faster
+        if (semaphore2)
+            semaphore2->release();
+        abort();
+    }
+}
+#endif
+
 int main(int argc, char *argv[])
 {
 #ifdef Q_OS_UNIX
@@ -317,31 +352,92 @@ int main(int argc, char *argv[])
     // remove executable path
     argList.removeFirst();
 
-    if (argList.contains("-v") || argList.contains("--version")) {
+    if (argList.contains(QL1S("-v")) || argList.contains(QL1S("--version"))) {
         qDebug() << "0.7.0";
         return 0;
     }
 
-    if (argList.contains("-h") || argList.contains("--help") || argList.size() < 2) {
+    if (argList.contains(QL1S("-h")) || argList.contains(QL1S("--help")) || argList.size() < 2) {
         showHelp();
         return 0;
     }
 
-    if (argList.contains("--info") && argList.size() == 2) {
+    if (argList.contains(QL1S("--info")) && argList.size() == 2) {
         showPresetInfo(argList.at(1));
         return 0;
     }
 
-    QString inputFile  = argList.takeFirst();
-    QString outputFile = argList.takeFirst();
+#ifdef USE_IPC
+    if (argList.first() == QL1S("--slave")) {
+        argList.removeFirst();
+        QString id = argList.takeFirst();
+        QSharedMemory sharedMemory("SvgCleanerMem_" + id);
+        SystemSemaphore semaphore1("SvgCleanerSemaphore1_" + id);
+        semaphore2 = new SystemSemaphore("SvgCleanerSemaphore2_" + id);
 
-    if (!QFile(inputFile).exists())
-        qFatal("Error: input file does not exist");
-    if (!QFileInfo(outputFile).absoluteDir().exists())
-        qFatal("Error: output folder does not exist");
+        if (!sharedMemory.attach())
+            qFatal("Error: unable to attach to shared memory segment.");
 
-    Keys.parseOptions(argList);
-    processFile(inputFile, outputFile);
+        qInstallMsgHandler(slaveMessageOutput);
+
+        Keys.parseOptions(argList);
+
+        // emit to 'gui' that 'cli' ready to clean files
+        semaphore2->release();
+
+        while (true) {
+            // wait while 'gui' set paths to shared memory
+            if (!semaphore1.acquire())
+                break;
+
+            // read shared memory
+            QBuffer buffer;
+            QDataStream in(&buffer);
+            QString inFile;
+            QString outFile;
+            buffer.setData((char*)sharedMemory.constData(), sharedMemory.size());
+            buffer.open(QBuffer::ReadWrite);
+            in >> inFile;
+            in >> outFile;
+
+            // if both paths is empty - this is signal to stop 'cli'
+            if (inFile.isEmpty() && outFile.isEmpty()) {
+                semaphore2->release();
+                break;
+            }
+
+            m_log.clear();
+
+            // clean svg
+            processFile(inFile, outFile);
+
+            // write to shared memory
+            buffer.seek(0);
+            QDataStream out(&buffer);
+            out << m_log;
+            int size = buffer.size();
+            char *to = (char*)sharedMemory.data();
+            const char *from = buffer.data().data();
+            memcpy(to, from, qMin(sharedMemory.size(), size));
+
+            // emit to 'gui' that file was cleaned
+            semaphore2->release();
+        }
+    }
+    else
+#endif
+    {
+        QString inputFile  = argList.takeFirst();
+        QString outputFile = argList.takeFirst();
+
+        if (!QFile(inputFile).exists())
+            qFatal("Error: input file does not exist");
+        if (!QFileInfo(outputFile).absoluteDir().exists())
+            qFatal("Error: output folder does not exist");
+
+        Keys.parseOptions(argList);
+        processFile(inputFile, outputFile);
+    }
 
     return 0;
 }

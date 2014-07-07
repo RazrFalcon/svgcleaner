@@ -28,7 +28,7 @@ QString SomeUtils::prepareSize(const quint32 bytes)
 {
     qreal size = bytes;
     int i = 0;
-    while (size > 1024 && i < 2) {
+    while (size > 1024.0 && i < 2) {
         size = size / 1024.0;
         i++;
     }
@@ -37,10 +37,10 @@ QString SomeUtils::prepareSize(const quint32 bytes)
     return QString::number(size, 'f', 1) + " " + list.at(i);
 }
 
-QString SomeUtils::prepareTime(const quint64 ms)
+QString SomeUtils::prepareTime(const quint64 nsec)
 {
     QTime t(0, 0);
-    t = t.addMSecs(ms);
+    t = t.addMSecs(nsec/1000000);
     QString timeStr;
     if (t.hour() != 0)
         timeStr += t.toString("hh") + QObject::tr("h");
@@ -48,6 +48,10 @@ QString SomeUtils::prepareTime(const quint64 ms)
         timeStr += " " + t.toString("mm") + QObject::tr("m");
     if (!timeStr.isEmpty() || t.second() != 0)
         timeStr += " " + t.toString("ss") + QObject::tr("s");
-    timeStr += " " + t.toString("zzz") + QObject::tr("ms");
+    timeStr += " " + t.toString("zzz");
+    // if string contains only ms - add nsec
+    if (timeStr.size() == 4)
+        timeStr += "." + QString::number(nsec % 1000000).left(1);
+    timeStr += QObject::tr("ms");
     return timeStr;
 }

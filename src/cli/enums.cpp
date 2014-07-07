@@ -163,6 +163,7 @@ namespace Attribute {
     const QString A_kerning                      = QL1S("kerning");
     const QString A_k                            = QL1S("k");
     const QString A_letter_spacing               = QL1S("letter-spacing");
+    const QString A_lengthAdjust                 = QL1S("lengthAdjust");
     const QString A_lighting_color               = QL1S("lighting-color");
     const QString A_line_height                  = QL1S("line-height");
     const QString A_marker_end                   = QL1S("marker-end");
@@ -177,6 +178,7 @@ namespace Attribute {
     const QString A_points                       = QL1S("points");
     const QString A_primitiveUnits               = QL1S("primitiveUnits");
     const QString A_r                            = QL1S("r");
+    const QString A_rotate                       = QL1S("rotate");
     const QString A_rx                           = QL1S("rx");
     const QString A_ry                           = QL1S("ry");
     const QString A_shape_rendering              = QL1S("shape-rendering");
@@ -196,6 +198,7 @@ namespace Attribute {
     const QString A_style                        = QL1S("style");
     const QString A_text_align                   = QL1S("text-align");
     const QString A_text_anchor                  = QL1S("text-anchor");
+    const QString A_textLength                   = QL1S("textLength");
     const QString A_text_decoration              = QL1S("text-decoration");
     const QString A_text                         = QL1S("text");
     const QString A_text_rendering               = QL1S("text-rendering");
@@ -420,6 +423,7 @@ QHash<QString,int> allAttributesHash()
     hash.insert(A_k,                            AttrId::k);
     hash.insert(A_kerning,                      AttrId::kerning);
     hash.insert(A_letter_spacing,               AttrId::letter_spacing);
+    hash.insert(A_lengthAdjust,                 AttrId::lengthAdjust);
     hash.insert(A_lighting_color,               AttrId::lighting_color);
     hash.insert(A_line_height,                  AttrId::line_height);
     hash.insert(A_marker,                       AttrId::marker);
@@ -434,6 +438,7 @@ QHash<QString,int> allAttributesHash()
     hash.insert(A_points,                       AttrId::points);
     hash.insert(A_primitiveUnits,               AttrId::primitiveUnits);
     hash.insert(A_r,                            AttrId::r);
+    hash.insert(A_rotate,                       AttrId::rotate);
     hash.insert(A_rx,                           AttrId::rx);
     hash.insert(A_ry,                           AttrId::ry);
     hash.insert(A_shape_rendering,              AttrId::shape_rendering);
@@ -455,6 +460,7 @@ QHash<QString,int> allAttributesHash()
     hash.insert(A_text_anchor,                  AttrId::text_anchor);
     hash.insert(A_text,                         AttrId::text);
     hash.insert(A_text_decoration,              AttrId::text_decoration);
+    hash.insert(A_textLength,                   AttrId::textLength);
     hash.insert(A_text_rendering,               AttrId::text_rendering);
     hash.insert(A_transform,                    AttrId::transform);
     hash.insert(A_unicode_bidi,                 AttrId::unicode_bidi);

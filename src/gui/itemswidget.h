@@ -19,29 +19,45 @@
 **
 ****************************************************************************/
 
-#ifndef THUMBWIDGET_H
-#define THUMBWIDGET_H
+#ifndef ITEMSWIDGET_H
+#define ITEMSWIDGET_H
 
-#include <QtGui/QFrame>
+#include <QtGui/QScrollArea>
 
-#include "arguments.h"
-#include "ui_thumbwidget.h"
+#include "thumbwidget.h"
 
-class ThumbWidget : public QFrame, private Ui::ThumbWidget
+class ItemsWidget : public QScrollArea
 {
     Q_OBJECT
 
 public:
-    explicit ThumbWidget(SVGInfo *info, bool compare = false, QWidget *parent = 0);
-    void refill(SVGInfo *info, bool compare = false);
+    explicit ItemsWidget(QWidget *parent = 0);
+    void setScroll(QScrollBar *scrollBar);
+    void appendData(SVGInfo *info);
+    void clear();
+    void setCompareView(bool flag);
+    int itemsCount();
+    int dataCount();
+
+public slots:
+    void scrollTo(int pos);
+    void sort(int type);
 
 private:
-    QString m_name;
+    static int m_sortType;
+    bool isCompareView;
+    QScrollBar *m_scrollBar;
+    QList<ThumbWidget *> m_itemList;
+    QList<SVGInfo *> m_dataList;
+    QVBoxLayout *m_lay;
+    QWidget *m_contentWidget;
+    int itemHeight;
 
-private slots:
-    void elideName();
+    bool haveFreeSpace();
+    static bool itemSort(SVGInfo *s1, SVGInfo *s2);
 
 protected:
     void resizeEvent(QResizeEvent *);
 };
-#endif // THUMBWIDGET_H
+
+#endif // ITEMSWIDGET_H

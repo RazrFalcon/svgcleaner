@@ -23,11 +23,10 @@
 #define FILESVIEW_H
 
 #include <QtGui/QTreeView>
+#include <QtGui/QItemDelegate>
 #include <QtCore/QAbstractItemModel>
 #include <QtCore/QModelIndex>
 #include <QtCore/QList>
-
-#include <QtGui/QItemDelegate>
 
 class ButtonDelegate : public QItemDelegate
 {

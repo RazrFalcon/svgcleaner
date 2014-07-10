@@ -19,7 +19,7 @@
 **
 ****************************************************************************/
 
-#include <QHBoxLayout>
+#include <QtGui/QHBoxLayout>
 
 #include "spinbox.h"
 

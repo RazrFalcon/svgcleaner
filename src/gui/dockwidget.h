@@ -19,29 +19,50 @@
 **
 ****************************************************************************/
 
-#ifndef THUMBWIDGET_H
-#define THUMBWIDGET_H
+#ifndef DOCKWIDGET_H
+#define DOCKWIDGET_H
 
-#include <QtGui/QFrame>
+#include <QtGui/QWidget>
+#include <QtCore/QElapsedTimer>
 
 #include "arguments.h"
-#include "ui_thumbwidget.h"
 
-class ThumbWidget : public QFrame, private Ui::ThumbWidget
+#include "ui_dockwidget.h"
+
+struct ProcessData {
+    int pos;
+    int cleaned;
+    int totalFiles;
+    float compressMax;
+    float compressMin;
+    quint32 inputSize;
+    quint32 outputSize;
+    quint64 timeFull;
+    quint64 timeMax;
+    quint64 timeMin;
+    quint32 crashed;
+};
+
+class DockWidget : public QWidget, public Ui::DockWidget
 {
     Q_OBJECT
 
 public:
-    explicit ThumbWidget(SVGInfo *info, bool compare = false, QWidget *parent = 0);
-    void refill(SVGInfo *info, bool compare = false);
+    explicit DockWidget(QWidget *parent = 0);
+    void start();
+    int &currentPos();
+    bool isFinished();
+    void clear();
+    void setFilesCount(int count);
+    void appendInfo(SVGInfo *info);
+    void setViewLayout(const Qt::Orientation &orient);
 
 private:
-    QString m_name;
+    ProcessData m_data;
+    QElapsedTimer totalTime;
+    Qt::Orientation m_currOrientation;
 
-private slots:
-    void elideName();
-
-protected:
-    void resizeEvent(QResizeEvent *);
+    void fillFilds();
 };
-#endif // THUMBWIDGET_H
+
+#endif // DOCKWIDGET_H

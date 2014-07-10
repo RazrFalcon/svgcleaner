@@ -18,7 +18,9 @@ SOURCES += \
     spinbox.cpp \
     thumbwidget.cpp \
     wizarddialog.cpp \
-    ../cli/keys.cpp
+    ../cli/keys.cpp \
+    dockwidget.cpp \
+    itemswidget.cpp
 
 HEADERS += \
     aboutdialog.h \
@@ -32,13 +34,16 @@ HEADERS += \
     spinbox.h \
     thumbwidget.h \
     wizarddialog.h \
-    ../cli/keys.h
+    ../cli/keys.h \
+    dockwidget.h \
+    itemswidget.h
 
 FORMS += \
     aboutdialog.ui \
     mainwindow.ui \
     thumbwidget.ui \
-    wizarddialog.ui
+    wizarddialog.ui \
+    dockwidget.ui
 
 RESOURCES    += ../../icons/icons.qrc
 CODECFORSRC   = UTF-8

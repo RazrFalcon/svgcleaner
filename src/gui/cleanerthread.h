@@ -23,9 +23,8 @@
 #ifndef CLEANERTHREAD_H
 #define CLEANERTHREAD_H
 
-#include <QThread>
-#include <QTimer>
-#include <QProcess>
+#include <QtCore/QThread>
+#include <QtCore/QProcess>
 #include <QtDebug>
 
 #ifdef USE_IPC
@@ -49,7 +48,7 @@ public slots:
     void exit();
 
 signals:
-    void cleaned(SVGInfo);
+    void cleaned(SVGInfo*);
 
 private:
     bool m_isForceStop;
@@ -72,7 +71,7 @@ private:
     void writeToMemory(const QString &inFile, const QString &outFile);
     QString readMemory();
 #endif
-    void parseDefaultOutput(SVGInfo &info, const QString &outData);
+    void parseDefaultOutput(SVGInfo *info, const QString &outData);
     void unzip(const QString &inFile, const QString &outFile);
     void zip(const QString &outFile);
 

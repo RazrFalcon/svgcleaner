@@ -32,8 +32,8 @@ QString SomeUtils::prepareSize(const quint32 bytes)
         size = size / 1024.0;
         i++;
     }
-    static QStringList list = QStringList() << QObject::tr("B") << QObject::tr("KiB")
-                                            << QObject::tr("MiB");
+    static const QStringList list = QStringList()
+        << QObject::tr("B") << QObject::tr("KiB") << QObject::tr("MiB");
     return QString::number(size, 'f', 1) + " " + list.at(i);
 }
 
@@ -41,17 +41,32 @@ QString SomeUtils::prepareTime(const quint64 nsec)
 {
     QTime t(0, 0);
     t = t.addMSecs(nsec/1000000);
+
+    int tm[3];
+    tm[0] = t.hour();
+    tm[1] = t.minute();
+    tm[2] = t.second();
+
+    static const QStringList list = QStringList()
+        << QObject::tr("h") << QObject::tr("m") << QObject::tr("s") << QObject::tr("ms");
+
     QString timeStr;
-    if (t.hour() != 0)
-        timeStr += t.toString("hh") + QObject::tr("h");
-    if (!timeStr.isEmpty() || t.minute() != 0)
-        timeStr += " " + t.toString("mm") + QObject::tr("m");
-    if (!timeStr.isEmpty() || t.second() != 0)
-        timeStr += " " + t.toString("ss") + QObject::tr("s");
-    timeStr += " " + t.toString("zzz");
-    // if string contains only ms - add nsec
-    if (timeStr.size() == 4)
+    for (int i = 0; i < 3; ++i) {
+        if (!timeStr.isEmpty() || tm[i] != 0) {
+            if (!timeStr.isEmpty())
+                timeStr += " ";
+            timeStr += QString::number(tm[i]).rightJustified(2, '0') + list.at(i);
+        }
+    }
+
+    if (!timeStr.isEmpty())
+        timeStr += " " + QString::number(t.msec()).rightJustified(3, '0');
+    else {
+        // if string contains only ms - add nsec
+        timeStr += QString::number(t.msec());
         timeStr += "." + QString::number(nsec % 1000000).left(1);
+    }
     timeStr += QObject::tr("ms");
     return timeStr;
 }
+

@@ -20,64 +20,67 @@
 ****************************************************************************/
 
 #include <QtCore/QFileInfo>
+#include <QtCore/QTimer>
 #include <QtGui/QResizeEvent>
 
 #include "someutils.h"
 #include "thumbwidget.h"
 
-ThumbWidget::ThumbWidget(const SVGInfo &info, bool compare, QWidget *parent) :
-    QWidget(parent)
+ThumbWidget::ThumbWidget(SVGInfo *info, bool compare, QWidget *parent) :
+    QFrame(parent)
 {
     setupUi(this);
 #ifdef Q_OS_WIN
-    frame->setFrameShadow(QFrame::Plain);
+    setFrameShadow(QFrame::Plain);
 #endif
     refill(info, compare);
+    // do no run immediately, to skip default events and make correct text elide
+    QTimer::singleShot(100, this, SLOT(elideName()));
 }
 
-void ThumbWidget::refill(const SVGInfo &info, bool compare)
+void ThumbWidget::refill(SVGInfo *info, bool compare)
 {
-    iconsWidget->setPaths(info.inPath, info.outPath, compare);
+    iconsWidget->setPaths(info->inPath, info->outPath, compare);
 
-    m_name = QFileInfo(info.outPath).fileName();
+    m_name = QFileInfo(info->outPath).fileName();
+    elideName();
 
-    if (!info.errString.isEmpty()) {
+    if (!info->errString.isEmpty()) {
         lblSizes->setText("0 -> 0 (0.00%)");
         lblElem->setText( "0 -> 0 (0.00%)");
         lblAttr->setText( "0 -> 0 (0.00%)");
         lblTime->setText( "0");
-        iconsWidget->setError(info.errString);
+        iconsWidget->setError(info->errString);
     } else {
         lblSizes->setText(QString("%1 -> %2 (%3%)")
-                          .arg(SomeUtils::prepareSize(info.inSize))
-                          .arg(SomeUtils::prepareSize(info.outSize))
-                          .arg(QString::number(info.compress, 'f', 2)));
+                          .arg(SomeUtils::prepareSize(info->inSize))
+                          .arg(SomeUtils::prepareSize(info->outSize))
+                          .arg(QString::number(info->compress, 'f', 2)));
 
-        float elemPerc = ((float)info.elemFinal / info.elemInitial) * 100;
+        float elemPerc = ((float)info->elemFinal / info->elemInitial) * 100;
         lblElem->setText(QString("%1 -> %2 (%3%)")
-                         .arg(info.elemInitial)
-                         .arg(info.elemFinal)
+                         .arg(info->elemInitial)
+                         .arg(info->elemFinal)
                          .arg(QString::number(elemPerc, 'f', 2)));
 
-        float attrPerc = ((float)info.attrFinal / info.attrInitial) * 100;
+        float attrPerc = ((float)info->attrFinal / info->attrInitial) * 100;
         lblAttr->setText(QString("%1 -> %2 (%3%)")
-                         .arg(info.attrInitial)
-                         .arg(info.attrFinal)
+                         .arg(info->attrInitial)
+                         .arg(info->attrFinal)
                          .arg(QString::number(attrPerc, 'f', 2)));
-        lblTime->setText(SomeUtils::prepareTime(info.time));
+        lblTime->setText(SomeUtils::prepareTime(info->time));
     }
-    QResizeEvent event(size(),size());
-    QApplication::sendEvent(this, &event);
 }
 
-void ThumbWidget::resizeEvent(QResizeEvent *)
+void ThumbWidget::elideName()
 {
-    QFont font = this->font();
-    font.setBold(true);
-    QFontMetrics fm(font);
-    int w = lblName->width();
-    if (w < 120)
-        w = 300;
-    QString name = fm.elidedText(m_name, Qt::ElideLeft, w - 50);
-    lblName->setText("<b>" + name + "</b>");
+    QFontMetrics fm(lblName->font());
+    QString name = fm.elidedText(m_name, Qt::ElideLeft, lblName->width());
+    lblName->setText(name);
+}
+
+void ThumbWidget::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+    elideName();
 }

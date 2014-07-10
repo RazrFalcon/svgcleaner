@@ -25,23 +25,12 @@
 #include <QtCore/QElapsedTimer>
 #include <QtGui/QComboBox>
 #include <QtGui/QMainWindow>
+#include <QtGui/QDockWidget>
 
 #include "cleanerthread.h"
 #include "arguments.h"
+#include "dockwidget.h"
 #include "ui_mainwindow.h"
-
-struct ProcessData {
-    int pos;
-    int cleaned;
-    float compressMax;
-    float compressMin;
-    quint32 inputSize;
-    quint32 outputSize;
-    quint64 timeFull;
-    quint64 timeMax;
-    quint64 timeMin;
-    quint32 crashed;
-};
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -52,20 +41,14 @@ public:
 
 private:
     bool m_isStop;
-    bool m_isExitNow;
-    ProcessData m_data;
-    QComboBox *cmbSort;
-    QList<SVGInfo> itemList;
-    QElapsedTimer totalTime;
+    QComboBox *m_cmbSort;
     ThreadData m_threadData;
     QList<StringPair> m_files;
-    QList<CleanerThread *> cleanerList;
-    static int m_sortType;
+    QList<CleanerThread *> m_cleanerList;
+    DockWidget *m_dockWidget;
+    QDockWidget *m_dockStatistics;
 
-    void createStatistics();
     void enableButtons(bool value);
-    void removeThumbs();
-    static bool customSort(const SVGInfo &s1, const SVGInfo &s2);
 
 private slots:
     void on_actionCompareView_triggered();
@@ -76,15 +59,15 @@ private slots:
     void on_actionWizard_triggered();
     void on_itemsScroll_valueChanged(int value);
     void prepareStart();
-    void sortingChanged(int value);
-    void onFileCleaned(const SVGInfo &info);
+    void onFileCleaned(SVGInfo *info);
     void onFinished();
     void removeCleaner(CleanerThread *cleaner = 0);
+    void setupDock();
+    void showWizard(const QStringList &pathList = QStringList());
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
     void closeEvent(QCloseEvent *event);
-    void resizeEvent(QResizeEvent *);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);

@@ -29,6 +29,7 @@ namespace SettingKey {
         extern const QString CompareView;
         extern const QString MainSize;
         extern const QString WizardSize;
+        extern const QString DockPosition;
     }
     namespace Wizard {
         extern const QString SaveMode;

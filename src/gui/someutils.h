@@ -22,7 +22,7 @@
 #ifndef SOMEUTILS_H
 #define SOMEUTILS_H
 
-#include <QString>
+#include <QtCore/QString>
 
 class SomeUtils
 {

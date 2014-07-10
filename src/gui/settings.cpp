@@ -23,9 +23,10 @@
 
 namespace SettingKey {
     namespace GUI {
-        const QString CompareView = "GUI/CompareView";
-        const QString MainSize    = "GUI/MainSize";
-        const QString WizardSize  = "GUI/WizardSize";
+        const QString CompareView  = "GUI/CompareView";
+        const QString MainSize     = "GUI/MainSize";
+        const QString WizardSize   = "GUI/WizardSize";
+        const QString DockPosition = "GUI/DockPosition";
     }
     namespace Wizard {
         const QString SaveMode         = "Wizard/SaveMode";

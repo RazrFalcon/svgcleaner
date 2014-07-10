@@ -135,10 +135,10 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
         startProcess();
 #endif
 
-    SVGInfo info;
-    info.inSize = QFile(inFile).size();
-    info.inPath = inFile;
-    info.outPath = outFile;
+    SVGInfo *info = new SVGInfo;
+    info->inSize = QFile(inFile).size();
+    info->inPath = inFile;
+    info->outPath = outFile;
 
     QString tmpInFile = inFile;
     if (inFile.endsWith("z")) {
@@ -177,18 +177,18 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
     if (!flag || outData.isEmpty()) {
         m_proc->kill();
         m_proc->waitForFinished();
-        info.errString = m_proc->readAllStandardError();
-        if (info.errString.isEmpty()) {
+        info->errString = m_proc->readAllStandardError();
+        if (info->errString.isEmpty()) {
             if (m_semaphore2->isTimeout())
-                info.errString = "Timeout error";
+                info->errString = "Timeout error";
         } else {
-            info.errString = info.errString.split("\n").filter(QRegExp("^Error")).join("");
+            info->errString = info->errString.split("\n").filter(QRegExp("^Error")).join("");
         }
-        if (info.errString.isEmpty())
-            info.errString = "Unknown error";
+        if (info->errString.isEmpty())
+            info->errString = "Unknown error";
         m_proc.clear();
     } else {
-        info.time = cleaningTime.nsecsElapsed();
+        info->time = cleaningTime.nsecsElapsed();
         parseDefaultOutput(info, outData);
     }
 #else
@@ -200,35 +200,37 @@ void CleanerThread::startNext(const QString &inFile, const QString &outFile)
     cleaningTime.start();
     proc.start(m_cliPath, args);
     proc.waitForFinished(60000); // 60 sec
-    info.time = cleaningTime.elapsed();
+    info->time = cleaningTime.elapsed();
     QString outData = proc.readAllStandardError();
-    info.time = cleaningTime.nsecsElapsed();
+    info->time = cleaningTime.nsecsElapsed();
     parseDefaultOutput(info, outData);
 #endif
 
     if (    m_data.compressType == ThreadData::CompressAll
-        || (m_data.compressType == ThreadData::CompressAsOrig && info.inPath.endsWith('z')))
+        || (m_data.compressType == ThreadData::CompressAsOrig && info->inPath.endsWith('z')))
     {
-        zip(info.outPath);
-        info.outPath = info.outPath + "z";
+        zip(info->outPath);
+        info->outPath = info->outPath + "z";
     }
-    info.outSize = QFile(info.outPath).size();
+    info->outSize = QFile(info->outPath).size();
 
-    info.compress = ((qreal)info.outSize / info.inSize) * 100;
-    if (info.compress > 100)
-        info.compress = 100;
-    else if (info.compress < 0)
-        info.compress = 0;
+    info->compress = ((qreal)info->outSize / info->inSize) * 100;
+    if (info->compress > 100)
+        info->compress = 100;
+    else if (info->compress < 0)
+        info->compress = 0;
 
     emit cleaned(info);
 }
 
-void CleanerThread::parseDefaultOutput(SVGInfo &info, const QString &outData)
+void CleanerThread::parseDefaultOutput(SVGInfo *info, const QString &outData)
 {
     const QChar *str = outData.constData();
     const QChar *end = str + outData.size();
-    QVector<int> vec;
-    vec.reserve(4);
+
+    int vec[4];
+    bool isValid = true;
+    int i = 0;
     while (str != end) {
         QString tmpStr;
         while (str->isPrint()) {
@@ -238,22 +240,27 @@ void CleanerThread::parseDefaultOutput(SVGInfo &info, const QString &outData)
         bool ok = false;
         int num = tmpStr.toInt(&ok);
         if (ok)
-            vec << num;
+            vec[i] = num;
+        else
+            isValid = false;
+        i++;
         ++str;
+        if (i > 3)
+            break;
     }
-    if (vec.size() == 4) {
-        info.elemInitial = vec.at(0);
-        info.attrInitial = vec.at(1);
-        info.elemFinal   = vec.at(2);
-        info.attrFinal   = vec.at(3);
+    if (isValid) {
+        info->elemInitial = vec[0];
+        info->attrInitial = vec[1];
+        info->elemFinal   = vec[2];
+        info->attrFinal   = vec[3];
     } else {
         if (outData.contains("Error:")) {
             QStringList list = outData.split("\n").filter("Error:");
             if (!list.isEmpty())
-                info.errString = list.first();
+                info->errString = list.first();
         }
-        if (info.errString.isEmpty())
-            info.errString = "Unknown error";
+        if (info->errString.isEmpty())
+            info->errString = "Unknown error";
     }
 }
 

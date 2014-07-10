@@ -47,7 +47,7 @@ private:
     QString outpath;
     QString errText;
     void makeToolTip();
-    QPixmap renderSvg(const QString &path, const QRect &rect, bool cleaned);
+    static QPixmap renderSvg(const QString &path, const QSize &imgSize, bool cleaned);
     
 private slots:
     void showToolTip();

@@ -75,7 +75,7 @@ void IconsWidget::setError(const QString &text)
 
 void IconsWidget::makeToolTip()
 {
-    QImage image(620, 310, QImage::Format_ARGB32);
+    QImage image(615, 310, QImage::Format_ARGB32);
     image.fill(0);
     tooltipPix = QPixmap::fromImage(image, Qt::NoOpaqueDetection | Qt::AutoColor);
     QPainter painter(&tooltipPix);
@@ -85,8 +85,8 @@ void IconsWidget::makeToolTip()
     painter.setBrush(QBrush(pal.color(QPalette::Background)));
     painter.setPen(QPen(QColor("#636363"), 2));
     painter.drawRoundedRect(2, 2, image.width()-4, image.height()-4, 5, 5);
-    painter.drawPixmap(5, 5, renderSvg(inpath, QRect(5, 5, 300, 300), false));
-    painter.drawPixmap(310, 5, renderSvg(outpath, QRect(5, 5, 300, 300), true));
+    painter.drawPixmap(5, 5, renderSvg(inpath, QSize(300, 300), false));
+    painter.drawPixmap(310, 5, renderSvg(outpath, QSize(300, 300), true));
 
     toolTip->setPixmap(tooltipPix);
     toolTip->setMask(tooltipPix.mask());
@@ -152,27 +152,27 @@ void IconsWidget::paintEvent(QPaintEvent *)
 
     if (compareView) {
         if (refresh)
-            leftPix = renderSvg(inpath, QRect(0,   0, 100, 100), false);
+            leftPix = renderSvg(inpath, QSize(100, 100), false);
         painter.drawPixmap(0, 0, leftPix);
 
         if (refresh)
-            rightPix = renderSvg(outpath, QRect(0, 0, 100, 100), true);
+            rightPix = renderSvg(outpath, QSize(100, 100), true);
         painter.drawPixmap(105, 0, rightPix);
     } else {
         if (refresh)
-            rightPix = renderSvg(outpath, QRect(0, 0, width(), height()), true);
+            rightPix = renderSvg(outpath, QSize(width(), height()), true);
         painter.drawPixmap(0, 0, rightPix);
     }
     refresh = false;
 }
 
-QPixmap IconsWidget::renderSvg(const QString &path, const QRect &rect, bool cleaned)
+QPixmap IconsWidget::renderSvg(const QString &path, const QSize &imgSize, bool cleaned)
 {
     QString tpath = path;
     if (cleaned)
-        tpath += "_cleaned" + QString::number(rect.height());
+        tpath += "_cleaned" + QString::number(imgSize.height());
     else
-        tpath += "_orig" + QString::number(rect.height());
+        tpath += "_orig" + QString::number(imgSize.height());
 
     if (QPixmapCache::find(tpath)) {
         QPixmap pix;
@@ -180,15 +180,16 @@ QPixmap IconsWidget::renderSvg(const QString &path, const QRect &rect, bool clea
         return pix;
     }
 
-    QSvgRenderer renderer(path);
-    QSize size = renderer.viewBox().size();
-    size.scale(rect.width(), rect.height(), Qt::KeepAspectRatio);
-    static int border = 3;
-    QPixmap pix(rect.width(), rect.height());
+    QPixmap pix(imgSize);
     pix.fill(Qt::transparent);
-    QPainter p(&pix);
-    renderer.render(&p, QRect(rect.x()+border, (rect.height()-size.height())/2+rect.y()+border,
-                                size.width()-border*2, size.height()-border*2));
+    if (QFile(path).exists()) {
+        QSvgRenderer renderer(path);
+        QSize size = renderer.viewBox().size();
+        size.scale(imgSize, Qt::KeepAspectRatio);
+        QPainter p(&pix);
+        renderer.render(&p, QRect(0, (imgSize.height()-size.height())/2,
+                                  size.width(), size.height()));
+    }
     QPixmapCache::insert(tpath, pix);
     return pix;
 }
@@ -198,7 +199,7 @@ void IconsWidget::mousePressEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton || crashed)
         return;
     if (event->x() < width()/2)
-        QDesktopServices::openUrl(QUrl(inpath));
+        QDesktopServices::openUrl(QUrl::fromLocalFile(inpath));
     else
-        QDesktopServices::openUrl(QUrl(outpath));
+        QDesktopServices::openUrl(QUrl::fromLocalFile(outpath));
 }

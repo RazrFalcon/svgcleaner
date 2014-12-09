@@ -319,20 +319,16 @@ QStringList arguments(int &argc, char **argv)
 #ifdef USE_IPC
 SystemSemaphore *semaphore2 = 0;
 QString m_log;
-void slaveMessageOutput(QtMsgType type, const char *msg)
+void slaveMessageOutput(QtMsgType type, const QMessageLogContext &, const QString &msg)
 {
     switch (type) {
     case QtDebugMsg:
-        m_log += QString(msg) + "\n";
-        break;
     case QtWarningMsg:
-        m_log += QString(msg) + "\n";
-        break;
     case QtCriticalMsg:
-        m_log += QString(msg) + "\n";
+        m_log += msg + "\n";
         break;
     case QtFatalMsg:
-        fprintf(stderr, "%s\n", msg);
+        fprintf(stderr, "%s\n", qPrintable(msg));
         // emit to 'gui' that we crashed
         // crash will be detected by timeout, but this way is much faster
         if (semaphore2)
@@ -378,7 +374,7 @@ int main(int argc, char *argv[])
         if (!sharedMemory.attach())
             qFatal("Error: unable to attach to shared memory segment.");
 
-        qInstallMsgHandler(slaveMessageOutput);
+        qInstallMessageHandler(slaveMessageOutput);
 
         Keys.parseOptions(argList);
 

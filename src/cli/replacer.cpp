@@ -526,7 +526,7 @@ IntHash splitStyle(const QString &style)
         str++;  // skip ':'
         length = 0;
 
-        // do not process styles which is linked to data in ENTITY
+        // do not process styles which are linked to data in ENTITY
         // like: '&st0;'
         if (!name.isEmpty() && name.at(0) == andChar)
             break;
@@ -1596,7 +1596,7 @@ void Replacer::groupElementsByStyles(SvgElement parentElem)
             if (currElem.isUsed())
                 groupHash.clear();
             IntHash lastGroupHash = groupHash;
-            // remove attributes which is not exist or different in next element
+            // remove attributes which do not exist or are different in next element
             foreach (const int &attrId, groupHash.keys()) {
                 if (!currElem.hasAttribute(attrId))
                     groupHash.remove(attrId);

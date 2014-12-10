@@ -128,7 +128,7 @@
         <translation>Rimuovi i contenitori vuoti</translation>
     </message>
     <message>
-        <source>Remove elements which is outside the viewbox</source>
+        <source>Remove elements which are outside the viewbox</source>
         <translation>Rimuovi gli elementi esterni all&apos;area di visualizzazione</translation>
     </message>
     <message>

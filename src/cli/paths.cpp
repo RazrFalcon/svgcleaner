@@ -955,7 +955,7 @@ QString Path::segmentsToPath(QList<Segment> &segList)
                     writeCmd = false;
             }
         } else {
-            // remove only commands which is not set in original path
+            // remove only commands which are not set in original path
             if (!segment.srcCmd)
                 writeCmd = false;
         }

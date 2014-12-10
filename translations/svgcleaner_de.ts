@@ -127,7 +127,7 @@
         <translation>Entferne leere Container-Elemente</translation>
     </message>
     <message>
-        <source>Remove elements which is outside the viewbox</source>
+        <source>Remove elements which are outside the viewbox</source>
         <translation>Entferne Elemente, die sich außerhalb des scihtbaren Bereiches befinden</translation>
     </message>
     <message>

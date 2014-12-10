@@ -181,7 +181,7 @@
     </message>
     <message>
         <location filename="../src/cli/keys.cpp" line="162"/>
-        <source>Remove elements which is outside the viewbox</source>
+        <source>Remove elements which are outside the viewbox</source>
         <translation>Видаляти елементи поза області видимості</translation>
     </message>
     <message>

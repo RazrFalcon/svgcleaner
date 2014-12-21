@@ -580,7 +580,7 @@ void Keys::parseOptions(QStringList &list)
                 || flag == KeyStr::AttributesPrecision
                 || flag == KeyStr::CoordsPrecision)
             {
-                if (value.toInt() > 0 && value.toInt() <= 8) {
+                if (value.toInt() >= 0 && value.toInt() <= 8) {
                     if (flag == KeyStr::TransformPrecision) {
                         m_transformPrecision = value.toInt();
                         numHash.insert(Key::TransformPrecision, value.toInt());

@@ -34,8 +34,8 @@ void Replacer::convertSizeToViewbox()
 {
     if (!svgElement().hasAttribute(AttrId::viewBox)) {
         if (svgElement().hasAttribute(AttrId::width) && svgElement().hasAttribute(AttrId::height)) {
-            QString width  = roundNumber(svgElement().doubleAttribute(AttrId::width));
-            QString height = roundNumber(svgElement().doubleAttribute(AttrId::height));
+            QString width  = fromDouble(svgElement().doubleAttribute(AttrId::width));
+            QString height = fromDouble(svgElement().doubleAttribute(AttrId::height));
             svgElement().setAttribute(AttrId::viewBox, QString("0 0 %1 %2").arg(width).arg(height));
             svgElement().removeAttribute(AttrId::width);
             svgElement().removeAttribute(AttrId::height);
@@ -212,8 +212,8 @@ void Replacer::updateLinkedDefTransform(SvgElement &elem)
                 } else if (defElem.tagName() == E_filter) {
                     Transform ts(elem.attribute(AttrId::transform));
                     SvgElement stdDevElem = defElem.firstChildElement();
-                    qreal oldStd = stdDevElem.doubleAttribute(AttrId::stdDeviation);
-                    QString newStd = roundNumber(oldStd * ts.scaleFactor());
+                    double oldStd = stdDevElem.doubleAttribute(AttrId::stdDeviation);
+                    QString newStd = fromDouble(oldStd * ts.scaleFactor());
                     stdDevElem.setAttribute(AttrId::stdDeviation, newStd);
                 }
             }
@@ -344,7 +344,7 @@ void Replacer::replaceEqualElementsByUse()
 
             SvgElement elem = eqElem.elem;
             elem.setTagName(E_use);
-            elem.setAttribute(AttrId::xlink_href, Char::Sharp + newElem.id());
+            elem.setAttribute(AttrId::xlink_href, QL1C('#') + newElem.id());
             elem.removeAttribute(AttrId::bbox);
             foreach (const int &attrId, mainEqElem.attrHash.keys())
                 elem.removeAttribute(attrId);
@@ -438,20 +438,20 @@ void Replacer::convertUnits()
         if (widthStr.contains(LengthType::Percent) && rect.isNull())
             qFatal("Error: could not convert width in percentage into px without viewBox");
         bool ok;
-        qreal width = Tools::convertUnitsToPx(widthStr, rect.width()).toDouble(&ok);
+        double width = Tools::convertUnitsToPx(widthStr, rect.width()).toDouble(&ok);
         if (!ok)
             qFatal("Error: could not convert width to px");
-        svgElement().setAttribute(AttrId::width, roundNumber(width));
+        svgElement().setAttribute(AttrId::width, fromDouble(width));
     }
     if (svgElement().hasAttribute(AttrId::height)) {
         QString heightStr = svgElement().attribute(AttrId::height);
         if (heightStr.contains(LengthType::Percent) && rect.isNull())
             qFatal("Error: could not convert height in percentage into px without viewBox");
         bool ok;
-        qreal height = Tools::convertUnitsToPx(heightStr, rect.height()).toDouble(&ok);
+        double height = Tools::convertUnitsToPx(heightStr, rect.height()).toDouble(&ok);
         if (!ok)
             qFatal("Error: could not convert height to px");
-        svgElement().setAttribute(AttrId::height, roundNumber(height));
+        svgElement().setAttribute(AttrId::height, fromDouble(height));
     }
 
     // TODO: process 'offset' attr with %
@@ -469,7 +469,8 @@ void Replacer::convertUnits()
                     QString parentFontSize = findAttribute(elem.parentElement(), AttrId::font_size);
                     if (parentFontSize.isEmpty() || parentFontSize == V_null)
                         qFatal("Error: could not calculate relative font-size");
-                    QString newFontSize = Tools::convertUnitsToPx(fontSizeStr, parentFontSize.toDouble());
+                    QString newFontSize = Tools::convertUnitsToPx(fontSizeStr,
+                                                                  toDouble(parentFontSize));
                     if (newFontSize == V_null)
                         elem.removeAttribute(AttrId::font_size);
                     else
@@ -500,7 +501,7 @@ void Replacer::convertUnits()
                        attrValue = Tools::convertUnitsToPx(attrValue, rect.height());
                 }
             } else if (attrValue.endsWith(LengthType::ex) || attrValue.endsWith(LengthType::em)) {
-                qreal fontSize = findAttribute(elem, AttrId::font_size).toDouble();
+                double fontSize = toDouble(findAttribute(elem, AttrId::font_size));
                 if (fontSize == 0)
                     qFatal("Error: could not convert em/ex values "
                            "without font-size attribute is set");
@@ -577,7 +578,7 @@ IntHash splitStyle(const QString &style)
         sw.skipSpaces();
 
         // add to hash
-        if (!name.isEmpty() && name.at(0) != Char::Sign) {
+        if (!name.isEmpty() && name.at(0) != QL1C('-')) {
             int attrId = attrStrToId(name);
             if (attrId != -1)
                 hash.insert(attrStrToId(name), value);
@@ -633,12 +634,12 @@ void Replacer::convertEntityData()
 
         // skip unnecessary data
         sw.skipSpaces();
-        if (sw.current() != Char::DoubleQuotes)
+        if (sw.current() != QL1C('\"'))
             break;
         sw.next();
 
         // parse data
-        QString data = sw.readBefore(sw.jumpTo(Char::DoubleQuotes));
+        QString data = sw.readBefore(sw.jumpTo(QL1C('\"')));
 
         sw.next();
         sw.skipSpaces();
@@ -851,12 +852,12 @@ void Replacer::fixWrongAttr()
                 elem.setAttribute(AttrId::ry, elem.attribute(AttrId::rx));
 
             // rx/ry can not be bigger then width/height
-            qreal halfWidth = elem.doubleAttribute(AttrId::width) / 2;
-            qreal halfHeight = elem.doubleAttribute(AttrId::height) / 2;
+            double halfWidth = elem.doubleAttribute(AttrId::width) / 2;
+            double halfHeight = elem.doubleAttribute(AttrId::height) / 2;
             if (elem.hasAttribute(AttrId::rx) && elem.doubleAttribute(AttrId::rx) >= halfWidth)
-                elem.setAttribute(AttrId::rx, roundNumber(halfWidth));
+                elem.setAttribute(AttrId::rx, fromDouble(halfWidth));
             if (elem.hasAttribute(AttrId::ry) && elem.doubleAttribute(AttrId::ry) >= halfHeight)
-                elem.setAttribute(AttrId::ry, roundNumber(halfHeight));
+                elem.setAttribute(AttrId::ry, fromDouble(halfHeight));
         }
 
         nextElement(elem, root);
@@ -907,10 +908,10 @@ void Replacer::finalFixes()
                     elem.removeAttribute(AttrId::gradientTransform);
                 }
             } else if (tagName == E_radialGradient) {
-                qreal fx = elem.doubleAttribute(AttrId::fx);
-                qreal fy = elem.doubleAttribute(AttrId::fy);
-                qreal cx = elem.doubleAttribute(AttrId::cx);
-                qreal cy = elem.doubleAttribute(AttrId::cy);
+                double fx = elem.doubleAttribute(AttrId::fx);
+                double fy = elem.doubleAttribute(AttrId::fy);
+                double cx = elem.doubleAttribute(AttrId::cx);
+                double cy = elem.doubleAttribute(AttrId::cy);
                 if (isZero(qAbs(fx-cx)))
                     elem.removeAttribute(AttrId::fx);
                 if (isZero(qAbs(fy-cy)))
@@ -1019,32 +1020,10 @@ void Replacer::trimIds()
             QString link = elem.attribute(AttrId::xlink_href);
             if (!link.startsWith(QL1S("data:"))) {
                 link.remove(0,1);
-                elem.setAttribute(AttrId::xlink_href, QString(Char::Sharp + idHash.value(link)));
+                elem.setAttribute(AttrId::xlink_href, QString(QL1C('#') + idHash.value(link)));
             }
         }
         nextElement(elem, root);
-    }
-}
-
-// TODO: move to SvgDocument
-void Replacer::calcElemAttrCount(const QString &text)
-{
-    quint32 elemCount = 0;
-    quint32 attrCount = 0;
-
-    SvgElement elem = document().documentElement();
-    SvgElement root = elem;
-    while (!elem.isNull()) {
-        elemCount++;
-        attrCount += elem.attributesCount();
-        nextElement(elem, root);
-    }
-    if (!Keys.flag(Key::ShortOutput)) {
-        qDebug("The %s number of elements is: %u",   qPrintable(text), elemCount);
-        qDebug("The %s number of attributes is: %u", qPrintable(text), attrCount);
-    } else {
-        qDebug("%u", elemCount);
-        qDebug("%u", attrCount);
     }
 }
 
@@ -1092,16 +1071,16 @@ void Replacer::groupTextElementsStyles()
             tsType &= ~(Transform::ProportionalScale);
             if (tsType == Transform::Translate) {
                 ts.setOldXY(elem.doubleAttribute(AttrId::x), elem.doubleAttribute(AttrId::y));
-                elem.setAttribute(AttrId::x, roundNumber(ts.newX()));
-                elem.setAttribute(AttrId::y, roundNumber(ts.newY()));
+                elem.setAttribute(AttrId::x, fromDouble(ts.newX()));
+                elem.setAttribute(AttrId::y, fromDouble(ts.newY()));
                 elem.removeAttribute(AttrId::transform);
 
                 tspan = elem.firstChildElement();
                 tspan_root = elem;
                 while (!tspan.isNull()) {
                     ts.setOldXY(tspan.doubleAttribute(AttrId::x), tspan.doubleAttribute(AttrId::y));
-                    tspan.setAttribute(AttrId::x, roundNumber(ts.newX()));
-                    tspan.setAttribute(AttrId::y, roundNumber(ts.newY()));
+                    tspan.setAttribute(AttrId::x, fromDouble(ts.newX()));
+                    tspan.setAttribute(AttrId::y, fromDouble(ts.newY()));
                     nextElement(tspan, tspan_root);
                 }
             }
@@ -1239,9 +1218,9 @@ void Replacer::roundNumericAttributes()
                     foreach (const QString &text, tmpList) {
                         bool ok;
                         if (attrId == AttrId::stroke_dasharray)
-                            tmpStr += QString::number(text.toDouble(&ok)) + " ";
+                            tmpStr += fromDouble(text.toDouble(&ok)) + " ";
                         else
-                            tmpStr += roundNumber(text.toDouble(&ok), Round::Transform) + " ";
+                            tmpStr += fromDouble(text.toDouble(&ok), Round::Transform) + " ";
                         if (!ok)
                             qFatal("Error: could not process value: '%s'",
                                    qPrintable(attrIdToStr(attrId) + "=" + value));
@@ -1250,7 +1229,7 @@ void Replacer::roundNumericAttributes()
                     elem.setAttribute(attrId, tmpStr);
                 } else {
                     bool ok;
-                    QString attrVal = roundNumber(value.toDouble(&ok), Round::Transform);
+                    QString attrVal = fromDouble(value.toDouble(&ok), Round::Transform);
                     if (!ok)
                         qFatal("Error: could not process value: '%s'",
                                qPrintable(attrIdToStr(attrId) + "=" + value));
@@ -1264,7 +1243,7 @@ void Replacer::roundNumericAttributes()
                 if (   !value.contains(LengthType::Percent) && !value.contains(" ")
                     && !value.contains(",") && !value.isEmpty()) {
                     bool ok;
-                    QString attrVal = roundNumber(value.toDouble(&ok), Round::Attribute);
+                    QString attrVal = fromDouble(value.toDouble(&ok), Round::Attribute);
                     if (!ok)
                         qFatal("Error: could not process value: '%s'",
                                qPrintable(attrIdToStr(attrId) + "=" + value));
@@ -1313,10 +1292,10 @@ void Replacer::convertBasicShapes()
                 elem.removeAttributes(QStringList() << A_x1 << A_y1 << A_x2 << A_y2);
             } else if (ctag == E_rect) {
                 if (elem.doubleAttribute(AttrId::rx) == 0 || elem.doubleAttribute(AttrId::ry) == 0) {
-                    qreal x = elem.doubleAttribute(AttrId::x);
-                    qreal y = elem.doubleAttribute(AttrId::y);
-                    qreal x1 = x + elem.doubleAttribute(AttrId::width);
-                    qreal y1 = y + elem.doubleAttribute(AttrId::height);
+                    double x = elem.doubleAttribute(AttrId::x);
+                    double y = elem.doubleAttribute(AttrId::y);
+                    double x1 = x + elem.doubleAttribute(AttrId::width);
+                    double y1 = y + elem.doubleAttribute(AttrId::height);
                     dAttr = QString("M %1,%2 H%3 V%4 H%1 z").arg(x).arg(y).arg(x1).arg(y1);
                     elem.removeAttributes(QStringList() << A_x << A_y << A_width << A_height
                                                         << A_rx << A_ry);
@@ -1507,7 +1486,7 @@ void Replacer::mergeGradientsWithEqualStopElem()
                     }
                 }
                 if (stopEqual) {
-                    lgs2.elem.setAttribute(AttrId::xlink_href, Char::Sharp + lgs1.id);
+                    lgs2.elem.setAttribute(AttrId::xlink_href, QL1C('#') + lgs1.id);
                     foreach (SvgElement stopElem, lgs2.elem.childElements())
                         lgs2.elem.removeChild(stopElem);
                     lineGradList.removeAt(j);
@@ -1531,24 +1510,24 @@ void Replacer::calcElementsBoundingBox()
                                   + " " + elem.attribute(AttrId::width)
                                   + " " + elem.attribute(AttrId::height));
         } else if (elem.tagName() == E_circle) {
-            qreal r = elem.doubleAttribute(AttrId::r);
-            qreal x = elem.doubleAttribute(AttrId::cx) - r;
-            qreal y = elem.doubleAttribute(AttrId::cy) - r;
+            double r = elem.doubleAttribute(AttrId::r);
+            double x = elem.doubleAttribute(AttrId::cx) - r;
+            double y = elem.doubleAttribute(AttrId::cy) - r;
             elem.setAttribute(AttrId::bbox,
-                                          roundNumber(x)
-                                  + " " + roundNumber(y)
-                                  + " " + roundNumber(qAbs(r*2))
-                                  + " " + roundNumber(qAbs(r*2)));
+                                          fromDouble(x)
+                                  + " " + fromDouble(y)
+                                  + " " + fromDouble(qAbs(r*2))
+                                  + " " + fromDouble(qAbs(r*2)));
         } else if (elem.tagName() == E_ellipse) {
-            qreal rx = elem.doubleAttribute(AttrId::rx);
-            qreal ry = elem.doubleAttribute(AttrId::ry);
-            qreal x = elem.doubleAttribute(AttrId::cx) - rx;
-            qreal y = elem.doubleAttribute(AttrId::cy) - ry;
+            double rx = elem.doubleAttribute(AttrId::rx);
+            double ry = elem.doubleAttribute(AttrId::ry);
+            double x = elem.doubleAttribute(AttrId::cx) - rx;
+            double y = elem.doubleAttribute(AttrId::cy) - ry;
             elem.setAttribute(AttrId::bbox,
-                                          roundNumber(x)
-                                  + " " + roundNumber(y)
-                                  + " " + roundNumber(qAbs(rx*2))
-                                  + " " + roundNumber(qAbs(ry*2)));
+                                          fromDouble(x)
+                                  + " " + fromDouble(y)
+                                  + " " + fromDouble(qAbs(rx*2))
+                                  + " " + fromDouble(qAbs(ry*2)));
         }
         // all other basic shapes bounding boxes are calculated in Paths class
 
@@ -1580,7 +1559,6 @@ void Replacer::calcElementsBoundingBox()
 //       demo.svg, applications-development.svg
 // TODO: group non successively used attributes
 //       Anonymous_City_flag_of_Gijon_Asturies_Spain.svg
-// TODO: group 'tspan' styles to 'text' element
 void Replacer::_groupElementsByStyles(SvgElement parentElem)
 {
     // first start
@@ -1781,12 +1759,12 @@ void Replacer::applyTransformToDefs()
                 if (gts.isProportionalScale()) {
                     gts.setOldXY(elem.doubleAttribute(AttrId::x1),
                                  elem.doubleAttribute(AttrId::y1));
-                    elem.setAttribute(AttrId::x1, roundNumber(gts.newX()));
-                    elem.setAttribute(AttrId::y1, roundNumber(gts.newY()));
+                    elem.setAttribute(AttrId::x1, fromDouble(gts.newX()));
+                    elem.setAttribute(AttrId::y1, fromDouble(gts.newY()));
                     gts.setOldXY(elem.doubleAttribute(AttrId::x2),
                                  elem.doubleAttribute(AttrId::y2));
-                    elem.setAttribute(AttrId::x2, roundNumber(gts.newX()));
-                    elem.setAttribute(AttrId::y2, roundNumber(gts.newY()));
+                    elem.setAttribute(AttrId::x2, fromDouble(gts.newX()));
+                    elem.setAttribute(AttrId::y2, fromDouble(gts.newY()));
                     elem.removeAttribute(AttrId::gradientTransform);
                 }
             }
@@ -1797,15 +1775,15 @@ void Replacer::applyTransformToDefs()
                     gts.setOldXY(elem.doubleAttribute(AttrId::fx),
                                  elem.doubleAttribute(AttrId::fy));
                     if (elem.hasAttribute(AttrId::fx))
-                        elem.setAttribute(AttrId::fx, roundNumber(gts.newX()));
+                        elem.setAttribute(AttrId::fx, fromDouble(gts.newX()));
                     if (elem.hasAttribute(AttrId::fy))
-                        elem.setAttribute(AttrId::fy, roundNumber(gts.newY()));
+                        elem.setAttribute(AttrId::fy, fromDouble(gts.newY()));
                     gts.setOldXY(elem.doubleAttribute(AttrId::cx),
                                  elem.doubleAttribute(AttrId::cy));
-                    elem.setAttribute(AttrId::cx, roundNumber(gts.newX()));
-                    elem.setAttribute(AttrId::cy, roundNumber(gts.newY()));
+                    elem.setAttribute(AttrId::cx, fromDouble(gts.newX()));
+                    elem.setAttribute(AttrId::cy, fromDouble(gts.newY()));
 
-                    elem.setAttribute(AttrId::r, roundNumber(elem.doubleAttribute(AttrId::r)
+                    elem.setAttribute(AttrId::r, fromDouble(elem.doubleAttribute(AttrId::r)
                                                               * gts.scaleFactor()));
                     elem.removeAttribute(AttrId::gradientTransform);
                 }
@@ -1868,15 +1846,15 @@ void Replacer::applyTransformToShapes()
                     && !ts.isSkew()
                     &&  ts.isProportionalScale()) {
                     ts.setOldXY(elem.doubleAttribute(AttrId::x), elem.doubleAttribute(AttrId::y));
-                    elem.setAttribute(AttrId::x, roundNumber(ts.newX()));
-                    elem.setAttribute(AttrId::y, roundNumber(ts.newY()));
-                    QString newW = roundNumber(elem.doubleAttribute(AttrId::width) * ts.scaleFactor());
+                    elem.setAttribute(AttrId::x, fromDouble(ts.newX()));
+                    elem.setAttribute(AttrId::y, fromDouble(ts.newY()));
+                    QString newW = fromDouble(elem.doubleAttribute(AttrId::width) * ts.scaleFactor());
                     elem.setAttribute(AttrId::width, newW);
-                    QString newH = roundNumber(elem.doubleAttribute(AttrId::height) * ts.scaleFactor());
+                    QString newH = fromDouble(elem.doubleAttribute(AttrId::height) * ts.scaleFactor());
                     elem.setAttribute(AttrId::height, newH);
-                    QString newRx = roundNumber(elem.doubleAttribute(AttrId::rx) * ts.scaleFactor());
+                    QString newRx = fromDouble(elem.doubleAttribute(AttrId::rx) * ts.scaleFactor());
                     elem.setAttribute(AttrId::rx, newRx);
-                    QString newRy = roundNumber(elem.doubleAttribute(AttrId::ry) * ts.scaleFactor());
+                    QString newRy = fromDouble(elem.doubleAttribute(AttrId::ry) * ts.scaleFactor());
                     elem.setAttribute(AttrId::ry, newRy);
                     updateLinkedDefTransform(elem);
                     calcNewStrokeWidth(elem, ts);
@@ -1896,9 +1874,9 @@ void Replacer::calcNewStrokeWidth(SvgElement &elem, const Transform &transform)
     bool hasParentStrokeWidth = false;
     while (!parentElem.isNull()) {
         if (parentElem.hasAttribute(AttrId::stroke_width)) {
-            qreal strokeWidth = Tools::convertUnitsToPx(parentElem.attribute(AttrId::stroke_width))
+            double strokeWidth = Tools::convertUnitsToPx(parentElem.attribute(AttrId::stroke_width))
                                     .toDouble();
-            QString sw = roundNumber(strokeWidth * transform.scaleFactor(), Round::Attribute);
+            QString sw = fromDouble(strokeWidth * transform.scaleFactor(), Round::Attribute);
             elem.setAttribute(AttrId::stroke_width, sw);
             hasParentStrokeWidth = true;
             break;
@@ -1906,7 +1884,7 @@ void Replacer::calcNewStrokeWidth(SvgElement &elem, const Transform &transform)
         parentElem = parentElem.parentElement();
     }
     if (!hasParentStrokeWidth) {
-        elem.setAttribute(AttrId::stroke_width, roundNumber(transform.scaleFactor(),
+        elem.setAttribute(AttrId::stroke_width, fromDouble(transform.scaleFactor(),
                                                                    Round::Attribute));
     }
 }

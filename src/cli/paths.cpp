@@ -95,21 +95,21 @@ void Segment::setTransform(Transform &ts)
     }
 }
 
-QPointF Segment::rotatePoint(qreal x, qreal y, qreal rad) const
+QPointF Segment::rotatePoint(double x, double y, double rad) const
 {
-    qreal X = x * cos(rad) - y * sin(rad);
-    qreal Y = x * sin(rad) + y * cos(rad);
+    double X = x * cos(rad) - y * sin(rad);
+    double Y = x * sin(rad) + y * cos(rad);
     return QPointF(X, Y);
 }
 
 // arcToCurve is a port from Raphael JavaScript library to Qt (MIT license)
 QList<QPointF> Segment::arcToCurve(ArcStruct arc) const
 {
-    qreal f1 = 0;
-    qreal f2 = 0;
-    qreal cx = 0;
-    qreal cy = 0;
-    qreal rad = M_PI / 180 * arc.angle;
+    double f1 = 0;
+    double f2 = 0;
+    double cx = 0;
+    double cy = 0;
+    double rad = M_PI / 180 * arc.angle;
     if (arc.recursive.isEmpty()) {
         QPointF p = rotatePoint(arc.x1, arc.y1, -rad);
         arc.x1 = p.x();
@@ -118,33 +118,33 @@ QList<QPointF> Segment::arcToCurve(ArcStruct arc) const
         arc.x2 = p.x();
         arc.y2 = p.y();
 
-        qreal x = (arc.x1 - arc.x2) / 2;
-        qreal y = (arc.y1 - arc.y2) / 2;
-        qreal h = (x * x) / (arc.rx * arc.rx) + (y * y) / (arc.ry * arc.ry);
+        double x = (arc.x1 - arc.x2) / 2;
+        double y = (arc.y1 - arc.y2) / 2;
+        double h = (x * x) / (arc.rx * arc.rx) + (y * y) / (arc.ry * arc.ry);
         if (h > 1) {
             h = sqrt(h);
             arc.rx = h * arc.rx;
             arc.ry = h * arc.ry;
         }
 
-        qreal rx2 = arc.rx * arc.rx;
-        qreal ry2 = arc.ry * arc.ry;
-        qreal kk = 1;
+        double rx2 = arc.rx * arc.rx;
+        double ry2 = arc.ry * arc.ry;
+        double kk = 1;
         if (arc.large_arc_flag == arc.sweep_flag)
             kk = -1;
-        qreal k = kk * sqrt(fabs((rx2 * ry2 - rx2 * y * y - ry2 * x * x)
+        double k = kk * sqrt(fabs((rx2 * ry2 - rx2 * y * y - ry2 * x * x)
                                      / (rx2 * y * y + ry2 * x * x)));
         cx = k * arc.rx * y / arc.ry + (arc.x1 + arc.x2) / 2;
         cy = k * -arc.ry * x / arc.rx + (arc.y1 + arc.y2) / 2;
 
-        qreal tt = (arc.y1 - cy) / arc.ry;
+        double tt = (arc.y1 - cy) / arc.ry;
         if (tt > 1)
             tt = 1;
         if (tt < -1)
             tt = -1;
         f1 = asin(tt);
 
-        qreal tt2 = (arc.y2 - cy) / arc.ry;
+        double tt2 = (arc.y2 - cy) / arc.ry;
         if (tt2 > 1)
             tt2 = 1;
         if (tt2 < -1)
@@ -172,19 +172,19 @@ QList<QPointF> Segment::arcToCurve(ArcStruct arc) const
     }
 
     QList<QPointF> res;
-    qreal df = f2 - f1;
-    const qreal a90 = M_PI * 90 / 180;
+    double df = f2 - f1;
+    const double a90 = M_PI * 90 / 180;
     if (std::abs(df) > a90) {
-        qreal f2old = f2;
-        qreal x2old = arc.x2;
-        qreal y2old = arc.y2;
-        qreal c = -1;
+        double f2old = f2;
+        double x2old = arc.x2;
+        double y2old = arc.y2;
+        double c = -1;
         if (arc.sweep_flag && f2 > f1)
             c = 1;
         f2 = f1 + a90 * c;
         arc.x2 = cx + arc.rx * cos(f2);
         arc.y2 = cy + arc.ry * sin(f2);
-        QList<qreal> list;
+        QList<double> list;
         list.reserve(4);
         list << f2 << f2old << cx << cy;
         ArcStruct newArk = { arc.x2, arc.y2, arc.rx, arc.ry, arc.angle, 0,
@@ -193,13 +193,13 @@ QList<QPointF> Segment::arcToCurve(ArcStruct arc) const
     }
 
     df = f2 - f1;
-    qreal c1 = cos(f1);
-    qreal s1 = sin(f1);
-    qreal c2 = cos(f2);
-    qreal s2 = sin(f2);
-    qreal t = tan(df / 4.0);
-    qreal hx = 4.0 / 3.0 * arc.rx * t;
-    qreal hy = 4.0 / 3.0 * arc.ry * t;
+    double c1 = cos(f1);
+    double s1 = sin(f1);
+    double c2 = cos(f2);
+    double s2 = sin(f2);
+    double t = tan(df / 4.0);
+    double hx = 4.0 / 3.0 * arc.rx * t;
+    double hy = 4.0 / 3.0 * arc.ry * t;
 
     QPointF p1(arc.x1, arc.y1);
     QPointF p2(arc.x1 + hx * s1, arc.y1 - hy * c1);
@@ -216,7 +216,7 @@ QList<QPointF> Segment::arcToCurve(ArcStruct arc) const
 }
 
 // FIXME: add s, q, t segments
-QList<Segment> Segment::toCurve(qreal prevX, qreal prevY) const
+QList<Segment> Segment::toCurve(double prevX, double prevY) const
 {
     QList<Segment> segList;
     if (command == Command::LineTo)
@@ -238,7 +238,7 @@ QList<Segment> Segment::toCurve(qreal prevX, qreal prevY) const
     {
         if (!isZero(rx) && !isZero(ry)) {
             ArcStruct arc = { prevX, prevY, rx, ry, xAxisRotation, largeArc,
-                              sweep, x, y, QList<qreal>() };
+                              sweep, x, y, QList<double>() };
             QList<QPointF> list = arcToCurve(arc);
             segList.reserve(list.size()/3);
             for (int i = 0; i < list.size(); i += 3) {
@@ -259,7 +259,7 @@ QList<Segment> Segment::toCurve(qreal prevX, qreal prevY) const
     return segList;
 }
 
-void Segment::toRelative(qreal xLast, qreal yLast)
+void Segment::toRelative(double xLast, double yLast)
 {
     x -= xLast;
     y -= yLast;
@@ -278,7 +278,7 @@ void Segment::toRelative(qreal xLast, qreal yLast)
     absolute = false;
 }
 
-void Segment::coords(QVector<qreal> &points)
+void Segment::coords(QVector<double> &points)
 {
     points.reserve(7);
     if (command == Command::CurveTo)
@@ -369,10 +369,10 @@ void Path::splitToSegments(const QString &path, QList<Segment> &segList)
     QChar cmd;
     QChar prevCmd;
     bool isNewCmd = false;
-    qreal prevX = 0;
-    qreal prevY = 0;
-    qreal prevMX = 0;
-    qreal prevMY = 0;
+    double prevX = 0;
+    double prevY = 0;
+    double prevMX = 0;
+    double prevMY = 0;
     while (sw.isValid() && !sw.atEnd()) {
         sw.skipSpaces();
         QChar pathElem = sw.current();
@@ -391,8 +391,8 @@ void Path::splitToSegments(const QString &path, QList<Segment> &segList)
             cmd = pathElem;
             sw.next();
         } else if (cmd != Command::ClosePath) {
-            qreal offsetX = 0;
-            qreal offsetY = 0;
+            double offsetX = 0;
+            double offsetY = 0;
             Segment seg;
             seg.command = cmd.toLower();
             if (seg.command != Command::ClosePath)
@@ -478,9 +478,9 @@ void Path::calcNewStrokeWidth(const Transform &transform)
     bool hasParentStrokeWidth = false;
     while (!parentElem.isNull()) {
         if (parentElem.hasAttribute(AttrId::stroke_width)) {
-            qreal strokeWidth
-                    = Tools::convertUnitsToPx(parentElem.attribute(AttrId::stroke_width)).toDouble();
-            QString sw = roundNumber(strokeWidth * transform.scaleFactor(), Round::Attribute);
+            double strokeWidth
+                = toDouble(Tools::convertUnitsToPx(parentElem.attribute(AttrId::stroke_width)));
+            QString sw = fromDouble(strokeWidth * transform.scaleFactor(), Round::Attribute);
             m_elem.setAttribute("stroke-width-new", sw);
             hasParentStrokeWidth = true;
             break;
@@ -488,7 +488,7 @@ void Path::calcNewStrokeWidth(const Transform &transform)
         parentElem = parentElem.parentElement();
     }
     if (!hasParentStrokeWidth) {
-        m_elem.setAttribute("stroke-width-new", roundNumber(transform.scaleFactor(), Round::Attribute));
+        m_elem.setAttribute("stroke-width-new", fromDouble(transform.scaleFactor(), Round::Attribute));
     }
 }
 
@@ -542,10 +542,10 @@ bool Path::isTsPathShorter()
 
 void Path::segmentsToRelative(QList<Segment> &segList, bool onlyIfSourceWasRelative)
 {
-    qreal lastX = 0;
-    qreal lastY = 0;
-    qreal lastMX = segList.first().x;
-    qreal lastMY = segList.first().y;
+    double lastX = 0;
+    double lastY = 0;
+    double lastMX = segList.first().x;
+    double lastMY = segList.first().y;
     for (int i = 0; i < segList.count(); ++i) {
         Segment segment = segList.at(i);
         if (segment.command != Command::ClosePath) {
@@ -667,7 +667,7 @@ bool Path::removeTinySegments(QList<Segment> &segList)
         return false;
 
     const int oldSize = segList.size();
-    static qreal minValue = 1 / pow(10, Keys.coordinatesPrecision());
+    static double minValue = 1 / pow(10, Keys.coordinatesPrecision());
 
     // if current segment too close to previous - remove it
     for (int i = 0; i < segList.count()-1; ++i) {
@@ -929,8 +929,8 @@ QString Path::segmentsToPath(QList<Segment> &segList)
     if (segList.size() == 1 || segList.isEmpty())
         return "";
 
-    static const ushort dot   = Char::Dot.unicode();
-    static const ushort space = Char::Space.unicode();
+    static const ushort dot   = '.';
+    static const ushort space = ' ';
 
     QVarLengthArray<ushort> array;
 
@@ -974,7 +974,7 @@ QString Path::segmentsToPath(QList<Segment> &segList)
         if (cmd == Command::EllipticalArc)
            round = false;
 
-        QVector<qreal> points;
+        QVector<double> points;
         segment.coords(points);
         if (isTrim) {
             // remove unneeded number separators
@@ -1034,25 +1034,25 @@ QString Path::segmentsToPath(QList<Segment> &segList)
 
 struct Box
 {
-    qreal minx;
-    qreal miny;
-    qreal maxx;
-    qreal maxy;
+    double minx;
+    double miny;
+    double maxx;
+    double maxy;
 };
 
 struct Bezier
 {
-    qreal p_x;
-    qreal p_y;
-    qreal x1;
-    qreal y1;
-    qreal x2;
-    qreal y2;
-    qreal x;
-    qreal y;
+    double p_x;
+    double p_y;
+    double x1;
+    double y1;
+    double x2;
+    double y2;
+    double x;
+    double y;
 };
 
-void updateBBox(Box &bbox, qreal x, qreal y)
+void updateBBox(Box &bbox, double x, double y)
 {
     bbox.maxx = qMax(x, bbox.maxx);
     bbox.minx = qMin(x, bbox.minx);
@@ -1060,28 +1060,28 @@ void updateBBox(Box &bbox, qreal x, qreal y)
     bbox.miny = qMin(y, bbox.miny);
 }
 
-QPointF findDotOnCurve(const Bezier &b, qreal t)
+QPointF findDotOnCurve(const Bezier &b, double t)
 {
-    qreal t1 = 1 - t;
-    qreal t_2 = t * t;
-    qreal t_3 = t_2 * t;
-    qreal t1_2 = t1 * t1;
-    qreal t1_3 = t1_2 * t1;
-    qreal x =   t1_3 * b.p_x
+    double t1 = 1 - t;
+    double t_2 = t * t;
+    double t_3 = t_2 * t;
+    double t1_2 = t1 * t1;
+    double t1_3 = t1_2 * t1;
+    double x =   t1_3 * b.p_x
               + t1_2 * 3 * t * b.x1
               + t1 * 3 * t_2 * b.x2
               + t_3 * b.x;
-    qreal y =   t1_3 * b.p_y
+    double y =   t1_3 * b.p_y
               + t1_2 * 3 * t * b.y1
               + t1 * 3 * t_2 * b.y2
               + t_3 * b.y;
     return QPointF(x, y);
 }
 
-void curveExtremum(qreal a, qreal b, qreal c, const Bezier &bezier, Box &bbox)
+void curveExtremum(double a, double b, double c, const Bezier &bezier, Box &bbox)
 {
-    qreal t1 = (-b + sqrt(b * b - 4 * a * c)) / 2 / a;
-    qreal t2 = (-b - sqrt(b * b - 4 * a * c)) / 2 / a;
+    double t1 = (-b + sqrt(b * b - 4 * a * c)) / 2 / a;
+    double t2 = (-b - sqrt(b * b - 4 * a * c)) / 2 / a;
 
     if (t1 > 0.0 && t1 < 1.0) {
         QPointF p = findDotOnCurve(bezier, t1);
@@ -1098,9 +1098,9 @@ void curveBBox(const Bezier &bz, Box &bbox)
     updateBBox(bbox, bz.p_x, bz.p_y);
     updateBBox(bbox, bz.x, bz.y);
 
-    qreal a = (bz.x2 - 2 * bz.x1 + bz.p_x) - (bz.x - 2 * bz.x2 + bz.x1);
-    qreal b = 2 * (bz.x1 - bz.p_x) - 2 * (bz.x2 - bz.x1);
-    qreal c = bz.p_x - bz.x1;
+    double a = (bz.x2 - 2 * bz.x1 + bz.p_x) - (bz.x - 2 * bz.x2 + bz.x1);
+    double b = 2 * (bz.x1 - bz.p_x) - 2 * (bz.x2 - bz.x1);
+    double c = bz.p_x - bz.x1;
     curveExtremum(a, b, c, bz, bbox);
 
     a = (bz.y2 - 2 * bz.y1 + bz.p_y) - (bz.y - 2 * bz.y2 + bz.y1);
@@ -1136,8 +1136,8 @@ void Path::calcBoundingBox(const QList<Segment> &segList)
         }
     }
     m_elem.setAttribute(AttrId::bbox,
-                                  roundNumber(bbox.minx)
-                          + " " + roundNumber(bbox.miny)
-                          + " " + roundNumber(bbox.maxx - bbox.minx)
-                          + " " + roundNumber(bbox.maxy - bbox.miny));
+                                  fromDouble(bbox.minx)
+                          + " " + fromDouble(bbox.miny)
+                          + " " + fromDouble(bbox.maxx - bbox.minx)
+                          + " " + fromDouble(bbox.maxy - bbox.miny));
 }

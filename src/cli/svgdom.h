@@ -130,6 +130,8 @@ public:
     SvgDeclaration createDeclaration(const QString &data);
     SvgText createText(const QString &text);
 
+    void calcElemAttrCount(const QString &text);
+
     SvgElement documentElement() const;
 
     bool loadFile(const QString &filePath);

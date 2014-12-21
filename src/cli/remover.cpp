@@ -199,7 +199,7 @@ void Remover::removeUnusedXLinks()
     }
 }
 
-// TODO: refract this func
+// TODO: simplify this func
 void Remover::removeDuplicatedDefs()
 {
     StringHash xlinkToReplace;
@@ -224,25 +224,25 @@ void Remover::removeDuplicatedDefs()
                 if (map.contains(A_gradientTransform)) {
                     Transform gts(map.value(A_gradientTransform));
                     if (!gts.isMirrored() && gts.isProportionalScale()) {
-                        gts.setOldXY(map.value(A_x1).toDouble(),
-                                     map.value(A_y1).toDouble());
-                        map.insert(A_x1, roundNumber(gts.newX()));
-                        map.insert(A_y1, roundNumber(gts.newY()));
-                        gts.setOldXY(map.value(A_x2).toDouble(),
-                                     map.value(A_y2).toDouble());
-                        map.insert(A_x2, roundNumber(gts.newX()));
-                        map.insert(A_y2, roundNumber(gts.newY()));
+                        gts.setOldXY(toDouble(map.value(A_x1)),
+                                     toDouble(map.value(A_y1)));
+                        map.insert(A_x1, fromDouble(gts.newX()));
+                        map.insert(A_y1, fromDouble(gts.newY()));
+                        gts.setOldXY(toDouble(map.value(A_x2)),
+                                     toDouble(map.value(A_y2)));
+                        map.insert(A_x2, fromDouble(gts.newX()));
+                        map.insert(A_y2, fromDouble(gts.newY()));
                         map.remove(A_gradientTransform);
                     } else {
                         map.insert(A_gradientTransform, gts.simplified());
                     }
                 }
                 if (map.contains(A_x2) || map.contains(A_y2)) {
-                    if (isZero(map.value(A_x1).toDouble() - map.value(A_x2).toDouble())) {
+                    if (isZero(toDouble(map.value(A_x1)) - toDouble(map.value(A_x2)))) {
                         map.remove(A_x1);
                         map.insert(A_x2, V_null);
                     }
-                    if (isZero(map.value(A_y1).toDouble() - map.value(A_y2).toDouble())) {
+                    if (isZero(toDouble(map.value(A_y1)) - toDouble(map.value(A_y2)))) {
                         map.remove(A_y1);
                         map.remove(A_y2);
                     }
@@ -251,28 +251,27 @@ void Remover::removeDuplicatedDefs()
                 if (map.contains(A_gradientTransform)) {
                     Transform gts(elem.attribute(AttrId::gradientTransform));
                     if (!gts.isMirrored() && gts.isProportionalScale() && !gts.isRotating()) {
-                        gts.setOldXY(map.value(A_fx).toDouble(),
-                                     map.value(A_fy).toDouble());
+                        gts.setOldXY(toDouble(map.value(A_fx)),
+                                     toDouble(map.value(A_fy)));
                         if (map.contains(A_fx))
-                            map.insert(A_fx, roundNumber(gts.newX()));
+                            map.insert(A_fx, fromDouble(gts.newX()));
                         if (map.contains(A_fy))
-                            map.insert(A_fy, roundNumber(gts.newY()));
-                        gts.setOldXY(map.value(A_cx).toDouble(),
-                                     map.value(A_cy).toDouble());
-                        map.insert(A_cx, roundNumber(gts.newX()));
-                        map.insert(A_cy, roundNumber(gts.newY()));
+                            map.insert(A_fy, fromDouble(gts.newY()));
+                        gts.setOldXY(toDouble(map.value(A_cx)),
+                                     toDouble(map.value(A_cy)));
+                        map.insert(A_cx, fromDouble(gts.newX()));
+                        map.insert(A_cy, fromDouble(gts.newY()));
 
-                        map.insert(A_r, roundNumber(map.value(A_r).toDouble()
-                                                                  * gts.scaleFactor()));
+                        map.insert(A_r, fromDouble(toDouble(map.value(A_r)) * gts.scaleFactor()));
                         map.remove(A_gradientTransform);
                     } else {
                         map.insert(A_gradientTransform, gts.simplified());
                     }
                 }
-                qreal fx = map.value(A_fx).toDouble();
-                qreal fy = map.value(A_fy).toDouble();
-                qreal cx = map.value(A_cx).toDouble();
-                qreal cy = map.value(A_cy).toDouble();
+                double fx = toDouble(map.value(A_fx));
+                double fy = toDouble(map.value(A_fy));
+                double cx = toDouble(map.value(A_cx));
+                double cy = toDouble(map.value(A_cy));
                 if (isZero(qAbs(fx-cx)))
                     map.remove(A_fx);
                 if (isZero(qAbs(fy-cy)))
@@ -353,7 +352,7 @@ void Remover::removeDuplicatedDefs()
                                 elemStructList.removeAt(j);
                                 for (int e = 0; e < elemStructList.size(); ++e) {
                                     if (elemStructList.at(e).attrMap.value(A_xlink_href).mid(1) == id2)
-                                        elemStructList[e].attrMap.insert(A_xlink_href, Char::Sharp + id1);
+                                        elemStructList[e].attrMap.insert(A_xlink_href, QL1C('#') + id1);
                                 }
                                 j--;
                             }
@@ -408,11 +407,11 @@ void Remover::removeDuplicatedDefs()
                         } else {
                             child2.setTagName(E_use);
                             child2.removeAttribute(AttrId::d);
-                            child2.setAttribute(AttrId::xlink_href, Char::Sharp + child1.id());
+                            child2.setAttribute(AttrId::xlink_href, QL1C('#') + child1.id());
                             child1.setAttribute(AttrId::used_element, "1");
                             if (child1.parentElement().tagName() == E_clipPath) {
                                 SvgElement newUse = document().createElement(E_use);
-                                newUse.setAttribute(AttrId::xlink_href, Char::Sharp + child1.id());
+                                newUse.setAttribute(AttrId::xlink_href, QL1C('#') + child1.id());
                                 newUse.setAttribute(AttrId::transform,
                                                     child1.attribute(AttrId::transform));
                                 child1.removeAttribute(AttrId::transform);
@@ -642,7 +641,7 @@ void Remover::removeElements()
     }
 
     // TODO: move to separate func
-    qreal stdDevLimit = Keys.doubleNumber(Key::RemoveTinyGaussianBlur);
+    double stdDevLimit = Keys.doubleNumber(Key::RemoveTinyGaussianBlur);
     if (stdDevLimit == 0)
         return;
     element_loop(defsElement()) {
@@ -708,8 +707,8 @@ bool Remover::isElementInvisible(SvgElement &elem)
     //remove elements "rect", "pattern" and "image" with height or width <= 0
     if (tagName == E_rect || tagName == E_pattern || tagName == E_image) {
         if (elem.hasAttribute(AttrId::width) && elem.hasAttribute(AttrId::height)) {
-            qreal width  = elem.doubleAttribute(AttrId::width);
-            qreal height = elem.doubleAttribute(AttrId::height);
+            double width  = elem.doubleAttribute(AttrId::width);
+            double height = elem.doubleAttribute(AttrId::height);
             if (width <= 0 || height <= 0)
                 return true;
         }
@@ -1068,7 +1067,7 @@ void Remover::cleanStyle(const SvgElement &elem, IntHash &hash)
         QString value = hash.value(attrId);
         if (!value.isEmpty()) {
             bool ok = false;
-            qreal num = value.toDouble(&ok);
+            double num = value.toDouble(&ok);
             if (!ok && !value.startsWith(UrlPrefix)) {
                 if (attrId == AttrId::stroke_width) {
                     if (value.endsWith(LengthType::Percent)) {
@@ -1079,7 +1078,7 @@ void Remover::cleanStyle(const SvgElement &elem, IntHash &hash)
                     }
                     else if (value.endsWith(LengthType::em) || value.endsWith(LengthType::ex)) {
                         QString fontSizeStr = findAttribute(elem, AttrId::font_size);
-                        qreal fontSize = Tools::convertUnitsToPx(fontSizeStr).toDouble();
+                        double fontSize = toDouble(Tools::convertUnitsToPx(fontSizeStr));
                         if (fontSize == 0)
                             qFatal("Error: could not convert em/ex values "
                                    "without font-size attribute is set.");
@@ -1089,9 +1088,9 @@ void Remover::cleanStyle(const SvgElement &elem, IntHash &hash)
                     }
                 } else
                     hash.insert(attrId, Tools::convertUnitsToPx(value));
-                num = hash.value(attrId).toDouble();
+                num = toDouble(hash.value(attrId));
             }
-            hash.insert(attrId, roundNumber(num, Round::Attribute));
+            hash.insert(attrId, fromDouble(num, Round::Attribute));
         }
     }
 
@@ -1188,7 +1187,7 @@ void Remover::removeDefaultValue(IntHash &hash, int attrId)
             if (value == hash.value(attrId))
                 hash.remove(attrId);
         } else if (!hash.value(attrId).isEmpty()
-                   && strToDouble(hash.value(attrId)) == value.toDouble()) {
+                   && toDouble(hash.value(attrId)) == value.toDouble()) {
             hash.remove(attrId);
         }
     }
@@ -1283,9 +1282,9 @@ void Remover::megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem, 
             childElem.setTransform(groupElem.attribute(attrName), !isParentToChild);
         } else if (attrName == A_opacity) {
             if (groupElem.hasAttribute(AttrId::opacity) && childElem.hasAttribute(AttrId::opacity)) {
-                qreal newOp =  groupElem.doubleAttribute(AttrId::opacity)
+                double newOp =  groupElem.doubleAttribute(AttrId::opacity)
                               * childElem.doubleAttribute(AttrId::opacity);
-                childElem.setAttribute(AttrId::opacity, roundNumber(newOp));
+                childElem.setAttribute(AttrId::opacity, fromDouble(newOp));
             } else {
                 childElem.setAttribute(attrName, groupElem.attribute(attrName));
             }
@@ -1376,23 +1375,23 @@ void _setupTransformForBBox(const SvgElement &elem, const QStringList &trList)
 void Remover::prepareViewBoxRect(QRectF &viewBox)
 {
     if (svgElement().hasAttribute(AttrId::width) || svgElement().hasAttribute(AttrId::height)) {
-        qreal w = viewBox.width();
+        double w = viewBox.width();
         if (svgElement().hasAttribute(AttrId::width))
             w = svgElement().doubleAttribute(AttrId::width);
 
-        qreal h = viewBox.height();
+        double h = viewBox.height();
         if (svgElement().hasAttribute(AttrId::height))
             h = svgElement().doubleAttribute(AttrId::height);
 
-        qreal vbAspect = viewBox.width()/viewBox.height();
-        qreal aspect = w/h;
+        double vbAspect = viewBox.width()/viewBox.height();
+        double aspect = w/h;
 
         QSizeF s(w, h);
         if ((aspect > 1.0 && aspect > vbAspect) || aspect > vbAspect) {
-            qreal asp = viewBox.height()/h;
+            double asp = viewBox.height()/h;
             s.scale(w * asp, h * asp, Qt::KeepAspectRatio);
         } else {
-            qreal asp = viewBox.width()/w;
+            double asp = viewBox.width()/w;
             s.scale(w * asp, h * asp, Qt::KeepAspectRatio);
         }
         viewBox.moveTo(viewBox.x() + (viewBox.width() - s.width()) / 2,
@@ -1422,8 +1421,8 @@ void Remover::removeElementsOutsideTheViewbox()
             && !hasParent(elem, E_defs)
             && !hasParent(elem, E_flowRegion)) {
             QStringList pList = elem.attribute(AttrId::bbox).split(" ");
-            QRectF rect(strToDouble(pList.at(0)), strToDouble(pList.at(1)),
-                        strToDouble(pList.at(2)), strToDouble(pList.at(3)));
+            QRectF rect(toDouble(pList.at(0)), toDouble(pList.at(1)),
+                        toDouble(pList.at(2)), toDouble(pList.at(3)));
             // fix rect's with zero area
             if (rect.width() == 0)
                 rect.setWidth(1);
@@ -1438,9 +1437,9 @@ void Remover::removeElementsOutsideTheViewbox()
             QString stroke = findAttribute(elem, AttrId::stroke);
             if (!stroke.isEmpty() && stroke != V_none) {
                 QString sws = findAttribute(elem, AttrId::stroke_width);
-                qreal sw = 1;
+                double sw = 1;
                 if (!sws.isEmpty())
-                    sw = sws.toDouble();
+                    sw = toDouble(sws);
                 rect.adjust(-sw/2, -sw/2, sw, sw);
             }
 

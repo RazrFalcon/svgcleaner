@@ -25,22 +25,20 @@
 #include "tools.h"
 
 Q_CORE_EXPORT double qstrtod(const char *s00, char const **se, bool *ok);
-Q_CORE_EXPORT char *qdtoa(double d, int mode, int ndigits, int *decpt,
-                          int *sign, char **rve, char **digits_str);
 
-bool isZero(qreal value)
+bool isZero(double value)
 {
-    static qreal minValue = 1.0 / pow(10, Keys::get().coordinatesPrecision());
+    u_static double minValue = 1.0 / pow(10, Keys::get().coordinatesPrecision());
     return (qAbs(value) < minValue);
 }
 
-bool isZeroTs(qreal value)
+bool isZeroTs(double value)
 {
-    static qreal minValue = 1.0 / pow(10, Keys::get().transformPrecision());
+    u_static double minValue = 1.0 / pow(10, Keys::get().transformPrecision());
     return (qAbs(value) < minValue);
 }
 
-QString roundNumber(qreal value, Round::RoundType type)
+QString fromDouble(double value, Round::RoundType type)
 {
     int precision;
     if (type == Round::Coordinate)
@@ -49,17 +47,17 @@ QString roundNumber(qreal value, Round::RoundType type)
         precision = Keys::get().attributesPrecision();
     else
         precision = Keys::get().transformPrecision();
-    return roundNumber(value, precision);
+    return fromDouble(value, precision);
 }
 
-QString roundNumber(qreal value, int precision)
+QString fromDouble(double value, int precision)
 {
     QVarLengthArray<ushort> array;
     doubleToVarArr(array, value, precision);
     return QString(reinterpret_cast<QChar *>(array.data()), array.size());
 }
 
-void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision)
+void doubleToVarArr(QVarLengthArray<ushort> &arr, double value, int precision)
 {
     double fractpart, intpart;
     fractpart = modf(value, &intpart);
@@ -70,32 +68,32 @@ void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision)
     // 2.01738 -> 2.02
     // 3.004   -> 3
     if (qAbs(fractpart/intpart*100) < 1.1f) {
-        qreal v = pow(10, (precision-1));
-        qreal fractpart2 = qRound(fractpart * v) / v;
+        double v = pow(10, (precision-1));
+        double fractpart2 = qRound(fractpart * v) / v;
         value = intpart + fractpart2;
     }
 
     uint multiplier = 1;
     while (precision--)
         multiplier *= 10;
-    qreal tmpValue = qRound64(qAbs(value) * multiplier);
+    double tmpValue = qRound64(qAbs(value) * multiplier);
 
-    static const ushort zero = Char::Zero.unicode();
-    if (qFuzzyCompare(tmpValue, 0.0)) {
+    static const ushort zero = '0';
+    if (qFuzzyIsNull(tmpValue)) {
         arr.append(zero);
         return;
     }
 
-    qreal newValue = tmpValue/multiplier;
+    double newValue = tmpValue/multiplier;
 
     int decimalPointPos = Tools::numbersBeforePoint(newValue);
-    int zeroAfterPoint = Tools::zerosAfterPoint(newValue);
+    int zeroAfterPoint  = Tools::zerosAfterPoint(newValue);
 
     qulonglong l = tmpValue;
     ushort buff[65];
     ushort *p = buff + 65;
-    static const ushort point = Char::Dot.unicode();
-    static const ushort sign  = Char::Sign.unicode();
+    static const ushort point = '.';
+    static const ushort sign  = '-';
     int pos = 0;
     while (l != 0) {
         pos++;
@@ -124,7 +122,7 @@ void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision)
         *(--p) = zero;
     if (decimalPointPos == 0) {
         *(--p) = point;
-        u_test const bool useLeadingZero = !Keys::get().flag(Key::RemoveUnneededSymbols);
+        u_static const bool useLeadingZero = !Keys::get().flag(Key::RemoveUnneededSymbols);
         if (useLeadingZero)
             *(--p) = zero;
     }
@@ -134,7 +132,7 @@ void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision)
     arr.append(p, 65 - (p - buff));
 }
 
-int Tools::numbersBeforePoint(qreal value)
+int Tools::numbersBeforePoint(double value)
 {
     int v = floor(value);
     int count = 0;
@@ -145,9 +143,9 @@ int Tools::numbersBeforePoint(qreal value)
     return count;
 }
 
-int Tools::zerosAfterPoint(qreal value)
+int Tools::zerosAfterPoint(double value)
 {
-    qreal v = qAbs(value);
+    double v = qAbs(value);
     int count = 0;
     while(v < 0.1) {
         v *= 10;
@@ -156,10 +154,9 @@ int Tools::zerosAfterPoint(qreal value)
     return count;
 }
 
-qreal strToDouble(const QString &str)
+double toDouble(const QString &str)
 {
-    const QChar *ch = str.constData();
-    return Tools::toDouble(ch);
+    return StringWalker(str).number(StringWalker::NoSkip);
 }
 
 // check is space or non printable character
@@ -176,92 +173,6 @@ bool isSpace(ushort ch)
     return false;
 }
 
-// the isDigit code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
-// '0' is 0x30 and '9' is 0x39
-bool Tools::isDigit(ushort ch)
-{
-    static quint16 magic = 0x3ff;
-    return ((ch >> 4) == 3) && (magic >> (ch & 15));
-}
-
-// the toDouble code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
-qreal Tools::toDouble(const QChar *&str)
-{
-    const int maxLen = 255; // technically doubles can go til 308+ but whatever
-    char temp[maxLen+1];
-    int pos = 0;
-
-    if (*str == QL1C('-')) {
-        temp[pos++] = '-';
-        ++str;
-    } else if (*str == QL1C('+')) {
-        ++str;
-    }
-    while (isDigit(str->unicode()) && pos < maxLen) {
-        temp[pos++] = str->toLatin1();
-        ++str;
-    }
-    if (*str == QL1C('.') && pos < maxLen) {
-        temp[pos++] = '.';
-        ++str;
-    }
-    while (isDigit(str->unicode()) && pos < maxLen) {
-        temp[pos++] = str->toLatin1();
-        ++str;
-    }
-    bool exponent = false;
-    if ((*str == QL1C('e') || *str == QL1C('E')) && pos < maxLen) {
-        exponent = true;
-        temp[pos++] = 'e';
-        ++str;
-        if ((*str == QL1C('-') || *str == QL1C('+')) && pos < maxLen) {
-            temp[pos++] = str->toLatin1();
-            ++str;
-        }
-        while (isDigit(str->unicode()) && pos < maxLen) {
-            temp[pos++] = str->toLatin1();
-            ++str;
-        }
-    }
-
-    temp[pos] = '\0';
-
-    qreal val;
-    if (!exponent && pos < 10) {
-        int ival = 0;
-        const char *t = temp;
-        bool neg = false;
-        if (*t == '-') {
-            neg = true;
-            ++t;
-        }
-        while (*t && *t != '.') {
-            ival *= 10;
-            ival += (*t) - '0';
-            ++t;
-        }
-        if (*t == '.') {
-            ++t;
-            int div = 1;
-            while (*t) {
-                ival *= 10;
-                ival += (*t) - '0';
-                div *= 10;
-                ++t;
-            }
-            val = ((qreal)ival)/((qreal)div);
-        } else {
-            val = ival;
-        }
-        if (neg)
-            val = -val;
-    } else {
-        bool ok = false;
-        val = qstrtod(temp, 0, &ok);
-    }
-    return val;
-}
-
 QString Tools::trimColor(const QString &color)
 {
     QString newColor = color.toLower();
@@ -270,20 +181,20 @@ QString Tools::trimColor(const QString &color)
     if (Keys::get().flag(Key::ConvertColorToRRGGBB)) {
         if (newColor.contains(QL1S("rgb"))) {
             StringWalker sw(newColor);
-            QVector<qreal> nums;
+            QVector<double> nums;
             nums.reserve(3);
             while (!sw.atEnd()) {
-                sw.jumpTo(Char::LeftParenthesis);
+                sw.jumpTo(QL1C('('));
                 sw.skipSpaces();
                 sw.next();
                 for (int i = 0; i < 3; ++i) {
                     nums << sw.number();
                     if (sw.current() == LengthType::Percent)
                         sw.next();
-                    if (sw.current() == Char::Comma)
+                    if (sw.current() == QL1C(','))
                         sw.next();
                 }
-                sw.jumpTo(Char::RightParenthesis);
+                sw.jumpTo(QL1C(')'));
                 sw.next();
             }
             // convert 'rgb (100%, 100%, 100%)' to 'rgb (255, 255, 255)'
@@ -291,18 +202,18 @@ QString Tools::trimColor(const QString &color)
                 for (int i = 0; i < 3; ++i)
                     nums[i] = nums.at(i) * 255 / 100;
             }
-            newColor = Char::Sharp;
-            foreach (const qreal &value, nums)
-                newColor += QString::number((int)value, 16).rightJustified(2, Char::Zero);
+            newColor = QL1C('#');
+            foreach (const double &value, nums)
+                newColor += QString::number((int)value, 16).rightJustified(2, QL1C('0'));
         }
 
         // check is color set by name
-        if (!newColor.contains(Char::Sharp))
+        if (!newColor.contains(QL1C('#')))
             newColor = replaceColorName(newColor);
     }
 
     if (Keys::get().flag(Key::ConvertRRGGBBToRGB)) {
-        if (newColor.startsWith(Char::Sharp)) {
+        if (newColor.startsWith(QL1C('#'))) {
             // try to convert #rrggbb to #rgb
             if (newColor.size() == 7) { // #000000
                 int inter = 0;
@@ -311,7 +222,7 @@ QString Tools::trimColor(const QString &color)
                         inter++;
                 }
                 if (inter == 3)
-                    newColor = Char::Sharp + newColor.at(1) + newColor.at(3) + newColor.at(5);
+                    newColor = QL1C('#') + newColor.at(1) + newColor.at(3) + newColor.at(5);
             }
         }
     }
@@ -467,10 +378,10 @@ QString Tools::replaceColorName(const QString &color)
 }
 
 // http://www.w3.org/TR/SVG11/coords.html#Units
-QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
+QString Tools::convertUnitsToPx(const QString &text, double baseValue)
 {
     QString unit;
-    qreal number = 0;
+    double number = 0;
     StringWalker sw(text);
     while (!sw.atEnd()) {
         number = sw.number();
@@ -481,7 +392,7 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
     }
 
     if (unit == LengthType::px)
-        return roundNumber(number, Round::Attribute);
+        return fromDouble(number, Round::Attribute);
 
     // fix string parsing, getNum func detect 'e' char as exponent...
     if (unit == QL1S("x"))
@@ -511,7 +422,7 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
     else
         return text;
 
-    return roundNumber(number, Round::Attribute);
+    return fromDouble(number, Round::Attribute);
 }
 
 
@@ -585,12 +496,94 @@ const QChar *&StringWalker::data()
     return str;
 }
 
-qreal StringWalker::number(Opt opt)
+// the number() code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
+double StringWalker::number(Opt opt)
 {
     skipSpaces();
-    qreal num = Tools::toDouble(str);
-    skipSpaces();
-    if (opt == SkipComma && *str == Char::Comma)
+
+    const int maxLen = 255; // technically doubles can go til 308+ but whatever
+    char temp[maxLen+1];
+    int pos = 0;
+
+    if (*str == QL1C('-')) {
+        temp[pos++] = '-';
         ++str;
-    return num;
+    } else if (*str == QL1C('+')) {
+        ++str;
+    }
+    while (isDigit(str->unicode()) && pos < maxLen) {
+        temp[pos++] = str->unicode();
+        ++str;
+    }
+    if (*str == QL1C('.') && pos < maxLen) {
+        temp[pos++] = '.';
+        ++str;
+    }
+    while (isDigit(str->unicode()) && pos < maxLen) {
+        temp[pos++] = str->unicode();
+        ++str;
+    }
+    bool exponent = false;
+    if ((*str == QL1C('e') || *str == QL1C('E')) && pos < maxLen) {
+        exponent = true;
+        temp[pos++] = 'e';
+        ++str;
+        if ((*str == QL1C('-') || *str == QL1C('+')) && pos < maxLen) {
+            temp[pos++] = str->unicode();
+            ++str;
+        }
+        while (isDigit(str->unicode()) && pos < maxLen) {
+            temp[pos++] = str->unicode();
+            ++str;
+        }
+    }
+
+    temp[pos] = '\0';
+
+    double val;
+    if (!exponent && pos < 10) {
+        int ival = 0;
+        const char *t = temp;
+        bool neg = false;
+        if (*t == '-') {
+            neg = true;
+            ++t;
+        }
+        while (*t && *t != '.') {
+            ival *= 10;
+            ival += (*t) - '0';
+            ++t;
+        }
+        if (*t == '.') {
+            ++t;
+            int div = 1;
+            while (*t) {
+                ival *= 10;
+                ival += (*t) - '0';
+                div *= 10;
+                ++t;
+            }
+            val = ((double)ival)/((double)div);
+        } else {
+            val = ival;
+        }
+        if (neg)
+            val = -val;
+    } else {
+        bool ok = false;
+        val = qstrtod(temp, 0, &ok);
+    }
+
+    skipSpaces();
+    if (opt == SkipComma && *str == QL1C(','))
+        ++str;
+    return val;
+}
+
+// the isDigit code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
+// '0' is 0x30 and '9' is 0x39
+bool StringWalker::isDigit(ushort ch)
+{
+    static quint16 magic = 0x3ff;
+    return ((ch >> 4) == 3) && (magic >> (ch & 15));
 }

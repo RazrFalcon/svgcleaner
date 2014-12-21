@@ -286,23 +286,6 @@ const StringSet elementsUsingXLink = StringSet()
     << E_animateTransform << E_set << E_tref;
 }
 
-namespace Char {
-
-    const QChar Dot              = QL1C('.');
-    const QChar Comma            = QL1C(',');
-    const QChar Space            = QL1C(' ');
-    const QChar LeftParenthesis  = QL1C('(');
-    const QChar RightParenthesis = QL1C(')');
-    const QChar Sharp            = QL1C('#');
-    const QChar Zero             = QL1C('0');
-    const QChar Sign             = QL1C('-');
-    const QChar SingleQuotes     = QL1C('\'');
-    const QChar DoubleQuotes     = QL1C('\"');
-    const QChar Equation         = QL1C('=');
-    const QChar ElementStart     = QL1C('<');
-    const QChar ElementEnd       = QL1C('>');
-}
-
 namespace DefaultValue {
     const QString V_none = QL1S("none");
     const QString V_null = QL1S("0");

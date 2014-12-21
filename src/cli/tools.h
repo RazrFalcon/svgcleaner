@@ -31,33 +31,31 @@
 // we cannot use static variables while unit testing
 // so replace 'static' with nothing
 #ifdef U_TEST
-# define u_test
+# define u_static
 #else
-# define u_test static
+# define u_static static
 #endif
 
 namespace Round {
     enum RoundType { Coordinate, Transform, Attribute };
 }
 
-bool isZero(qreal value);
-bool isZeroTs(qreal value);
-QString roundNumber(qreal value, Round::RoundType type = Round::Coordinate);
-QString roundNumber(qreal value, int precision);
-qreal strToDouble(const QString &str);
-void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision = 6);
+bool isZero(double value);
+bool isZeroTs(double value);
+QString fromDouble(double value, Round::RoundType type = Round::Coordinate);
+QString fromDouble(double value, int precision);
+double toDouble(const QString &str);
+void doubleToVarArr(QVarLengthArray<ushort> &arr, double value, int precision = 6);
 bool isSpace(ushort ch);
 
 class Tools
 {
 public:
-    static QString convertUnitsToPx(const QString &text, qreal baseValue = 0);
+    static QString convertUnitsToPx(const QString &text, double baseValue = 0);
     static QString trimColor(const QString &color);
     static QVariantHash initDefaultStyleHash();
-    static int numbersBeforePoint(qreal value);
-    static int zerosAfterPoint(qreal value);
-    static bool isDigit(ushort ch);
-    static qreal toDouble(const QChar *&str);
+    static int numbersBeforePoint(double value);
+    static int zerosAfterPoint(double value);
 
 private:
     static QString replaceColorName(const QString &color);
@@ -66,7 +64,7 @@ private:
 class StringWalker
 {
 public:
-    enum Opt { None, SkipComma };
+    enum Opt { NoSkip, SkipComma };
 
     StringWalker(const QString &text);
     int jumpTo(const QChar &c);
@@ -79,11 +77,13 @@ public:
     bool isValid() const;
     QChar current() const;
     const QChar *&data();
-    qreal number(Opt opt = SkipComma);
+    double number(Opt opt = SkipComma);
 
 private:
     const QChar *str;
     const QChar *end;
+
+    static bool isDigit(ushort ch);
 };
 
 #endif // TOOLS_H

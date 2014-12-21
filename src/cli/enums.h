@@ -371,22 +371,6 @@ namespace Properties {
     extern const StringSet elementsUsingXLink;
 }
 
-namespace Char {
-    extern const QChar Dot;
-    extern const QChar Comma;
-    extern const QChar Space;
-    extern const QChar LeftParenthesis;
-    extern const QChar RightParenthesis;
-    extern const QChar Sharp;
-    extern const QChar Zero;
-    extern const QChar Sign;
-    extern const QChar SingleQuotes;
-    extern const QChar DoubleQuotes;
-    extern const QChar Equation;
-    extern const QChar ElementStart;
-    extern const QChar ElementEnd;
-}
-
 QString attrIdToStr(int id);
 int attrStrToId(const QString &name);
 bool isDefaultAttribute(const QString &name);

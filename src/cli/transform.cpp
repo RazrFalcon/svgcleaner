@@ -39,19 +39,19 @@ class TransformMatrix
 {
 public:
     explicit TransformMatrix();
-    TransformMatrix(qreal a, qreal b, qreal c, qreal d, qreal e, qreal f);
+    TransformMatrix(double a, double b, double c, double d, double e, double f);
     void setToIdentity();
     void invert();
     TransformMatrix operator *(const TransformMatrix &matrix) const;
-    qreal& operator()(int row, int column);
-    qreal operator()(int row, int column) const;
+    double& operator()(int row, int column);
+    double operator()(int row, int column) const;
 
 private:
-    qreal m[3][3];
+    double m[3][3];
 
     static TransformMatrix subMatrix(const TransformMatrix &matrix, int n, int indRow, int indCol);
-    qreal determinant();
-    qreal _determinant(const TransformMatrix &matrix, int n);
+    double determinant();
+    double _determinant(const TransformMatrix &matrix, int n);
 };
 
 TransformMatrix::TransformMatrix()
@@ -59,7 +59,7 @@ TransformMatrix::TransformMatrix()
     setToIdentity();
 }
 
-TransformMatrix::TransformMatrix(qreal a, qreal b, qreal c, qreal d, qreal e, qreal f)
+TransformMatrix::TransformMatrix(double a, double b, double c, double d, double e, double f)
 {
     setToIdentity();
     m[0][0] = a;
@@ -83,14 +83,14 @@ void TransformMatrix::setToIdentity()
     }
 }
 
-qreal TransformMatrix::determinant()
+double TransformMatrix::determinant()
 {
     return _determinant(*this, 3);
 }
 
 void TransformMatrix::invert()
 {
-    qreal det = determinant();
+    double det = determinant();
     TransformMatrix invMat;
     const int n = 3;
     for(int i = 0; i < n; ++i) {
@@ -107,7 +107,7 @@ TransformMatrix TransformMatrix::operator *(const TransformMatrix &matrix) const
     TransformMatrix result;
     for (int row = 0; row < 3; ++row) {
         for (int col = 0; col < 3; ++col) {
-            qreal sum(0.0f);
+            double sum(0.0f);
             for (int j = 0; j < 3; ++j)
                 sum += m[j][row] * matrix.m[col][j];
             result.m[col][row] = sum;
@@ -116,7 +116,7 @@ TransformMatrix TransformMatrix::operator *(const TransformMatrix &matrix) const
     return result;
 }
 
-qreal TransformMatrix::operator()(int row, int column) const
+double TransformMatrix::operator()(int row, int column) const
 {
     Q_ASSERT(row >= 0 && row < 3 && column >= 0 && column < 3);
     return m[column][row];
@@ -140,9 +140,9 @@ TransformMatrix TransformMatrix::subMatrix(const TransformMatrix &matrix, int n,
     return tmpMatrix;
 }
 
-qreal TransformMatrix::_determinant(const TransformMatrix &matrix, int n)
+double TransformMatrix::_determinant(const TransformMatrix &matrix, int n)
 {
-    qreal tmpDet = 0;
+    double tmpDet = 0;
     if (n == 1) {
         tmpDet = matrix(0,0);
     } else if (n == 2) {
@@ -158,7 +158,7 @@ qreal TransformMatrix::_determinant(const TransformMatrix &matrix, int n)
     return tmpDet;
 }
 
-qreal &TransformMatrix::operator()(int row, int column)
+double &TransformMatrix::operator()(int row, int column)
 {
     Q_ASSERT(row >= 0 && row < 3 && column >= 0 && column < 3);
     return m[column][row];
@@ -174,7 +174,7 @@ Transform::Transform(const QString &text)
         calcMatrixes(text);
 }
 
-void Transform::setOldXY(qreal prevX, qreal prevY)
+void Transform::setOldXY(double prevX, double prevY)
 {
     oldX = prevX;
     oldY = prevY;
@@ -199,9 +199,9 @@ void Transform::divide(const QString &text)
 
 QRectF Transform::transformRect(const QRectF &rect)
 {
-    QList<qreal> xList;
+    QList<double> xList;
     xList.reserve(4);
-    QList<qreal> yList;
+    QList<double> yList;
     yList.reserve(4);
 
     setOldXY(rect.x(), rect.y());
@@ -220,16 +220,16 @@ QRectF Transform::transformRect(const QRectF &rect)
     xList << newX();
     yList << newY();
 
-    qreal minx, miny, maxx, maxy;
+    double minx, miny, maxx, maxy;
     minx = maxx = xList.first();
     miny = maxy = yList.first();
-    foreach (qreal x, xList) {
+    foreach (double x, xList) {
         if (x > maxx)
             maxx = x;
         else if (x < minx)
             minx = x;
     }
-    foreach (qreal y, yList) {
+    foreach (double y, yList) {
         if (y > maxy)
             maxy = y;
         else if (y < miny)
@@ -238,12 +238,12 @@ QRectF Transform::transformRect(const QRectF &rect)
     return QRectF(minx, miny, maxx - minx, maxy - miny);
 }
 
-qreal Transform::newX() const
+double Transform::newX() const
 {
     return a*oldX + c*oldY + e;
 }
 
-qreal Transform::newY() const
+double Transform::newY() const
 {
     return b*oldX + d*oldY + f;
 }
@@ -254,20 +254,20 @@ QList<TransformMatrix> Transform::parseTransform(const QString &text)
     StringWalker sw(text);
     while (!sw.atEnd()) {
         sw.skipSpaces();
-        while (sw.current() == Char::Comma)
+        while (sw.current() == QL1C(','))
             sw.next();
 
         QString transformType;
 
-        while (sw.current() != Char::LeftParenthesis) {
-            if (sw.current() != Char::Space)
+        while (sw.current() != QL1C('(')) {
+            if (sw.current() != QL1C(' '))
                 transformType += sw.current();
             sw.next();
         }
         sw.next();
 
-        qreal cx = 0;
-        qreal cy = 0;
+        double cx = 0;
+        double cy = 0;
         TransformMatrix matrix;
         if (transformType == TransformType::Matrix) {
             matrix(0,0) = sw.number();
@@ -279,19 +279,19 @@ QList<TransformMatrix> Transform::parseTransform(const QString &text)
         } else if (transformType == TransformType::Translate) {
             matrix(0,2) = sw.number();
             sw.skipSpaces();
-            if (sw.current() != Char::RightParenthesis)
+            if (sw.current() != QL1C(')'))
                 matrix(1,2) = sw.number();
             else
                 matrix(1,2) = 0;
         } else if (transformType == TransformType::Scale) {
             matrix(0,0) = sw.number();
             sw.skipSpaces();
-            if (sw.current() != Char::RightParenthesis)
+            if (sw.current() != QL1C(')'))
                 matrix(1,1) = sw.number();
             else
                 matrix(1,1) = matrix(0,0);
         } else if (transformType == TransformType::Rotate) {
-            qreal val = sw.number();
+            double val = sw.number();
             cx = sw.number();
             cy = sw.number();
             matrix(0,0) = cos((val/180)*M_PI);
@@ -319,8 +319,8 @@ QList<TransformMatrix> Transform::parseTransform(const QString &text)
             list << matrix;
         }
 
-        sw.jumpTo(Char::RightParenthesis);
-        if (sw.current() == Char::RightParenthesis)
+        sw.jumpTo(QL1C(')'));
+        if (sw.current() == QL1C(')'))
             sw.next();
         sw.skipSpaces();
     }
@@ -399,12 +399,12 @@ QString Transform::simplified() const
 
     if (!Keys::get().flag(Key::SimplifyTransformMatrix)) {
         QString ts = TransformType::Matrix + "(";
-        ts += roundNumber(a, Round::Transform) + " ";
-        ts += roundNumber(b, Round::Transform) + " ";
-        ts += roundNumber(c, Round::Transform) + " ";
-        ts += roundNumber(d, Round::Transform) + " ";
-        ts += roundNumber(e, Round::Coordinate) + " ";
-        ts += roundNumber(f, Round::Coordinate);
+        ts += fromDouble(a, Round::Transform) + " ";
+        ts += fromDouble(b, Round::Transform) + " ";
+        ts += fromDouble(c, Round::Transform) + " ";
+        ts += fromDouble(d, Round::Transform) + " ";
+        ts += fromDouble(e, Round::Coordinate) + " ";
+        ts += fromDouble(f, Round::Coordinate);
         ts += ")";
         return ts;
     }
@@ -422,12 +422,12 @@ QString Transform::simplified() const
         if (f != 0) {
             if (e == 0 && f == 0)
                 return "";
-            newPoints << roundNumber(e, Round::Coordinate);
-            newPoints << roundNumber(f, Round::Coordinate);
+            newPoints << fromDouble(e, Round::Coordinate);
+            newPoints << fromDouble(f, Round::Coordinate);
         } else if (f == 0) {
             if (isZero(e))
                 return "";
-            newPoints << roundNumber(e, Round::Coordinate);
+            newPoints << fromDouble(e, Round::Coordinate);
         }
         transform = TransformType::Translate;
     } // [sx 0 0 sy 0 0] = scale
@@ -436,12 +436,12 @@ QString Transform::simplified() const
         if (a != d) {
             if (isZeroTs(a) && isZeroTs(d))
                 return "";
-            newPoints << roundNumber(a, Round::Transform);
-            newPoints << roundNumber(d, Round::Transform);
+            newPoints << fromDouble(a, Round::Transform);
+            newPoints << fromDouble(d, Round::Transform);
         } else {
             if (isZeroTs(a))
                 return "";
-            newPoints << roundNumber(a, Round::Transform);
+            newPoints << fromDouble(a, Round::Transform);
         }
         transform = TransformType::Scale;
     } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
@@ -450,7 +450,7 @@ QString Transform::simplified() const
         if (m_angle == 0)
             return "";
         transform = TransformType::Rotate;
-        newPoints << roundNumber(m_angle, Round::Transform);
+        newPoints << fromDouble(m_angle, Round::Transform);
     } // [1 0 tan(a) 1 0 0] = skewX, [1 tan(a) 0 1 0 0] = skewY
     else if (type == Skew)
     {
@@ -458,10 +458,10 @@ QString Transform::simplified() const
             return "";
         if (m_xSkew != 0) {
             transform = TransformType::SkewX;
-            newPoints << roundNumber(m_xSkew, Round::Transform);
+            newPoints << fromDouble(m_xSkew, Round::Transform);
         } else {
             transform = TransformType::SkewY;
-            newPoints << roundNumber(m_ySkew, Round::Transform);
+            newPoints << fromDouble(m_ySkew, Round::Transform);
         }
     }
     else if (type == HorizontalMirror)
@@ -491,12 +491,12 @@ QString Transform::simplified() const
 
         transform = TransformType::Matrix;
         newPoints.reserve(6);
-        newPoints << roundNumber(a, Round::Transform);
-        newPoints << roundNumber(b, Round::Transform);
-        newPoints << roundNumber(c, Round::Transform);
-        newPoints << roundNumber(d, Round::Transform);
-        newPoints << roundNumber(e, Round::Coordinate);
-        newPoints << roundNumber(f, Round::Coordinate);
+        newPoints << fromDouble(a, Round::Transform);
+        newPoints << fromDouble(b, Round::Transform);
+        newPoints << fromDouble(c, Round::Transform);
+        newPoints << fromDouble(d, Round::Transform);
+        newPoints << fromDouble(e, Round::Coordinate);
+        newPoints << fromDouble(f, Round::Coordinate);
     }
 
     transform += "(";
@@ -518,7 +518,7 @@ QString Transform::simplified() const
     return transform;
 }
 
-qreal Transform::scaleFactor() const
+double Transform::scaleFactor() const
 {
     return m_xScale;
 }

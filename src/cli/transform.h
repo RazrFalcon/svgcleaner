@@ -32,13 +32,13 @@ class Transform
 {
 public:
     explicit Transform(const QString &text);
-    void setOldXY(qreal prevX, qreal prevY);
+    void setOldXY(double prevX, double prevY);
     void divide(const QString &text);
     QRectF transformRect(const QRectF &rect);
-    qreal newX() const;
-    qreal newY() const;
+    double newX() const;
+    double newY() const;
     QString simplified() const;
-    qreal scaleFactor() const;
+    double scaleFactor() const;
     bool isProportionalScale();
     bool isMirrored();
     bool isSkew();
@@ -67,20 +67,20 @@ public:
     }
 
 private:
-    qreal oldX;
-    qreal oldY;
-    qreal m_xScale;
-    qreal m_yScale;
-    qreal m_xSkew;
-    qreal m_ySkew;
-    qreal m_angle;
+    double oldX;
+    double oldY;
+    double m_xScale;
+    double m_yScale;
+    double m_xSkew;
+    double m_ySkew;
+    double m_angle;
 
-    qreal a;
-    qreal b;
-    qreal c;
-    qreal d;
-    qreal e;
-    qreal f;
+    double a;
+    double b;
+    double c;
+    double d;
+    double e;
+    double f;
 
     Types m_types;
 

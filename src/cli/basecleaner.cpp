@@ -83,7 +83,7 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
             foreach (const QString &key, hash.keys()) {
                 if (value == key) {
                     if (hash.value(key) != elemId)
-                        elem.setAttribute(AttrId::xlink_href, QString(Char::Sharp + hash.value(key)));
+                        elem.setAttribute(AttrId::xlink_href, QString(QL1C('#') + hash.value(key)));
                     else
                         elem.removeAttribute(AttrId::xlink_href);
                     break;
@@ -129,9 +129,9 @@ SvgElement BaseCleaner::smartElementRemove(const SvgElement &elem, bool returnPr
 
         if (elem.tagName() == E_linearGradient && elem.hasAttribute(AttrId::xlink_href)) {
             SvgElement defElem = elemFromDefs(elem.xlinkId());
-            const int useCount = defUsageCount(Char::Sharp + defElem.id());
+            const int useCount = defUsageCount(QL1C('#') + defElem.id());
             if (useCount == 1 && !defElem.hasAttribute(AttrId::xlink_href)) {
-                SvgElement usesElem = findUsedElement(Char::Sharp + defElem.id());
+                SvgElement usesElem = findUsedElement(QL1C('#') + defElem.id());
                 Q_ASSERT(usesElem.isNull() == false);
                 joinLinearGradients(usesElem, defElem);
             }
@@ -245,8 +245,8 @@ QRectF BaseCleaner::viewBoxRect()
     QRectF rect;
     if (svgElement().hasAttribute(AttrId::viewBox)) {
         QStringList list = svgElement().attribute(AttrId::viewBox).split(' ', QString::SkipEmptyParts);
-        rect.setRect(list.at(0).toDouble(), list.at(1).toDouble(),
-                     list.at(2).toDouble(), list.at(3).toDouble());
+        rect.setRect(toDouble(list.at(0)), toDouble(list.at(1)),
+                     toDouble(list.at(2)), toDouble(list.at(3)));
     } else if (svgElement().hasAttribute(AttrId::width) && svgElement().hasAttribute(AttrId::height)) {
         rect.setRect(0, 0, svgElement().doubleAttribute(AttrId::width),
                            svgElement().doubleAttribute(AttrId::height));
@@ -258,7 +258,7 @@ QString BaseCleaner::getFreeId(int startId) const
 {
     QString newId;
     while (newId.isEmpty() || !isFreeId(newId))
-        newId = "SVGCleanerId_" + QString::number(startId++);
+        newId = "SVGCleanerId_" + fromDouble(startId++);
     return newId;
 }
 
@@ -271,4 +271,3 @@ bool BaseCleaner::isFreeId(const QString &id) const
     }
     return true;
 }
-

@@ -41,7 +41,7 @@
 #include "tools.h"
 #include "svgdom.h"
 
-// Private class declarations
+// Private classes declarations
 
 using namespace Element;
 using namespace Attribute;
@@ -118,7 +118,7 @@ public:
             // store all data between '?'
             QChar prevChar;
             while (!atEnd()) {
-                if (*str == Char::ElementEnd && prevChar == '?') {
+                if (*str == QL1C('>') && prevChar == QL1C('?')) {
                     str++;
                     break;
                 }
@@ -142,7 +142,7 @@ public:
             parseElement();
         } else if (token == EndElement) {
             while (!atEnd()) {
-                if (*str == Char::ElementEnd) {
+                if (*str == QL1C('>')) {
                     str++;
                     break;
                 }
@@ -151,7 +151,7 @@ public:
         } else if (token == Text) {
             int length = 0;
             while (!atEnd()) {
-                if (*str == Char::ElementStart)
+                if (*str == QL1C('<'))
                     break;
                 length++;
                 str++;
@@ -164,7 +164,7 @@ public:
             bool containsEntity = false;
             static const QString entityEnd = QLatin1String("]>");
             while (!atEnd()) {
-                if (!containsEntity && *str == Char::ElementEnd) {
+                if (!containsEntity && *str == QL1C('>')) {
                     // skip '>'
                     str++;
                     break;
@@ -176,7 +176,7 @@ public:
                 str++;
             }
             if (!containsEntity)
-                textBuffer += Char::ElementEnd;
+                textBuffer += QL1C('>');
             m_value = textBuffer;
         } else {
             m_error = ParseError;
@@ -297,7 +297,7 @@ private:
             nameLength = 0;
             skipSpaces();
             // data between ' ' and '=' is attribute name
-            while (!atEnd() && *str != Char::Equation) {
+            while (!atEnd() && *str != QL1C('=')) {
                 nameLength++;
                 ++str;
             }
@@ -309,7 +309,7 @@ private:
 
             skipSpaces();
 
-            if (!atEnd() && (*str == Char::DoubleQuotes || *str == Char::SingleQuotes)) {
+            if (!atEnd() && (*str == QL1C('\"') || *str == QL1C('\''))) {
                 quote = *str;
                 str++;
             }
@@ -345,7 +345,7 @@ private:
     }
     inline EndTagType isEndTag(bool skipTag = true) {
         static const QString elemEndStr = QL1S("/>");
-        if (*str == Char::ElementEnd) {
+        if (*str == QL1C('>')) {
             if (skipTag)
                 str++;
             return EndType1;
@@ -385,7 +385,7 @@ private:
             *p += 2;
             return EndElement;
         }
-        else if (**p == Char::ElementStart) {
+        else if (**p == QL1C('<')) {
             *p += 1;
             return StartElement;
         }
@@ -994,9 +994,9 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
     static const QString startAttr = QL1S("=\"");
 
     if (this->name != tspanElem)
-        s << QString(indent < 1 ? 0 : depth * indent, Char::Space);
+        s << QString(indent < 1 ? 0 : depth * indent, QL1C(' '));
 
-    s << Char::ElementStart << name;
+    s << QL1C('<') << name;
 
     if (!attrs.isEmpty() || !attrsExt.isEmpty()) {
         // save default attributes
@@ -1004,10 +1004,10 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
         for (; it != attrs.constEnd(); ++it) {
             // do not save attributes with empty value
             if (!it.value().isEmpty()) {
-                s << Char::Space;
+                s << QL1C(' ');
                 Q_ASSERT(attrIdToStr(it.key()).isEmpty() == false);
                 Q_ASSERT(it.value().isEmpty() == false);
-                s << attrIdToStr(it.key()) << startAttr << it.value() << Char::DoubleQuotes;
+                s << attrIdToStr(it.key()) << startAttr << it.value() << QL1C('\"');
             }
         }
         // save custom attributes
@@ -1015,10 +1015,10 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
         for (; it2 != attrsExt.constEnd(); ++it2) {
             // do not save attributes with empty value
             if (!it2.value().isEmpty()) {
-                s << Char::Space;
+                s << QL1C(' ');
                 Q_ASSERT(it2.key().isEmpty() == false);
                 Q_ASSERT(it2.value().isEmpty() == false);
-                s << it2.key() << startAttr << it2.value() << Char::DoubleQuotes;
+                s << it2.key() << startAttr << it2.value() << QL1C('\"');
             }
         }
 
@@ -1041,23 +1041,23 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
     if (last) {
         // has child nodes
         if (first->hasValue()) {
-            s << Char::ElementEnd;
+            s << QL1C('>');
         } else {
-            s << Char::ElementEnd;
+            s << QL1C('>');
             // -1 disables new lines.
             if (indent != -1 && first->name != tspanElem && name != tspanElem)
                 s << endl;
         }
         SvgNodePrivate::save(s, depth + 1, indent);
         if (!last->hasValue())
-            s << QString(indent < 1 ? 0 : depth * indent, Char::Space);
+            s << QString(indent < 1 ? 0 : depth * indent, QL1C(' '));
 
-        s << startStr << name << Char::ElementEnd;
+        s << startStr << name << QL1C('>');
     } else {
         if (hasValue()) {
-            s << Char::ElementEnd;
+            s << QL1C('>');
             s << value;
-            s << startStr << name << Char::ElementEnd;
+            s << startStr << name << QL1C('>');
         } else {
             s << endStr;
         }
@@ -1329,7 +1329,7 @@ void SvgElement::removeAttributeIf(const QString &name, const QString &value)
 
 double SvgElement::doubleAttribute(int attrId)
 {
-    return strToDouble(attribute(attrId));
+    return toDouble(attribute(attrId));
 }
 
 QStringList SvgElement::attributesList() const
@@ -1704,8 +1704,6 @@ SvgDocument& SvgDocument::operator= (const SvgDocument &x)
 
 bool SvgDocument::loadFile(const QString &filePath)
 {
-    clear();
-
     if (!impl)
         impl = new SvgDocumentPrivate();
 
@@ -1807,6 +1805,27 @@ SvgText SvgDocument::createText(const QString &text)
     SvgTextPrivate *p = new SvgTextPrivate(IMPL, 0, text);
     p->ref.deref();
     return p;
+}
+
+void SvgDocument::calcElemAttrCount(const QString &text)
+{
+    quint32 elemCount = 0;
+    quint32 attrCount = 0;
+
+    SvgElement elem = documentElement();
+    SvgElement root = elem;
+    while (!elem.isNull()) {
+        elemCount++;
+        attrCount += elem.attributesCount();
+        nextElement(elem, root);
+    }
+    if (!Keys::get().flag(Key::ShortOutput)) {
+        qDebug("The %s number of elements is: %u",   qPrintable(text), elemCount);
+        qDebug("The %s number of attributes is: %u", qPrintable(text), attrCount);
+    } else {
+        qDebug("%u", elemCount);
+        qDebug("%u", attrCount);
+    }
 }
 
 #undef IMPL

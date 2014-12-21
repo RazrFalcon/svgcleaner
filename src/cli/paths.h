@@ -42,16 +42,16 @@ namespace Command {
 
 struct ArcStruct
 {
-    qreal x1;
-    qreal y1;
-    qreal rx;
-    qreal ry;
-    qreal angle;
+    double x1;
+    double y1;
+    double rx;
+    double ry;
+    double angle;
     bool large_arc_flag;
     bool sweep_flag;
-    qreal x2;
-    qreal y2;
-    QList<qreal> recursive;
+    double x2;
+    double y2;
+    QList<double> recursive;
 };
 
 class Segment
@@ -59,29 +59,29 @@ class Segment
 public:
     Segment();
     void setTransform(Transform &ts);
-    void toRelative(qreal xLast, qreal yLast);
-    void coords(QVector<qreal> &points);
-    QList<Segment> toCurve(qreal prevX, qreal prevY) const;
+    void toRelative(double xLast, double yLast);
+    void coords(QVector<double> &points);
+    QList<Segment> toCurve(double prevX, double prevY) const;
 
     QChar command;
     // store original value
     bool absolute;
     // is this command defined in source path
     bool srcCmd;
-    qreal x;
-    qreal y;
-    qreal x1;
-    qreal y1;
-    qreal x2;
-    qreal y2;
-    qreal rx;
-    qreal ry;
-    qreal xAxisRotation;
+    double x;
+    double y;
+    double x1;
+    double y1;
+    double x2;
+    double y2;
+    double rx;
+    double ry;
+    double xAxisRotation;
     bool largeArc;
     bool sweep;
 
 private:
-    QPointF rotatePoint(qreal x, qreal y, qreal rad) const;
+    QPointF rotatePoint(double x, double y, double rad) const;
     QList<QPointF> arcToCurve(ArcStruct arc) const;
 };
 

@@ -61,9 +61,9 @@ void showPresetInfo(const QString &presetName)
         if (   key == Key::TransformPrecision
             || key == Key::AttributesPrecision
             || key == Key::CoordsPrecision) {
-            qDebug() << Keys.keyName(key) + "=" + QString::number(Keys.intNumber(key));
+            qDebug() << Keys.keyName(key) + "=" + fromDouble(Keys.intNumber(key));
         } else if (key == Key::RemoveTinyGaussianBlur) {
-            qDebug() << Keys.keyName(key) + "=" + QString::number(Keys.doubleNumber(key));
+            qDebug() << Keys.keyName(key) + "=" + fromDouble(Keys.doubleNumber(key));
         } else {
             qDebug() << Keys.keyName(key);
         }
@@ -143,14 +143,13 @@ void processFile(const QString &inPath, const QString &outPath)
     Replacer replacer(doc);
     Remover remover(doc);
 
-    replacer.calcElemAttrCount("initial");
+    doc.calcElemAttrCount("initial");
 
     // TODO: fix double clean issues
 
     // mandatory fixes used to simplify subsequent functions
     replacer.convertEntityData();
     replacer.splitStyleAttributes();
-    // TODO: add key
     replacer.convertCDATAStyle();
     replacer.convertUnits();
     replacer.convertColors();
@@ -224,7 +223,7 @@ void processFile(const QString &inPath, const QString &outPath)
     if (!Keys.flag(Key::ShortOutput))
         qDebug("The final file size is: %u", (int)QFile(outPath).size());
 
-    replacer.calcElemAttrCount("final");
+    doc.calcElemAttrCount("final");
 }
 
 // the code underneath is from QtCore module (qcorecmdlineargs_p.h) (LGPLv2 license)

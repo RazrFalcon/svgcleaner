@@ -312,7 +312,7 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     m_elem = elem;
 
     QList<Segment> segList;
-    splitToSegments(inPath.midRef(0), segList);
+    splitToSegments(inPath, segList);
     // paths without segments or with first segment not 'moveto' are invalid
     if (segList.isEmpty() || segList.first().command != Command::MoveTo) {
         if (Keys.flag(Key::RemoveInvisibleElements))
@@ -363,10 +363,9 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     }
 }
 
-void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
+void Path::splitToSegments(const QString &path, QList<Segment> &segList)
 {
-    const QChar *str = path.constData();
-    const QChar *end = str + path.size();
+    StringWalker sw(path);
     QChar cmd;
     QChar prevCmd;
     bool isNewCmd = false;
@@ -374,10 +373,9 @@ void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
     qreal prevY = 0;
     qreal prevMX = 0;
     qreal prevMY = 0;
-    while (str != end) {
-        while (str->isSpace())
-            ++str;
-        QChar pathElem = *str;
+    while (sw.isValid() && !sw.atEnd()) {
+        sw.skipSpaces();
+        QChar pathElem = sw.current();
         if (pathElem.isLetter()) {
             isNewCmd = true;
             if (pathElem.toLower() == Command::ClosePath) {
@@ -391,7 +389,7 @@ void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
             }
             prevCmd = cmd.toLower();
             cmd = pathElem;
-            ++str;
+            sw.next();
         } else if (cmd != Command::ClosePath) {
             qreal offsetX = 0;
             qreal offsetY = 0;
@@ -417,49 +415,49 @@ void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
                 }
                 if (!seg.srcCmd)
                     seg.command = Command::LineTo;
-                seg.x = getNum(str) + offsetX;
-                seg.y = getNum(str) + offsetY;
+                seg.x = sw.number() + offsetX;
+                seg.y = sw.number() + offsetY;
                 if (seg.srcCmd) {
                     prevMX = seg.x;
                     prevMY = seg.y;
                 }
             } else if (   seg.command == Command::LineTo
                        || seg.command == Command::SmoothQuadratic) {
-                seg.x = getNum(str) + offsetX;
-                seg.y = getNum(str) + offsetY;
+                seg.x = sw.number() + offsetX;
+                seg.y = sw.number() + offsetY;
             } else if (seg.command == Command::HorizontalLineTo) {
                 seg.command = Command::LineTo;
-                seg.x = getNum(str) + offsetX;
+                seg.x = sw.number() + offsetX;
                 seg.y = segList.last().y;
             } else if (seg.command == Command::VerticalLineTo) {
                 seg.command = Command::LineTo;
                 seg.x = segList.last().x;
-                seg.y = getNum(str) + offsetY;
+                seg.y = sw.number() + offsetY;
             } else if (seg.command == Command::CurveTo) {
-                seg.x1 = getNum(str) + offsetX;
-                seg.y1 = getNum(str) + offsetY;
-                seg.x2 = getNum(str) + offsetX;
-                seg.y2 = getNum(str) + offsetY;
-                seg.x  = getNum(str) + offsetX;
-                seg.y  = getNum(str) + offsetY;
+                seg.x1 = sw.number() + offsetX;
+                seg.y1 = sw.number() + offsetY;
+                seg.x2 = sw.number() + offsetX;
+                seg.y2 = sw.number() + offsetY;
+                seg.x  = sw.number() + offsetX;
+                seg.y  = sw.number() + offsetY;
             } else if (seg.command == Command::SmoothCurveTo) {
-                seg.x2 = getNum(str) + offsetX;
-                seg.y2 = getNum(str) + offsetY;
-                seg.x  = getNum(str) + offsetX;
-                seg.y  = getNum(str) + offsetY;
+                seg.x2 = sw.number() + offsetX;
+                seg.y2 = sw.number() + offsetY;
+                seg.x  = sw.number() + offsetX;
+                seg.y  = sw.number() + offsetY;
             } else if (seg.command == Command::Quadratic) {
-                seg.x1 = getNum(str) + offsetX;
-                seg.y1 = getNum(str) + offsetY;
-                seg.x  = getNum(str) + offsetX;
-                seg.y  = getNum(str) + offsetY;
+                seg.x1 = sw.number() + offsetX;
+                seg.y1 = sw.number() + offsetY;
+                seg.x  = sw.number() + offsetX;
+                seg.y  = sw.number() + offsetY;
             } else if (seg.command == Command::EllipticalArc) {
-                seg.rx = getNum(str);
-                seg.ry = getNum(str);
-                seg.xAxisRotation = getNum(str);
-                seg.largeArc      = getNum(str);
-                seg.sweep         = getNum(str);
-                seg.x = getNum(str) + offsetX;
-                seg.y = getNum(str) + offsetY;
+                seg.rx = sw.number();
+                seg.ry = sw.number();
+                seg.xAxisRotation = sw.number();
+                seg.largeArc      = sw.number();
+                seg.sweep         = sw.number();
+                seg.x = sw.number() + offsetX;
+                seg.y = sw.number() + offsetY;
             } else {
                 qFatal("Error: wrong path format");
             }
@@ -931,8 +929,8 @@ QString Path::segmentsToPath(QList<Segment> &segList)
     if (segList.size() == 1 || segList.isEmpty())
         return "";
 
-    static const ushort dot   = QL1C('.').unicode();
-    static const ushort space = QL1C(' ').unicode();
+    static const ushort dot   = Char::Dot.unicode();
+    static const ushort space = Char::Space.unicode();
 
     QVarLengthArray<ushort> array;
 

@@ -96,7 +96,7 @@ private:
     SvgElement m_elem;
 
     void calcBoundingBox(const QList<Segment> &segList);
-    void splitToSegments(const QStringRef &path, QList<Segment> &segList);
+    void splitToSegments(const QString &path, QList<Segment> &segList);
     void processSegments(QList<Segment> &segList);
     void segmentsToRelative(QList<Segment> &segList, bool onlyIfSourceWasRelative);
     void calcNewStrokeWidth(const Transform &transform);

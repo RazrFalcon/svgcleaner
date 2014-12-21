@@ -358,7 +358,7 @@ namespace LengthType {
     extern const QString mm;
     extern const QString pt;
     extern const QString pc;
-    extern const QChar percent;
+    extern const QChar Percent;
 }
 
 namespace Properties {
@@ -369,6 +369,22 @@ namespace Properties {
     extern const StringSet textElements;
     extern const QList<int> textAttributesIds;
     extern const StringSet elementsUsingXLink;
+}
+
+namespace Char {
+    extern const QChar Dot;
+    extern const QChar Comma;
+    extern const QChar Space;
+    extern const QChar LeftParenthesis;
+    extern const QChar RightParenthesis;
+    extern const QChar Sharp;
+    extern const QChar Zero;
+    extern const QChar Sign;
+    extern const QChar SingleQuotes;
+    extern const QChar DoubleQuotes;
+    extern const QChar Equation;
+    extern const QChar ElementStart;
+    extern const QChar ElementEnd;
 }
 
 QString attrIdToStr(int id);

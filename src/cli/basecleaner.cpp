@@ -83,7 +83,7 @@ void BaseCleaner::updateXLinks(const StringHash &hash)
             foreach (const QString &key, hash.keys()) {
                 if (value == key) {
                     if (hash.value(key) != elemId)
-                        elem.setAttribute(AttrId::xlink_href, QString("#" + hash.value(key)));
+                        elem.setAttribute(AttrId::xlink_href, QString(Char::Sharp + hash.value(key)));
                     else
                         elem.removeAttribute(AttrId::xlink_href);
                     break;
@@ -129,9 +129,9 @@ SvgElement BaseCleaner::smartElementRemove(const SvgElement &elem, bool returnPr
 
         if (elem.tagName() == E_linearGradient && elem.hasAttribute(AttrId::xlink_href)) {
             SvgElement defElem = elemFromDefs(elem.xlinkId());
-            const int useCount = defUsageCount("#" + defElem.id());
+            const int useCount = defUsageCount(Char::Sharp + defElem.id());
             if (useCount == 1 && !defElem.hasAttribute(AttrId::xlink_href)) {
-                SvgElement usesElem = findUsedElement("#" + defElem.id());
+                SvgElement usesElem = findUsedElement(Char::Sharp + defElem.id());
                 Q_ASSERT(usesElem.isNull() == false);
                 joinLinearGradients(usesElem, defElem);
             }

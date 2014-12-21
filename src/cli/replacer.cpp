@@ -344,7 +344,7 @@ void Replacer::replaceEqualElementsByUse()
 
             SvgElement elem = eqElem.elem;
             elem.setTagName(E_use);
-            elem.setAttribute(AttrId::xlink_href, "#" + newElem.id());
+            elem.setAttribute(AttrId::xlink_href, Char::Sharp + newElem.id());
             elem.removeAttribute(AttrId::bbox);
             foreach (const int &attrId, mainEqElem.attrHash.keys())
                 elem.removeAttribute(attrId);
@@ -435,7 +435,7 @@ void Replacer::convertUnits()
     // TODO: merge code
     if (svgElement().hasAttribute(AttrId::width)) {
         QString widthStr = svgElement().attribute(AttrId::width);
-        if (widthStr.contains(LengthType::percent) && rect.isNull())
+        if (widthStr.contains(LengthType::Percent) && rect.isNull())
             qFatal("Error: could not convert width in percentage into px without viewBox");
         bool ok;
         qreal width = Tools::convertUnitsToPx(widthStr, rect.width()).toDouble(&ok);
@@ -445,7 +445,7 @@ void Replacer::convertUnits()
     }
     if (svgElement().hasAttribute(AttrId::height)) {
         QString heightStr = svgElement().attribute(AttrId::height);
-        if (heightStr.contains(LengthType::percent) && rect.isNull())
+        if (heightStr.contains(LengthType::Percent) && rect.isNull())
             qFatal("Error: could not convert height in percentage into px without viewBox");
         bool ok;
         qreal height = Tools::convertUnitsToPx(heightStr, rect.height()).toDouble(&ok);
@@ -464,7 +464,7 @@ void Replacer::convertUnits()
             if (!ok) {
                 if (   fontSizeStr.endsWith(LengthType::ex)
                     || fontSizeStr.endsWith(LengthType::em)
-                    || fontSizeStr.endsWith(LengthType::percent))
+                    || fontSizeStr.endsWith(LengthType::Percent))
                 {
                     QString parentFontSize = findAttribute(elem.parentElement(), AttrId::font_size);
                     if (parentFontSize.isEmpty() || parentFontSize == V_null)
@@ -491,7 +491,7 @@ void Replacer::convertUnits()
                 attrValue = attrValue.left(attrValue.indexOf(" "));
 
             // TODO: process gradients attrs
-            if (attrValue.contains(LengthType::percent)) {
+            if (attrValue.contains(LengthType::Percent)) {
                 if (currTag != E_radialGradient && currTag != E_linearGradient) {
                     QString attrName = attrIdToStr(attrId);
                     if (attrName.contains(A_x) || attrId == AttrId::width)
@@ -544,65 +544,46 @@ IntHash splitStyle(const QString &style)
     if (style.isEmpty())
         return hash;
 
-    static const QChar signChar = QL1C('-');
-    static const QChar colonChar = QL1C(':');
+    static const QChar colonChar     = QL1C(':');
     static const QChar semicolonChar = QL1C(';');
-    static const QChar asteriskChar = QL1C('*');
-    static const QChar andChar = QL1C('&');
+    static const QChar asteriskChar  = QL1C('*');
+    static const QChar andChar       = QL1C('&');
 
-    const QChar *str = style.constData();
-    const QChar *end = str + style.size();
-
-    while (str && str != end) {
-        int length = 0;
-        while (str->isSpace())
-            str++;
+    StringWalker sw(style);
+    while (sw.isValid() && !sw.atEnd()) {
+        sw.skipSpaces();
 
         // skip comments inside attribute value
-        if (*str == '/') {
-            str += 2; // skip /*
-            while (str != end && *str != asteriskChar)
-                str++;
-            str += 2; // skip */
-            while (str->isSpace())
-                str++;
+        if (sw.current() == '/') {
+            sw.next(2); // skip /*
+            sw.jumpTo(asteriskChar);
+            sw.next(2); // skip */
+            sw.skipSpaces();
         }
 
-        // parse name
-        while (str != end && *str != colonChar) {
-            length++;
-            str++;
-        }
-        QString name = QString(str-length, length);
-        str++;  // skip ':'
-        length = 0;
+        QString name = sw.readBefore(sw.jumpTo(colonChar));
+        sw.next(); // skip ':'
 
         // do not process styles which are linked to data in ENTITY
         // like: '&st0;'
         if (!name.isEmpty() && name.at(0) == andChar)
             break;
 
-        while (str->isSpace())
-            str++;
+        sw.skipSpaces();
 
-        // parse value
-        while (str != end && *str != semicolonChar) {
-            length++;
-            str++;
-        }
-        QString value = QString(str-length, length);
-        if (str != end)
-            str++; // skip ';'
-        while (str->isSpace())
-            str++;
+        QString value = sw.readBefore(sw.jumpTo(semicolonChar));
+        if (!sw.atEnd())
+            sw.next(); // skip ';'
+        sw.skipSpaces();
 
         // add to hash
-        if (!name.isEmpty() && name.at(0) != signChar) {
+        if (!name.isEmpty() && name.at(0) != Char::Sign) {
             int attrId = attrStrToId(name);
             if (attrId != -1)
                 hash.insert(attrStrToId(name), value);
         }
     }
+
     return hash;
 }
 
@@ -633,59 +614,38 @@ void Replacer::convertEntityData()
     if (text.isEmpty() || !text.contains('['))
         return;
 
-    const QChar *str = text.constData();
-    const QChar *end = str + text.size();
-
     StringHash entityHash;
 
-    // jump to '['
-    while (*str != '[')
-        str++;
-    str++;
-    while (isSpace(str->unicode()))
-        str++;
-
-    while (str && str != end) {
-        if (*str != '<')
+    StringWalker sw(text);
+    sw.jumpTo('[');
+    sw.next();
+    sw.skipSpaces();
+    while (sw.isValid() && !sw.atEnd()) {
+        if (sw.current() != '<')
             break;
 
         // skip '!ENTITY'
-        while (!isSpace(str->unicode()))
-            str++;
-        str++;
+        sw.jumpToSpace();
+        sw.next();
 
         // parse name
-        int len = 0;
-        while (!isSpace(str->unicode())) {
-            len++;
-            str++;
-        }
-        QString name = QString(str-len, len);
+        QString name = sw.readBefore(sw.jumpToSpace());
 
         // skip unnecessary data
-        while (isSpace(str->unicode()))
-            str++;
-        if (*str != '\"')
+        sw.skipSpaces();
+        if (sw.current() != Char::DoubleQuotes)
             break;
-        str++;
+        sw.next();
 
         // parse data
-        len = 0;
-        while (*str != '\"') {
-            len++;
-            str++;
-        }
-        QString data = QString(str-len, len);
+        QString data = sw.readBefore(sw.jumpTo(Char::DoubleQuotes));
 
-        // skip unnecessary data
-        str++;
-        while (isSpace(str->unicode()))
-            str++;
-        if (*str != '>')
+        sw.next();
+        sw.skipSpaces();
+        if (sw.current() != '>')
             break;
-        str++;
-        while (isSpace(str->unicode()))
-            str++;
+        sw.next();
+        sw.skipSpaces();
 
         entityHash.insert("&" + name + ";", data);
     }
@@ -995,13 +955,15 @@ void plusOne(QList<int> &list, int offset = 0)
 // convert id names to short one using custom numeral system
 void Replacer::trimIds()
 {
-    QList<QChar> charList;
-    for (int i = 97; i < 123; ++i) // a-z
-        charList << QChar(i);
-    for (int i = 65; i < 91; ++i)  // A-Z
-        charList << QChar(i);
-    for (int i = 48; i < 58; ++i)  // 0-9
-        charList << QChar(i);
+    static QList<QChar> charList;
+    if (charList.isEmpty()) {
+        for (int i = 97; i < 123; ++i) // a-z
+            charList << QChar(i);
+        for (int i = 65; i < 91; ++i)  // A-Z
+            charList << QChar(i);
+        for (int i = 48; i < 58; ++i)  // 0-9
+            charList << QChar(i);
+    }
 
     int pos = 0;
     StringHash idHash;
@@ -1057,7 +1019,7 @@ void Replacer::trimIds()
             QString link = elem.attribute(AttrId::xlink_href);
             if (!link.startsWith(QL1S("data:"))) {
                 link.remove(0,1);
-                elem.setAttribute(AttrId::xlink_href, QString("#" + idHash.value(link)));
+                elem.setAttribute(AttrId::xlink_href, QString(Char::Sharp + idHash.value(link)));
             }
         }
         nextElement(elem, root);
@@ -1299,7 +1261,7 @@ void Replacer::roundNumericAttributes()
         foreach (const int &attrId, Properties::digitListIds) {
             if (elem.hasAttribute(attrId)) {
                 QString value = elem.attribute(attrId);
-                if (   !value.contains(LengthType::percent) && !value.contains(" ")
+                if (   !value.contains(LengthType::Percent) && !value.contains(" ")
                     && !value.contains(",") && !value.isEmpty()) {
                     bool ok;
                     QString attrVal = roundNumber(value.toDouble(&ok), Round::Attribute);
@@ -1362,15 +1324,14 @@ void Replacer::convertBasicShapes()
             } else if (ctag == E_polyline || ctag == E_polygon) {
                 QList<Segment> segmentList;
                 QString path = elem.attribute(AttrId::points).simplified();
-                const QChar *str = path.constData();
-                const QChar *end = str + path.size();
-                while (str != end) {
+                StringWalker sw(path);
+                while (!sw.atEnd()) {
                     Segment seg;
                     seg.command = Command::MoveTo;
                     seg.absolute = true;
                     seg.srcCmd = segmentList.isEmpty();
-                    seg.x = getNum(str);
-                    seg.y = getNum(str);
+                    seg.x = sw.number();
+                    seg.y = sw.number();
                     segmentList.append(seg);
                 }
                 if (ctag == E_polygon) {
@@ -1546,7 +1507,7 @@ void Replacer::mergeGradientsWithEqualStopElem()
                     }
                 }
                 if (stopEqual) {
-                    lgs2.elem.setAttribute(AttrId::xlink_href, "#" + lgs1.id);
+                    lgs2.elem.setAttribute(AttrId::xlink_href, Char::Sharp + lgs1.id);
                     foreach (SvgElement stopElem, lgs2.elem.childElements())
                         lgs2.elem.removeChild(stopElem);
                     lineGradList.removeAt(j);

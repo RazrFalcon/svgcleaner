@@ -80,9 +80,9 @@ void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision)
         multiplier *= 10;
     qreal tmpValue = qRound64(qAbs(value) * multiplier);
 
-    static const ushort m_zero  = QChar('0').unicode();
+    static const ushort zero = Char::Zero.unicode();
     if (qFuzzyCompare(tmpValue, 0.0)) {
-        arr.append(m_zero);
+        arr.append(zero);
         return;
     }
 
@@ -94,8 +94,8 @@ void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision)
     qulonglong l = tmpValue;
     ushort buff[65];
     ushort *p = buff + 65;
-    static const ushort m_point = QChar('.').unicode();
-    static const ushort m_sign  = QChar('-').unicode();
+    static const ushort point = Char::Dot.unicode();
+    static const ushort sign  = Char::Sign.unicode();
     int pos = 0;
     while (l != 0) {
         pos++;
@@ -109,27 +109,27 @@ void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision)
         if (c != 0)
             isTrailingZero = false;
         if (!isTrailingZero) {
-            *(--p) = m_zero + c;
+            *(--p) = zero + c;
             charCount++;
         }
         pos--;
         if (pos == decimalPointPos && decimalPointPos != 0) {
             if (charCount > 0)
-                *(--p) = m_point;
+                *(--p) = point;
             isTrailingZero = false;
         }
         l /= 10;
     }
     while (zeroAfterPoint--)
-        *(--p) = m_zero;
+        *(--p) = zero;
     if (decimalPointPos == 0) {
-        *(--p) = m_point;
+        *(--p) = point;
         u_test const bool useLeadingZero = !Keys::get().flag(Key::RemoveUnneededSymbols);
         if (useLeadingZero)
-            *(--p) = m_zero;
+            *(--p) = zero;
     }
     if (value < 0)
-        *(--p) = m_sign;
+        *(--p) = sign;
 
     arr.append(p, 65 - (p - buff));
 }
@@ -154,18 +154,6 @@ int Tools::zerosAfterPoint(qreal value)
         count++;
     }
     return count;
-}
-
-qreal getNum(const QChar *&str)
-{
-    while (isSpace(str->unicode()))
-        ++str;
-    qreal num = Tools::toDouble(str);
-    while (isSpace(str->unicode()))
-        ++str;
-    if (*str == QL1C(','))
-        ++str;
-    return num;
 }
 
 qreal strToDouble(const QString &str)
@@ -276,48 +264,45 @@ qreal Tools::toDouble(const QChar *&str)
 
 QString Tools::trimColor(const QString &color)
 {
-    static const QChar sharpChar = QL1C('#');
     QString newColor = color.toLower();
 
     // convert 'rgb (255, 255, 255)' to #RRGGBB
     if (Keys::get().flag(Key::ConvertColorToRRGGBB)) {
         if (newColor.contains(QL1S("rgb"))) {
-            const QChar *str = newColor.constData();
-            const QChar *end = str + newColor.size();
+            StringWalker sw(newColor);
             QVector<qreal> nums;
             nums.reserve(3);
-            while (str != end) {
-                while (isSpace(str->unicode()) || *str != QL1C('('))
-                    ++str;
-                ++str;
+            while (!sw.atEnd()) {
+                sw.jumpTo(Char::LeftParenthesis);
+                sw.skipSpaces();
+                sw.next();
                 for (int i = 0; i < 3; ++i) {
-                    nums << getNum(str);
-                    if (*str == LengthType::percent)
-                        ++str;
-                    if (*str == QL1C(','))
-                        ++str;
+                    nums << sw.number();
+                    if (sw.current() == LengthType::Percent)
+                        sw.next();
+                    if (sw.current() == Char::Comma)
+                        sw.next();
                 }
-                while (*str != QL1C(')'))
-                    ++str;
-                ++str;
+                sw.jumpTo(Char::RightParenthesis);
+                sw.next();
             }
             // convert 'rgb (100%, 100%, 100%)' to 'rgb (255, 255, 255)'
-            if (newColor.contains(LengthType::percent)) {
+            if (newColor.contains(LengthType::Percent)) {
                 for (int i = 0; i < 3; ++i)
                     nums[i] = nums.at(i) * 255 / 100;
             }
-            newColor = sharpChar;
+            newColor = Char::Sharp;
             foreach (const qreal &value, nums)
-                newColor += QString::number((int)value, 16).rightJustified(2, QL1C('0'));
+                newColor += QString::number((int)value, 16).rightJustified(2, Char::Zero);
         }
 
         // check is color set by name
-        if (!newColor.contains(sharpChar))
+        if (!newColor.contains(Char::Sharp))
             newColor = replaceColorName(newColor);
     }
 
     if (Keys::get().flag(Key::ConvertRRGGBBToRGB)) {
-        if (newColor.startsWith(sharpChar)) {
+        if (newColor.startsWith(Char::Sharp)) {
             // try to convert #rrggbb to #rgb
             if (newColor.size() == 7) { // #000000
                 int inter = 0;
@@ -326,7 +311,7 @@ QString Tools::trimColor(const QString &color)
                         inter++;
                 }
                 if (inter == 3)
-                    newColor = sharpChar + newColor.at(1) + newColor.at(3) + newColor.at(5);
+                    newColor = Char::Sharp + newColor.at(1) + newColor.at(3) + newColor.at(5);
             }
         }
     }
@@ -486,13 +471,12 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
 {
     QString unit;
     qreal number = 0;
-    const QChar *str = text.constData();
-    const QChar *end = str + text.size();
-    while (str != end) {
-        number = getNum(str);
-        while ((str->isLetter() || *str == LengthType::percent) && str != end) {
-            unit += *str;
-            ++str;
+    StringWalker sw(text);
+    while (!sw.atEnd()) {
+        number = sw.number();
+        while ((sw.current().isLetter() || sw.current() == LengthType::Percent) && !sw.atEnd()) {
+            unit += sw.current();
+            sw.next();
         }
     }
 
@@ -518,7 +502,7 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
         number = number * 35.43307;
     else if (unit == LengthType::in)
         number = number * 90;
-    else if (unit == LengthType::percent)
+    else if (unit == LengthType::Percent)
         number = number * baseValue / 100;
     else if (unit == LengthType::em)
         number = number * baseValue;
@@ -528,4 +512,85 @@ QString Tools::convertUnitsToPx(const QString &text, qreal baseValue)
         return text;
 
     return roundNumber(number, Round::Attribute);
+}
+
+
+// Simple 'const QChar *' wrapper
+
+StringWalker::StringWalker(const QString &text)
+{
+    str = text.constData();
+    end = str + text.size();
+}
+
+int StringWalker::jumpTo(const QChar &c)
+{
+    int len = 0;
+    while (!atEnd() && *str != c) {
+        len++;
+        str++;
+    }
+    return len;
+}
+
+int StringWalker::jumpToSpace()
+{
+    int len = 0;
+    while (!isSpace(str->unicode())) {
+        str++;
+        len++;
+    }
+    return len;
+}
+
+QString StringWalker::readBefore(int len) const
+{
+    return QString(str - len, len);
+}
+
+void StringWalker::next()
+{
+    str++;
+}
+
+void StringWalker::next(int count)
+{
+    for (int i = 0; i < count; ++i)
+        str++;
+}
+
+void StringWalker::skipSpaces()
+{
+    while (isSpace(str->unicode()))
+        str++;
+}
+
+bool StringWalker::atEnd() const
+{
+    return (str == end);
+}
+
+bool StringWalker::isValid() const
+{
+    return str;
+}
+
+QChar StringWalker::current() const
+{
+    return *str;
+}
+
+const QChar *&StringWalker::data()
+{
+    return str;
+}
+
+qreal StringWalker::number(Opt opt)
+{
+    skipSpaces();
+    qreal num = Tools::toDouble(str);
+    skipSpaces();
+    if (opt == SkipComma && *str == Char::Comma)
+        ++str;
+    return num;
 }

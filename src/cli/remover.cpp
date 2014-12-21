@@ -353,7 +353,7 @@ void Remover::removeDuplicatedDefs()
                                 elemStructList.removeAt(j);
                                 for (int e = 0; e < elemStructList.size(); ++e) {
                                     if (elemStructList.at(e).attrMap.value(A_xlink_href).mid(1) == id2)
-                                        elemStructList[e].attrMap.insert(A_xlink_href, "#" + id1);
+                                        elemStructList[e].attrMap.insert(A_xlink_href, Char::Sharp + id1);
                                 }
                                 j--;
                             }
@@ -408,11 +408,11 @@ void Remover::removeDuplicatedDefs()
                         } else {
                             child2.setTagName(E_use);
                             child2.removeAttribute(AttrId::d);
-                            child2.setAttribute(AttrId::xlink_href, "#" + child1.id());
+                            child2.setAttribute(AttrId::xlink_href, Char::Sharp + child1.id());
                             child1.setAttribute(AttrId::used_element, "1");
                             if (child1.parentElement().tagName() == E_clipPath) {
                                 SvgElement newUse = document().createElement(E_use);
-                                newUse.setAttribute(AttrId::xlink_href, "#" + child1.id());
+                                newUse.setAttribute(AttrId::xlink_href, Char::Sharp + child1.id());
                                 newUse.setAttribute(AttrId::transform,
                                                     child1.attribute(AttrId::transform));
                                 child1.removeAttribute(AttrId::transform);
@@ -938,7 +938,7 @@ void Remover::removeAttributes()
 
         // TODO: disable by key, because do not supported by SVG spec
         if (tagName == E_stop) {
-            if (!elem.attribute(AttrId::offset).contains(LengthType::percent)) {
+            if (!elem.attribute(AttrId::offset).contains(LengthType::Percent)) {
                 if (elem.doubleAttribute(AttrId::offset) < 0.0001)
                     elem.removeAttribute(AttrId::offset);
             }
@@ -1071,7 +1071,7 @@ void Remover::cleanStyle(const SvgElement &elem, IntHash &hash)
             qreal num = value.toDouble(&ok);
             if (!ok && !value.startsWith(UrlPrefix)) {
                 if (attrId == AttrId::stroke_width) {
-                    if (value.endsWith(LengthType::percent)) {
+                    if (value.endsWith(LengthType::Percent)) {
                         static QRectF m_viewBoxRect = viewBoxRect();
                         if (m_viewBoxRect.isNull())
                             qFatal("Error: could not detect viewBox");

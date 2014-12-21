@@ -186,7 +186,7 @@ void Transform::divide(const QString &text)
         divide("translate(0,0)");
         return;
     }
-    QList<TransformMatrix> transMatrixList = parseTransform(text.midRef(0));
+    QList<TransformMatrix> transMatrixList = parseTransform(text);
 
     TransformMatrix newMatrix = transMatrixList.at(0);
     for (int i = 1; i < transMatrixList.count(); ++i)
@@ -248,65 +248,62 @@ qreal Transform::newY() const
     return b*oldX + d*oldY + f;
 }
 
-QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
+QList<TransformMatrix> Transform::parseTransform(const QString &text)
 {
     QList<TransformMatrix> list;
-    const QChar *str = text.constData();
-    const QChar *end = str + text.size();
-    while (str != end) {
-        while (str->isSpace())
-            ++str;
-        while (*str == ',')
-            ++str;
+    StringWalker sw(text);
+    while (!sw.atEnd()) {
+        sw.skipSpaces();
+        while (sw.current() == Char::Comma)
+            sw.next();
 
         QString transformType;
-        while (*str != QL1C('(')) {
-            if (*str != QL1C(' '))
-                transformType += *str;
-            ++str;
+
+        while (sw.current() != Char::LeftParenthesis) {
+            if (sw.current() != Char::Space)
+                transformType += sw.current();
+            sw.next();
         }
-        ++str;
+        sw.next();
 
         qreal cx = 0;
         qreal cy = 0;
         TransformMatrix matrix;
         if (transformType == TransformType::Matrix) {
-            matrix(0,0) = getNum(str);
-            matrix(1,0) = getNum(str);
-            matrix(0,1) = getNum(str);
-            matrix(1,1) = getNum(str);
-            matrix(0,2) = getNum(str);
-            matrix(1,2) = getNum(str);
+            matrix(0,0) = sw.number();
+            matrix(1,0) = sw.number();
+            matrix(0,1) = sw.number();
+            matrix(1,1) = sw.number();
+            matrix(0,2) = sw.number();
+            matrix(1,2) = sw.number();
         } else if (transformType == TransformType::Translate) {
-            matrix(0,2) = getNum(str);
-            while (str->isSpace())
-                ++str;
-            if (*str != QL1C(')'))
-                matrix(1,2) = getNum(str);
+            matrix(0,2) = sw.number();
+            sw.skipSpaces();
+            if (sw.current() != Char::RightParenthesis)
+                matrix(1,2) = sw.number();
             else
                 matrix(1,2) = 0;
         } else if (transformType == TransformType::Scale) {
-            matrix(0,0) = getNum(str);
-            while (str->isSpace())
-                ++str;
-            if (*str != QL1C(')'))
-                matrix(1,1) = getNum(str);
+            matrix(0,0) = sw.number();
+            sw.skipSpaces();
+            if (sw.current() != Char::RightParenthesis)
+                matrix(1,1) = sw.number();
             else
                 matrix(1,1) = matrix(0,0);
         } else if (transformType == TransformType::Rotate) {
-            qreal val = getNum(str);
-            cx = getNum(str);
-            cy = getNum(str);
+            qreal val = sw.number();
+            cx = sw.number();
+            cy = sw.number();
             matrix(0,0) = cos((val/180)*M_PI);
             matrix(1,0) = sin((val/180)*M_PI);
             matrix(0,1) = -sin((val/180)*M_PI);
             matrix(1,1) = cos((val/180)*M_PI);
         } else if (transformType == TransformType::SkewX) {
-            matrix(0,1) = tan(getNum(str));
+            matrix(0,1) = tan(sw.number());
         } else if (transformType == TransformType::SkewY) {
-            matrix(1,0) = tan(getNum(str));
+            matrix(1,0) = tan(sw.number());
         } else {
-            qFatal("Error: wrong transform matrix: %s", qPrintable(text.toString()));
+            qFatal("Error: wrong transform matrix: %s", qPrintable(text));
         }
         if (cx != 0 && cy != 0) {
             TransformMatrix matrix;
@@ -322,19 +319,17 @@ QList<TransformMatrix> Transform::parseTransform(const QStringRef &text)
             list << matrix;
         }
 
-        while (*str != QL1C(')'))
-            ++str;
-        if (*str == QL1C(')'))
-            ++str;
-        while (str->isSpace())
-            ++str;
+        sw.jumpTo(Char::RightParenthesis);
+        if (sw.current() == Char::RightParenthesis)
+            sw.next();
+        sw.skipSpaces();
     }
     return list;
 }
 
 void Transform::calcMatrixes(const QString &text)
 {
-    QList<TransformMatrix> transMatrixList = parseTransform(text.midRef(0));
+    QList<TransformMatrix> transMatrixList = parseTransform(text);
 
     TransformMatrix newMatrix = transMatrixList.at(0);
     for (int i = 1; i < transMatrixList.count(); ++i)

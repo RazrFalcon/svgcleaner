@@ -44,7 +44,6 @@ bool isZero(qreal value);
 bool isZeroTs(qreal value);
 QString roundNumber(qreal value, Round::RoundType type = Round::Coordinate);
 QString roundNumber(qreal value, int precision);
-qreal getNum(const QChar *&str);
 qreal strToDouble(const QString &str);
 void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision = 6);
 bool isSpace(ushort ch);
@@ -62,6 +61,29 @@ public:
 
 private:
     static QString replaceColorName(const QString &color);
+};
+
+class StringWalker
+{
+public:
+    enum Opt { None, SkipComma };
+
+    StringWalker(const QString &text);
+    int jumpTo(const QChar &c);
+    int jumpToSpace();
+    QString readBefore(int len) const;
+    void next();
+    void next(int count);
+    void skipSpaces();
+    bool atEnd() const;
+    bool isValid() const;
+    QChar current() const;
+    const QChar *&data();
+    qreal number(Opt opt = SkipComma);
+
+private:
+    const QChar *str;
+    const QChar *end;
 };
 
 #endif // TOOLS_H

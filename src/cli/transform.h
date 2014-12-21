@@ -84,7 +84,7 @@ private:
 
     Types m_types;
 
-    QList<TransformMatrix> parseTransform(const QStringRef &text);
+    QList<TransformMatrix> parseTransform(const QString &text);
     void calcMatrixes(const QString &text);
     void calcParameters(TransformMatrix &matrix);
 };

@@ -159,7 +159,7 @@ void Keys::prepareDescription()
     descHash.insert(Key::RemoveEmptyContainers,
                     tr("Remove empty containers elements"));
     descHash.insert(Key::RemoveOutsideElements,
-                    tr("Remove elements which is outside the viewbox"));
+                    tr("Remove elements which are outside the viewbox"));
     descHash.insert(Key::ReplaceEqualEltsByUse,
                     tr("Replace equal elements by the 'use'"));
     descHash.insert(Key::UngroupContainers,

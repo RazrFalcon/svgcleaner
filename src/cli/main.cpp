@@ -153,9 +153,11 @@ void processFile(const QString &inPath, const QString &outPath)
     // TODO: add key
     replacer.convertCDATAStyle();
     replacer.convertUnits();
+    replacer.convertColors();
     replacer.prepareDefs();
     replacer.fixWrongAttr();
     replacer.markUsedElements();
+    replacer.roundNumericAttributes();
 
     remover.cleanSvgElementAttribute();
     if (Keys.flag(Key::CreateViewbox))
@@ -188,12 +190,12 @@ void processFile(const QString &inPath, const QString &outPath)
         remover.removeGroups();
     }
     replacer.processPaths();
+    if (Keys.flag(Key::RemoveOutsideElements))
+        remover.removeElementsOutsideTheViewbox();
     if (Keys.flag(Key::ReplaceEqualEltsByUse))
         replacer.replaceEqualElementsByUse();
     if (Keys.flag(Key::RemoveNotAppliedAttributes))
         replacer.moveStyleFromUsedElemToUse();
-    if (Keys.flag(Key::RemoveOutsideElements))
-        remover.removeElementsOutsideTheViewbox();
     if (Keys.flag(Key::GroupTextStyles))
         replacer.groupTextElementsStyles();
     if (Keys.flag(Key::GroupElemByStyle))
@@ -202,12 +204,7 @@ void processFile(const QString &inPath, const QString &outPath)
         replacer.applyTransformToDefs();
     if (Keys.flag(Key::TrimIds))
         replacer.trimIds();
-    // some defs can be released by previous functions, so we check it again
-    if (Keys.flag(Key::RemoveUnusedDefs))
-        remover.removeUnusedDefs();
-    replacer.roundNumericAttributes();
-    // TODO: check only for xmlns:xlink
-    remover.cleanSvgElementAttribute();
+    remover.checkXlinkDeclaration();
     if (Keys.flag(Key::SortDefs))
         replacer.sortDefs();
     replacer.finalFixes();
@@ -318,29 +315,26 @@ QStringList arguments(int &argc, char **argv)
 
 #ifdef USE_IPC
 SystemSemaphore *semaphore2 = 0;
-QString m_log;
+QString appLog;
 void slaveMessageOutput(QtMsgType type, const char *msg)
 {
-    switch (type) {
-    case QtDebugMsg:
-        m_log += QString(msg) + "\n";
-        break;
-    case QtWarningMsg:
-        m_log += QString(msg) + "\n";
-        break;
-    case QtCriticalMsg:
-        m_log += QString(msg) + "\n";
-        break;
-    case QtFatalMsg:
-        fprintf(stderr, "%s\n", msg);
+    appLog += QString(msg) + "\n";
+    if (type == QtFatalMsg) {
         // emit to 'gui' that we crashed
-        // crash will be detected by timeout, but this way is much faster
+        // crash will be detected by timeout anyway, but this way is much faster
         if (semaphore2)
             semaphore2->release();
-        abort();
+        exit(1);
     }
 }
 #endif
+
+void ownMessageOutput(QtMsgType type, const char *msg)
+{
+    fprintf(stderr, "%s\n", msg);
+    if (type == QtFatalMsg)
+        exit(1);
+}
 
 int main(int argc, char *argv[])
 {
@@ -406,7 +400,7 @@ int main(int argc, char *argv[])
                 break;
             }
 
-            m_log.clear();
+            appLog.clear();
 
             // clean svg
             processFile(inFile, outFile);
@@ -414,7 +408,7 @@ int main(int argc, char *argv[])
             // write to shared memory
             buffer.seek(0);
             QDataStream out(&buffer);
-            out << m_log;
+            out << appLog;
             int size = buffer.size();
             char *to = (char*)sharedMemory.data();
             const char *from = buffer.data().data();
@@ -427,6 +421,8 @@ int main(int argc, char *argv[])
     else
 #endif
     {
+        qInstallMsgHandler(ownMessageOutput);
+
         QString inputFile  = argList.takeFirst();
         QString outputFile = argList.takeFirst();
 

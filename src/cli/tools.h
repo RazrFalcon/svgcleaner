@@ -28,6 +28,14 @@
 #include "enums.h"
 #include "keys.h"
 
+// we cannot use static variables while unit testing
+// so replace 'static' with nothing
+#ifdef U_TEST
+# define u_test
+#else
+# define u_test static
+#endif
+
 namespace Round {
     enum RoundType { Coordinate, Transform, Attribute };
 }

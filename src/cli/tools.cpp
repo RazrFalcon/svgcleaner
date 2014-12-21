@@ -80,7 +80,7 @@ void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision)
         multiplier *= 10;
     qreal tmpValue = qRound64(qAbs(value) * multiplier);
 
-    static ushort m_zero  = QChar('0').unicode();
+    static const ushort m_zero  = QChar('0').unicode();
     if (qFuzzyCompare(tmpValue, 0.0)) {
         arr.append(m_zero);
         return;
@@ -94,8 +94,8 @@ void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision)
     qulonglong l = tmpValue;
     ushort buff[65];
     ushort *p = buff + 65;
-    static ushort m_point = QChar('.').unicode();
-    static ushort m_sign  = QChar('-').unicode();
+    static const ushort m_point = QChar('.').unicode();
+    static const ushort m_sign  = QChar('-').unicode();
     int pos = 0;
     while (l != 0) {
         pos++;
@@ -124,7 +124,7 @@ void doubleToVarArr(QVarLengthArray<ushort> &arr, qreal value, int precision)
         *(--p) = m_zero;
     if (decimalPointPos == 0) {
         *(--p) = m_point;
-        static const bool useLeadingZero = !Keys::get().flag(Key::RemoveUnneededSymbols);
+        u_test const bool useLeadingZero = !Keys::get().flag(Key::RemoveUnneededSymbols);
         if (useLeadingZero)
             *(--p) = m_zero;
     }

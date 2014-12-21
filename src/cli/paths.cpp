@@ -174,7 +174,7 @@ QList<QPointF> Segment::arcToCurve(ArcStruct arc) const
     QList<QPointF> res;
     qreal df = f2 - f1;
     const qreal a90 = M_PI * 90 / 180;
-    if (abs(df) > a90) {
+    if (std::abs(df) > a90) {
         qreal f2old = f2;
         qreal x2old = arc.x2;
         qreal y2old = arc.y2;
@@ -380,7 +380,7 @@ void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
         QChar pathElem = *str;
         if (pathElem.isLetter()) {
             isNewCmd = true;
-            if (pathElem == Command::ClosePath) {
+            if (pathElem.toLower() == Command::ClosePath) {
                 Segment seg;
                 seg.command = Command::ClosePath;
                 seg.absolute = false;
@@ -397,7 +397,8 @@ void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
             qreal offsetY = 0;
             Segment seg;
             seg.command = cmd.toLower();
-            seg.absolute = cmd.isUpper();
+            if (seg.command != Command::ClosePath)
+                seg.absolute = cmd.isUpper();
             if (!seg.absolute) {
                 offsetX = prevX;
                 offsetY = prevY;
@@ -459,6 +460,8 @@ void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
                 seg.sweep         = getNum(str);
                 seg.x = getNum(str) + offsetX;
                 seg.y = getNum(str) + offsetY;
+            } else {
+                qFatal("Error: wrong path format");
             }
             prevX = seg.x;
             prevY = seg.y;
@@ -466,6 +469,7 @@ void Path::splitToSegments(const QStringRef &path, QList<Segment> &segList)
             prevCmd = cmd.toLower();
         }
     }
+
     if (segList.size() == 1)
         segList.clear();
 }
@@ -486,8 +490,7 @@ void Path::calcNewStrokeWidth(const Transform &transform)
         parentElem = parentElem.parentElement();
     }
     if (!hasParentStrokeWidth) {
-        m_elem.setAttribute("stroke-width-new", roundNumber(transform.scaleFactor(),
-                                                                   Round::Attribute));
+        m_elem.setAttribute("stroke-width-new", roundNumber(transform.scaleFactor(), Round::Attribute));
     }
 }
 
@@ -596,9 +599,7 @@ bool Path::removeZSegments(QList<Segment> &segList)
 
     bool isRemoved = false;
     QString stroke = findAttribute(AttrId::stroke);
-    QString strokeLinecap = findAttribute(AttrId::stroke_linecap);
     bool hasStroke = (!stroke.isEmpty() && stroke != V_none);
-    bool isDefaultLinecap = (strokeLinecap.isEmpty() || strokeLinecap == QL1S("butt"));
 
     int lastMIdx = 0;
     QPointF prevM(segList.first().x, segList.first().y);
@@ -608,6 +609,7 @@ bool Path::removeZSegments(QList<Segment> &segList)
 
         Segment prevSeg = segList.at(i-1);
         if (isZero(prevM.x() - prevSeg.x) && isZero(prevM.y() - prevSeg.y)) {
+
             // Remove previous segment before 'z' segment if it's line like segment,
             // because 'z' actually will be replaced with the same line while rendering.
             // In path like: M 80 90 L 200 90 L 80 90 Z
@@ -617,18 +619,6 @@ bool Path::removeZSegments(QList<Segment> &segList)
                 segList.removeAt(i-1);
                 i--;
                 isRemoved = true;
-
-                Segment seg = segList.at(i);
-                if (isDefaultLinecap && isLineBasedSegment(seg)) {
-                    // remove 'z' segment if we have path like:
-                    // M 80 90 L 200 90 Z
-                    // but only when 'stroke-linecap' = 'butt'
-                    // in other cases it will change rendering of the path
-                    if (segList.size() == 3 || (i - lastMIdx == 2)) {
-                        segList.removeAt(i);
-                        i--;
-                    }
-                }
             } else if (!hasStroke) {
                 segList.removeAt(i--);
                 isRemoved = true;
@@ -639,6 +629,15 @@ bool Path::removeZSegments(QList<Segment> &segList)
             lastMIdx = i+1;
         }
     }
+
+    if (   segList.size() == 3
+        && isLineBasedSegment(segList.at(1))
+        && segList.last().command == Command::ClosePath)
+    {
+        segList.removeLast();
+        isRemoved = true;
+    }
+
     return isRemoved;
 }
 
@@ -663,6 +662,7 @@ bool Path::removeUnneededMoveToSegments(QList<Segment> &segList)
     return isRemoved;
 }
 
+// BUG: do not remove segments at an acute angle
 bool Path::removeTinySegments(QList<Segment> &segList)
 {
     if (segList.isEmpty())
@@ -697,11 +697,9 @@ bool Path::removeTinySegments(QList<Segment> &segList)
             if (cmd == Command::MoveTo) {
                 // removing MoveTo from path with blur filter breaks render
                 if (!isElemHasFilter && prevSeg.command == Command::MoveTo)
-                {
                     segList.removeAt(i--);
-                } else if (i == segList.size()-1 && prevSeg.command != Command::MoveTo) {
+                else if (i == segList.size()-1 && prevSeg.command != Command::MoveTo)
                     segList.removeAt(i--);
-                }
             }
             else if (cmd == Command::CurveTo) {
                 if (   isZero(seg.x1 - prevSeg.x1) && isZero(seg.y1 - prevSeg.y1)

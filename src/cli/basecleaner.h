@@ -43,13 +43,20 @@ public:
     SvgElement svgElement() const;
     SvgElement defsElement() const;
     void updateXLinks(const StringHash &hash);
-    SvgElement findInDefs(const QString &id);
+    SvgElement elemFromDefs(const QString &id) const;
     SvgElement findElement(const QString &id, SvgElement parent = SvgElement());
+    SvgElement findUsedElement(const QString &xlink) const;
     bool hasParent(const SvgElement &elem, const QString &tagName);
     QString findAttribute(const SvgElement &elem, int attrId) const;
     QString absoluteTransform(const SvgElement &elem);
     QRectF viewBoxRect();
     static SvgElement svgElement(SvgDocument doc);
+    SvgElement smartElementRemove(const SvgElement &elem, bool returnPreviousElement = false) const;
+    bool isDefUsed(int attrId, const QString &defId, const SvgElement &baseElem) const;
+    int defUsageCount(const QString &defId) const;
+    QString getFreeId(int startId) const;
+    bool isFreeId(const QString &id) const;
+    void joinLinearGradients(SvgElement &parent, SvgElement &child) const;
 
 private:
     SvgDocument m_doc;

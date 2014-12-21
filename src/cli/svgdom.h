@@ -37,12 +37,12 @@ class SvgDeclarationPrivate;
 class SvgTextPrivate;
 class SvgCommentPrivate;
 
+class SvgDocument;
 class SvgNode;
 class SvgElement;
-class SvgComment;
 class SvgDeclaration;
 class SvgText;
-class SvgDocument;
+class SvgComment;
 
 typedef QHash<QString,QString> StringHash;
 typedef QHash<int,QString> IntHash;
@@ -189,7 +189,7 @@ public:
     bool hasChildWithTagName(const QString &name) const;
     bool hasTextChild() const;
     int attributesCount() const;
-    QString defIdFromAttribute(const int &attrId);
+    QString defIdFromAttribute(const int &attrId) const;
     IntHash styleHash() const;
     void removeAttributes(const QStringList &list);
     void setStylesFromHash(const IntHash &hash);

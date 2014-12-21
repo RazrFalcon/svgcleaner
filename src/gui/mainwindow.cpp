@@ -173,6 +173,8 @@ void MainWindow::on_actionStart_triggered()
     Settings settings;
     if (settings.flag(SettingKey::Wizard::ThreadingEnabled))
         threadCount = settings.integer(SettingKey::Wizard::ThreadsCount, QThread::idealThreadCount());
+    if (threadCount > m_files.size())
+        threadCount = m_files.size();
     QThreadPool::globalInstance()->setMaxThreadCount(threadCount);
 
     progressBar->setMaximum(m_files.size());

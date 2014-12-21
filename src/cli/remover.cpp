@@ -30,24 +30,12 @@
 
 void Remover::cleanSvgElementAttribute()
 {
-    bool isXlinkUsed = false;
-
-    element_loop(svgElement()) {
-        if (elem.hasAttribute(AttrId::xlink_href)) {
-            isXlinkUsed = true;
-            break;
-        }
-        nextElement(elem, root);
-    }
-
     if (Keys.flag(Key::RemoveNotAppliedAttributes)) {
         StringSet ignoreAttr = Properties::presentationAttributes;
-        ignoreAttr << "xmlns" << A_width << A_height << A_viewBox;
+        ignoreAttr << "xmlns" << "xmlns:xlink" << A_width << A_height << A_viewBox;
 
         if (!Keys.flag(Key::RemoveSvgVersion))
             ignoreAttr << "version";
-        if (isXlinkUsed)
-            ignoreAttr << "xmlns:xlink";
         if (!Keys.flag(Key::RemoveInkscapeAttributes))
             ignoreAttr << "xmlns:inkscape";
         if (!Keys.flag(Key::RemoveSodipodiAttributes))
@@ -69,17 +57,31 @@ void Remover::cleanSvgElementAttribute()
             svgElement().removeAttribute("version");
     }
 
-    // fix missing or wrong xmlns:xlink attribute
-    if (isXlinkUsed
-        && (!svgElement().hasAttribute("xmlns:xlink")
-            || svgElement().attribute("xmlns:xlink") != "http://www.w3.org/1999/xlink"))
-        svgElement().setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-
     // dirty way, but svg cannot be processed by default style cleaning func,
     // because in svg node we cannot remove default values
     if (Keys.flag(Key::RemoveDefaultAttributes))
         svgElement().removeAttributeIf(AttrId::display, "inline");
     // TODO: add default attributes removing
+}
+
+void Remover::checkXlinkDeclaration()
+{
+    bool isXlinkUsed = false;
+    element_loop(svgElement()) {
+        if (elem.hasAttribute(AttrId::xlink_href)) {
+            isXlinkUsed = true;
+            break;
+        }
+        nextElement(elem, root);
+    }
+    if (!isXlinkUsed) {
+        svgElement().removeAttribute("xmlns:xlink");
+        return;
+    }
+
+    // fix missing or wrong xmlns:xlink attribute
+    if (svgElement().attribute("xmlns:xlink") != "http://www.w3.org/1999/xlink")
+        svgElement().setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 }
 
 void Remover::removeUnusedDefs()
@@ -97,7 +99,14 @@ void Remover::removeUnusedDefs()
                 child = child.nextSiblingElement();
             }
         }
-        defsIdList << dElem.id();
+        // remove defs with equal 'id' attribute
+        if (defsIdList.contains(dElem.id())) {
+            SvgElement tElem = dElem;
+            dElem = dElem.previousSiblingElement();
+            defsElement().removeChild(tElem);
+        } else {
+            defsIdList << dElem.id();
+        }
         dElem = dElem.nextSiblingElement();
     }
 
@@ -799,7 +808,7 @@ bool Remover::isElementInvisible2(SvgElement &elem)
                 || findAttribute(elem, AttrId::stroke).isEmpty())
             && !elem.isUsed()) {
             if (elem.hasAttribute(AttrId::filter)) {
-                SvgElement filterElem = findInDefs(elem.defIdFromAttribute(AttrId::filter));
+                SvgElement filterElem = elemFromDefs(elem.defIdFromAttribute(AttrId::filter));
                 if (filterElem.childElementCount() == 1) {
                     if (filterElem.firstChildElement().tagName() == E_feGaussianBlur) {
                         return true;
@@ -880,22 +889,11 @@ void Remover::removeAttributes()
                 if (elem.attribute(AttrId::marker) == V_none)
                     elem.removeAttribute(AttrId::marker);
 
-            // path inside clipPath needs to contains only d attribute
-            if (tagName == E_path || tagName == E_use) {
-                QString parentTag = elem.parentElement().tagName();
-                if (parentTag == E_clipPath) {
-                    foreach (const int &attrId, elem.baseAttributesList()) {
-                        bool removeAttr = true;
-                        if (   attrId == AttrId::d
-                            || attrId == AttrId::transform
-                            || attrId == AttrId::filter
-                            || attrId == AttrId::id)
-                        {
-                            removeAttr = false;
-                        }
-                        if (tagName == E_use && attrId == AttrId::xlink_href)
-                            removeAttr = false;
-                        if (removeAttr)
+            // elements inside clipPath needs to contains only geometry relevant attributes
+            if (elem.parentElement().tagName() == E_clipPath) {
+                foreach (const int &attrId, elem.baseAttributesList()) {
+                    if (Properties::presentationAttributesIds.contains(attrId)) {
+                        if (attrId != AttrId::filter)
                             elem.removeAttribute(attrId);
                     }
                 }
@@ -906,7 +904,7 @@ void Remover::removeAttributes()
                 if (elem.hasAttribute(attrId)) {
                     QString url = elem.attribute(attrId);
                     if (url.startsWith(UrlPrefix)) {
-                        SvgElement defElem = findInDefs(url.mid(5, url.size()-6));
+                        SvgElement defElem = elemFromDefs(url.mid(5, url.size()-6));
                         if (defElem.isNull())
                             elem.setAttribute(attrId, V_none);
                     }
@@ -938,6 +936,7 @@ void Remover::removeAttributes()
             elem.removeAttribute(AttrId::d);
         }
 
+        // TODO: disable by key, because do not supported by SVG spec
         if (tagName == E_stop) {
             if (!elem.attribute(AttrId::offset).contains(LengthType::percent)) {
                 if (elem.doubleAttribute(AttrId::offset) < 0.0001)
@@ -1004,7 +1003,12 @@ void Remover::removeNonElementAttributes()
     }
 }
 
-void Remover::cleanPresentationAttributes(SvgElement parent)
+void Remover::cleanPresentationAttributes()
+{
+    _cleanPresentationAttributes();
+}
+
+void Remover::_cleanPresentationAttributes(SvgElement parent)
 {
     if (parent.isNull())
         parent = svgElement();
@@ -1027,7 +1031,7 @@ void Remover::cleanPresentationAttributes(SvgElement parent)
         foreach (const int &attrId, hash.keys())
             elem.setAttribute(attrId, hash.value(attrId));
         if (elem.hasChildrenElement())
-            cleanPresentationAttributes(elem);
+            _cleanPresentationAttributes(elem);
         elem = elem.nextSiblingElement();
     }
 
@@ -1042,9 +1046,6 @@ void Remover::cleanPresentationAttributes(SvgElement parent)
 void Remover::cleanStyle(const SvgElement &elem, IntHash &hash)
 {
     static bool isRemoveNotApplied = Keys.flag(Key::RemoveNotAppliedAttributes);
-    static bool isConvertColors
-            = (Keys.flag(Key::ConvertColorToRRGGBB) || Keys.flag(Key::ConvertRRGGBBToRGB));
-
 
     if (isRemoveNotApplied) {
         // remove style props which already defined in parent style
@@ -1114,10 +1115,6 @@ void Remover::cleanStyle(const SvgElement &elem, IntHash &hash)
             = IntList() << AttrId::fill_rule << AttrId::fill_opacity;
         foreach (const int &attrId, fillList)
             hash.remove(attrId);
-    } else if (isConvertColors) {
-        QString fill = hash.value(AttrId::fill);
-        if (!fill.isEmpty() && fill != V_none && !fill.startsWith(UrlPrefix))
-            hash.insert(AttrId::fill, Tools::trimColor(fill));
     }
 
     // remove all stroke properties if stroke is off
@@ -1134,16 +1131,7 @@ void Remover::cleanStyle(const SvgElement &elem, IntHash &hash)
         if (parentHash.value(AttrId::stroke) != V_none)
             hash.insert(AttrId::stroke, V_none);
     } else {
-        if (isConvertColors) {
-            QString stroke = hash.value(AttrId::stroke);
-            if (   !stroke.isEmpty()
-                &&  stroke != V_none
-                && !stroke.startsWith(UrlPrefix))
-            {
-                hash.insert(AttrId::stroke, Tools::trimColor(hash.value(AttrId::stroke)));
-            }
-        }
-        // trim array
+        // trim dasharray
         if (hash.contains(AttrId::stroke_dasharray))
             hash.insert(AttrId::stroke_dasharray, QString(hash.value(AttrId::stroke_dasharray))
                                              .replace(", ", ","));
@@ -1180,16 +1168,6 @@ void Remover::cleanStyle(const SvgElement &elem, IntHash &hash)
     if (Keys.flag(Key::RemoveDefaultAttributes)) {
         foreach (const int &attrId, hash.keys())
             removeDefaultValue(hash, attrId);
-    }
-
-    // trim colors
-    if (isConvertColors) {
-        static const IntList colorList
-            = IntList() << AttrId::color << AttrId::stop_color << AttrId::flood_color;
-        foreach (const int &attrId, colorList) {
-            if (hash.contains(attrId))
-                hash.insert(attrId, Tools::trimColor(hash.value(attrId)));
-        }
     }
 }
 
@@ -1425,6 +1403,7 @@ void Remover::prepareViewBoxRect(QRectF &viewBox)
 
 // TODO: add blur support
 // TODO: better element removing (skadge_SVG_widgets_for_diagrams.svg)
+// TODO: remove 'image' elements (applications-other.svg)
 void Remover::removeElementsOutsideTheViewbox()
 {
     QRectF viewBox = viewBoxRect();
@@ -1466,7 +1445,7 @@ void Remover::removeElementsOutsideTheViewbox()
             }
 
             if (!viewBox.intersects(rect)) {
-                elem.parentElement().removeChild(elem);
+                smartElementRemove(elem);
                 elem.clear();
             } else {
                 elem.removeAttribute(AttrId::bbox);

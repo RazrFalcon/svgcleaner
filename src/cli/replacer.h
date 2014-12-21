@@ -40,6 +40,7 @@ public:
     void processPaths();
     void fixWrongAttr();
     void convertUnits();
+    void convertColors();
     void convertEntityData();
     void convertCDATAStyle();
     void prepareDefs();
@@ -53,7 +54,7 @@ public:
     void trimIds();
     void calcElemAttrCount(const QString &text);
     void groupTextElementsStyles();
-    void groupElementsByStyles(SvgElement parentElem = SvgElement());
+    void groupElementsByStyles();
     void markUsedElements();
     void applyTransformToDefs();
     void applyTransformToShapes();
@@ -69,6 +70,7 @@ private:
     void updateLinkedDefTransform(SvgElement &elem);
     static bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2);
     void calcNewStrokeWidth(SvgElement &elem, const Transform &transform);
+    void _groupElementsByStyles(SvgElement parentElem = SvgElement());
 };
 
 #endif // REPLACER_H

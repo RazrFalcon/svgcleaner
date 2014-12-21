@@ -270,8 +270,8 @@ const QList<int> digitListIds = QList<int>()
 
 const QList<int> textAttributesIds = QList<int>()
     << AttrId::font_style << AttrId::font_variant << AttrId::font_weight << AttrId::font_weight
-    << AttrId::font_stretch << AttrId::font_size << AttrId::font_size_adjust << AttrId::kerning
-    << AttrId::letter_spacing << AttrId::word_spacing << AttrId::text_decoration
+    << AttrId::font_stretch << AttrId::font_size << AttrId::font_family << AttrId::font_size_adjust
+    << AttrId::kerning << AttrId::letter_spacing << AttrId::word_spacing << AttrId::text_decoration
     << AttrId::writing_mode << AttrId::glyph_orientation_vertical
     << AttrId::glyph_orientation_horizontal << AttrId::direction << AttrId::text_anchor
     << AttrId::dominant_baseline << AttrId::alignment_baseline << AttrId::baseline_shift;

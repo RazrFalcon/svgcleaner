@@ -506,12 +506,6 @@ public:
     QString lastError;
 };
 
-inline void SvgNodePrivate::setOwnerDocument(SvgDocumentPrivate *doc)
-{
-    ownerNode = doc;
-    hasParent = false;
-}
-
 SvgNodePrivate::SvgNodePrivate(SvgDocumentPrivate *doc, SvgNodePrivate *par)
 {
     ref = 1;
@@ -541,6 +535,12 @@ SvgNodePrivate::~SvgNodePrivate()
     }
     first = 0;
     last = 0;
+}
+
+inline void SvgNodePrivate::setOwnerDocument(SvgDocumentPrivate *doc)
+{
+    ownerNode = doc;
+    hasParent = false;
 }
 
 void SvgNodePrivate::clear()
@@ -735,14 +735,14 @@ QString SvgNode::nodeName() const
 {
     if (!impl)
         return QString();
-    return ((SvgNodePrivate*)impl)->name;
+    return impl->name;
 }
 
 SvgNode SvgNode::parentNode() const
 {
     if (!impl)
         return SvgNode();
-    return SvgNode(((SvgNodePrivate*)impl)->parent());
+    return impl->parent();
 }
 
 SvgNodeList SvgNode::childNodes() const
@@ -762,35 +762,35 @@ SvgNode SvgNode::firstChild() const
 {
     if (!impl)
         return SvgNode();
-    return SvgNode(((SvgNodePrivate*)impl)->first);
+    return impl->first;
 }
 
 SvgNode SvgNode::lastChild() const
 {
     if (!impl)
         return SvgNode();
-    return SvgNode(((SvgNodePrivate*)impl)->last);
+    return impl->last;
 }
 
 SvgNode SvgNode::previousSibling() const
 {
     if (!impl)
         return SvgNode();
-    return SvgNode(((SvgNodePrivate*)impl)->prev);
+    return impl->prev;
 }
 
 SvgNode SvgNode::nextSibling() const
 {
     if (!impl)
         return SvgNode();
-    return SvgNode(((SvgNodePrivate*)impl)->next);
+    return impl->next;
 }
 
 SvgDocument SvgNode::ownerDocument() const
 {
     if (!impl)
         return SvgDocument();
-    return SvgDocument(((SvgNodePrivate*)impl)->ownerDocument());
+    return impl->ownerDocument();
 }
 
 bool SvgNode::hasNextSibling() const
@@ -798,6 +798,7 @@ bool SvgNode::hasNextSibling() const
     if (!impl)
         return false;
     SvgNodePrivate *p = impl->next;
+    // FIXME: ignore isElement check, use it only in hasNextSiblingElement
     while (p) {
         if (p->isElement())
             return true;
@@ -810,7 +811,7 @@ SvgNode SvgNode::insertBefore(const SvgNode &newChild, const SvgNode &refChild)
 {
     if (!impl)
         return SvgNode();
-    return SvgNode(((SvgNodePrivate*)impl)->insertBefore(newChild.impl, refChild.impl));
+    return impl->insertBefore(newChild.impl, refChild.impl);
 }
 
 SvgNode SvgNode::removeChild(const SvgNode &oldChild)
@@ -821,7 +822,7 @@ SvgNode SvgNode::removeChild(const SvgNode &oldChild)
     if (oldChild.isNull())
         return SvgNode();
 
-    return SvgNode(((SvgNodePrivate*)impl)->removeChild(oldChild.impl));
+    return impl->removeChild(oldChild.impl);
 }
 
 SvgNode SvgNode::appendChild(const SvgNode &newChild)
@@ -830,14 +831,14 @@ SvgNode SvgNode::appendChild(const SvgNode &newChild)
         qWarning("Calling appendChild() on a null node does nothing.");
         return SvgNode();
     }
-    return SvgNode(((SvgNodePrivate*)impl)->appendChild(newChild.impl));
+    return impl->appendChild(newChild.impl);
 }
 
 bool SvgNode::hasChildren() const
 {
     if (!impl)
         return false;
-    return (((SvgNodePrivate*)impl)->first != 0);
+    return (impl->first != 0);
 }
 
 bool SvgNode::isNull() const
@@ -1523,7 +1524,7 @@ int SvgElement::attributesCount() const
     return IMPL->attrs.size() + IMPL->attrsExt.size();
 }
 
-QString SvgElement::defIdFromAttribute(const int &attrId)
+QString SvgElement::defIdFromAttribute(const int &attrId) const
 {
     QString id = attribute(attrId);
     if (!id.startsWith(UrlPrefix))

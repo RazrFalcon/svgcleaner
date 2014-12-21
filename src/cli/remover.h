@@ -46,8 +46,9 @@ public:
     void removeElementsFinal();
     void removeNonElementAttributes();
     void cleanSvgElementAttribute();
+    void checkXlinkDeclaration();
     void removeAttributes();
-    void cleanPresentationAttributes(SvgElement parent = SvgElement());
+    void cleanPresentationAttributes();
     void removeGroups();
     void ungroupSwitchElement();
     void ungroupAElement();
@@ -58,6 +59,7 @@ private:
     IntHash parentHash;
     QSet<int> parentAttrs;
 
+    void _cleanPresentationAttributes(SvgElement parent = SvgElement());
     void cleanStyle(const SvgElement &elem, IntHash &hash);
     void removeDefaultValue(IntHash &hash, int attrId);
     bool isElementInvisible(SvgElement &elem);

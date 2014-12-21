@@ -176,6 +176,7 @@ namespace KeyStr {
 // singleton
 class Keys : public QObject
 {
+    // TODO: remove qobj dependency
     Q_OBJECT
 
 public:
@@ -203,7 +204,7 @@ public:
     QList<int> extremePresetKeys();
     void setPreset(const QString &name);
     QString preset();
-    QStringList& allKeys();
+    QStringList allKeys();
     QString keyName(int keyId);
     QString presetDescription(const QString &name);
 

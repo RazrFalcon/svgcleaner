@@ -75,16 +75,15 @@ void IconsWidget::setError(const QString &text)
 
 void IconsWidget::makeToolTip()
 {
-    QImage image(615, 310, QImage::Format_ARGB32);
-    image.fill(0);
-    tooltipPix = QPixmap::fromImage(image, Qt::NoOpaqueDetection | Qt::AutoColor);
+    tooltipPix = QPixmap(615, 310);
+    tooltipPix.fill(Qt::transparent);
     QPainter painter(&tooltipPix);
     QPalette pal;
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
     painter.setBrush(QBrush(pal.color(QPalette::Background)));
     painter.setPen(QPen(QColor("#636363"), 2));
-    painter.drawRoundedRect(2, 2, image.width()-4, image.height()-4, 5, 5);
+    painter.drawRoundedRect(2, 2, tooltipPix.width()-4, tooltipPix.height()-4, 5, 5);
     painter.drawPixmap(5, 5, renderSvg(inpath, QSize(300, 300), false));
     painter.drawPixmap(310, 5, renderSvg(outpath, QSize(300, 300), true));
 

@@ -382,10 +382,14 @@ QList<int> Keys::extremePresetKeys()
     return list;
 }
 
-QStringList &Keys::allKeys()
+QStringList Keys::allKeys()
 {
     // must be in the same order as in Key namespace
-    static QStringList allKeys = QStringList()
+    static QStringList allKeys;
+    if (!allKeys.isEmpty())
+        return allKeys;
+
+    allKeys
         << KeyStr::RemoveProlog
         << KeyStr::RemoveComments
         << KeyStr::RemoveProcInstruction
@@ -449,6 +453,7 @@ QStringList &Keys::allKeys()
         << KeyStr::SortDefs
 
         << KeyStr::ShortOutput;
+
     return allKeys;
 }
 

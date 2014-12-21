@@ -8,6 +8,8 @@ DESTDIR  = ../../bin
 TEMPLATE = app
 DEFINES *= QT_USE_QSTRINGBUILDER
 
+QMAKE_CXXFLAGS += -Wextra
+
 SOURCES += \
     basecleaner.cpp \
     enums.cpp \

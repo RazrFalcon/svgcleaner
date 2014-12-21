@@ -22,10 +22,10 @@
 #include <QtGui/QResizeEvent>
 #include <QtGui/QScrollBar>
 
+#include <QtDebug>
+
 #include "settings.h"
 #include "itemswidget.h"
-
-#include <QtDebug>
 
 int ItemsWidget::m_sortType = -1;
 
@@ -58,7 +58,8 @@ void ItemsWidget::setScroll(QScrollBar *scrollBar)
 
 bool ItemsWidget::haveFreeSpace()
 {
-    return ((m_itemList.size() + 1) * (itemHeight + m_lay->spacing())) < height() - m_lay->contentsMargins().bottom();
+    return ((m_itemList.size() + 1) * (itemHeight + m_lay->spacing()))
+            < height() - m_lay->contentsMargins().bottom();
 }
 
 void ItemsWidget::appendData(SVGInfo *info)
@@ -66,7 +67,7 @@ void ItemsWidget::appendData(SVGInfo *info)
     m_dataList.append(info);
 
     if (haveFreeSpace() || m_itemList.isEmpty()) {
-        ThumbWidget *w = new ThumbWidget(info, this);
+        ThumbWidget *w = new ThumbWidget(info, isCompareView, this);
         w->setFixedHeight(itemHeight);
         m_itemList << w;
         m_lay->insertWidget(m_lay->count()-1, w);
@@ -82,8 +83,14 @@ void ItemsWidget::clear()
 
 void ItemsWidget::scrollTo(int pos)
 {
-    foreach (ThumbWidget *w, m_itemList)
-        w->refill(m_dataList.at(pos++), isCompareView);
+    if (pos < 0)
+        pos = 0;
+    foreach (ThumbWidget *w, m_itemList) {
+        if (pos < m_dataList.size()) {
+            w->refill(m_dataList.at(pos), isCompareView);
+            pos++;
+        }
+    }
 }
 
 void ItemsWidget::setCompareView(bool flag)
@@ -138,7 +145,7 @@ void ItemsWidget::resizeEvent(QResizeEvent *event)
     int i = m_scrollBar->value() + m_itemList.size();
     // try to add new widgets
     while (haveFreeSpace() && i < m_dataList.size()) {
-        ThumbWidget *w = new ThumbWidget(m_dataList.at(i), this);
+        ThumbWidget *w = new ThumbWidget(m_dataList.at(i), isCompareView, this);
         w->setFixedHeight(itemHeight);
         m_itemList << w;
         m_lay->insertWidget(m_lay->count()-1, w);
@@ -147,8 +154,8 @@ void ItemsWidget::resizeEvent(QResizeEvent *event)
     // when we increase window height and scroll at maximum - prepend new widgets
     if (i == m_dataList.size()) {
         i -= m_itemList.size();
-        while (haveFreeSpace() && i >= 0) {
-            ThumbWidget *w = new ThumbWidget(m_dataList.at(i), this);
+        while (haveFreeSpace() && i > 0) {
+            ThumbWidget *w = new ThumbWidget(m_dataList.at(i), isCompareView, this);
             w->setFixedHeight(itemHeight);
             m_itemList.prepend(w);
             m_lay->insertWidget(0, w);

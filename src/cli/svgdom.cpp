@@ -112,6 +112,7 @@ public:
         m_id.clear();
         m_name.clear();
         m_value.clear();
+        m_transform.clear();
 
         TokenType token = identify(&str);
         if (token == ProcessingInstruction) {
@@ -192,6 +193,7 @@ public:
     QString id() const               { return m_id; }
     QString name() const             { return m_name; }
     QString value() const            { return m_value; }
+    Transform transform() const      { return m_transform; }
 
 private:
     // have to store full file content to prevent
@@ -208,6 +210,7 @@ private:
     IntHash m_attrHash;
     StringHash m_attrExtHash;
     QString m_id;
+    Transform m_transform;
 
     // parser vars
     bool m_isPrevElemEnded;
@@ -329,10 +332,15 @@ private:
                 int aId = attrStrToId(attrName);
                 if (aId == AttrId::id)
                     m_id = attrValue;
-                if (aId != -1)
-                    m_attrHash.insert(aId, attrValue);
-                else
+
+                if (aId != -1) {
+                    if (aId == AttrId::transform || aId == AttrId::gradientTransform)
+                        m_transform = Transform::create(attrValue);
+                    else
+                        m_attrHash.insert(aId, attrValue);
+                } else {
                     m_attrExtHash.insert(attrName, attrValue);
+                }
             }
 
             EndTagType endType = isEndTag();
@@ -458,8 +466,9 @@ public:
     // Variables
     QString id;
     IntHash attrs;
-    // external attributes
-    StringHash attrsExt;
+    StringHash attrsExt; // external attributes
+    Transform transform;
+    Transform bboxTransform; // contains bounding box transform of the element
 };
 
 class SvgCommentPrivate : public SvgNodePrivate
@@ -986,19 +995,19 @@ SvgElementPrivate::SvgElementPrivate(SvgDocumentPrivate *d, SvgNodePrivate *p)
     createdWithDom1Interface = false;
 }
 
+// TODO: sort attributes
 void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
 {
-    static const QString tspanElem = QL1S("tspan");
     static const QString startStr  = QL1S("</");
     static const QString endStr    = QL1S("/>");
     static const QString startAttr = QL1S("=\"");
 
-    if (this->name != tspanElem)
+    if (this->name != E_tspan)
         s << QString(indent < 1 ? 0 : depth * indent, QL1C(' '));
 
     s << QL1C('<') << name;
 
-    if (!attrs.isEmpty() || !attrsExt.isEmpty()) {
+    if (!attrs.isEmpty()) {
         // save default attributes
         IntHash::const_iterator it = attrs.constBegin();
         for (; it != attrs.constEnd(); ++it) {
@@ -1010,6 +1019,8 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
                 s << attrIdToStr(it.key()) << startAttr << it.value() << QL1C('\"');
             }
         }
+    }
+    if (!attrsExt.isEmpty()) {
         // save custom attributes
         StringHash::const_iterator it2 = attrsExt.constBegin();
         for (; it2 != attrsExt.constEnd(); ++it2) {
@@ -1021,21 +1032,14 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
                 s << it2.key() << startAttr << it2.value() << QL1C('\"');
             }
         }
-
-//        // sorted
-//        StringMap map;
-//        foreach (const int &attrId, attrs.keys())
-//            map.insert(attrIdToStr(attrId), attrs.value(attrId));
-//        foreach (const QString &attrName, attrsExt.keys())
-//            map.insert(attrName, attrsExt.value(attrName));
-
-//        StringMap::const_iterator it3 = map.constBegin();
-//        for (; it3 != map.constEnd(); ++it3) {
-//            if (!it3.value().isEmpty()) {
-//                s << spaceChar;
-//                s << it3.key() << startAttr << it3.value() << quoteChar;
-//            }
-//        }
+    }
+    if (!transform.isNull()) {
+        QString transformName;
+        if (name == E_linearGradient || name == E_radialGradient)
+            transformName = A_gradientTransform;
+        else
+            transformName = A_transform;
+        s << QL1C(' ') << transformName << startAttr << transform.simplified() << QL1C('\"');
     }
 
     if (last) {
@@ -1045,7 +1049,7 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
         } else {
             s << QL1C('>');
             // -1 disables new lines.
-            if (indent != -1 && first->name != tspanElem && name != tspanElem)
+            if (indent != -1 && first->name != E_tspan && name != E_tspan)
                 s << endl;
         }
         SvgNodePrivate::save(s, depth + 1, indent);
@@ -1063,7 +1067,7 @@ void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
         }
     }
     if (next) {
-        if (next->name != tspanElem && !next->hasValue()) {
+        if (next->name != E_tspan && !next->hasValue()) {
             if (indent != -1)
                 s << endl;
         }
@@ -1230,7 +1234,7 @@ bool SvgElement::hasAttributes() const
 {
     if (!impl)
         return false;
-    return IMPL->attrs.size() > 0 || IMPL->attrsExt.size() > 0;
+    return IMPL->attrs.size() > 0 || IMPL->attrsExt.size() > 0 || hasTransform();
 }
 
 QString SvgElement::xlinkId() const
@@ -1291,7 +1295,7 @@ int SvgElement::childElementCount() const
     return count;
 }
 
-// TODO: remove
+// TODO: remove this func
 StringHash SvgElement::attributesHash(bool ignoreId) const
 {
     if (!impl)
@@ -1302,6 +1306,8 @@ StringHash SvgElement::attributesHash(bool ignoreId) const
         hash.insert(attrIdToStr(id), IMPL->attrs.value(id));
     if (ignoreId)
         hash.remove(Attribute::A_id);
+    if (hasTransform())
+        hash.insert(Attribute::A_transform, transform().simplified());
     return hash;
 }
 
@@ -1340,6 +1346,8 @@ QStringList SvgElement::attributesList() const
     foreach (const int &id, IMPL->attrs.keys())
         list << attrIdToStr(id);
     list << IMPL->attrsExt.keys();
+    if (hasTransform())
+        list << Attribute::A_transform;
     return list;
 }
 
@@ -1350,6 +1358,8 @@ IntList SvgElement::baseAttributesList() const
     IntList list;
     foreach (const int &id, IMPL->attrs.keys())
         list << id;
+    if (hasTransform())
+        list << AttrId::transform;
     return list;
 }
 
@@ -1474,6 +1484,7 @@ bool SvgElement::hasLinkedStyle()
     return false;
 }
 
+// TODO: replace atrribute with variable
 bool SvgElement::isUsed() const
 {
     return hasAttribute(AttrId::used_element);
@@ -1510,7 +1521,7 @@ int SvgElement::attributesCount() const
 {
     if (!impl)
         return 0;
-    return IMPL->attrs.size() + IMPL->attrsExt.size();
+    return IMPL->attrs.size() + IMPL->attrsExt.size() + (hasTransform() ? 1 : 0);
 }
 
 QString SvgElement::defIdFromAttribute(const int &attrId) const
@@ -1545,19 +1556,46 @@ void SvgElement::setStylesFromHash(const IntHash &hash)
         setAttribute(attrId, hash.value(attrId));
 }
 
-void SvgElement::setTransform(const QString &transform, bool fromParent)
+bool SvgElement::hasTransform() const
 {
-    if (hasAttribute(AttrId::transform)) {
+    return !IMPL->transform.isNull();
+}
+
+void SvgElement::setTransform(const Transform &transform, bool fromParent)
+{
+    if (hasTransform()) {
         if (fromParent) {
-            Transform ts(transform + " " + attribute(AttrId::transform));
-            setAttribute(AttrId::transform, ts.simplified());
+            Transform ts = transform.clone();
+            ts.append(IMPL->transform);
+            IMPL->transform = ts;
         } else {
-            Transform ts(attribute(AttrId::transform) + " " + transform);
-            setAttribute(AttrId::transform, ts.simplified());
+            Transform ts = IMPL->transform.clone();
+            ts.append(transform);
+            IMPL->transform = ts;
         }
     } else {
-        setAttribute(AttrId::transform, transform);
+        IMPL->transform = transform.clone();
     }
+}
+
+void SvgElement::removeTransform()
+{
+    IMPL->transform.clear();
+}
+
+Transform SvgElement::transform() const
+{
+    return IMPL->transform;
+}
+
+void SvgElement::setBBoxTransform(const Transform &transform)
+{
+    IMPL->bboxTransform = transform.clone();
+}
+
+Transform SvgElement::bboxTransform() const
+{
+    return IMPL->bboxTransform;
 }
 
 QString SvgElement::text() const
@@ -1720,6 +1758,7 @@ bool SvgDocument::loadFile(const QString &filePath)
             node.appendChild(elem);
             elem.setAttribute(AttrId::id, reader.id());
             elem.setAttributeHash(reader.attributes(), reader.attributesExt());
+            elem.setTransform(reader.transform());
             node = elem;
         } else if (token == SvgParser::Text) {
             if (node == documentElement())

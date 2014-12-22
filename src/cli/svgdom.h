@@ -67,7 +67,7 @@ class SvgNode
 public:
     SvgNode();
     SvgNode(const SvgNode &);
-    SvgNode& operator= (const SvgNode &);
+    SvgNode &operator= (const SvgNode &);
     bool operator== (const SvgNode &) const;
     bool operator!= (const SvgNode &) const;
     ~SvgNode();
@@ -195,7 +195,14 @@ public:
     IntHash styleHash() const;
     void removeAttributes(const QStringList &list);
     void setStylesFromHash(const IntHash &hash);
-    void setTransform(const QString &transform, bool fromParent = false);
+
+    bool hasTransform() const;
+    void setTransform(const Transform &transform, bool fromParent = false);
+    void removeTransform();
+    Transform transform() const;
+
+    void setBBoxTransform(const Transform &transform);
+    Transform bboxTransform() const;
 
     QString tagName() const;
     void setTagName(const QString &name);

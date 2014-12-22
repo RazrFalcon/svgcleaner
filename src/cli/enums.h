@@ -121,7 +121,6 @@ namespace Attribute {
     extern const QString A_baseFrequency;
     extern const QString A_baseline_shift;
     extern const QString A_bbox;
-    extern const QString A_bbox_transform;
     extern const QString A_block_progression;
     extern const QString A_class;
     extern const QString A_clip;
@@ -235,7 +234,6 @@ enum {
     baseFrequency,
     baseline_shift,
     bbox,
-    bbox_transform,
     block_progression,
     class_,
     clip,

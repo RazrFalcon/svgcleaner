@@ -65,7 +65,6 @@ TransformMatrix::TransformMatrix(double a, double b, double c, double d, double 
     m[0][0] = a;
     m[1][0] = c;
     m[2][0] = e;
-
     m[0][1] = b;
     m[1][1] = d;
     m[2][1] = f;
@@ -164,23 +163,172 @@ double &TransformMatrix::operator()(int row, int column)
     return m[column][row];
 }
 
+// SVG 2d transform implementation
 
 // http://www.w3.org/TR/SVG/coords.html#EstablishingANewUserSpace
-Transform::Transform(const QString &text)
+
+class TransformPrivate
 {
-    if (text.isEmpty() || text.count(' ') == text.size())
-        calcMatrixes("translate(0,0)");
+public:
+    TransformPrivate() { ref = 1; isChanged = true; }
+    virtual ~TransformPrivate() {}
+
+    QString simplified() const;
+    void divide(const QString &text);
+    TransformPrivate *clone();
+    TransformMatrix matrix() const;
+    QList<TransformMatrix> parseTransform(const QString &text);
+    void calcMatrixes(const QString &text);
+    void calcParameters(const TransformMatrix &matrix);
+
+    // Variables
+    QAtomicInt ref;
+
+    double oldX;
+    double oldY;
+    double xScale;
+    double yScale;
+    double xSkew;
+    double ySkew;
+    double angle;
+
+    // matrix
+    double a;
+    double b;
+    double c;
+    double d;
+    double e;
+    double f;
+
+    Transform::Types types;
+    bool isChanged;
+    QString lastSimplified;
+};
+
+QString TransformPrivate::simplified() const
+{
+    if (!Keys::get().flag(Key::SimplifyTransformMatrix)) {
+        QString ts = TransformType::Matrix + "(";
+        ts += fromDouble(a, Round::Transform) + " ";
+        ts += fromDouble(b, Round::Transform) + " ";
+        ts += fromDouble(c, Round::Transform) + " ";
+        ts += fromDouble(d, Round::Transform) + " ";
+        ts += fromDouble(e, Round::Coordinate) + " ";
+        ts += fromDouble(f, Round::Coordinate);
+        ts += ")";
+        return ts;
+    }
+
+    QString transform;
+    QStringList newPoints;
+    newPoints.reserve(2);
+
+    Transform::Types type = types;
+    type &= ~(Transform::ProportionalScale);
+
+    // [1 0 0 1 tx ty] = translate
+    if (type == Transform::Translate)
+    {
+        if (f != 0) {
+            if (e == 0 && f == 0)
+                return "";
+            newPoints << fromDouble(e, Round::Coordinate);
+            newPoints << fromDouble(f, Round::Coordinate);
+        } else if (f == 0) {
+            if (isZero(e))
+                return "";
+            newPoints << fromDouble(e, Round::Coordinate);
+        }
+        transform = TransformType::Translate;
+    } // [sx 0 0 sy 0 0] = scale
+    else if (type == Transform::Scale)
+    {
+        if (a != d) {
+            if (isZeroTs(a) && isZeroTs(d))
+                return "";
+            newPoints << fromDouble(a, Round::Transform);
+            newPoints << fromDouble(d, Round::Transform);
+        } else {
+            if (isZeroTs(a))
+                return "";
+            newPoints << fromDouble(a, Round::Transform);
+        }
+        transform = TransformType::Scale;
+    } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
+    else if (type == Transform::Rotate)
+    {
+        if (angle == 0)
+            return "";
+        transform = TransformType::Rotate;
+        newPoints << fromDouble(angle, Round::Transform);
+    } // [1 0 tan(a) 1 0 0] = skewX, [1 tan(a) 0 1 0 0] = skewY
+    else if (type == Transform::Skew)
+    {
+        if (xSkew == 0 && ySkew == 0)
+            return "";
+        if (xSkew != 0) {
+            transform = TransformType::SkewX;
+            newPoints << fromDouble(xSkew, Round::Transform);
+        } else {
+            transform = TransformType::SkewY;
+            newPoints << fromDouble(ySkew, Round::Transform);
+        }
+    }
+    else if (type == Transform::HorizontalMirror)
+    {
+        transform = TransformType::Scale;
+        newPoints << "-1" << "1";
+    }
+    else if (type == Transform::VertiacalMirror)
+    {
+        transform = TransformType::Scale;
+        newPoints << "1" << "-1";
+    }
+    else if (type == (Transform::HorizontalMirror | Transform::VertiacalMirror))
+    {
+        transform = TransformType::Scale;
+        newPoints << "-1" << "-1";
+    }
     else
-        calcMatrixes(text);
+    {
+        if (   a == 1
+            && b == 0
+            && c == 0
+            && d == 1
+            && e == 0
+            && f == 0)
+            return "";
+
+        transform = TransformType::Matrix;
+        newPoints.reserve(6);
+        newPoints << fromDouble(a, Round::Transform);
+        newPoints << fromDouble(b, Round::Transform);
+        newPoints << fromDouble(c, Round::Transform);
+        newPoints << fromDouble(d, Round::Transform);
+        newPoints << fromDouble(e, Round::Coordinate);
+        newPoints << fromDouble(f, Round::Coordinate);
+    }
+
+    transform += "(";
+    bool isTrim = Keys::get().flag(Key::RemoveUnneededSymbols);
+    for (int i = 0; i < newPoints.size(); ++i) {
+        if (i != 0) {
+            if (isTrim) {
+                if ((!newPoints.at(i-1).contains('.')
+                     && newPoints.at(i).startsWith(QL1C('.')))
+                        || newPoints.at(i).at(0).isDigit())
+                    transform += " ";
+            } else {
+                transform += " ";
+            }
+        }
+        transform += newPoints.at(i);
+    }
+    transform += ")";
+    return transform;
 }
 
-void Transform::setOldXY(double prevX, double prevY)
-{
-    oldX = prevX;
-    oldY = prevY;
-}
-
-void Transform::divide(const QString &text)
+void TransformPrivate::divide(const QString &text)
 {
     if (text.isEmpty() || text.count(' ') == text.size()) {
         divide("translate(0,0)");
@@ -192,63 +340,40 @@ void Transform::divide(const QString &text)
     for (int i = 1; i < transMatrixList.count(); ++i)
         newMatrix = newMatrix * transMatrixList.at(i);
     newMatrix.invert();
-    TransformMatrix currMatrix(a,b,c,d,e,f);
-    newMatrix = currMatrix * newMatrix;
+    newMatrix = matrix() * newMatrix;
     calcParameters(newMatrix);
 }
 
-QRectF Transform::transformRect(const QRectF &rect)
+TransformPrivate *TransformPrivate::clone()
 {
-    QList<double> xList;
-    xList.reserve(4);
-    QList<double> yList;
-    yList.reserve(4);
-
-    setOldXY(rect.x(), rect.y());
-    xList << newX();
-    yList << newY();
-
-    setOldXY(rect.x() + rect.width(), rect.y());
-    xList << newX();
-    yList << newY();
-
-    setOldXY(rect.x(), rect.y() + rect.height());
-    xList << newX();
-    yList << newY();
-
-    setOldXY(rect.x() + rect.width(), rect.y() + rect.height());
-    xList << newX();
-    yList << newY();
-
-    double minx, miny, maxx, maxy;
-    minx = maxx = xList.first();
-    miny = maxy = yList.first();
-    foreach (double x, xList) {
-        if (x > maxx)
-            maxx = x;
-        else if (x < minx)
-            minx = x;
-    }
-    foreach (double y, yList) {
-        if (y > maxy)
-            maxy = y;
-        else if (y < miny)
-            miny = y;
-    }
-    return QRectF(minx, miny, maxx - minx, maxy - miny);
+    TransformPrivate *p = new TransformPrivate();
+    p->oldX = oldX;
+    p->oldY = oldY;
+    p->xScale = xScale;
+    p->yScale = yScale;
+    p->xSkew = xSkew;
+    p->ySkew = ySkew;
+    p->angle = angle;
+    p->a = a;
+    p->b = b;
+    p->c = c;
+    p->d = d;
+    p->e = e;
+    p->f = f;
+    p->types = types;
+    p->isChanged = isChanged;
+    p->lastSimplified = lastSimplified;
+    // We are not interested in this node
+    p->ref.deref();
+    return p;
 }
 
-double Transform::newX() const
+TransformMatrix TransformPrivate::matrix() const
 {
-    return a*oldX + c*oldY + e;
+    return TransformMatrix(a, b, c, d, e, f);
 }
 
-double Transform::newY() const
-{
-    return b*oldX + d*oldY + f;
-}
-
-QList<TransformMatrix> Transform::parseTransform(const QString &text)
+QList<TransformMatrix> TransformPrivate::parseTransform(const QString &text)
 {
     QList<TransformMatrix> list;
     StringWalker sw(text);
@@ -327,9 +452,13 @@ QList<TransformMatrix> Transform::parseTransform(const QString &text)
     return list;
 }
 
-void Transform::calcMatrixes(const QString &text)
+void TransformPrivate::calcMatrixes(const QString &text)
 {
-    QList<TransformMatrix> transMatrixList = parseTransform(text);
+    QList<TransformMatrix> transMatrixList;
+    if (text.isNull())
+        transMatrixList << TransformMatrix();
+    else
+        transMatrixList = parseTransform(text);
 
     TransformMatrix newMatrix = transMatrixList.at(0);
     for (int i = 1; i < transMatrixList.count(); ++i)
@@ -337,8 +466,10 @@ void Transform::calcMatrixes(const QString &text)
     calcParameters(newMatrix);
 }
 
-void Transform::calcParameters(TransformMatrix &matrix)
+void TransformPrivate::calcParameters(const TransformMatrix &matrix)
 {
+    isChanged = true;
+
     a = b = c = d = e = f = 0;
 
     if (!isZeroTs(matrix(0,0)))
@@ -356,199 +487,273 @@ void Transform::calcParameters(TransformMatrix &matrix)
 
 //    qDebug() << "abc" << a << b << c << d << e << f;
 
-    m_xScale = sqrt(a*a + c*c);
-    m_yScale = sqrt(b*b + d*d);
-    m_xSkew = atan(b)*(180.0/M_PI);
-    m_ySkew = atan(c)*(180.0/M_PI);
-    m_angle = atan(-b/a)*(180/M_PI);
-    if (qIsNaN(m_angle))
+    xScale = sqrt(a*a + c*c);
+    yScale = sqrt(b*b + d*d);
+    xSkew = atan(b)*(180.0/M_PI);
+    ySkew = atan(c)*(180.0/M_PI);
+    angle = atan(-b/a)*(180/M_PI);
+    if (qIsNaN(angle))
         qFatal("Error: rotation is NaN");
 
     if (b < c)
-        m_angle = -m_angle;
+        angle = -angle;
 
 //    qDebug() << "calc" << m_xScale << m_yScale << m_xSkew << m_ySkew << m_angle;
 
     // detect all the transformations inside the matrix
 
+    types = Transform::Types();
+
     if (f != 0 || e != 0)
-        m_types |= Translate;
+        types |= Transform::Translate;
 
-    if ((isZeroTs(qAbs(b) - qAbs(c)) && b != 0) || !isZero(m_angle))
-        m_types |= Rotate;
+    if ((isZeroTs(qAbs(b) - qAbs(c)) && b != 0) || !isZero(angle))
+        types |= Transform::Rotate;
 
-    if (m_xScale != 1 || m_yScale != 1)
-        m_types |= Scale;
+    if (xScale != 1 || yScale != 1)
+        types |= Transform::Scale;
 
-    if (isZeroTs(m_xScale - m_yScale))
-        m_types |= ProportionalScale;
+    if (isZeroTs(xScale - yScale))
+        types |= Transform::ProportionalScale;
 
-    if (m_xSkew != 0 || m_ySkew != 0)
-        m_types |= Skew;
+    if (xSkew != 0 || ySkew != 0)
+        types |= Transform::Skew;
 
-    if (m_xScale < 0 || a < 0)
-        m_types |= HorizontalMirror;
+    if (xScale < 0 || a < 0)
+        types |= Transform::HorizontalMirror;
 
-    if (m_yScale < 0 || d < 0)
-        m_types |= VertiacalMirror;
+    if (yScale < 0 || d < 0)
+        types |= Transform::VertiacalMirror;
+}
+
+Transform::Transform()
+{
+    impl = 0;
+}
+
+Transform::Transform(const Transform &t)
+{
+    impl = t.impl;
+    if (impl)
+        impl->ref.ref();
+}
+
+Transform &Transform::operator=(const Transform &t)
+{
+    if (t.impl)
+        t.impl->ref.ref();
+    if (impl && !impl->ref.deref())
+        delete impl;
+    impl = t.impl;
+    return *this;
+}
+
+bool Transform::operator!=(const Transform &t) const
+{
+    return (impl != t.impl);
+}
+
+bool Transform::operator==(const Transform &t) const
+{
+    return (impl == t.impl);
+}
+
+Transform::~Transform()
+{
+    if (impl && !impl->ref.deref())
+        delete impl;
+}
+
+bool Transform::isNull() const
+{
+    return (impl == 0);
+}
+
+void Transform::clear()
+{
+    if (impl && !impl->ref.deref())
+        delete impl;
+    impl = 0;
+}
+
+Transform Transform::clone() const
+{
+    if (!impl)
+        return Transform();
+    return Transform(impl->clone());
+}
+
+Transform Transform::create()
+{
+    TransformPrivate *impl = new TransformPrivate();
+    impl->ref.deref();
+    impl->calcMatrixes(QString());
+    return impl;
+}
+
+Transform Transform::create(const QString &text)
+{
+    TransformPrivate *impl = new TransformPrivate();
+    impl->ref.deref();
+
+    if (text.isEmpty() || text.count(' ') == text.size())
+        impl->calcMatrixes(QString());
+    else
+        impl->calcMatrixes(text);
+
+    return impl;
+}
+
+void Transform::append(const Transform &ts)
+{
+    if (!impl)
+        return;
+    impl->calcParameters(matrix() * ts.matrix());
+}
+
+void Transform::setOldXY(double prevX, double prevY)
+{
+    if (!impl)
+        return;
+    impl->oldX = prevX;
+    impl->oldY = prevY;
+}
+
+void Transform::divide(const QString &text)
+{
+    if (!impl)
+        return;
+    impl->divide(text);
+}
+
+QRectF Transform::transformRect(const QRectF &rect)
+{
+    if (!impl)
+        return QRectF();
+
+    QList<double> xList;
+    xList.reserve(4);
+    QList<double> yList;
+    yList.reserve(4);
+
+    setOldXY(rect.x(), rect.y());
+    xList << newX();
+    yList << newY();
+
+    setOldXY(rect.x() + rect.width(), rect.y());
+    xList << newX();
+    yList << newY();
+
+    setOldXY(rect.x(), rect.y() + rect.height());
+    xList << newX();
+    yList << newY();
+
+    setOldXY(rect.x() + rect.width(), rect.y() + rect.height());
+    xList << newX();
+    yList << newY();
+
+    double minx, miny, maxx, maxy;
+    minx = maxx = xList.first();
+    miny = maxy = yList.first();
+    foreach (double x, xList) {
+        if (x > maxx)
+            maxx = x;
+        else if (x < minx)
+            minx = x;
+    }
+    foreach (double y, yList) {
+        if (y > maxy)
+            maxy = y;
+        else if (y < miny)
+            miny = y;
+    }
+    return QRectF(minx, miny, maxx - minx, maxy - miny);
+}
+
+double Transform::newX() const
+{
+    if (!impl)
+        return 0;
+    return impl->a * impl->oldX + impl->c * impl->oldY + impl->e;
+}
+
+double Transform::newY() const
+{
+    if (!impl)
+        return 0;
+    return impl->b * impl->oldX + impl->d * impl->oldY + impl->f;
+}
+
+Transform::Transform(TransformPrivate *t)
+{
+    impl = t;
+    if (impl)
+        impl->ref.ref();
 }
 
 QString Transform::simplified() const
 {
-    // TODO: rewrite to QVarLengthArray
-
-    if (!Keys::get().flag(Key::SimplifyTransformMatrix)) {
-        QString ts = TransformType::Matrix + "(";
-        ts += fromDouble(a, Round::Transform) + " ";
-        ts += fromDouble(b, Round::Transform) + " ";
-        ts += fromDouble(c, Round::Transform) + " ";
-        ts += fromDouble(d, Round::Transform) + " ";
-        ts += fromDouble(e, Round::Coordinate) + " ";
-        ts += fromDouble(f, Round::Coordinate);
-        ts += ")";
-        return ts;
+    if (!impl)
+        return QString();
+    if (impl->isChanged) {
+        impl->lastSimplified = impl->simplified();
+        impl->isChanged = false;
     }
-
-    QString transform;
-    QStringList newPoints;
-    newPoints.reserve(2);
-
-    Types type = m_types;
-    type &= ~(Transform::ProportionalScale);
-
-    // [1 0 0 1 tx ty] = translate
-    if (type == Translate)
-    {
-        if (f != 0) {
-            if (e == 0 && f == 0)
-                return "";
-            newPoints << fromDouble(e, Round::Coordinate);
-            newPoints << fromDouble(f, Round::Coordinate);
-        } else if (f == 0) {
-            if (isZero(e))
-                return "";
-            newPoints << fromDouble(e, Round::Coordinate);
-        }
-        transform = TransformType::Translate;
-    } // [sx 0 0 sy 0 0] = scale
-    else if (type == Scale)
-    {
-        if (a != d) {
-            if (isZeroTs(a) && isZeroTs(d))
-                return "";
-            newPoints << fromDouble(a, Round::Transform);
-            newPoints << fromDouble(d, Round::Transform);
-        } else {
-            if (isZeroTs(a))
-                return "";
-            newPoints << fromDouble(a, Round::Transform);
-        }
-        transform = TransformType::Scale;
-    } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
-    else if (type == Rotate)
-    {
-        if (m_angle == 0)
-            return "";
-        transform = TransformType::Rotate;
-        newPoints << fromDouble(m_angle, Round::Transform);
-    } // [1 0 tan(a) 1 0 0] = skewX, [1 tan(a) 0 1 0 0] = skewY
-    else if (type == Skew)
-    {
-        if (m_xSkew == 0 && m_ySkew == 0)
-            return "";
-        if (m_xSkew != 0) {
-            transform = TransformType::SkewX;
-            newPoints << fromDouble(m_xSkew, Round::Transform);
-        } else {
-            transform = TransformType::SkewY;
-            newPoints << fromDouble(m_ySkew, Round::Transform);
-        }
-    }
-    else if (type == HorizontalMirror)
-    {
-        transform = TransformType::Scale;
-        newPoints << "-1" << "1";
-    }
-    else if (type == VertiacalMirror)
-    {
-        transform = TransformType::Scale;
-        newPoints << "1" << "-1";
-    }
-    else if (type == (HorizontalMirror | VertiacalMirror))
-    {
-        transform = TransformType::Scale;
-        newPoints << "-1" << "-1";
-    }
-    else
-    {
-        if (   a == 1
-            && b == 0
-            && c == 0
-            && d == 1
-            && e == 0
-            && f == 0)
-            return "";
-
-        transform = TransformType::Matrix;
-        newPoints.reserve(6);
-        newPoints << fromDouble(a, Round::Transform);
-        newPoints << fromDouble(b, Round::Transform);
-        newPoints << fromDouble(c, Round::Transform);
-        newPoints << fromDouble(d, Round::Transform);
-        newPoints << fromDouble(e, Round::Coordinate);
-        newPoints << fromDouble(f, Round::Coordinate);
-    }
-
-    transform += "(";
-    bool isTrim = Keys::get().flag(Key::RemoveUnneededSymbols);
-    for (int i = 0; i < newPoints.size(); ++i) {
-        if (i != 0) {
-            if (isTrim) {
-                if ((!newPoints.at(i-1).contains('.')
-                     && newPoints.at(i).startsWith(QL1C('.')))
-                        || newPoints.at(i).at(0).isDigit())
-                    transform += " ";
-            } else {
-                transform += " ";
-            }
-        }
-        transform += newPoints.at(i);
-    }
-    transform += ")";
-    return transform;
+    return impl->lastSimplified;
 }
 
 double Transform::scaleFactor() const
 {
-    return m_xScale;
+    if (!impl)
+        return 0;
+    return impl->xScale;
 }
 
 bool Transform::isProportionalScale()
 {
-    return m_types.testFlag(ProportionalScale);
+    if (!impl)
+        return false;
+    return impl->types.testFlag(ProportionalScale);
 }
 
 bool Transform::isMirrored()
 {
-    return m_types.testFlag(VertiacalMirror) || m_types.testFlag(HorizontalMirror);
+    if (!impl)
+        return false;
+    return impl->types.testFlag(VertiacalMirror) || impl->types.testFlag(HorizontalMirror);
 }
 
 bool Transform::isSkew()
 {
-    return m_types.testFlag(Skew);
+    if (!impl)
+        return false;
+    return impl->types.testFlag(Skew);
 }
 
 bool Transform::isRotating()
 {
-    return m_types.testFlag(Rotate);
+    if (!impl)
+        return false;
+    return impl->types.testFlag(Rotate);
 }
 
 bool Transform::isTranslate()
 {
-    return m_types.testFlag(Translate);
+    if (!impl)
+        return false;
+    return impl->types.testFlag(Translate);
+}
+
+TransformMatrix Transform::matrix() const
+{
+    if (!impl)
+        return TransformMatrix();
+    return impl->matrix();
 }
 
 Transform::Types Transform::type()
 {
-    return m_types;
+    if (!impl)
+        return Transform::Types();
+    return impl->types;
 }

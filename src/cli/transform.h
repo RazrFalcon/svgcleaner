@@ -28,10 +28,24 @@
 
 class TransformMatrix;
 
+class TransformPrivate;
+
 class Transform
 {
 public:
-    explicit Transform(const QString &text);
+    Transform();
+    Transform(const Transform &t);
+    Transform &operator= (const Transform &t);
+    bool operator== (const Transform &t) const;
+    bool operator!= (const Transform &t) const;
+    ~Transform();
+    bool isNull() const;
+    void clear();
+    Transform clone() const;
+    static Transform create();
+    static Transform create(const QString &text);
+
+    void append(const Transform &ts);
     void setOldXY(double prevX, double prevY);
     void divide(const QString &text);
     QRectF transformRect(const QRectF &rect);
@@ -44,6 +58,7 @@ public:
     bool isSkew();
     bool isRotating();
     bool isTranslate();
+    TransformMatrix matrix() const;
 
     enum TsType {
         Scale = 0x1,
@@ -57,36 +72,9 @@ public:
     Q_DECLARE_FLAGS(Types, TsType)
     Types type();
 
-    bool operator ==(const Transform &t) {
-        return (   a == t.a
-                && b == t.b
-                && c == t.c
-                && d == t.d
-                && e == t.e
-                && f == t.f);
-    }
-
-private:
-    double oldX;
-    double oldY;
-    double m_xScale;
-    double m_yScale;
-    double m_xSkew;
-    double m_ySkew;
-    double m_angle;
-
-    double a;
-    double b;
-    double c;
-    double d;
-    double e;
-    double f;
-
-    Types m_types;
-
-    QList<TransformMatrix> parseTransform(const QString &text);
-    void calcMatrixes(const QString &text);
-    void calcParameters(TransformMatrix &matrix);
+protected:
+    TransformPrivate *impl;
+    Transform(TransformPrivate*);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Transform::Types)

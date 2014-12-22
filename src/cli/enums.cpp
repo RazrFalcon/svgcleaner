@@ -111,7 +111,6 @@ namespace Attribute {
     const QString A_baseFrequency                = QL1S("baseFrequency");
     const QString A_baseline_shift               = QL1S("baseline-shift");
     const QString A_bbox                         = QL1S("bbox");
-    const QString A_bbox_transform               = QL1S("bbox-transform");
     const QString A_block_progression            = QL1S("block-progression");
     const QString A_class                        = QL1S("class");
     const QString A_clip_path                    = QL1S("clip-path");
@@ -371,7 +370,6 @@ QHash<QString,int> allAttributesHash()
     hash.insert(A_baseFrequency,                AttrId::baseFrequency);
     hash.insert(A_baseline_shift,               AttrId::baseline_shift);
     hash.insert(A_bbox,                         AttrId::bbox);
-    hash.insert(A_bbox_transform,               AttrId::bbox_transform);
     hash.insert(A_block_progression,            AttrId::block_progression);
     hash.insert(A_class,                        AttrId::class_);
     hash.insert(A_clip,                         AttrId::clip);

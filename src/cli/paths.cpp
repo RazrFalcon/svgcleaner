@@ -472,7 +472,7 @@ void Path::splitToSegments(const QString &path, QList<Segment> &segList)
         segList.clear();
 }
 
-void Path::calcNewStrokeWidth(const Transform &transform)
+void Path::calcNewStrokeWidth(const double scaleFactor)
 {
     SvgElement parentElem = m_elem;
     bool hasParentStrokeWidth = false;
@@ -480,7 +480,7 @@ void Path::calcNewStrokeWidth(const Transform &transform)
         if (parentElem.hasAttribute(AttrId::stroke_width)) {
             double strokeWidth
                 = toDouble(Tools::convertUnitsToPx(parentElem.attribute(AttrId::stroke_width)));
-            QString sw = fromDouble(strokeWidth * transform.scaleFactor(), Round::Attribute);
+            QString sw = fromDouble(strokeWidth * scaleFactor, Round::Attribute);
             m_elem.setAttribute("stroke-width-new", sw);
             hasParentStrokeWidth = true;
             break;
@@ -488,15 +488,14 @@ void Path::calcNewStrokeWidth(const Transform &transform)
         parentElem = parentElem.parentElement();
     }
     if (!hasParentStrokeWidth) {
-        m_elem.setAttribute("stroke-width-new", fromDouble(transform.scaleFactor(), Round::Attribute));
+        m_elem.setAttribute("stroke-width-new", fromDouble(scaleFactor, Round::Attribute));
     }
 }
 
 bool Path::applyTransform(QList<Segment> &segList)
 {
-    QString transStr = m_elem.attribute(AttrId::transform);
     QList<Segment> tsSegList = segList;
-    Transform ts(transStr);
+    Transform ts = m_elem.transform();
     for (int i = 1; i < tsSegList.count(); ++i) {
         Segment prevSegment = tsSegList.at(i-1);
         QList<Segment> list = tsSegList.at(i).toCurve(prevSegment.x, prevSegment.y);
@@ -511,7 +510,7 @@ bool Path::applyTransform(QList<Segment> &segList)
 
     if (Keys.flag(Key::ConvertToRelative))
         segmentsToRelative(tsSegList, false);
-    calcNewStrokeWidth(ts);
+    calcNewStrokeWidth(ts.scaleFactor());
     m_elem.setAttribute("dts", segmentsToPath(tsSegList));
     return true;
 }
@@ -526,8 +525,8 @@ bool Path::isTsPathShorter()
     }
 
     quint32 beforeTransform = m_elem.attribute(AttrId::d).size();
-    if (m_elem.hasAttribute(AttrId::transform)) {
-        beforeTransform += m_elem.attribute(AttrId::transform).size();
+    if (m_elem.hasTransform()) {
+        beforeTransform += m_elem.transform().simplified().size();
         // char count in ' transform=\"\" '
         beforeTransform += 14;
     }

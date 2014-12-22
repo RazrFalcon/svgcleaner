@@ -25,13 +25,6 @@
 #include "transform.h"
 #include "basecleaner.h"
 
-struct LineGradStruct {
-    SvgElement elem;
-    QString id;
-    StringHash attrs;
-    QList<StringHash> stopAttrs;
-};
-
 class Replacer : public BaseCleaner
 {
 public:
@@ -69,7 +62,7 @@ private:
     bool isBlurFilter(const QString &id);
     void updateLinkedDefTransform(SvgElement &elem);
     static bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2);
-    void calcNewStrokeWidth(SvgElement &elem, const Transform &transform);
+    void calcNewStrokeWidth(SvgElement &elem, double scaleFactor);
     void _groupElementsByStyles(SvgElement parentElem = SvgElement());
 };
 

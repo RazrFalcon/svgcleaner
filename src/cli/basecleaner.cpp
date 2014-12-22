@@ -229,17 +229,6 @@ QString BaseCleaner::findAttribute(const SvgElement &elem, int attrId) const
     return "";
 }
 
-QString BaseCleaner::absoluteTransform(const SvgElement &elem)
-{
-    QString transform;
-    SvgElement parent = elem;
-    while (!parent.isNull()) {
-        transform += parent.attribute(AttrId::transform) + " ";
-        parent = parent.parentElement();
-    }
-    return Transform(transform).simplified();
-}
-
 QRectF BaseCleaner::viewBoxRect()
 {
     QRectF rect;

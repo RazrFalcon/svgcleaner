@@ -91,11 +91,10 @@ void Replacer::processPaths()
             if (canApplyTransform) {
                 if (isPathApplyed) {
                     updateLinkedDefTransform(elem);
-                    elem.removeAttribute(AttrId::transform);
+                    elem.removeTransform();
                 }
             }
             if (elem.attribute(AttrId::d).isEmpty()) {
-//                elem.parentElement().removeChild(elem);
                 smartElementRemove(elem);
                 removed = true;
             }
@@ -110,7 +109,7 @@ void Replacer::processPaths()
 
 bool Replacer::isPathValidToTransform(SvgElement &pathElem, QHash<QString,int> &defsIdHash)
 {
-    if (pathElem.hasAttribute(AttrId::transform)) {
+    if (pathElem.hasTransform()) {
         // non proportional transform could not be applied to path with stroke
         bool hasStroke = false;
         SvgElement parentElem = pathElem;
@@ -124,8 +123,7 @@ bool Replacer::isPathValidToTransform(SvgElement &pathElem, QHash<QString,int> &
             parentElem = parentElem.parentElement();
         }
         if (hasStroke) {
-            Transform ts(pathElem.attribute(AttrId::transform));
-            if (!ts.isProportionalScale())
+            if (pathElem.transform().isProportionalScale())
                 return false;
         }
     } else {
@@ -202,15 +200,15 @@ void Replacer::updateLinkedDefTransform(SvgElement &elem)
                     || defElem.tagName() == E_radialGradient)
                        && defElem.attribute(AttrId::gradientUnits) == "userSpaceOnUse")
                 {
-                    QString gradTs = defElem.attribute(AttrId::gradientTransform);
-                    if (!gradTs.isEmpty()) {
-                        Transform ts(elem.attribute(AttrId::transform) + " " + gradTs);
-                        defElem.setAttribute(AttrId::gradientTransform, ts.simplified());
-                    } else {
-                        defElem.setAttribute(AttrId::gradientTransform, elem.attribute(AttrId::transform));
+                    Transform gts = defElem.transform();
+                    Transform ts = elem.transform();
+                    if (!gts.isNull()) {
+                        ts.append(gts);
                     }
+                    defElem.removeTransform();
+                    defElem.setTransform(ts);
                 } else if (defElem.tagName() == E_filter) {
-                    Transform ts(elem.attribute(AttrId::transform));
+                    Transform ts = elem.transform();
                     SvgElement stdDevElem = defElem.firstChildElement();
                     double oldStd = stdDevElem.doubleAttribute(AttrId::stdDeviation);
                     QString newStd = fromDouble(oldStd * ts.scaleFactor());
@@ -392,7 +390,7 @@ void Replacer::moveStyleFromUsedElemToUse()
         QHash<QString, int> attrsCount;
         foreach (const SvgElement &usedElem, usedElemList) {
             IntList usedElemAttrs = usedElem.styleAttributesList();
-            if (usedElem.hasAttribute(AttrId::transform))
+            if (usedElem.hasTransform())
                 usedElemAttrs << AttrId::transform;
             foreach (const int &attrId, usedElemAttrs) {
                 if (!usedElem.hasAttribute(attrId))
@@ -415,7 +413,7 @@ void Replacer::moveStyleFromUsedElemToUse()
                 continue;
             // do not replace transform when used elem has already has transform
             if (attr.startsWith(A_transform)
-                && (elem.hasAttribute(AttrId::transform) || attrsCount.value(attr) == 1))
+                && (elem.hasTransform() || attrsCount.value(attr) == 1))
                 continue;
 
             QString attrName = attr;
@@ -905,7 +903,7 @@ void Replacer::finalFixes()
                 // remove 'gradientTransform' attr if only x2=0 attr left
                 if (   !elem.hasAttribute(AttrId::x1) && elem.attribute(AttrId::x2) == V_null
                     && !elem.hasAttribute(AttrId::y1) && !elem.hasAttribute(AttrId::y2)) {
-                    elem.removeAttribute(AttrId::gradientTransform);
+                    elem.removeTransform();
                 }
             } else if (tagName == E_radialGradient) {
                 double fx = elem.doubleAttribute(AttrId::fx);
@@ -1065,15 +1063,15 @@ void Replacer::groupTextElementsStyles()
             continue;
 
         // apply transform
-        if (elem.hasAttribute(AttrId::transform) && elem.tagName() == E_text) {
-            Transform ts(elem.attribute(AttrId::transform));
+        if (elem.hasTransform() && elem.tagName() == E_text) {
+            Transform ts = elem.transform();
             Transform::Types tsType = ts.type();
             tsType &= ~(Transform::ProportionalScale);
             if (tsType == Transform::Translate) {
                 ts.setOldXY(elem.doubleAttribute(AttrId::x), elem.doubleAttribute(AttrId::y));
                 elem.setAttribute(AttrId::x, fromDouble(ts.newX()));
                 elem.setAttribute(AttrId::y, fromDouble(ts.newY()));
-                elem.removeAttribute(AttrId::transform);
+                elem.removeTransform();
 
                 tspan = elem.firstChildElement();
                 tspan_root = elem;
@@ -1218,7 +1216,8 @@ void Replacer::roundNumericAttributes()
                     foreach (const QString &text, tmpList) {
                         bool ok;
                         if (attrId == AttrId::stroke_dasharray)
-                            tmpStr += fromDouble(text.toDouble(&ok)) + " ";
+                            // stroke-dasharray do not support numbers without leading zero
+                            tmpStr += QString::number(text.toDouble(&ok)) + " ";
                         else
                             tmpStr += fromDouble(text.toDouble(&ok), Round::Transform) + " ";
                         if (!ok)
@@ -1249,24 +1248,6 @@ void Replacer::roundNumericAttributes()
                                qPrintable(attrIdToStr(attrId) + "=" + value));
                     elem.setAttribute(attrId, attrVal);
                 }
-            }
-        }
-        if (Keys.flag(Key::SimplifyTransformMatrix)) {
-            if (elem.hasAttribute(AttrId::gradientTransform)) {
-                Transform ts(elem.attribute(AttrId::gradientTransform));
-                QString transform = ts.simplified();
-                if (transform.isEmpty())
-                    elem.removeAttribute(AttrId::gradientTransform);
-                else
-                    elem.setAttribute(AttrId::gradientTransform, transform);
-            }
-            if (elem.hasAttribute(AttrId::transform)) {
-                Transform ts(elem.attribute(AttrId::transform));
-                QString transform = ts.simplified();
-                if (transform.isEmpty())
-                    elem.removeAttribute(AttrId::transform);
-                else
-                    elem.setAttribute(AttrId::transform, transform);
             }
         }
 
@@ -1444,6 +1425,14 @@ void Replacer::mergeGradients()
  * <linearGradient id="linearGradient002" xlink:href="#linearGradient001">
  *
  */
+
+struct LineGradStruct {
+    SvgElement elem;
+    QString id;
+    StringHash attrs;
+    QList<StringHash> stopAttrs;
+};
+
 void Replacer::mergeGradientsWithEqualStopElem()
 {
     SvgElementList list = defsElement().childElements();
@@ -1584,10 +1573,10 @@ void Replacer::_groupElementsByStyles(SvgElement parentElem)
                 if (currElem.hasAttribute(attrId))
                     groupHash.insert(attrId, currElem.attribute(attrId));
             }
-            if (    currElem.hasAttribute(AttrId::transform)
+            if (    currElem.hasTransform()
                 && !currElem.hasLinkedDef()
                 && !parentElem.hasLinkedDef()) {
-                groupHash.insert(AttrId::transform, currElem.attribute(AttrId::transform));
+                groupHash.insert(AttrId::transform, currElem.transform().simplified());
             }
 
             // we can not group elements by some attributes
@@ -1657,9 +1646,10 @@ void Replacer::_groupElementsByStyles(SvgElement parentElem)
                     // move equal style attributes of selected elements to parent group
                     foreach (const int &attrId, lastGroupHash.keys()) {
                         if (parentGElem.hasAttribute(attrId) && attrId == AttrId::transform) {
-                            Transform ts(parentGElem.attribute(AttrId::transform) + " "
-                                         + lastGroupHash.value(attrId));
-                            parentGElem.setAttribute(AttrId::transform, ts.simplified());
+                            Transform ts = parentGElem.transform();
+                            Transform ts2 = Transform::create(lastGroupHash.value(attrId));
+                            ts.append(ts2);
+                            parentGElem.setTransform(ts);
                         } else {
                             parentGElem.setAttribute(attrId, lastGroupHash.value(attrId));
                         }
@@ -1717,6 +1707,7 @@ void Replacer::markUsedElements()
     }
 }
 
+// TODO: store linked elements as refs
 QHash<QString,int> Replacer::calcDefsUsageCount()
 {
     IntList attrList;
@@ -1754,8 +1745,8 @@ void Replacer::applyTransformToDefs()
     while (!list.isEmpty()) {
         SvgElement elem = list.takeFirst();
         if (elem.tagName() == E_linearGradient) {
-            if (elem.hasAttribute(AttrId::gradientTransform)) {
-                Transform gts(elem.attribute(AttrId::gradientTransform));
+            if (elem.hasTransform()) {
+                Transform gts = elem.transform();
                 if (gts.isProportionalScale()) {
                     gts.setOldXY(elem.doubleAttribute(AttrId::x1),
                                  elem.doubleAttribute(AttrId::y1));
@@ -1765,12 +1756,12 @@ void Replacer::applyTransformToDefs()
                                  elem.doubleAttribute(AttrId::y2));
                     elem.setAttribute(AttrId::x2, fromDouble(gts.newX()));
                     elem.setAttribute(AttrId::y2, fromDouble(gts.newY()));
-                    elem.removeAttribute(AttrId::gradientTransform);
+                    elem.removeTransform();
                 }
             }
         } else if (elem.tagName() == E_radialGradient) {
-            if (elem.hasAttribute(AttrId::gradientTransform)) {
-                Transform gts(elem.attribute(AttrId::gradientTransform));
+            if (elem.hasTransform()) {
+                Transform gts = elem.transform();
                 if (!gts.isMirrored() && gts.isProportionalScale() && !gts.isRotating()) {
                     gts.setOldXY(elem.doubleAttribute(AttrId::fx),
                                  elem.doubleAttribute(AttrId::fy));
@@ -1784,8 +1775,8 @@ void Replacer::applyTransformToDefs()
                     elem.setAttribute(AttrId::cy, fromDouble(gts.newY()));
 
                     elem.setAttribute(AttrId::r, fromDouble(elem.doubleAttribute(AttrId::r)
-                                                              * gts.scaleFactor()));
-                    elem.removeAttribute(AttrId::gradientTransform);
+                                                            * gts.scaleFactor()));
+                    elem.removeTransform();
                 }
             }
         }
@@ -1803,25 +1794,25 @@ void Replacer::applyTransformToShapes()
     SvgElementList list = svgElement().childElements();
     while (!list.isEmpty()) {
         SvgElement elem = list.takeFirst();
+        SvgElement firstChild = elem.firstChildElement();
 
-        // TODO: too many firstChildElement
         if (   elem.isGroup()
-            && elem.hasAttribute(AttrId::transform)
+            && elem.hasTransform()
             && !elem.hasAttribute(AttrId::clip_path)
             && !elem.hasAttribute(AttrId::mask)
             && !elem.hasAttribute(AttrId::filter)
             && elem.childElementCount() == 1
             && !elem.isUsed()
-            && elem.firstChildElement().tagName() != E_use
-            && !elem.firstChildElement().isGroup()
-            && !elem.firstChildElement().isUsed()
-            && !elem.firstChildElement().hasAttribute(AttrId::clip_path))
+            && firstChild.tagName() != E_use
+            && !firstChild.isGroup()
+            && !firstChild.isUsed()
+            && !firstChild.hasAttribute(AttrId::clip_path))
         {
-            elem.firstChildElement().setTransform(elem.attribute(AttrId::transform), true);
-            elem.removeAttribute(AttrId::transform);
+            firstChild.setTransform(elem.transform(), true);
+            elem.removeTransform();
         }
         else if (   elem.tagName() == E_rect
-                 && elem.hasAttribute(AttrId::transform)
+                 && elem.hasTransform()
                  && !elem.hasAttribute(AttrId::clip_path)
                  && !elem.hasAttribute(AttrId::mask)
                  && defsHash.value(elem.defIdFromAttribute(AttrId::filter)) < 2
@@ -1840,7 +1831,7 @@ void Replacer::applyTransformToShapes()
                     canApplyTransform = false;
             }
             if (canApplyTransform) {
-                Transform ts(elem.attribute(AttrId::transform));
+                Transform ts = elem.transform();
                 if (   !ts.isMirrored()
                     && !ts.isRotating()
                     && !ts.isSkew()
@@ -1848,17 +1839,18 @@ void Replacer::applyTransformToShapes()
                     ts.setOldXY(elem.doubleAttribute(AttrId::x), elem.doubleAttribute(AttrId::y));
                     elem.setAttribute(AttrId::x, fromDouble(ts.newX()));
                     elem.setAttribute(AttrId::y, fromDouble(ts.newY()));
-                    QString newW = fromDouble(elem.doubleAttribute(AttrId::width) * ts.scaleFactor());
+                    const double sf = ts.scaleFactor();
+                    QString newW = fromDouble(elem.doubleAttribute(AttrId::width) * sf);
                     elem.setAttribute(AttrId::width, newW);
-                    QString newH = fromDouble(elem.doubleAttribute(AttrId::height) * ts.scaleFactor());
+                    QString newH = fromDouble(elem.doubleAttribute(AttrId::height) * sf);
                     elem.setAttribute(AttrId::height, newH);
-                    QString newRx = fromDouble(elem.doubleAttribute(AttrId::rx) * ts.scaleFactor());
+                    QString newRx = fromDouble(elem.doubleAttribute(AttrId::rx) * sf);
                     elem.setAttribute(AttrId::rx, newRx);
-                    QString newRy = fromDouble(elem.doubleAttribute(AttrId::ry) * ts.scaleFactor());
+                    QString newRy = fromDouble(elem.doubleAttribute(AttrId::ry) * sf);
                     elem.setAttribute(AttrId::ry, newRy);
                     updateLinkedDefTransform(elem);
-                    calcNewStrokeWidth(elem, ts);
-                    elem.removeAttribute(AttrId::transform);
+                    calcNewStrokeWidth(elem, sf);
+                    elem.removeTransform();
                 }
             }
         }
@@ -1868,7 +1860,7 @@ void Replacer::applyTransformToShapes()
     }
 }
 
-void Replacer::calcNewStrokeWidth(SvgElement &elem, const Transform &transform)
+void Replacer::calcNewStrokeWidth(SvgElement &elem, double scaleFactor)
 {
     SvgElement parentElem = elem;
     bool hasParentStrokeWidth = false;
@@ -1876,7 +1868,7 @@ void Replacer::calcNewStrokeWidth(SvgElement &elem, const Transform &transform)
         if (parentElem.hasAttribute(AttrId::stroke_width)) {
             double strokeWidth = Tools::convertUnitsToPx(parentElem.attribute(AttrId::stroke_width))
                                     .toDouble();
-            QString sw = fromDouble(strokeWidth * transform.scaleFactor(), Round::Attribute);
+            QString sw = fromDouble(strokeWidth * scaleFactor, Round::Attribute);
             elem.setAttribute(AttrId::stroke_width, sw);
             hasParentStrokeWidth = true;
             break;
@@ -1884,7 +1876,6 @@ void Replacer::calcNewStrokeWidth(SvgElement &elem, const Transform &transform)
         parentElem = parentElem.parentElement();
     }
     if (!hasParentStrokeWidth) {
-        elem.setAttribute(AttrId::stroke_width, fromDouble(transform.scaleFactor(),
-                                                                   Round::Attribute));
+        elem.setAttribute(AttrId::stroke_width, fromDouble(scaleFactor, Round::Attribute));
     }
 }

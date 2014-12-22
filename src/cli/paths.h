@@ -99,7 +99,7 @@ private:
     void splitToSegments(const QString &path, QList<Segment> &segList);
     void processSegments(QList<Segment> &segList);
     void segmentsToRelative(QList<Segment> &segList, bool onlyIfSourceWasRelative);
-    void calcNewStrokeWidth(const Transform &transform);
+    void calcNewStrokeWidth(const double scaleFactor);
     bool applyTransform(QList<Segment> &segList);
     bool isTsPathShorter();
     void fixRelative(QList<Segment> &segList);

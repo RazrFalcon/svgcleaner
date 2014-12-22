@@ -24,16 +24,6 @@
 
 #include "basecleaner.h"
 
-struct DefsElemStruct
-{
-    SvgElement elem;
-    QString tagName;
-    bool hasChildren;
-    StringHash attrMap;
-    QStringList attrList;
-    QString id;
-};
-
 class Remover : public BaseCleaner
 {
 public:

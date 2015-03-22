@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -33,15 +33,16 @@
 void printLine(int keyId, const QString &desc = QString())
 {
     if (desc.isEmpty())
-        qDebug("  %s %s", qPrintable(Keys.keyName(keyId).leftJustified(35, ' ')),
+        qDebug("  %s %s", qPrintable(Keys.keyName(keyId).leftJustified(35, QL1C(' '))),
                           qPrintable(Keys.description(keyId)));
     else
-        qDebug("  %s %s", qPrintable(Keys.keyName(keyId).leftJustified(35, ' ')), qPrintable(desc));
+        qDebug("  %s %s", qPrintable(Keys.keyName(keyId).leftJustified(35, QL1C(' '))),
+               qPrintable(desc));
 }
 
 void printLine(const QString &key, const QString &desc)
 {
-    qDebug("  %s %s", qPrintable(key.leftJustified(35, ' ')), qPrintable(desc));
+    qDebug("  %s %s", qPrintable(key.leftJustified(35, QL1C(' '))), qPrintable(desc));
 }
 
 void showPresetInfo(const QString &presetName)
@@ -61,9 +62,9 @@ void showPresetInfo(const QString &presetName)
         if (   key == Key::TransformPrecision
             || key == Key::AttributesPrecision
             || key == Key::CoordsPrecision) {
-            qDebug() << Keys.keyName(key) + "=" + fromDouble(Keys.intNumber(key));
+            qDebug() << Keys.keyName(key) + QL1S("=") + fromDouble(Keys.intNumber(key));
         } else if (key == Key::RemoveTinyGaussianBlur) {
-            qDebug() << Keys.keyName(key) + "=" + fromDouble(Keys.doubleNumber(key));
+            qDebug() << Keys.keyName(key) + QL1S("=") + fromDouble(Keys.doubleNumber(key));
         } else {
             qDebug() << Keys.keyName(key);
         }
@@ -82,21 +83,21 @@ void showHelp()
     qDebug() << "  svgcleaner-cli --info --preset=<name>";
     qDebug() << "";
     qDebug() << "Presets:";
-    printLine("--preset=basic",    "Basic cleaning");
-    printLine("--preset=complete", "Complete cleaning [default]");
-    printLine("--preset=extreme",  "Extreme cleaning");
+    printLine(QL1S("--preset=basic"),    QL1S("Basic cleaning"));
+    printLine(QL1S("--preset=complete"), QL1S("Complete cleaning [default]"));
+    printLine(QL1S("--preset=extreme"),  QL1S("Extreme cleaning"));
     qDebug() << "";
     qDebug() << "Options:";
     qDebug() << "";
-    printLine("-h --help", "Show this text");
-    printLine("-v --version", "Show version");
+    printLine(QL1S("-h --help"),    QL1S("Show this text"));
+    printLine(QL1S("-v --version"), QL1S("Show version"));
     qDebug() << "";
 
     qDebug() << "Elements:";
     foreach (const int &key, Keys.elementsKeysId()) {
         if (key == Key::RemoveTinyGaussianBlur)
-            printLine(Keys.keyName(key) + "=<0..1.0>",
-                      Keys.description(key) + QString(" [default: %1]")
+            printLine(Keys.keyName(key) + QL1S("=<0..1.0>"),
+                      Keys.description(key) + QString(QL1S(" [default: %1]"))
                         .arg(Keys.doubleNumber(Key::RemoveTinyGaussianBlur)));
         else
             printLine(key);
@@ -118,8 +119,9 @@ void showHelp()
         if (   key == Key::TransformPrecision
             || key == Key::AttributesPrecision
             || key == Key::CoordsPrecision) {
-            printLine(Keys.keyName(key) + "=<1..8>",
-                      Keys.description(key) + QString(" [default: %1]").arg(Keys.doubleNumber(key)));
+            printLine(Keys.keyName(key) + QL1S("=<1..8>"),
+                      Keys.description(key) + QString(QL1S(" [default: %1]"))
+                        .arg(Keys.doubleNumber(key)));
         } else
             printLine(key);
     }
@@ -138,16 +140,17 @@ void processFile(const QString &inPath, const QString &outPath)
     if (!flag)
         qFatal("%s", qPrintable(doc.lastError()));
     if (BaseCleaner::svgElement(doc).isNull())
-        qFatal("Error: invalid svg file");
+        qFatal("invalid svg file");
 
     Replacer replacer(doc);
     Remover remover(doc);
 
-    doc.calcElemAttrCount("initial");
+    doc.calcElemAttrCount(QL1S("initial"));
 
     // TODO: fix double clean issues
 
     // mandatory fixes used to simplify subsequent functions
+    // cannot be disabled
     replacer.convertEntityData();
     replacer.splitStyleAttributes();
     replacer.convertCDATAStyle();
@@ -155,14 +158,19 @@ void processFile(const QString &inPath, const QString &outPath)
     replacer.convertColors();
     replacer.prepareDefs();
     replacer.fixWrongAttr();
-    replacer.markUsedElements();
     replacer.roundNumericAttributes();
+    replacer.prepareLinkedStyles();
 
+    // cleaning methods
     remover.cleanSvgElementAttribute();
     if (Keys.flag(Key::CreateViewbox))
         replacer.convertSizeToViewbox();
     if (Keys.flag(Key::RemoveUnusedDefs))
         remover.removeUnusedDefs();
+    if (Keys.flag(Key::ApplyTransformsToDefs))
+        replacer.applyTransformToDefs();
+    if (Keys.flag(Key::RemoveNotAppliedAttributes))
+        remover.removeUnusedDefsAttributes();
     if (Keys.flag(Key::RemoveDuplicatedDefs))
         remover.removeDuplicatedDefs();
     if (Keys.flag(Key::MergeGradients)) {
@@ -174,8 +182,6 @@ void processFile(const QString &inPath, const QString &outPath)
     remover.removeElementsFinal();
     if (Keys.flag(Key::RemoveUnreferencedIds))
         remover.removeUnreferencedIds();
-    if (Keys.flag(Key::RemoveUnusedXLinks))
-        remover.removeUnusedXLinks();
     remover.cleanPresentationAttributes();
     if (Keys.flag(Key::ApplyTransformsToShapes))
         replacer.applyTransformToShapes();
@@ -210,9 +216,11 @@ void processFile(const QString &inPath, const QString &outPath)
     if (Keys.flag(Key::JoinStyleAttributes))
         replacer.joinStyleAttr();
 
+
+    // save file
     QFile outFile(outPath);
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
-        qFatal("Error: could not write output file");
+        qFatal("could not write output file");
 
     int indent = 1;
     if (Keys.flag(Key::CompactOutput))
@@ -223,7 +231,7 @@ void processFile(const QString &inPath, const QString &outPath)
     if (!Keys.flag(Key::ShortOutput))
         qDebug("The final file size is: %u", (int)QFile(outPath).size());
 
-    doc.calcElemAttrCount("final");
+    doc.calcElemAttrCount(QL1S("final"));
 }
 
 // the code underneath is from QtCore module (qcorecmdlineargs_p.h) (LGPLv2 license)
@@ -317,7 +325,7 @@ SystemSemaphore *semaphore2 = 0;
 QString appLog;
 void slaveMessageOutput(QtMsgType type, const char *msg)
 {
-    appLog += QString(msg) + "\n";
+    appLog += QString(QL1S(msg)) + QL1S("\n");
     if (type == QtFatalMsg) {
         // emit to 'gui' that we crashed
         // crash will be detected by timeout anyway, but this way is much faster
@@ -330,16 +338,24 @@ void slaveMessageOutput(QtMsgType type, const char *msg)
 
 void ownMessageOutput(QtMsgType type, const char *msg)
 {
-    fprintf(stderr, "%s\n", msg);
-    if (type == QtFatalMsg)
+    if (type == QtFatalMsg) {
+        fprintf(stderr, "Error: %s\n", msg);
         exit(1);
+    } else if (type == QtWarningMsg) {
+        fprintf(stderr, "Warning: %s\n", msg);
+    } else {
+        fprintf(stderr, "%s\n", msg);
+    }
 }
 
+#include <QElapsedTimer>
 int main(int argc, char *argv[])
 {
 #ifdef Q_OS_UNIX
     setlocale(LC_ALL, "");
 #endif
+    QLocale::setDefault(QLocale::English);
+
 
     QStringList argList = arguments(argc, argv);
     // remove executable path
@@ -364,12 +380,12 @@ int main(int argc, char *argv[])
     if (argList.first() == QL1S("--slave")) {
         argList.removeFirst();
         QString id = argList.takeFirst();
-        QSharedMemory sharedMemory("SvgCleanerMem_" + id);
-        SystemSemaphore semaphore1("SvgCleanerSemaphore1_" + id);
-        semaphore2 = new SystemSemaphore("SvgCleanerSemaphore2_" + id);
+        QSharedMemory sharedMemory(QL1S("SvgCleanerMem_") + id);
+        SystemSemaphore semaphore1(QL1S("SvgCleanerSemaphore1_") + id);
+        semaphore2 = new SystemSemaphore(QL1S("SvgCleanerSemaphore2_") + id);
 
         if (!sharedMemory.attach())
-            qFatal("Error: unable to attach to shared memory segment.");
+            qFatal("unable to attach to shared memory segment.");
 
         qInstallMsgHandler(slaveMessageOutput);
 
@@ -426,9 +442,9 @@ int main(int argc, char *argv[])
         QString outputFile = argList.takeFirst();
 
         if (!QFile(inputFile).exists())
-            qFatal("Error: input file does not exist");
+            qFatal("input file does not exist");
         if (!QFileInfo(outputFile).absoluteDir().exists())
-            qFatal("Error: output folder does not exist");
+            qFatal("output folder does not exist");
 
         Keys.parseOptions(argList);
         processFile(inputFile, outputFile);

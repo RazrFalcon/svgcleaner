@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -42,20 +42,17 @@ public:
     SvgDocument document() const;
     SvgElement svgElement() const;
     SvgElement defsElement() const;
-    void updateXLinks(const StringHash &hash);
-    SvgElement elemFromDefs(const QString &id) const;
-    SvgElement findElement(const QString &id, SvgElement parent = SvgElement());
-    SvgElement findUsedElement(const QString &xlink) const;
-    bool hasParent(const SvgElement &elem, const QString &tagName);
-    QString findAttribute(const SvgElement &elem, int attrId) const;
+    bool hasParent(const SvgElement &elem, const QString &tagName) const;
+    bool hasUsedParent(const SvgElement &elem);
+    QString parentAttribute(const SvgElement &elem, uint attrId) const;
     QRectF viewBoxRect();
     static SvgElement svgElement(SvgDocument doc);
-    SvgElement smartElementRemove(const SvgElement &elem, bool returnPreviousElement = false) const;
-    bool isDefUsed(int attrId, const QString &defId, const SvgElement &baseElem) const;
-    int defUsageCount(const QString &defId) const;
-    QString getFreeId(int startId) const;
-    bool isFreeId(const QString &id) const;
+    SvgElement smartElementRemove(SvgElement &rmElem, bool isReturnPrev = false) const;
+    void removeAndMoveToPrev(SvgElement &elem);
+    void removeAndMoveToPrevSibling(SvgElement &elem);
+    QString genFreeId() const;
     void joinLinearGradients(SvgElement &parent, SvgElement &child) const;
+    bool isGradientStopsEqual(const SvgElement &elem1, const SvgElement &elem2);
 
 private:
     SvgDocument m_doc;

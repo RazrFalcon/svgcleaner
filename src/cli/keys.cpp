@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -19,77 +19,78 @@
 **
 ****************************************************************************/
 
+#include "enums.h"
 #include "keys.h"
 
 namespace Preset {
-    const QString Basic    = "basic";
-    const QString Complete = "complete";
-    const QString Extreme  = "extreme";
-    const QString Custom   = "custom";
+    const QString Basic    = QL1S("basic");
+    const QString Complete = QL1S("complete");
+    const QString Extreme  = QL1S("extreme");
+    const QString Custom   = QL1S("custom");
 }
 
 namespace KeyStr {
-    const QString RemoveProlog                = "--remove-prolog";
-    const QString RemoveComments              = "--remove-comments";
-    const QString RemoveProcInstruction       = "--remove-proc-instr";
-    const QString RemoveUnusedDefs            = "--remove-unused-defs";
-    const QString RemoveNonSvgElements        = "--remove-nonsvg-elts";
-    const QString RemoveMetadata              = "--remove-metadata-elts";
-    const QString RemoveInkscapeElements      = "--remove-inkscape-elts";
-    const QString RemoveSodipodiElements      = "--remove-sodipodi-elts";
-    const QString RemoveAdobeElements         = "--remove-ai-elts";
-    const QString RemoveCorelDrawElements     = "--remove-corel-elts";
-    const QString RemoveMSVisioElements       = "--remove-msvisio-elts";
-    const QString RemoveSketchElements        = "--remove-sketch-elts";
-    const QString RemoveInvisibleElements     = "--remove-invisible-elts";
-    const QString RemoveEmptyContainers       = "--remove-empty-containers";
-    const QString RemoveTinyGaussianBlur      = "--remove-gaussian-blur";
-    const QString RemoveDuplicatedDefs        = "--remove-duplicated-defs";
-    const QString RemoveOutsideElements       = "--remove-outside-elts";
-    const QString ReplaceEqualEltsByUse       = "--equal-elts-to-use";
-    const QString UngroupContainers           = "--ungroup-containers";
-    const QString MergeGradients              = "--merge-gradients";
+    const QString RemoveProlog                = QL1S("--remove-prolog");
+    const QString RemoveComments              = QL1S("--remove-comments");
+    const QString RemoveProcInstruction       = QL1S("--remove-proc-instr");
+    const QString RemoveUnusedDefs            = QL1S("--remove-unused-defs");
+    const QString RemoveNonSvgElements        = QL1S("--remove-nonsvg-elts");
+    const QString RemoveMetadata              = QL1S("--remove-metadata-elts");
+    const QString RemoveInkscapeElements      = QL1S("--remove-inkscape-elts");
+    const QString RemoveSodipodiElements      = QL1S("--remove-sodipodi-elts");
+    const QString RemoveAdobeElements         = QL1S("--remove-ai-elts");
+    const QString RemoveCorelDrawElements     = QL1S("--remove-corel-elts");
+    const QString RemoveMSVisioElements       = QL1S("--remove-msvisio-elts");
+    const QString RemoveSketchElements        = QL1S("--remove-sketch-elts");
+    const QString RemoveInvisibleElements     = QL1S("--remove-invisible-elts");
+    const QString RemoveEmptyContainers       = QL1S("--remove-empty-containers");
+    const QString RemoveTinyGaussianBlur      = QL1S("--remove-gaussian-blur");
+    const QString RemoveDuplicatedDefs        = QL1S("--remove-duplicated-defs");
+    const QString RemoveOutsideElements       = QL1S("--remove-outside-elts");
+    const QString ReplaceEqualEltsByUse       = QL1S("--equal-elts-to-use");
+    const QString UngroupContainers           = QL1S("--ungroup-containers");
+    const QString MergeGradients              = QL1S("--merge-gradients");
 
-    const QString RemoveSvgVersion            = "--remove-version";
-    const QString RemoveUnreferencedIds       = "--remove-unreferenced-ids";
-    const QString TrimIds                     = "--trim-ids";
-    const QString RemoveNotAppliedAttributes  = "--remove-notappl-atts";
-    const QString RemoveDefaultAttributes     = "--remove-default-atts";
-    const QString RemoveInkscapeAttributes    = "--remove-inkscape-atts";
-    const QString RemoveSodipodiAttributes    = "--remove-sodipodi-atts";
-    const QString RemoveAdobeAttributes       = "--remove-ai-atts";
-    const QString RemoveCorelDrawAttributes   = "--remove-corel-atts";
-    const QString RemoveMSVisioAttributes     = "--remove-msvisio-atts";
-    const QString RemoveSketchAttributes      = "--remove-sketch-atts";
-    const QString RemoveStrokeProps           = "--remove-stroke-props";
-    const QString RemoveFillProps             = "--remove-fill-props";
-    const QString RemoveUnusedXLinks          = "--remove-unused-xlinks";
-    const QString GroupTextStyles             = "--group-text-styles";
-    const QString GroupElemByStyle            = "--group-elts-by-styles";
-    const QString JoinStyleAttributes         = "--join-style-atts";
-    const QString SimplifyTransformMatrix     = "--simplify-transform-matrix";
-    const QString ApplyTransformsToDefs       = "--apply-transforms-to-defs";
-    const QString ApplyTransformsToShapes     = "--apply-transforms-to-shapes";
-    const QString KeepNamedIds                = "--keep-named-ids";
-    const QString DisableDigitId              = "--disable-digit-ids";
+    const QString RemoveSvgVersion            = QL1S("--remove-version");
+    const QString RemoveUnreferencedIds       = QL1S("--remove-unreferenced-ids");
+    const QString TrimIds                     = QL1S("--trim-ids");
+    const QString RemoveNotAppliedAttributes  = QL1S("--remove-notappl-atts");
+    const QString RemoveDefaultAttributes     = QL1S("--remove-default-atts");
+    const QString RemoveInkscapeAttributes    = QL1S("--remove-inkscape-atts");
+    const QString RemoveSodipodiAttributes    = QL1S("--remove-sodipodi-atts");
+    const QString RemoveAdobeAttributes       = QL1S("--remove-ai-atts");
+    const QString RemoveCorelDrawAttributes   = QL1S("--remove-corel-atts");
+    const QString RemoveMSVisioAttributes     = QL1S("--remove-msvisio-atts");
+    const QString RemoveSketchAttributes      = QL1S("--remove-sketch-atts");
+    const QString RemoveStrokeProps           = QL1S("--remove-stroke-props");
+    const QString RemoveFillProps             = QL1S("--remove-fill-props");
+    const QString RemoveUnusedXLinks          = QL1S("--remove-unused-xlinks");
+    const QString GroupTextStyles             = QL1S("--group-text-styles");
+    const QString GroupElemByStyle            = QL1S("--group-elts-by-styles");
+    const QString JoinStyleAttributes         = QL1S("--join-style-atts");
+    const QString SimplifyTransformMatrix     = QL1S("--simplify-transform-matrix");
+    const QString ApplyTransformsToDefs       = QL1S("--apply-transforms-to-defs");
+    const QString ApplyTransformsToShapes     = QL1S("--apply-transforms-to-shapes");
+    const QString KeepNamedIds                = QL1S("--keep-named-ids");
+    const QString DisableDigitId              = QL1S("--disable-digit-ids");
 
-    const QString ConvertToRelative           = "--convert-to-relative";
-    const QString RemoveUnneededSymbols       = "--remove-unneeded-symbols";
-    const QString RemoveTinySegments          = "--remove-tiny-segments";
-    const QString ConvertSegments             = "--convert-segments";
-    const QString ApplyTransformsToPaths      = "--apply-transforms-to-paths";
+    const QString ConvertToRelative           = QL1S("--convert-to-relative");
+    const QString RemoveUnneededSymbols       = QL1S("--remove-unneeded-symbols");
+    const QString RemoveTinySegments          = QL1S("--remove-tiny-segments");
+    const QString ConvertSegments             = QL1S("--convert-segments");
+    const QString ApplyTransformsToPaths      = QL1S("--apply-transforms-to-paths");
 
-    const QString CreateViewbox               = "--create-viewbox";
-    const QString ConvertColorToRRGGBB        = "--colors-to-rrggbb";
-    const QString ConvertRRGGBBToRGB          = "--rrggbb-to-rgb";
-    const QString ConvertBasicShapes          = "--convert-basic-shapes";
-    const QString TransformPrecision          = "--transform-precision";
-    const QString CoordsPrecision             = "--coordinates-precision";
-    const QString AttributesPrecision         = "--attributes-precision";
-    const QString CompactOutput               = "--compact-output";
-    const QString SortDefs                    = "--sort-defs";
+    const QString CreateViewbox               = QL1S("--create-viewbox");
+    const QString ConvertColorToRRGGBB        = QL1S("--colors-to-rrggbb");
+    const QString ConvertRRGGBBToRGB          = QL1S("--rrggbb-to-rgb");
+    const QString ConvertBasicShapes          = QL1S("--convert-basic-shapes");
+    const QString TransformPrecision          = QL1S("--transform-precision");
+    const QString CoordsPrecision             = QL1S("--coordinates-precision");
+    const QString AttributesPrecision         = QL1S("--attributes-precision");
+    const QString CompactOutput               = QL1S("--compact-output");
+    const QString SortDefs                    = QL1S("--sort-defs");
 
-    const QString ShortOutput                 = "--short-output";
+    const QString ShortOutput                 = QL1S("--short-output");
 }
 
 Keys::Keys(QObject *parent) : QObject(parent)
@@ -106,6 +107,15 @@ bool Keys::flag(int key) const
 int Keys::intNumber(int key) const
 {
     return numHash.value(key);
+}
+
+int Keys::precision(Round::RoundType type) const
+{
+    if (type == Round::Coordinate)
+        return m_coordinatesPrecision;
+    else if (type == Round::Attribute)
+        return m_attributesPrecision;
+    return m_transformPrecision;
 }
 
 double Keys::doubleNumber(int key) const
@@ -483,7 +493,7 @@ QString Keys::presetDescription(const QString &name)
         return tr("<b>Custom</b> preset is used to store your own cleaning options. "
                   "By default all options are off.");
     }
-    return "";
+    return QString();
 }
 
 void Keys::setPreset(const QString &name)
@@ -518,7 +528,7 @@ void Keys::setPreset(const QString &name)
         numHash.insert(Key::CoordsPrecision, 8);
         numHash.insert(Key::AttributesPrecision, 8);
     } else {
-        qFatal("Error: wrong preset name");
+        qFatal("wrong preset name");
     }
 }
 
@@ -534,7 +544,7 @@ void Keys::parseOptions(QStringList &list)
     m_coordinatesPrecision = intNumber(Key::CoordsPrecision);
 
     foreach (const QString &key, list) {
-        if (key.isEmpty() || key.count(' ') != 0)
+        if (key.isEmpty() || key.count(QL1C(' ')) != 0)
             list.removeOne(key);
     }
     if (list.isEmpty())
@@ -603,9 +613,9 @@ void Keys::parseOptions(QStringList &list)
                 flags->insert(index);
             }
         } else {
-            qFatal("Error: SVG Cleaner does not support option: %s", qPrintable(flag));
+            qFatal("SVG Cleaner does not support option: %s", qPrintable(flag));
         }
         if (isError)
-            qFatal("Error: wrong value for option: %s", qPrintable(flag));
+            qFatal("wrong value for option: %s", qPrintable(flag));
     }
 }

@@ -7,8 +7,10 @@ CONFIG  -= app_bundle
 DESTDIR  = ../../bin
 TEMPLATE = app
 DEFINES *= QT_USE_QSTRINGBUILDER
+DEFINES *= QT_NO_CAST_FROM_ASCII
 
 QMAKE_CXXFLAGS += -Wextra
+QMAKE_CXXFLAGS_RELEASE += -fno-rtti -fno-exceptions
 
 SOURCES += \
     basecleaner.cpp \

@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ private:
     bool applyTransform(QList<Segment> &segList);
     bool isTsPathShorter();
     void fixRelative(QList<Segment> &segList);
-    QString findAttribute(const int &attrId);
+    QString findAttribute(const uint &attrId);
 
     // segments processing
     bool removeZSegments(QList<Segment> &segList);

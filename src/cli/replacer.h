@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ public:
     void joinStyleAttr();
     void sortDefs();
     void roundNumericAttributes();
+    void prepareLinkedStyles();
     void convertBasicShapes();
     void mergeGradients();
     void finalFixes();
@@ -48,7 +49,6 @@ public:
     void calcElemAttrCount(const QString &text);
     void groupTextElementsStyles();
     void groupElementsByStyles();
-    void markUsedElements();
     void applyTransformToDefs();
     void applyTransformToShapes();
     void mergeGradientsWithEqualStopElem();
@@ -57,9 +57,8 @@ public:
     void moveStyleFromUsedElemToUse();
 
 private:
-    QHash<QString,int> calcDefsUsageCount();
-    bool isPathValidToTransform(SvgElement &pathElem, QHash<QString, int> &defsIdHash);
-    bool isBlurFilter(const QString &id);
+    bool isPathValidToTransform(SvgElement &pathElem);
+    bool isBlurFilter(const SvgElement &elem);
     void updateLinkedDefTransform(SvgElement &elem);
     static bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2);
     void calcNewStrokeWidth(SvgElement &elem, double scaleFactor);

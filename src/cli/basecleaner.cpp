@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -59,46 +59,9 @@ SvgElement BaseCleaner::defsElement(SvgDocument doc, SvgElement &svgElem)
     return newDefs;
 }
 
-void BaseCleaner::updateXLinks(const StringHash &hash)
-{
-    IntList xlinkStyles;
-    xlinkStyles << AttrId::fill << AttrId::stroke << AttrId::filter << AttrId::clip_path;
-
-    element_loop(svgElement()) {
-        for (int i = 0; i < xlinkStyles.size(); ++i) {
-            if (elem.hasAttribute(xlinkStyles.at(i))) {
-                QString attrValue = elem.attribute(xlinkStyles.at(i));
-                if (attrValue.startsWith(UrlPrefix)) {
-                    QString url = attrValue.mid(5, attrValue.size()-6);
-                    if (hash.contains(url)) {
-                        elem.setAttribute(xlinkStyles.at(i),
-                                              QString("url(#" + hash.value(url) + ")"));
-                    }
-                }
-            }
-        }
-        if (elem.hasAttribute(AttrId::xlink_href)) {
-            QString value = elem.xlinkId();
-            QString elemId = elem.id();
-            foreach (const QString &key, hash.keys()) {
-                if (value == key) {
-                    if (hash.value(key) != elemId)
-                        elem.setAttribute(AttrId::xlink_href, QString(QL1C('#') + hash.value(key)));
-                    else
-                        elem.removeAttribute(AttrId::xlink_href);
-                    break;
-                }
-            }
-        }
-        nextElement(elem, root);
-    }
-}
-
 SvgElement BaseCleaner::svgElement(SvgDocument doc)
 {
-    QList<SvgNode> list = doc.childNodes();
-    while (!list.isEmpty()) {
-        SvgNode node = list.takeFirst();
+    foreach (const SvgNode &node, doc.childNodes()) {
         if (node.isElement()) {
             if (node.toElement().tagName() == E_svg)
                 return node.toElement();
@@ -112,102 +75,81 @@ void BaseCleaner::joinLinearGradients(SvgElement &parent, SvgElement &child) con
 {
     foreach (const SvgElement &elem, child.childElements())
         parent.appendChild(elem);
-    parent.removeAttribute(AttrId::xlink_href);
-    child.parentElement().removeChild(child);
+    parent.setReferenceElement(AttrId::xlink_href, SvgElement());
+    smartElementRemove(child);
 }
 
 // remove element with dependency checking
-SvgElement BaseCleaner::smartElementRemove(const SvgElement &elem, bool returnPreviousElement) const
+SvgElement BaseCleaner::smartElementRemove(SvgElement &rmElem, bool isReturnPrev) const
 {
-    if (elem.parentElement().tagName() == E_defs) {
+    if (rmElem.parentElement().tagName() == E_defs) {
         // if removed element is 'linearGradient'
         // and it has xlink to another 'linearGradient'
-        // and this parent 'linearGradient' used only by 1 gradients
+        // and this parent 'linearGradient' used only by 1 gradient,
         // than merge parent 'linearGradient' with it only child
-
-        // TODO: add example
-
-        if (elem.tagName() == E_linearGradient && elem.hasAttribute(AttrId::xlink_href)) {
-            SvgElement defElem = elemFromDefs(elem.xlinkId());
-            const int useCount = defUsageCount(QL1C('#') + defElem.id());
-            if (useCount == 1 && !defElem.hasAttribute(AttrId::xlink_href)) {
-                SvgElement usesElem = findUsedElement(QL1C('#') + defElem.id());
-                Q_ASSERT(usesElem.isNull() == false);
-                joinLinearGradients(usesElem, defElem);
+        if (rmElem.tagName() == E_linearGradient && rmElem.hasReference(AttrId::xlink_href)) {
+            SvgElement defElem = rmElem.referencedElement(AttrId::xlink_href);
+            if (defElem.usesCount() == 1 && !defElem.hasReference(AttrId::xlink_href)) {
+                SvgElementList usedList = defElem.linkedElements();
+                joinLinearGradients(usedList.first(), defElem);
+            } else {
+                rmElem.removeReferenceElement(AttrId::xlink_href);
             }
         }
-    } else {
-        // if removed element has linked defs used only by this element - removes it
-        foreach (const int &attrId, Properties::linkableStyleAttributesIds) {
-            if (!elem.hasAttribute(attrId))
+
+        if (rmElem.tagName() == E_radialGradient && rmElem.hasReference(AttrId::xlink_href)) {
+            rmElem.removeReferenceElement(AttrId::xlink_href);
+        }
+    }
+
+    // if refereced elements of removed element was used only by it,
+    // than we can remove them too
+    if (rmElem.hasReferencedDefs()) {
+        foreach (const uint &attrId, rmElem.referencedAttributes()) {
+            if (!hasParent(rmElem, E_defs))
                 continue;
-            SvgElement defElem = elemFromDefs(elem.defIdFromAttribute(attrId));
-            if (!isDefUsed(attrId, defElem.id(), elem)) {
-                smartElementRemove(defElem);
+            if (rmElem.referencedElement(attrId).usesCount() == 1) {
+                SvgElement tElem = rmElem.referencedElement(attrId);
+                smartElementRemove(tElem);
+            }
+            rmElem.removeReferenceElement(attrId);
+        }
+    }
+
+    // if we remove used element - replace all attributes linked to it with 'none'
+    if (rmElem.usesCount() != 0) {
+        foreach (SvgElement usedElem, rmElem.linkedElements()) {
+            const uint attrId = usedElem.referenceAttribute(rmElem);
+            if (attrId != 0) {
+                usedElem.removeReferenceElement(attrId);
+                if (attrId != AttrId::xlink_href)
+                    usedElem.setAttribute(attrId, V_none);
             }
         }
     }
 
-    return elem.parentElement().removeChild(elem, returnPreviousElement);
+    // alse process all children items
+    loop_children (rmElem)
+        smartElementRemove(elem);
+
+    return rmElem.parentElement().removeChild(rmElem, isReturnPrev);
 }
 
-bool BaseCleaner::isDefUsed(int attrId, const QString &defId, const SvgElement &baseElem) const
+void BaseCleaner::removeAndMoveToPrev(SvgElement &elem)
 {
-    element_loop(svgElement()) {
-        if (elem.xlinkId() == defId)
-            return true;
-        if (elem.defIdFromAttribute(attrId) == defId && elem != baseElem)
-            return true;
-        nextElement(elem, root);
-    }
-    return false;
+    SvgElement tElem = elem;
+    elem = prevElement(elem);
+    smartElementRemove(tElem);
 }
 
-int BaseCleaner::defUsageCount(const QString &defId) const
+void BaseCleaner::removeAndMoveToPrevSibling(SvgElement &elem)
 {
-    int i = 0;
-    element_loop(svgElement()) {
-        if (elem.attribute(AttrId::xlink_href) == defId)
-            i++;
-        nextElement(elem, root);
-    }
-    return i;
+    SvgElement tElem = elem;
+    elem = prevSiblingElement(elem);
+    smartElementRemove(tElem);
 }
 
-SvgElement BaseCleaner::elemFromDefs(const QString &id) const
-{
-    SvgElement elem = defsElement().firstChildElement();
-    while (!elem.isNull()) {
-        if (elem.id() == id)
-            return elem;
-        elem = elem.nextSiblingElement();
-    }
-    return SvgElement();
-}
-
-SvgElement BaseCleaner::findElement(const QString &id, SvgElement parent)
-{
-    if (parent.isNull())
-        parent = svgElement();
-    element_loop(parent) {
-        if (elem.id() == id)
-            return elem;
-        nextElement(elem, root);
-    }
-    return SvgElement();
-}
-
-SvgElement BaseCleaner::findUsedElement(const QString &xlink) const
-{
-    element_loop(svgElement()) {
-        if (elem.attribute(AttrId::xlink_href) == xlink)
-            return elem;
-        nextElement(elem, root);
-    }
-    return SvgElement();
-}
-
-bool BaseCleaner::hasParent(const SvgElement &elem, const QString &tagName)
+bool BaseCleaner::hasParent(const SvgElement &elem, const QString &tagName) const
 {
     SvgElement parent = elem.parentElement();
     while (!parent.isNull()) {
@@ -218,7 +160,19 @@ bool BaseCleaner::hasParent(const SvgElement &elem, const QString &tagName)
     return false;
 }
 
-QString BaseCleaner::findAttribute(const SvgElement &elem, int attrId) const
+bool BaseCleaner::hasUsedParent(const SvgElement &elem)
+{
+    SvgElement parent = elem;
+    while (!parent.isNull()) {
+        if (parent.isUsed())
+            return true;
+        parent = parent.parentElement();
+    }
+    return false;
+}
+
+// TODO: remove
+QString BaseCleaner::parentAttribute(const SvgElement &elem, uint attrId) const
 {
     SvgElement parent = elem;
     while (!parent.isNull()) {
@@ -226,14 +180,15 @@ QString BaseCleaner::findAttribute(const SvgElement &elem, int attrId) const
             return parent.attribute(attrId);
         parent = parent.parentElement();
     }
-    return "";
+    return QString();
 }
 
 QRectF BaseCleaner::viewBoxRect()
 {
     QRectF rect;
     if (svgElement().hasAttribute(AttrId::viewBox)) {
-        QStringList list = svgElement().attribute(AttrId::viewBox).split(' ', QString::SkipEmptyParts);
+        QStringList list = svgElement().attribute(AttrId::viewBox).split(QL1C(' '),
+                                                                         QString::SkipEmptyParts);
         rect.setRect(toDouble(list.at(0)), toDouble(list.at(1)),
                      toDouble(list.at(2)), toDouble(list.at(3)));
     } else if (svgElement().hasAttribute(AttrId::width) && svgElement().hasAttribute(AttrId::height)) {
@@ -243,20 +198,43 @@ QRectF BaseCleaner::viewBoxRect()
     return rect;
 }
 
-QString BaseCleaner::getFreeId(int startId) const
+QString BaseCleaner::genFreeId() const
 {
-    QString newId;
-    while (newId.isEmpty() || !isFreeId(newId))
-        newId = "SVGCleanerId_" + fromDouble(startId++);
-    return newId;
+    return QL1S("SVGCleanerId_") + document().takeFreeId();
 }
 
-bool BaseCleaner::isFreeId(const QString &id) const
+// TODO: maybe store colors as QColor
+bool BaseCleaner::isGradientStopsEqual(const SvgElement &elem1, const SvgElement &elem2)
 {
-    element_loop(svgElement()) {
-        if (elem.id() == id)
+    if (elem1.childElementCount() != elem2.childElementCount())
+        return false;
+
+    if (elem1.childElementCount() == 0)
+        return true;
+
+    static const QString oneStr = QL1S("1");
+    static const QString colorStr = QL1S("#000000");
+
+    SvgElement child1 = elem1.firstChildElement();
+    SvgElement child2 = elem2.firstChildElement();
+    while (!child1.isNull()) {
+        if (child1.tagName() != child2.tagName())
             return false;
-        nextElement(elem, root);
+
+        // TODO: test which attribute is usually different first and sort checks
+        if (   child1.attribute(AttrId::offset, V_zero)
+            != child2.attribute(AttrId::offset, V_zero))
+            return false;
+        if (   child1.attribute(AttrId::stop_color, colorStr)
+            != child2.attribute(AttrId::stop_color, colorStr))
+            return false;
+        if (   child1.attribute(AttrId::stop_opacity, oneStr)
+            != child2.attribute(AttrId::stop_opacity, oneStr))
+            return false;
+
+        child1 = child1.nextSiblingElement();
+        child2 = child2.nextSiblingElement();
     }
+
     return true;
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -20,26 +20,31 @@
 ****************************************************************************/
 
 /*
- * This classes is a mix of Qt DOM implementation:
- * - Implicitly shared classes
- * - Classes structure
- * - Some functions implementations
+ * SvgDom classes are mix of Qt DOM implementation:
+ * - only implicitly/explicitly shared classes
+ * - classes structure
+ * - some functions implementations
  * and TinyXML2:
- * - Parser logic
- * - Node detecting
+ * - parser logic
+ * - node detecting
  *
- * Main difference that SvgDom:
- * - Works only with well-formed SVG files
+ * The main difference that SvgDom:
+ * - works only with well-formed SVG files
  * - Qt based
- * - UFT-8 only
- * - Written specifically for SVG
+ * - UTF-8 only
+ * - written specifically for SVG
  */
 
 #include <QAtomicInt>
 #include <QFile>
 
+#include "enums.h"
 #include "tools.h"
 #include "svgdom.h"
+
+#define CheckData(_retValue) if (!impl) return _retValue
+#define ToDoc(x) static_cast<SvgDocumentPrivate *>(x)
+#define ToElem(x) static_cast<SvgElementPrivate *>(x)
 
 // Private classes declarations
 
@@ -65,23 +70,12 @@ public:
     };
     enum ErrorType {
         NoError,
-        FileOpenError,
-        FileEmptyError,
         ParseError
     };
 
-    SvgParser(const QString &filePath)
+    SvgParser(const QString &text)
     {
-        QFile file(filePath);
-        if (!file.open(QFile::ReadOnly)) {
-            m_error = FileOpenError;
-            return;
-        }
-        m_fullStr = QString::fromUtf8(file.readAll());
-        if (m_fullStr.size() == 0) {
-            m_error = FileEmptyError;
-            return;
-        }
+        m_fullStr = text;
         // pointer to data start
         str = m_fullStr.constData();
         // pointer to data end
@@ -109,7 +103,6 @@ public:
 
         m_attrHash.clear();
         m_attrExtHash.clear();
-        m_id.clear();
         m_name.clear();
         m_value.clear();
         m_transform.clear();
@@ -131,7 +124,7 @@ public:
         } else if (token == Comment) {
             // store all data between '<-- ' and  ' -->'
             clearTextBuffer();
-            static const QString endArr = "-->";
+            static const QString endArr = QL1S("-->");
             while (!atEnd()) {
                 if (textBuffer.endsWith(endArr))
                     break;
@@ -171,7 +164,7 @@ public:
                     break;
                 } else if (containsEntity && textBuffer.endsWith(entityEnd))
                     break;
-                if (*str == '[')
+                if (*str == QL1C('['))
                     containsEntity = true;
                 textBuffer += *str;
                 str++;
@@ -190,7 +183,6 @@ public:
     ErrorType errorId() const        { return m_error; }
     IntHash attributes() const       { return m_attrHash; }
     StringHash attributesExt() const { return m_attrExtHash; }
-    QString id() const               { return m_id; }
     QString name() const             { return m_name; }
     QString value() const            { return m_value; }
     Transform transform() const      { return m_transform; }
@@ -209,7 +201,6 @@ private:
     QString m_value;
     IntHash m_attrHash;
     StringHash m_attrExtHash;
-    QString m_id;
     Transform m_transform;
 
     // parser vars
@@ -295,7 +286,6 @@ private:
         m_attrHash.reserve(6);
         QChar quote;
         QString attrName;
-        QString attrValue;
         while (!atEnd()) {
             nameLength = 0;
             skipSpaces();
@@ -305,7 +295,11 @@ private:
                 ++str;
             }
             // ignore spaces in attribute name
-            attrName = QString(str-nameLength, nameLength).trimmed();
+            attrName.clear();
+
+            uint attrId = hash(str-nameLength, nameLength);
+            if (!isDefaultAttribute(attrId))
+                attrName = QString(str-nameLength, nameLength);
 
             // skip '='
             str++;
@@ -322,26 +316,26 @@ private:
                 nameLength++;
                 str++;
             }
-            attrValue = QString(str-nameLength, nameLength);
+
+            // ignore empty attributes
+            if (nameLength > 0) {
+                if (   attrId == AttrId::transform
+                    || attrId == AttrId::gradientTransform
+                    || attrId == AttrId::patternTransform) {
+                    m_transform = Transform(str-nameLength, nameLength);
+                } else {
+                    QString attrValue = QString(str-nameLength, nameLength);
+                    if (attrName.isEmpty()) {
+                        m_attrHash.insert(attrId, attrValue);
+                    } else {
+                        m_attrExtHash.insert(attrName, attrValue);
+                    }
+                }
+            }
+
             // skip quote char
             str++;
             skipSpaces();
-
-            // ignore empty attributes
-            if (!attrValue.isEmpty()) {
-                int aId = attrStrToId(attrName);
-                if (aId == AttrId::id)
-                    m_id = attrValue;
-
-                if (aId != -1) {
-                    if (aId == AttrId::transform || aId == AttrId::gradientTransform)
-                        m_transform = Transform::create(attrValue);
-                    else
-                        m_attrHash.insert(aId, attrValue);
-                } else {
-                    m_attrExtHash.insert(attrName, attrValue);
-                }
-            }
 
             EndTagType endType = isEndTag();
             if (endType != NotEnd) {
@@ -367,10 +361,10 @@ private:
     // try to detect node type by start char
     TokenType identify(const QChar **p)
     {
-        static const QString xmlHeaderStr     = QString("<?");
-        static const QString commentHeaderStr = QString("<!--");
-        static const QString dtdHeaderStr     = QString("<!");
-        static const QString elementEndStr    = QString("</");
+        static const QString xmlHeaderStr     = QL1S("<?");
+        static const QString commentHeaderStr = QL1S("<!--");
+        static const QString dtdHeaderStr     = QL1S("<!");
+        static const QString elementEndStr    = QL1S("</");
 
         const QChar* start = *p;
 
@@ -412,24 +406,12 @@ public:
     SvgNodePrivate(SvgDocumentPrivate *, SvgNodePrivate *parent = 0);
     virtual ~SvgNodePrivate();
 
-    bool hasValue() const { return !value.isEmpty(); }
-
     SvgDocumentPrivate* ownerDocument();
     void setOwnerDocument(SvgDocumentPrivate *doc);
 
     virtual SvgNodePrivate* insertBefore(SvgNodePrivate *newChild, SvgNodePrivate *refChild);
-    virtual SvgNodePrivate* removeChild(SvgNodePrivate *oldChild);
+    virtual void removeChild(SvgNodePrivate *oldChild);
     virtual SvgNodePrivate* appendChild(SvgNodePrivate *newChild);
-
-    virtual void clear();
-
-    inline SvgNodePrivate* parent() const { return hasParent ? ownerNode : 0; }
-    inline void setParent(SvgNodePrivate *p) { ownerNode = p; hasParent = true; }
-
-    void setNoParent() {
-        ownerNode = hasParent ? (SvgNodePrivate*)ownerDocument() : 0;
-        hasParent = false;
-    }
 
     // Dynamic cast
     virtual bool isDocument() const    { return false; }
@@ -438,36 +420,29 @@ public:
     virtual bool isComment() const     { return false; }
     virtual bool isText() const        { return false; }
 
-    virtual void save(QTextStream&, int, int) const;
+    virtual void save(QString&, int, int) const;
 
-    // Variables
+    // vars
     QAtomicInt ref;
     SvgNodePrivate* prev;
     SvgNodePrivate* next;
     SvgNodePrivate* ownerNode; // either the node's parent or the node's owner document
     SvgNodePrivate* first;
     SvgNodePrivate* last;
-
-    QString name;
-    QString value;
-    bool createdWithDom1Interface : 1;
-    bool hasParent                : 1;
 };
 
 class SvgElementPrivate : public SvgNodePrivate
 {
 public:
     SvgElementPrivate(SvgDocumentPrivate *, SvgNodePrivate *parent, const QString &name);
-    SvgElementPrivate(SvgDocumentPrivate *, SvgNodePrivate *parent);
-    ~SvgElementPrivate() {}
     virtual bool isElement() const { return true; }
-    virtual void save(QTextStream &s, int, int) const;
+    virtual void save(QString &s, int, int) const;
 
-    // Variables
-    QString id;
-    IntHash attrs;
-    StringHash attrsExt; // external attributes
-    Transform transform;
+    // vars
+    QString name; // tag name
+    SvgAttributeHash attributes; // attributes hash
+    // internal
+    QList<SvgElement> linkedElemList; // list of elements linked to this element
     Transform bboxTransform; // contains bounding box transform of the element
 };
 
@@ -476,7 +451,10 @@ class SvgCommentPrivate : public SvgNodePrivate
 public:
     SvgCommentPrivate(SvgDocumentPrivate*, SvgNodePrivate *parent, const QString &val);
     virtual bool isComment() const { return true; }
-    virtual void save(QTextStream &s, int, int) const;
+    virtual void save(QString &s, int, int) const;
+
+    // vars
+    QString value;
 };
 
 class SvgTextPrivate : public SvgNodePrivate
@@ -484,9 +462,11 @@ class SvgTextPrivate : public SvgNodePrivate
 public:
     SvgTextPrivate(SvgDocumentPrivate *, SvgNodePrivate *parent, const QString &val);
     virtual bool isText() const { return true; }
-    virtual void save(QTextStream &s, int, int) const;
+    virtual void save(QString &s, int, int) const;
+
     // vars
     bool isDtd;
+    QString value;
 };
 
 class SvgDeclarationPrivate : public SvgNodePrivate
@@ -494,7 +474,10 @@ class SvgDeclarationPrivate : public SvgNodePrivate
 public:
     SvgDeclarationPrivate(SvgDocumentPrivate *, SvgNodePrivate *parent, const QString &data);
     virtual bool isDeclaration() const { return true; }
-    virtual void save(QTextStream &s, int, int) const;
+    virtual void save(QString &s, int, int) const;
+
+    // vars
+    QString value;
 };
 
 class SvgDocumentPrivate : public SvgNodePrivate
@@ -503,24 +486,24 @@ public:
     SvgDocumentPrivate();
     ~SvgDocumentPrivate() {}
     bool isDocument() const { return true; }
-    void clear();
 
     // vars:
     QString lastError;
+    bool blockStringUrls;
+    uint genIdCount;
 };
 
 SvgNodePrivate::SvgNodePrivate(SvgDocumentPrivate *doc, SvgNodePrivate *par)
 {
     ref = 1;
     if (par)
-        setParent(par);
+        ownerNode = par;
     else
         setOwnerDocument(doc);
     prev = 0;
     next = 0;
     first = 0;
     last = 0;
-    createdWithDom1Interface = true;
 }
 
 SvgNodePrivate::~SvgNodePrivate()
@@ -533,7 +516,7 @@ SvgNodePrivate::~SvgNodePrivate()
         if (!p->ref.deref())
             delete p;
         else
-            p->setNoParent();
+            p->ownerNode = 0;
         p = n;
     }
     first = 0;
@@ -543,22 +526,6 @@ SvgNodePrivate::~SvgNodePrivate()
 inline void SvgNodePrivate::setOwnerDocument(SvgDocumentPrivate *doc)
 {
     ownerNode = doc;
-    hasParent = false;
-}
-
-void SvgNodePrivate::clear()
-{
-    SvgNodePrivate* p = first;
-    SvgNodePrivate* n;
-
-    while (p) {
-        n = p->next;
-        if (!p->ref.deref())
-            delete p;
-        p = n;
-    }
-    first = 0;
-    last = 0;
 }
 
 SvgNodePrivate* SvgNodePrivate::insertBefore(SvgNodePrivate *newChild, SvgNodePrivate *refChild)
@@ -572,17 +539,19 @@ SvgNodePrivate* SvgNodePrivate::insertBefore(SvgNodePrivate *newChild, SvgNodePr
         return 0;
 
     // Error check
-    if (refChild && refChild->parent() != this)
+    if (refChild && refChild->ownerNode != this) {
+        qWarning("insertBefore() works only on direct child.");
         return 0;
+    }
 
     // No more errors can occur now, so we take
     // ownership of the node.
     newChild->ref.ref();
 
-    if (newChild->parent())
-        newChild->parent()->removeChild(newChild);
+    if (newChild->ownerNode)
+        newChild->ownerNode->removeChild(newChild);
 
-    newChild->setParent(this);
+    newChild->ownerNode = this;
 
     if (!refChild) {
         if (first)
@@ -612,16 +581,18 @@ SvgNodePrivate* SvgNodePrivate::insertBefore(SvgNodePrivate *newChild, SvgNodePr
     return newChild;
 }
 
-SvgNodePrivate* SvgNodePrivate::removeChild(SvgNodePrivate *oldChild)
+void SvgNodePrivate::removeChild(SvgNodePrivate *oldChild)
 {
     // Error check
-    if (oldChild->parent() != this)
-        return 0;
+    if (oldChild->ownerNode != this) {
+        qWarning("removeChild() works only on direct child.");
+        return;
+    }
 
     // Perhaps oldChild was just created with "createElement" or that. In this case
     // its parent is SvgDocument but it is not part of the documents child list.
     if (oldChild->next == 0 && oldChild->prev == 0 && first != oldChild)
-        return 0;
+        return;
 
     if (oldChild->next)
         oldChild->next->prev = oldChild->prev;
@@ -633,14 +604,12 @@ SvgNodePrivate* SvgNodePrivate::removeChild(SvgNodePrivate *oldChild)
     if (first == oldChild)
         first = oldChild->next;
 
-    oldChild->setNoParent();
+    oldChild->ownerNode = 0;
     oldChild->next = 0;
     oldChild->prev = 0;
 
     // We are no longer interested in the old node
     oldChild->ref.deref();
-
-    return oldChild;
 }
 
 SvgNodePrivate* SvgNodePrivate::appendChild(SvgNodePrivate *newChild)
@@ -649,14 +618,14 @@ SvgNodePrivate* SvgNodePrivate::appendChild(SvgNodePrivate *newChild)
         return 0;
 
     // Release new node from its current parent
-    if (newChild->parent())
-        newChild->parent()->removeChild(newChild);
+    if (newChild->ownerNode)
+        newChild->ownerNode->removeChild(newChild);
 
     // No more errors can occur now, so we take
     // ownership of the node
     newChild->ref.ref();
 
-    newChild->setParent(this);
+    newChild->ownerNode = this;
 
     // Insert at the end
     if (last)
@@ -672,15 +641,14 @@ SvgDocumentPrivate* SvgNodePrivate::ownerDocument()
 {
     SvgNodePrivate* p = this;
     while (p && !p->isDocument()) {
-        if (!p->hasParent)
+        if (!p)
             return (SvgDocumentPrivate*)p->ownerNode;
-        p = p->parent();
+        p = p->ownerNode;
     }
-
-    return static_cast<SvgDocumentPrivate *>(p);
+    return ToDoc(p);
 }
 
-void SvgNodePrivate::save(QTextStream &s, int depth, int indent) const
+void SvgNodePrivate::save(QString &s, int depth, int indent) const
 {
     const SvgNodePrivate* n = first;
     while (n) {
@@ -734,24 +702,15 @@ SvgNode::~SvgNode()
         delete impl;
 }
 
-QString SvgNode::nodeName() const
-{
-    if (!impl)
-        return QString();
-    return impl->name;
-}
-
 SvgNode SvgNode::parentNode() const
 {
-    if (!impl)
-        return SvgNode();
-    return impl->parent();
+    CheckData(SvgNode());
+    return impl->ownerNode;
 }
 
 SvgNodeList SvgNode::childNodes() const
 {
-    if (!impl)
-        return SvgNodeList();
+    CheckData(SvgNodeList());
     SvgNodeList list;
     SvgNodePrivate* p = impl->first;
     while (p) {
@@ -763,45 +722,32 @@ SvgNodeList SvgNode::childNodes() const
 
 SvgNode SvgNode::firstChild() const
 {
-    if (!impl)
-        return SvgNode();
+    CheckData(SvgNode());
     return impl->first;
-}
-
-SvgNode SvgNode::lastChild() const
-{
-    if (!impl)
-        return SvgNode();
-    return impl->last;
 }
 
 SvgNode SvgNode::previousSibling() const
 {
-    if (!impl)
-        return SvgNode();
+    CheckData(SvgNode());
     return impl->prev;
 }
 
 SvgNode SvgNode::nextSibling() const
 {
-    if (!impl)
-        return SvgNode();
+    CheckData(SvgNode());
     return impl->next;
 }
 
 SvgDocument SvgNode::ownerDocument() const
 {
-    if (!impl)
-        return SvgDocument();
+    CheckData(SvgDocument());
     return impl->ownerDocument();
 }
 
 bool SvgNode::hasNextSibling() const
 {
-    if (!impl)
-        return false;
+    CheckData(false);
     SvgNodePrivate *p = impl->next;
-    // FIXME: ignore isElement check, use it only in hasNextSiblingElement
     while (p) {
         if (p->isElement())
             return true;
@@ -812,26 +758,24 @@ bool SvgNode::hasNextSibling() const
 
 SvgNode SvgNode::insertBefore(const SvgNode &newChild, const SvgNode &refChild)
 {
-    if (!impl)
-        return SvgNode();
+    CheckData(SvgNode());
     return impl->insertBefore(newChild.impl, refChild.impl);
 }
 
-SvgNode SvgNode::removeChild(const SvgNode &oldChild)
+void SvgNode::removeChild(const SvgNode &oldChild)
 {
-    if (!impl)
-        return SvgNode();
+    CheckData();
 
     if (oldChild.isNull())
-        return SvgNode();
+        return;
 
-    return impl->removeChild(oldChild.impl);
+    impl->removeChild(oldChild.impl);
 }
 
 SvgNode SvgNode::appendChild(const SvgNode &newChild)
 {
     if (!impl) {
-        qWarning("Calling appendChild() on a null node does nothing.");
+        qWarning("calling appendChild() on a null node does nothing.");
         return SvgNode();
     }
     return impl->appendChild(newChild.impl);
@@ -839,8 +783,7 @@ SvgNode SvgNode::appendChild(const SvgNode &newChild)
 
 bool SvgNode::hasChildren() const
 {
-    if (!impl)
-        return false;
+    CheckData(false);
     return (impl->first != 0);
 }
 
@@ -856,11 +799,9 @@ void SvgNode::clear()
     impl = 0;
 }
 
-void SvgNode::save(QTextStream &str, int indent) const
+void SvgNode::save(QString &str, int indent) const
 {
-    if (!impl)
-        return;
-
+    CheckData();
     if (isDocument()) {
         const SvgNodePrivate* n = impl->first;
         while (n) {
@@ -868,7 +809,7 @@ void SvgNode::save(QTextStream &str, int indent) const
             n = n->next;
         }
     } else {
-        ((SvgNodePrivate*)impl)->save(str, 1, indent);
+        impl->save(str, 1, indent);
     }
 }
 
@@ -881,36 +822,31 @@ bool SvgNode::isDocument() const
 
 bool SvgNode::isElement() const
 {
-    if (impl)
-        return impl->isElement();
-    return false;
+    CheckData(false);
+    return impl->isElement();
 }
 
 bool SvgNode::isText() const
 {
-    if (impl)
-        return impl->isText();
-    return false;
+    CheckData(false);
+    return impl->isText();
 }
 
 bool SvgNode::isDeclaration() const
 {
-    if (impl)
-        return impl->isDeclaration();
-    return false;
+    CheckData(false);
+    return impl->isDeclaration();
 }
 
 bool SvgNode::isComment() const
 {
-    if (impl)
-        return impl->isComment();
-    return false;
+    CheckData(false);
+    return impl->isComment();
 }
 
 bool SvgNode::hasText() const
 {
-    if (!impl)
-        return false;
+    CheckData(false);
     if (impl->first)
         return impl->first->isText();
     return false;
@@ -927,8 +863,7 @@ SvgElement SvgNode::firstChildElement() const
 
 SvgElement SvgNode::nextSiblingElement() const
 {
-    if (!impl)
-        return SvgElement();
+    CheckData(SvgElement());
     SvgNodePrivate *p = impl->next;
     while (p) {
         if (p->isElement())
@@ -936,6 +871,12 @@ SvgElement SvgNode::nextSiblingElement() const
         p = p->next;
     }
     return SvgElement();
+}
+
+SvgNode SvgNode::nextNode(const SvgNode &root) const
+{
+    CheckData(SvgNode());
+    return nextNodePrivate(impl, root.implementation());
 }
 
 SvgElement SvgNode::previousSiblingElement() const
@@ -950,35 +891,35 @@ SvgElement SvgNode::previousSiblingElement() const
 SvgDocument SvgNode::toDocument() const
 {
     if (impl && impl->isDocument())
-        return SvgDocument(((SvgDocumentPrivate*)impl));
+        return SvgDocument(static_cast<SvgDocumentPrivate*>(impl));
     return SvgDocument();
 }
 
 SvgElement SvgNode::toElement() const
 {
     if (impl && impl->isElement())
-        return SvgElement(((SvgElementPrivate*)impl));
+        return SvgElement(static_cast<SvgElementPrivate*>(impl));
     return SvgElement();
 }
 
 SvgDeclaration SvgNode::toDeclaration() const
 {
     if (impl && impl->isDeclaration())
-        return SvgDeclaration(((SvgDeclarationPrivate*)impl));
+        return SvgDeclaration(static_cast<SvgDeclarationPrivate*>(impl));
     return SvgDeclaration();
 }
 
 SvgComment SvgNode::toComment() const
 {
     if (impl && impl->isComment())
-        return SvgComment(((SvgCommentPrivate*)impl));
+        return SvgComment(static_cast<SvgCommentPrivate*>(impl));
     return SvgComment();
 }
 
 SvgText SvgNode::toText() const
 {
     if (impl && impl->isText())
-        return SvgText(((SvgTextPrivate*)impl));
+        return SvgText(static_cast<SvgTextPrivate*>(impl));
     return SvgText();
 }
 
@@ -989,95 +930,86 @@ SvgElementPrivate::SvgElementPrivate(SvgDocumentPrivate *d, SvgNodePrivate *p,
     name = tagname;
 }
 
-SvgElementPrivate::SvgElementPrivate(SvgDocumentPrivate *d, SvgNodePrivate *p)
-    : SvgNodePrivate(d, p)
+QString appendAttribute(const QString &name, const QString &value)
 {
-    createdWithDom1Interface = false;
+    return QL1C(' ') + name + QL1S("=\"") + value + QL1C('\"');
 }
 
 // TODO: sort attributes
-void SvgElementPrivate::save(QTextStream &s, int depth, int indent) const
+void SvgElementPrivate::save(QString &s, int depth, int indent) const
 {
     static const QString startStr  = QL1S("</");
     static const QString endStr    = QL1S("/>");
-    static const QString startAttr = QL1S("=\"");
+    static const QString urlPrefix = QL1S("url(#");
+
+    const QString indentStr = QString(indent < 1 ? 0 : depth * indent, QL1C(' '));
 
     if (this->name != E_tspan)
-        s << QString(indent < 1 ? 0 : depth * indent, QL1C(' '));
+        s += indentStr;
 
-    s << QL1C('<') << name;
+    s += QL1C('<') + name;
 
-    if (!attrs.isEmpty()) {
-        // save default attributes
-        IntHash::const_iterator it = attrs.constBegin();
-        for (; it != attrs.constEnd(); ++it) {
-            // do not save attributes with empty value
-            if (!it.value().isEmpty()) {
-                s << QL1C(' ');
-                Q_ASSERT(attrIdToStr(it.key()).isEmpty() == false);
-                Q_ASSERT(it.value().isEmpty() == false);
-                s << attrIdToStr(it.key()) << startAttr << it.value() << QL1C('\"');
-            }
+    // save default attributes
+    foreach (const SvgAttribute &a, attributes.values()) {
+        // do not save attributes with empty value
+        if (a.isReference()) {
+            Q_ASSERT_X(a.referencedElement().isUsed() == true, "link saving",
+                       "linked element cannot be unused");
+
+            QString value;
+            if (a.id() == AttrId::xlink_href)
+                value = QL1C('#') + a.referencedElement().id();
+            else
+                value = urlPrefix + a.referencedElement().id() + QL1C(')');
+            s += appendAttribute(attrIdToStr(a.id()), value);
+        } else if (a.isTransform()) {
+            QString transformName;
+            if (name == E_linearGradient || name == E_radialGradient)
+                transformName = A_gradientTransform;
+            else if (name == E_pattern)
+                transformName = A_patternTransform;
+            else
+                transformName = A_transform;
+
+            QString ts = a.transform().simplified();
+            if (!ts.isEmpty())
+                s += appendAttribute(transformName, ts);
+        } else if (a.isDefault()) {
+            if (!a.value().isEmpty())
+                s += appendAttribute(attrIdToStr(a.id()), a.value());
+        } else if (a.isExternal()) {
+            if (!a.value().isEmpty())
+                s += appendAttribute(a.name(), a.value());
+            else
+                qWarning("attribute '%s' cannot be empty", qPrintable(a.name()));
+        } else {
+            qWarning("invalid attribute type");
         }
-    }
-    if (!attrsExt.isEmpty()) {
-        // save custom attributes
-        StringHash::const_iterator it2 = attrsExt.constBegin();
-        for (; it2 != attrsExt.constEnd(); ++it2) {
-            // do not save attributes with empty value
-            if (!it2.value().isEmpty()) {
-                s << QL1C(' ');
-                Q_ASSERT(it2.key().isEmpty() == false);
-                Q_ASSERT(it2.value().isEmpty() == false);
-                s << it2.key() << startAttr << it2.value() << QL1C('\"');
-            }
-        }
-    }
-    if (!transform.isNull()) {
-        QString transformName;
-        if (name == E_linearGradient || name == E_radialGradient)
-            transformName = A_gradientTransform;
-        else
-            transformName = A_transform;
-        s << QL1C(' ') << transformName << startAttr << transform.simplified() << QL1C('\"');
     }
 
     if (last) {
-        // has child nodes
-        if (first->hasValue()) {
-            s << QL1C('>');
-        } else {
-            s << QL1C('>');
-            // -1 disables new lines.
-            if (indent != -1 && first->name != E_tspan && name != E_tspan)
-                s << endl;
-        }
+        s += QL1C('>');
+        // -1 disables new lines.
+        if (indent != -1 && (first->isElement() && ToElem(first)->name != E_tspan) && name != E_tspan)
+            s += QL1C('\n');
         SvgNodePrivate::save(s, depth + 1, indent);
-        if (!last->hasValue())
-            s << QString(indent < 1 ? 0 : depth * indent, QL1C(' '));
+        if (last->isElement())
+            s += indentStr;
 
-        s << startStr << name << QL1C('>');
+        s += startStr + name + QL1C('>');
     } else {
-        if (hasValue()) {
-            s << QL1C('>');
-            s << value;
-            s << startStr << name << QL1C('>');
-        } else {
-            s << endStr;
-        }
+        s += endStr;
     }
     if (next) {
-        if (next->name != E_tspan && !next->hasValue()) {
+        if (next->isElement() && ToElem(next)->name != E_tspan) {
             if (indent != -1)
-                s << endl;
+                s += QL1C('\n');
         }
     } else {
         if (indent != -1)
-            s << endl;
+            s += QL1C('\n');
     }
 }
-
-#define IMPL ((SvgElementPrivate*)impl)
 
 SvgElement::SvgElement(SvgElementPrivate *n) : SvgNode(n) {}
 
@@ -1086,137 +1018,129 @@ SvgElement& SvgElement::operator= (const SvgElement &x)
     return (SvgElement&) SvgNode::operator=(x);
 }
 
+SvgElement SvgElement::nextElement(const SvgElement &root, bool ignoreChild) const
+{
+    CheckData(SvgElement());
+    return ToElem(nextElementPrivate(ToElem(impl), root.implementation(), ignoreChild));
+}
+
 void SvgElement::setTagName(const QString &name)
 {
     if (impl)
-        impl->name = name;
+        ToElem(impl)->name = name;
 }
 
 QString SvgElement::tagName() const
 {
-    if (!impl)
-        return QString();
-    return impl->name;
+    CheckData(QString());
+    return ToElem(impl)->name;
 }
 
-QString SvgElement::attribute(const int &attrId, const QString &defValue) const
+QString SvgElement::attribute(const uint &attrId, const QString &defValue) const
 {
-    if (!impl)
-        return defValue;
-    if (!IMPL->attrs.contains(attrId))
-        return defValue;
-    return IMPL->attrs.value(attrId);
+    CheckData(defValue);
+    return ToElem(impl)->attributes.value(attrId).value();
 }
 
 QString SvgElement::attribute(const QString &name, const QString &defValue) const
 {
-    if (!impl)
-        return defValue;
-    int aId = attrStrToId(name);
-    if (!IMPL->attrs.contains(aId)) {
-        if (!IMPL->attrsExt.contains(name))
-            return defValue;
-        else
-            return IMPL->attrsExt.value(name);
+    return attribute(qHash(name), defValue);
+}
+
+SvgAttribute SvgElement::attributeItem(const uint &attrId) const
+{
+    CheckData(SvgAttribute());
+    foreach (const SvgAttribute &a, ToElem(impl)->attributes) {
+        if (a.id() == attrId)
+            return a;
     }
-    return IMPL->attrs.value(aId);
+    return SvgAttribute();
 }
 
-QString SvgElement::extAttribute(const QString &name, const QString &defValue) const
+void SvgElement::setAttribute(const uint &attrId, const QString &value)
 {
-    if (!impl)
-        return defValue;
-    if (!IMPL->attrsExt.contains(name))
-        return defValue;
-    return IMPL->attrsExt.value(name);
-}
+    Q_ASSERT(attrId != 0);
+    CheckData();
 
-void SvgElement::setAttribute(const int &attrId, const QString &value)
-{
-    Q_ASSERT(attrId != -1);
-    if (!impl)
-        return;
-    if (attrId == AttrId::id)
-        IMPL->id = value;
-    IMPL->attrs.insert(attrId, value);
+    // string attribute value cannot be an url
+    if (ownerDocument().isBlockStringUrls()) {
+        if (value.startsWith(QL1S("url(#")))
+            qFatal("attribute value cannot contain url");
+        else if (attrId == AttrId::xlink_href)
+            qFatal("attribute value cannot contain xlink:href");
+    }
+
+    if (ToElem(impl)->attributes.contains(attrId)) {
+        SvgAttribute attr = ToElem(impl)->attributes.value(attrId);
+        attr.setValue(value);
+    } else {
+        ToElem(impl)->attributes.insert(attrId, SvgAttribute(attrId, value));
+    }
 }
 
 void SvgElement::setAttribute(const QString &name, const QString &value)
 {
-    if (!impl)
+    if (value.isEmpty())
         return;
-    if (name == Attribute::A_id)
-        IMPL->id = value;
+    CheckData();
     if (isDefaultAttribute(name))
-        IMPL->attrs.insert(attrStrToId(name), value);
-    else
-        IMPL->attrsExt.insert(name, value);
-}
+        setAttribute(attrStrToId(name), value);
 
-void SvgElement::setAttributeHash(const IntHash &baseHash, const StringHash &extHash)
-{
-    if (!impl)
-        return;
-    IMPL->attrs = baseHash;
-    IMPL->attrsExt = extHash;
-}
+    // string attribute value cannot be an url
+    if (ownerDocument().isBlockStringUrls())
+        Q_ASSERT(value.startsWith(QL1S("url(#")) == false);
 
-void SvgElement::removeAttribute(int attrId)
-{
-    if (!impl)
-        return;
-    if (attrId == AttrId::id)
-        IMPL->id.clear();
-    IMPL->attrs.remove(attrId);
-}
-
-void SvgElement::removeAttribute(const QVariant &name)
-{
-    if (!impl)
-        return;
-
-    int id = -1;
-    if (name.type() == QVariant::String) {
-        if (!isDefaultAttribute(name.toString())) {
-            IMPL->attrsExt.remove(name.toString());
-            return;
-        } else {
-            id = attrStrToId(name.toString());
-        }
+    uint attrId = qHash(name);
+    if (ToElem(impl)->attributes.contains(attrId)) {
+        SvgAttribute attr = ToElem(impl)->attributes.value(attrId);
+        attr.setValue(value);
+    } else {
+        ToElem(impl)->attributes.insert(attrId, SvgAttribute(name, value));
     }
-
-    if (id == AttrId::id)
-        IMPL->id.clear();
-    IMPL->attrs.remove(id);
 }
 
-bool SvgElement::hasAttribute(int attrId) const
+void SvgElement::setAttribute(const SvgAttribute &attr)
 {
-    if (!impl)
-        return false;
-    return IMPL->attrs.contains(attrId);
+    CheckData();
+    if (attr.isDefault())
+        setAttribute(attr.id(), attr.value());
+    else if (attr.isExternal())
+        setAttribute(attr.name(), attr.value());
+    else if (attr.isTransform())
+        setTransform(attr.transform());
+    else if (attr.isReference())
+        setReferenceElement(attr.id(), attr.referencedElement());
+    else
+        qFatal("invalid attribute");
+}
+
+void SvgElement::removeAttribute(uint attrId)
+{
+    CheckData();
+    ToElem(impl)->attributes.remove(attrId);
+}
+
+void SvgElement::removeAttribute(const QString &name)
+{
+    CheckData();
+    ToElem(impl)->attributes.remove(qHash(name));
+}
+
+bool SvgElement::hasAttribute(uint attrId) const
+{
+    CheckData(false);
+    return ToElem(impl)->attributes.contains(attrId);
 }
 
 bool SvgElement::hasAttribute(const QString &name) const
 {
-    if (!impl)
-        return false;
-    if (isDefaultAttribute(name))
-        return IMPL->attrs.contains(attrStrToId(name));
-    else
-        return IMPL->attrsExt.contains(name);
-}
-
-bool SvgElement::hasExtAttribute(const QString &name) const
-{
-    if (!impl)
-        return false;
-    return IMPL->attrsExt.contains(name);
+    CheckData(false);
+    return ToElem(impl)->attributes.contains(qHash(name));
 }
 
 bool SvgElement::hasAttributes(const IntList &list) const
 {
-    foreach (const int &attrId, list)
+    foreach (const uint &attrId, list)
         if (hasAttribute(attrId))
             return true;
     return false;
@@ -1232,46 +1156,33 @@ bool SvgElement::hasAttributes(const QStringList &list) const
 
 bool SvgElement::hasAttributes() const
 {
-    if (!impl)
-        return false;
-    return IMPL->attrs.size() > 0 || IMPL->attrsExt.size() > 0 || hasTransform();
-}
-
-QString SvgElement::xlinkId() const
-{
-    return attribute(AttrId::xlink_href).remove(0,1);
+    CheckData(false);
+    return !ToElem(impl)->attributes.isEmpty();
 }
 
 QString SvgElement::id() const
 {
-    if (!impl)
-        return QString();
-    return IMPL->id;
+    CheckData(QString());
+    return ToElem(impl)->attributes.value(AttrId::id).value();
 }
 
-SvgElement SvgElement::removeChild(const SvgElement &oldChild, bool returnPreviousElement)
+SvgElement SvgElement::removeChild(const SvgElement &oldChild, bool returnPrevious)
 {
-    if (!impl)
-        return SvgElement();
+    CheckData(SvgElement());
 
     if (oldChild.isNull())
         return SvgElement();
 
     SvgElement ret;
-    if (returnPreviousElement) {
+    if (returnPrevious)
         ret = prevElement(oldChild);
-        ((SvgNodePrivate*)impl)->removeChild(oldChild.impl);
-    } else {
-        ret = SvgNode(((SvgNodePrivate*)impl)->removeChild(oldChild.impl)).toElement();
-    }
-
+    impl->removeChild(oldChild.impl);
     return ret;
 }
 
 bool SvgElement::hasChildrenElement() const
 {
-    if (!impl)
-        return false;
+    CheckData(false);
     SvgNodePrivate* p = impl->first;
     while (p) {
         if (p->isElement())
@@ -1283,8 +1194,7 @@ bool SvgElement::hasChildrenElement() const
 
 int SvgElement::childElementCount() const
 {
-    if (!impl)
-        return 0;
+    CheckData(0);
     SvgNodePrivate* p = impl->first;
     int count = 0;
     while (p) {
@@ -1295,81 +1205,60 @@ int SvgElement::childElementCount() const
     return count;
 }
 
-// TODO: remove this func
-StringHash SvgElement::attributesHash(bool ignoreId) const
+void SvgElement::removeAttributeIf(uint attrId, const QString &value)
 {
-    if (!impl)
-        return StringHash();
-
-    StringHash hash = IMPL->attrsExt;
-    foreach (const int &id, IMPL->attrs.keys())
-        hash.insert(attrIdToStr(id), IMPL->attrs.value(id));
-    if (ignoreId)
-        hash.remove(Attribute::A_id);
-    if (hasTransform())
-        hash.insert(Attribute::A_transform, transform().simplified());
-    return hash;
-}
-
-void SvgElement::removeAttributeIf(int attrId, const QString &value)
-{
-    if (!impl)
-        return;
-    if (IMPL->attrs.value(attrId) == value)
-        IMPL->attrs.remove(attrId);
+    CheckData();
+    if (attribute(attrId) == value)
+        removeAttribute(attrId);
 }
 
 void SvgElement::removeAttributeIf(const QString &name, const QString &value)
 {
-    if (!impl)
-        return;
-    if (isDefaultAttribute(name)) {
-        int id = attrStrToId(name);
-        if (IMPL->attrs.value(id) == value)
-            IMPL->attrs.remove(id);
-    } else {
-        if (IMPL->attrsExt.value(name) == value)
-            IMPL->attrsExt.remove(name);
-    }
+    CheckData();
+    if (attribute(name) == value)
+        removeAttribute(name);
 }
 
-double SvgElement::doubleAttribute(int attrId)
+double SvgElement::doubleAttribute(uint attrId)
 {
     return toDouble(attribute(attrId));
 }
 
-QStringList SvgElement::attributesList() const
-{
-    if (!impl)
-        return QStringList();
-    QStringList list;
-    foreach (const int &id, IMPL->attrs.keys())
-        list << attrIdToStr(id);
-    list << IMPL->attrsExt.keys();
-    if (hasTransform())
-        list << Attribute::A_transform;
-    return list;
-}
-
 IntList SvgElement::baseAttributesList() const
 {
-    if (!impl)
-        return IntList();
+    CheckData(IntList());
     IntList list;
-    foreach (const int &id, IMPL->attrs.keys())
-        list << id;
-    if (hasTransform())
-        list << AttrId::transform;
+    foreach (const SvgAttribute &attr, ToElem(impl)->attributes) {
+        if (attr.isDefault())
+            list << attr.id();
+    }
     return list;
 }
 
 QStringList SvgElement::extAttributesList() const
 {
-    if (!impl)
-        return QStringList();
+    CheckData(QStringList());
     QStringList list;
-    foreach (const QString &name, IMPL->attrsExt.keys())
-        list << name;
+    foreach (const SvgAttribute &attr, ToElem(impl)->attributes) {
+        if (attr.isExternal())
+            list << attr.name();
+    }
+    return list;
+}
+
+SvgAttributeList SvgElement::attributesList() const
+{
+    CheckData(SvgAttributeList());
+    return ToElem(impl)->attributes.values();
+}
+
+QStringList SvgElement::attributesNamesList() const
+{
+    CheckData(QStringList());
+    QStringList list;
+    foreach (const SvgAttribute &attr, ToElem(impl)->attributes) {
+        list << attr.name();
+    }
     return list;
 }
 
@@ -1381,8 +1270,7 @@ SvgElement SvgElement::parentElement() const
 // TODO: get rid of it
 SvgElementList SvgElement::childElements() const
 {
-    if (!impl)
-        return SvgElementList();
+    CheckData(SvgElementList());
     SvgNodePrivate* p = impl->first;
     SvgElementList list;
     list.reserve(childElementCount());
@@ -1396,8 +1284,7 @@ SvgElementList SvgElement::childElements() const
 
 SvgElement SvgElement::firstChildElement() const
 {
-    if (!impl)
-        return SvgElement();
+    CheckData(SvgElement());
     SvgNodePrivate* p = impl->first;
     while (p) {
         if (p->isElement())
@@ -1409,32 +1296,141 @@ SvgElement SvgElement::firstChildElement() const
 
 IntList SvgElement::styleAttributesList() const
 {
-    if (!impl)
-        return IntList();
+    CheckData(IntList());
     IntList list;
-    list.reserve(attributesCount());
-    foreach (const int &id, IMPL->attrs.keys()) {
-        if (Properties::presentationAttributesIds.contains(id))
-            list << id;
+    SvgElementPrivate *e = ToElem(impl);
+    list.reserve(e->attributes.size());
+    foreach (const SvgAttribute &a, e->attributes) {
+        if (a.isStyle())
+            list << a.id();
     }
     return list;
 }
 
-bool SvgElement::hasLinkedDef() const
+int SvgElement::usesCount() const
 {
-    if (!impl)
-        return false;
-    // TODO: is 'filter' needed?
-    static const IntList illegalAttrList = IntList()
-        << AttrId::clip_path << AttrId::mask << AttrId::filter;
-    foreach (const int &id, illegalAttrList) {
-        if (hasAttribute(id))
+    CheckData(0);
+    return ToElem(impl)->linkedElemList.size();
+}
+
+bool SvgElement::hasReference(uint attrId) const
+{
+    CheckData(false);
+    foreach (const SvgAttribute &attr, ToElem(impl)->attributes) {
+        if (attr.isReference() && attr.id() == attrId)
             return true;
     }
-    static const IntList illegalStyleAttrList = IntList()
-        << AttrId::fill << AttrId::stroke;
-    foreach (const int &id, illegalStyleAttrList) {
-        if (attribute(id).startsWith(UrlPrefix))
+    return false;
+}
+
+SvgElement SvgElement::referencedElement(uint attrId) const
+{
+    CheckData(SvgElement());
+    return ToElem(impl)->attributes.value(attrId).referencedElement();
+}
+
+void SvgElement::setReferenceElement(uint attrId, const SvgElement &elem)
+{
+    CheckData();
+
+    if (elem.isNull()) {
+        referencedElement(attrId).removeLinkedElement(id());
+        ToElem(impl)->attributes.remove(attrId);
+        return;
+    }
+
+    ToElem(impl)->attributes.insert(attrId, SvgAttribute(attrId, elem));
+    if (!elem.isNull())
+        referencedElement(attrId).appendLinkedElement(attrId, *this);
+}
+
+IntList SvgElement::referencedAttributes() const
+{
+    CheckData(IntList());
+    IntList list;
+    foreach (const SvgAttribute &attr, ToElem(impl)->attributes) {
+        if (attr.isReference())
+            list << attr.id();
+    }
+    return list;
+}
+
+uint SvgElement::referenceAttribute(const SvgElement &elem) const
+{
+    CheckData(0);
+    foreach (const SvgAttribute &attr, ToElem(impl)->attributes) {
+        if (attr.isReference() && attr.referencedElement() == elem)
+            return attr.id();
+    }
+    return 0;
+}
+
+void SvgElement::removeReferenceElement(uint attrId)
+{
+    setReferenceElement(attrId, SvgElement());
+}
+
+void SvgElement::appendLinkedElement(const uint attrId, const SvgElement &elem)
+{
+    CheckData();
+    ToElem(impl)->linkedElemList.insert(attrId, elem);
+}
+
+void SvgElement::removeLinkedElement(const QString &id)
+{
+    CheckData();
+
+    bool flag = false;
+    foreach (const SvgElement &e, ToElem(impl)->linkedElemList) {
+        if (e.id() == id) {
+            flag = ToElem(impl)->linkedElemList.removeOne(e);
+            break;
+        }
+    }
+    Q_ASSERT(flag == true);
+}
+
+SvgElementList SvgElement::linkedElements() const
+{
+    return ToElem(impl)->linkedElemList;
+}
+
+bool SvgElement::hasParentAttribute(uint attrId)
+{
+    CheckData(false);
+    SvgNodePrivate *parent = impl->ownerNode;
+    while (parent) {
+        if (parent->isElement()) {
+            SvgElementPrivate *e = ((SvgElementPrivate *)parent);
+            if (e->attributes.contains(attrId))
+                return true;
+        }
+        parent = parent->ownerNode;
+    }
+    return false;
+}
+
+QString SvgElement::parentAttribute(uint attrId)
+{
+    CheckData(QString());
+    SvgNodePrivate *parent = impl->ownerNode;
+    while (parent) {
+        if (parent->isElement()) {
+            SvgElementPrivate *e = ((SvgElementPrivate *)parent);
+            if (e->attributes.contains(attrId)) {
+                return e->attributes.value(attrId).value();
+            }
+        }
+        parent = parent->ownerNode;
+    }
+    return QString();
+}
+
+bool SvgElement::hasReferencedDefs() const
+{
+    CheckData(false);
+    foreach (const SvgAttribute &attr, ToElem(impl)->attributes) {
+        if (attr.isReference())
             return true;
     }
     return false;
@@ -1455,14 +1451,19 @@ bool SvgElement::isGroup() const
 
 bool SvgElement::hasImportantAttrs(const IntList &ignoreList)
 {
+    CheckData(false);
+
     int attrCount = attributesCount();
     if (attrCount == 0)
         return false;
-    QStringList list = attributesList();
-    foreach (const int &attrId, ignoreList)
-        list.removeOne(attrIdToStr(attrId));
+
+    IntList list = ToElem(impl)->attributes.keys();
+    foreach (const uint &attrId, ignoreList)
+        list.removeOne(attrId);
+
     if (list.isEmpty())
         return false;
+
     if (Keys::get().flag(Key::RemoveUnreferencedIds)) {
         if (list.size() == 1 && hasAttribute(AttrId::id))
             return false;
@@ -1470,44 +1471,15 @@ bool SvgElement::hasImportantAttrs(const IntList &ignoreList)
     return true;
 }
 
-bool SvgElement::hasLinkedStyle()
-{
-    if (!impl)
-        return false;
-    static QStringList illegalStyleAttrList;
-    if (illegalStyleAttrList.isEmpty())
-        illegalStyleAttrList << A_fill << A_stroke;
-    foreach (const QString attrName, illegalStyleAttrList) {
-        if (attribute(attrName).startsWith(UrlPrefix))
-            return true;
-    }
-    return false;
-}
-
-// TODO: replace atrribute with variable
 bool SvgElement::isUsed() const
 {
-    return hasAttribute(AttrId::used_element);
-}
-
-bool SvgElement::hasChildWithTagName(const QString &name) const
-{
-    if (!impl)
-        return false;
-
-    element_loop(*this) {
-        if (elem.tagName() == name)
-            return true;
-        nextElement(elem, root);
-    }
-    return false;
+    CheckData(false);
+    return usesCount() > 0;
 }
 
 bool SvgElement::hasTextChild() const
 {
-    if (!impl)
-        return false;
-
+    CheckData(false);
     SvgNodePrivate *p = impl->first;
     while (p) {
         if (p->isText())
@@ -1519,27 +1491,29 @@ bool SvgElement::hasTextChild() const
 
 int SvgElement::attributesCount() const
 {
-    if (!impl)
-        return 0;
-    return IMPL->attrs.size() + IMPL->attrsExt.size() + (hasTransform() ? 1 : 0);
+    CheckData(0);
+    return ToElem(impl)->attributes.size();
 }
 
-QString SvgElement::defIdFromAttribute(const int &attrId) const
+QString SvgElement::defIdFromAttribute(const uint &attrId) const
 {
+    CheckData(QString());
+    if (ownerDocument().isBlockStringUrls())
+        return ToElem(impl)->attributes.value(attrId).referencedElement().id();
+
     QString id = attribute(attrId);
     if (!id.startsWith(UrlPrefix))
         return QString();
     return id.mid(5, id.size()-6);
 }
 
-IntHash SvgElement::styleHash() const
+SvgAttributeHash SvgElement::styleHash() const
 {
-    if (!impl)
-        return IntHash();
-    IntHash hash;
-    foreach (const int &id, IMPL->attrs.keys()) {
-        if (Properties::presentationAttributesIds.contains(id))
-            hash.insert(id, IMPL->attrs.value(id));
+    CheckData(SvgAttributeHash());
+    SvgAttributeHash hash;
+    foreach (const SvgAttribute &attr, ToElem(impl)->attributes) {
+        if (attr.isStyle())
+            hash.insert(attr.id(), attr);
     }
     return hash;
 }
@@ -1550,73 +1524,126 @@ void SvgElement::removeAttributes(const QStringList &list)
         removeAttribute(text);
 }
 
-void SvgElement::setStylesFromHash(const IntHash &hash)
-{
-    foreach (const int &attrId, hash.keys())
-        setAttribute(attrId, hash.value(attrId));
-}
-
 bool SvgElement::hasTransform() const
 {
-    return !IMPL->transform.isNull();
+    CheckData(false);
+    return ToElem(impl)->attributes.value(AttrId::transform).transform().isValid();
 }
 
-void SvgElement::setTransform(const Transform &transform, bool fromParent)
+void SvgElement::setTransform(const Transform &atransform, bool fromParent)
 {
+    Transform ts;
     if (hasTransform()) {
         if (fromParent) {
-            Transform ts = transform.clone();
-            ts.append(IMPL->transform);
-            IMPL->transform = ts;
+            ts = atransform;
+            ts.append(transform());
         } else {
-            Transform ts = IMPL->transform.clone();
-            ts.append(transform);
-            IMPL->transform = ts;
+            ts = transform();
+            ts.append(atransform);
         }
     } else {
-        IMPL->transform = transform.clone();
+        ts = atransform;
     }
+
+    if (!ts.isValid()) {
+        removeTransform();
+        return;
+    }
+
+    ToElem(impl)->attributes.insert(AttrId::transform, SvgAttribute(ts));
 }
 
 void SvgElement::removeTransform()
 {
-    IMPL->transform.clear();
+    CheckData();
+    ToElem(impl)->attributes.remove(AttrId::transform);
 }
 
 Transform SvgElement::transform() const
 {
-    return IMPL->transform;
+    CheckData(Transform());
+    return ToElem(impl)->attributes.value(AttrId::transform).transform();
 }
 
 void SvgElement::setBBoxTransform(const Transform &transform)
 {
-    IMPL->bboxTransform = transform.clone();
+    ToElem(impl)->bboxTransform = transform;
 }
 
 Transform SvgElement::bboxTransform() const
 {
-    return IMPL->bboxTransform;
+    return ToElem(impl)->bboxTransform;
 }
 
 QString SvgElement::text() const
 {
-    if (!impl)
-        return QString();
-    SvgNodePrivate *first = IMPL->first;
+    CheckData(QString());
+    SvgNodePrivate *first = ToElem(impl)->first;
     if (first != 0) {
         SvgNodePrivate* p = first;
         QString str;
         while (p) {
             if (p->isText())
-                str += p->value;
+                str += ((SvgTextPrivate*)p)->value;
             p = p->next;
         }
         return str;
     }
-    return "";
+    return QString();
 }
 
-#undef IMPL
+SvgNodePrivate* _nextSiblingElement(SvgNodePrivate *node)
+{
+    SvgNodePrivate *p = node->next;
+    while (p) {
+        if (p->isElement())
+            return p;
+        p = p->next;
+    }
+    return 0;
+}
+
+SvgNodePrivate* SvgElement::nextElementPrivate(SvgNodePrivate *node, SvgNodePrivate *root,
+                                               bool ignoreChild)
+{
+    SvgNodePrivate *bn = node;
+
+    if (node->first != 0 && !ignoreChild) {
+        node = node->first;
+        while (node) {
+            if (node->isElement()) {
+                break;
+            }
+            node = node->next;
+        }
+        if (node)
+            return node;
+        else
+            node = bn;
+    }
+
+    if (_nextSiblingElement(node) == 0) {
+        if (node->ownerNode == root) {
+            node = 0;
+            return node;
+        }
+        while (node->ownerNode != 0 && _nextSiblingElement(node->ownerNode) == 0) {
+            node = node->ownerNode;
+        }
+        if (node != root && node->ownerNode != root) {
+            if (node->ownerNode)
+                node = _nextSiblingElement(node->ownerNode);
+            else
+                node = 0;
+            return node;
+        }
+    } else if (node == root) {
+        return 0;
+    }
+
+    node = _nextSiblingElement(node);
+    return node;
+}
 
 SvgCommentPrivate::SvgCommentPrivate(SvgDocumentPrivate *d, SvgNodePrivate *parent,
                                      const QString &val)
@@ -1625,22 +1652,22 @@ SvgCommentPrivate::SvgCommentPrivate(SvgDocumentPrivate *d, SvgNodePrivate *pare
     value = val;
 }
 
-void SvgCommentPrivate::save(QTextStream &s, int depth, int indent) const
+void SvgCommentPrivate::save(QString &s, int depth, int indent) const
 {
     if (indent != -1)
-        s << endl;
+        s += QL1C('\n');
 
     // We don't output whitespace if we would pollute a text node.
-    if (!(prev && prev->isElement() && !prev->value.isEmpty()))
-        s << QString(indent < 1 ? 0 : depth * indent, QL1C(' '));
+    if (!(prev && prev->isElement()/* && !prev->value.isEmpty()*/))
+        s += QString(indent < 1 ? 0 : depth * indent, QL1C(' '));
 
-    s << "<!--" << value;
+    s += QL1S("<!--") + value;
     if (value.endsWith(QL1C('-')))
-        s << ' '; // Ensures that XML comment doesn't end with --->
-    s << "-->";
+        s += QL1C(' '); // Ensures that XML comment doesn't end with --->
+    s += QL1S("-->");
 
-    if (!(next && !next->value.isEmpty()))
-        s << endl;
+    if (!(next && !next->isElement() /* && !next->value.isEmpty()*/))
+        s += QL1C('\n');
 }
 
 SvgComment::SvgComment(SvgCommentPrivate *n) : SvgNode(n) {}
@@ -1650,6 +1677,12 @@ SvgComment& SvgComment::operator= (const SvgComment &x)
     return (SvgComment&) SvgNode::operator=(x);
 }
 
+QString SvgComment::data() const
+{
+    CheckData(QString());
+    return ((SvgCommentPrivate*)impl)->value;
+}
+
 SvgTextPrivate::SvgTextPrivate(SvgDocumentPrivate *d, SvgNodePrivate *parent, const QString &val)
     : SvgNodePrivate(d, parent)
 {
@@ -1657,13 +1690,11 @@ SvgTextPrivate::SvgTextPrivate(SvgDocumentPrivate *d, SvgNodePrivate *parent, co
     isDtd = false;
 }
 
-void SvgTextPrivate::save(QTextStream &s, int /*depth*/, int indent) const
+void SvgTextPrivate::save(QString &s, int /*depth*/, int indent) const
 {
+    s += value;
     if (isDtd && indent != -1)
-        s << endl;
-    s << value;
-    if (isDtd && indent != -1)
-        s << endl;
+        s += QL1C('\n');
 }
 
 SvgText::SvgText(SvgTextPrivate *n) : SvgNode(n) {}
@@ -1675,15 +1706,13 @@ SvgText& SvgText::operator= (const SvgText &x)
 
 QString SvgText::text() const
 {
-    if (!impl)
-        return QString();
+    CheckData(QString());
     return ((SvgTextPrivate*)impl)->value;
 }
 
 void SvgText::setDtd(bool flag)
 {
-    if (!impl)
-        return;
+    CheckData();
     ((SvgTextPrivate*)impl)->isDtd = flag;
 }
 
@@ -1694,11 +1723,11 @@ SvgDeclarationPrivate::SvgDeclarationPrivate(SvgDocumentPrivate *d, SvgNodePriva
     value = data;
 }
 
-void SvgDeclarationPrivate::save(QTextStream &s, int, int indent) const
+void SvgDeclarationPrivate::save(QString &s, int, int indent) const
 {
-    s << "<?" << value << "?>";
+    s += QL1S("<?") + value + QL1S("?>");
     if (indent != -1)
-        s << endl;
+        s += QL1C('\n');
 }
 
 SvgDeclaration& SvgDeclaration::operator= (const SvgDeclaration &x)
@@ -1708,32 +1737,25 @@ SvgDeclaration& SvgDeclaration::operator= (const SvgDeclaration &x)
 
 QString SvgDeclaration::data() const
 {
-    if (!impl)
-        return QString();
-    return impl->value;
+    CheckData(QString());
+    return ((SvgDeclarationPrivate*)impl)->value;
 }
 
 void SvgDeclaration::setData(const QString &d)
 {
-    if (!impl)
-        return;
-    impl->value = d;
+    CheckData();
+    ((SvgDeclarationPrivate*)impl)->value = d;
 }
 
 SvgDeclaration::SvgDeclaration(SvgDeclarationPrivate *n) : SvgNode(n) {}
-SvgDocumentPrivate::SvgDocumentPrivate() : SvgNodePrivate(0) {}
 
-void SvgDocumentPrivate::clear()
+SvgDocumentPrivate::SvgDocumentPrivate() : SvgNodePrivate(0)
 {
-    SvgNodePrivate::clear();
+    blockStringUrls = false;
+    genIdCount = 0;
 }
 
-#define IMPL ((SvgDocumentPrivate*)impl)
-
-SvgDocument::SvgDocument(SvgDocumentPrivate *x)
-    : SvgNode(x)
-{
-}
+SvgDocument::SvgDocument(SvgDocumentPrivate *x) : SvgNode(x) {}
 
 SvgDocument& SvgDocument::operator= (const SvgDocument &x)
 {
@@ -1745,10 +1767,25 @@ bool SvgDocument::loadFile(const QString &filePath)
     if (!impl)
         impl = new SvgDocumentPrivate();
 
+    QFile file(filePath);
+    if (!file.open(QFile::ReadOnly)) {
+        ToDoc(impl)->lastError = QL1S("could not open svg file");
+        return false;
+    }
+
+    // TODO: create elements inside parser
+    return fromString(QString::fromUtf8(file.readAll()));
+}
+
+bool SvgDocument::fromString(const QString &text)
+{
+    if (!impl)
+        impl = new SvgDocumentPrivate();
+
     using namespace Parser;
 
     SvgNode node(impl);
-    SvgParser reader(filePath);
+    SvgParser reader(text);
     while (!reader.atEnd() && !reader.hasError()) {
         SvgParser::TokenType token = reader.readNext();
         if (token == SvgParser::ProcessingInstruction) {
@@ -1756,8 +1793,10 @@ bool SvgDocument::loadFile(const QString &filePath)
         } else if (token == SvgParser::StartElement) {
             SvgElement elem = createElement(reader.name());
             node.appendChild(elem);
-            elem.setAttribute(AttrId::id, reader.id());
-            elem.setAttributeHash(reader.attributes(), reader.attributesExt());
+            foreach (int attrId, reader.attributes().keys())
+                elem.setAttribute(attrId, reader.attributes().value(attrId));
+            foreach (const QString &name, reader.attributesExt().keys())
+                elem.setAttribute(name, reader.attributesExt().value(name));
             elem.setTransform(reader.transform());
             node = elem;
         } else if (token == SvgParser::Text) {
@@ -1776,45 +1815,60 @@ bool SvgDocument::loadFile(const QString &filePath)
         }
     }
     if (reader.hasError()) {
-        if (reader.errorId() == SvgParser::FileOpenError)
-            IMPL->lastError = "Error: could not open svg file";
-        else if (reader.errorId() == SvgParser::ParseError)
-            IMPL->lastError = "Error: could not parse svg file";
+        if (reader.errorId() == SvgParser::ParseError)
+            ToDoc(impl)->lastError = QL1S("could not parse svg file");
         return false;
     }
+
     return true;
 }
 
 QString SvgDocument::toString(int indent) const
 {
     QString str;
-    QTextStream s(&str, QIODevice::WriteOnly);
-    save(s, indent);
+    save(str, indent);
     return str;
 }
 
 QString SvgDocument::lastError() const
 {
-    if (!impl)
-        return QString();
-    return IMPL->lastError;
+    CheckData(QString());
+    return ToDoc(impl)->lastError;
 }
 
 SvgElement SvgDocument::documentElement() const
 {
-    if (!impl)
-        return SvgElement();
+    CheckData(SvgElement());
     SvgNodePrivate *p = impl->first;
     while (p && !p->isElement())
         p = p->next;
     return static_cast<SvgElementPrivate *>(p);
 }
 
+void SvgDocument::setBlockStringUrls(bool flag)
+{
+    CheckData();
+    ToDoc(impl)->blockStringUrls = flag;
+}
+
+bool SvgDocument::isBlockStringUrls() const
+{
+    CheckData(false);
+    return ToDoc(impl)->blockStringUrls;
+}
+
+QString SvgDocument::takeFreeId()
+{
+    int id = ToDoc(impl)->genIdCount;
+    ToDoc(impl)->genIdCount++;
+    return QString::number(id);
+}
+
 SvgElement SvgDocument::createElement(const QString &tagName)
 {
     if (!impl)
         impl = new SvgDocumentPrivate();
-    SvgElementPrivate *e = new SvgElementPrivate(IMPL, 0, tagName);
+    SvgElementPrivate *e = new SvgElementPrivate(ToDoc(impl), 0, tagName);
     e->ref.deref();
     return e;
 }
@@ -1823,7 +1877,7 @@ SvgComment SvgDocument::createComment(const QString &value)
 {
     if (!impl)
         impl = new SvgDocumentPrivate();
-    SvgCommentPrivate *c = new SvgCommentPrivate(IMPL, 0, value);
+    SvgCommentPrivate *c = new SvgCommentPrivate(ToDoc(impl), 0, value);
     c->ref.deref();
     return c;
 }
@@ -1832,16 +1886,17 @@ SvgDeclaration SvgDocument::createDeclaration(const QString &data)
 {
     if (!impl)
         impl = new SvgDocumentPrivate();
-    SvgDeclarationPrivate *p = new SvgDeclarationPrivate(IMPL, 0, data);
+    SvgDeclarationPrivate *p = new SvgDeclarationPrivate(ToDoc(impl), 0, data);
     p->ref.deref();
     return p;
 }
 
+// TODO: store comments and declaration as text
 SvgText SvgDocument::createText(const QString &text)
 {
     if (!impl)
         impl = new SvgDocumentPrivate();
-    SvgTextPrivate *p = new SvgTextPrivate(IMPL, 0, text);
+    SvgTextPrivate *p = new SvgTextPrivate(ToDoc(impl), 0, text);
     p->ref.deref();
     return p;
 }
@@ -1851,12 +1906,9 @@ void SvgDocument::calcElemAttrCount(const QString &text)
     quint32 elemCount = 0;
     quint32 attrCount = 0;
 
-    SvgElement elem = documentElement();
-    SvgElement root = elem;
-    while (!elem.isNull()) {
+    element_loop (documentElement()) {
         elemCount++;
         attrCount += elem.attributesCount();
-        nextElement(elem, root);
     }
     if (!Keys::get().flag(Key::ShortOutput)) {
         qDebug("The %s number of elements is: %u",   qPrintable(text), elemCount);
@@ -1867,31 +1919,17 @@ void SvgDocument::calcElemAttrCount(const QString &text)
     }
 }
 
-#undef IMPL
-
 void nextElement(SvgElement &elem, const SvgElement &root, bool ignoreChild)
 {
-    if (elem.hasChildrenElement() && !ignoreChild) {
-        elem = elem.firstChildElement();
-        return;
-    }
-    if (!elem.hasNextSibling()) {
-        if (elem.parentNode() == root) {
-            elem = SvgElement();
-            return;
-        }
-        while (!elem.parentNode().isNull() && !elem.parentNode().hasNextSibling()) {
-            elem = elem.parentElement();
-        }
-        if (elem != root && elem.parentNode() != root) {
-            elem = elem.parentNode().nextSiblingElement();
-            return;
-        }
-    }
-    elem = elem.nextSiblingElement();
+    elem = elem.nextElement(root, ignoreChild);
 }
 
-inline SvgNodePrivate* nextNodePrivate(SvgNodePrivate *node, SvgNodePrivate *root)
+void nextNode(SvgNode &node, const SvgNode &root)
+{
+    node = node.nextNode(root);
+}
+
+SvgNodePrivate* nextNodePrivate(SvgNodePrivate *node, SvgNodePrivate *root)
 {
     if (node->first != 0) {
         node = node->first;
@@ -1926,3 +1964,205 @@ SvgElement prevElement(const SvgElement &elem)
         pElem = pElem.parentElement();
     return pElem;
 }
+
+SvgElement prevSiblingElement(const SvgElement &elem)
+{
+    SvgElement e = elem;
+    if (!e.previousSiblingElement().isNull())
+        e = e.previousSiblingElement();
+    else
+        e = e.parentElement().firstChildElement();
+    return e;
+}
+
+SvgAttribute::SvgAttribute()
+{
+    impl = 0;
+}
+
+SvgAttribute::SvgAttribute(uint aid, const SvgElement &elem)
+{
+    Q_ASSERT(aid != 0);
+
+    SvgAttributeData *p = new SvgAttributeData;
+    p->type = SvgAttributeData::Reference;
+    p->id = aid;
+    p->linked = elem;
+    if (p->id == AttrId::xlink_href)
+        p->value = QL1S("#") + elem.id();
+    else
+        p->value = UrlPrefix + QL1S("#") + elem.id() + QL1S(")");
+
+    if (Properties::presentationAttributesIds.contains(aid))
+        p->isStyle = true;
+
+    impl = p;
+}
+
+SvgAttribute::SvgAttribute(uint aid, const QString &avalue)
+{
+    Q_ASSERT(aid != 0);
+
+    SvgAttributeData *p = new SvgAttributeData;
+    p->type = SvgAttributeData::Default;
+    p->id = aid;
+    p->value = avalue;
+    if (Properties::presentationAttributesIds.contains(aid))
+        p->isStyle = true;
+    impl = p;
+}
+
+SvgAttribute::SvgAttribute(const Transform &ts)
+{
+    Q_ASSERT(ts.isValid() == true);
+
+    SvgAttributeData *p = new SvgAttributeData;
+    p->type = SvgAttributeData::TTransform;
+    p->id = AttrId::transform;
+    p->transform = ts;
+    impl = p;
+}
+
+SvgAttribute::SvgAttribute(const QString &aname, const QString &avalue)
+{
+    SvgAttributeData *p = new SvgAttributeData;
+    p->type = SvgAttributeData::External;
+    p->name = aname;
+    p->value = avalue;
+    impl = p;
+}
+
+SvgAttribute::SvgAttribute(const SvgAttribute &a): impl(a.impl) {}
+
+bool SvgAttribute::operator==(const SvgAttribute &t) const
+{
+    // compare pointers
+    if (impl == t.impl)
+        return true;
+
+    return false;
+}
+
+bool SvgAttribute::operator!=(const SvgAttribute &t) const
+{
+    return !(*this == t);
+}
+
+bool SvgAttribute::isNull() const
+{
+    return !impl;
+}
+
+uint SvgAttribute::id() const
+{
+    if (impl)
+        return impl->id;
+    return 0;
+}
+
+QString SvgAttribute::name() const
+{
+    CheckData(QString());
+
+    if (impl->type != SvgAttributeData::External)
+        return attrIdToStr(impl->id);
+    else
+        return impl->name;
+    return QString();
+}
+
+SvgAttribute::SvgAttribute(SvgAttributeData *t) { impl = t; }
+
+QString SvgAttribute::value() const
+{
+    CheckData(QString());
+
+    if (impl->type != SvgAttributeData::TTransform) {
+        if (isReference() && impl->linked.isNull())
+            return QString();
+        return impl->value;
+    }
+    qFatal("cannot get string value from transform attribute");
+    return QString();
+}
+
+void SvgAttribute::setValue(const QString &text)
+{
+    CheckData();
+
+    if (impl->type == SvgAttributeData::Default)
+        impl->value = text;
+    else if (impl->type == SvgAttributeData::External)
+        impl->value = text;
+    else if (impl->type == SvgAttributeData::Reference) {
+        SvgAttributeData *p = new SvgAttributeData;
+        p->type = SvgAttributeData::Default;
+        p->id = id();
+        p->value = text;
+        if (Properties::presentationAttributesIds.contains(id()))
+            p->isStyle = true;
+        impl = p;
+    } else if (impl->type == SvgAttributeData::TTransform) {
+        qFatal("transform attribute cannot be init by string");
+    } else {
+        qFatal("current attribute is invalid");
+    }
+}
+
+SvgElement SvgAttribute::referencedElement() const
+{
+    CheckData(SvgElement());
+
+    if (impl->type == SvgAttributeData::Default)
+        return SvgElement();
+    if (impl->type == SvgAttributeData::Reference)
+        return impl->linked;
+
+    qFatal("current attribute is not link");
+    return SvgElement();
+}
+
+Transform SvgAttribute::transform() const
+{
+    CheckData(Transform());
+    if (impl->type == SvgAttributeData::TTransform)
+        return impl->transform;
+    qFatal("current attribute is not transform");
+    return Transform();
+}
+
+bool SvgAttribute::isDefault() const
+{
+    CheckData(false);
+    return impl->type == SvgAttributeData::Default;
+}
+
+bool SvgAttribute::isExternal() const
+{
+    CheckData(false);
+    return impl->type == SvgAttributeData::External;
+}
+
+bool SvgAttribute::isTransform() const
+{
+    CheckData(false);
+    return impl->type == SvgAttributeData::TTransform;
+}
+
+bool SvgAttribute::isStyle() const
+{
+    CheckData(false);
+
+    if (impl->type == SvgAttributeData::Default)
+        return impl->isStyle;
+    if (impl->type == SvgAttributeData::Reference)
+        return impl->isStyle;
+    return false;
+}
+
+bool SvgAttribute::isReference() const
+{
+    CheckData(false);
+    return impl->type == SvgAttributeData::Reference;
+}
+

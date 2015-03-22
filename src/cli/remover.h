@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ public:
     explicit Remover(SvgDocument &doc) : BaseCleaner(doc) {}
     void removeUnreferencedIds();
     void removeUnusedDefs();
-    void removeUnusedXLinks();
+    void removeUnusedDefsAttributes();
     void removeDuplicatedDefs();
     void removeElements();
     void removeElementsFinal();
@@ -45,18 +45,16 @@ public:
     void removeElementsOutsideTheViewbox();
 
 private:
-    QList<IntHash> styleHashList;
-    IntHash parentHash;
-    QSet<int> parentAttrs;
-
-    void _cleanPresentationAttributes(SvgElement parent = SvgElement());
-    void cleanStyle(const SvgElement &elem, IntHash &hash);
-    void removeDefaultValue(IntHash &hash, int attrId);
+    void detectEqualLinearGradients(SvgElement &elem1);
+    void detectEqualRadialGradients(SvgElement &elem1);
+    void detectEqualFilters(SvgElement &elem1);
+    void detectEqualClipPaths(SvgElement &elem1);
+    void cleanStyle(SvgElement &elem);
     bool isElementInvisible(SvgElement &elem);
     bool isElementInvisible2(SvgElement &elem);
-    void megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem, bool isParentToChild) const;
+    void megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem,
+                             bool isParentToChild) const;
     bool isDoctype(const QString &str);
-    bool isGradientsEqual(const SvgElement &elem1, const SvgElement &elem2);
     void prepareViewBoxRect(QRectF &viewBox);
 };
 

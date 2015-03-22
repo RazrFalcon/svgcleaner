@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -27,6 +27,10 @@
 #include <QMap>
 #include <QSet>
 #include <QObject>
+
+namespace Round {
+    enum RoundType { Coordinate, Transform, Attribute };
+}
 
 namespace Preset {
     extern const QString Basic;
@@ -139,6 +143,8 @@ namespace KeyStr {
     extern const QString RemoveCorelDrawAttributes;
     extern const QString RemoveMSVisioAttributes;
     extern const QString RemoveSketchAttributes;
+    // TODO: is RemoveStrokeProps and RemoveFillProps really needed?
+    //       Can be replaced with RemoveNotAppliedAttributes
     extern const QString RemoveStrokeProps;
     extern const QString RemoveFillProps;
     extern const QString RemoveUnusedXLinks;
@@ -186,6 +192,7 @@ public:
     }
     bool flag(int key) const;
     int intNumber(int key) const;
+    int precision(Round::RoundType type) const;
     int coordinatesPrecision() const;
     int attributesPrecision() const;
     int transformPrecision() const;

@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -36,15 +36,23 @@
 # define u_static static
 #endif
 
-namespace Round {
-    enum RoundType { Coordinate, Transform, Attribute };
+#include <cmath>
+
+static inline bool isZero(double value)
+{
+    u_static const double minValue = 1.0 / pow(10, Keys::get().coordinatesPrecision());
+    return (qAbs(value) < minValue);
 }
 
-bool isZero(double value);
-bool isZeroTs(double value);
+static inline bool isZeroTs(double value)
+{
+    u_static const double minValue = 1.0 / pow(10, Keys::get().transformPrecision());
+    return (qAbs(value) < minValue);
+}
+
 QString fromDouble(double value, Round::RoundType type = Round::Coordinate);
 QString fromDouble(double value, int precision);
-double toDouble(const QString &str);
+double toDouble(const QString &str, bool *ok = 0);
 void doubleToVarArr(QVarLengthArray<ushort> &arr, double value, int precision = 6);
 bool isSpace(ushort ch);
 
@@ -67,17 +75,18 @@ public:
     enum Opt { NoSkip, SkipComma };
 
     StringWalker(const QString &text);
+    StringWalker(const QChar *astr, int size);
     int jumpTo(const QChar &c);
     int jumpToSpace();
     QString readBefore(int len) const;
+    uint readBeforeId(int len) const;
     void next();
     void next(int count);
     void skipSpaces();
     bool atEnd() const;
     bool isValid() const;
-    QChar current() const;
-    const QChar *&data();
-    double number(Opt opt = SkipComma);
+    const QChar& current() const;
+    double number(Opt opt = SkipComma, bool *ok = 0);
 
 private:
     const QChar *str;

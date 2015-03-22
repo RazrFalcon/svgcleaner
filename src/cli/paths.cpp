@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -36,16 +36,16 @@ using namespace DefaultValue;
 //       warszawianka_Betel.svg
 
 namespace Command {
-    const QChar MoveTo           = 'm';
-    const QChar LineTo           = 'l';
-    const QChar HorizontalLineTo = 'h';
-    const QChar VerticalLineTo   = 'v';
-    const QChar CurveTo          = 'c';
-    const QChar SmoothCurveTo    = 's';
-    const QChar Quadratic        = 'q';
-    const QChar SmoothQuadratic  = 't';
-    const QChar EllipticalArc    = 'a';
-    const QChar ClosePath        = 'z';
+    const QChar MoveTo           = QL1C('m');
+    const QChar LineTo           = QL1C('l');
+    const QChar HorizontalLineTo = QL1C('h');
+    const QChar VerticalLineTo   = QL1C('v');
+    const QChar CurveTo          = QL1C('c');
+    const QChar SmoothCurveTo    = QL1C('s');
+    const QChar Quadratic        = QL1C('q');
+    const QChar SmoothQuadratic  = QL1C('t');
+    const QChar EllipticalArc    = QL1C('a');
+    const QChar ClosePath        = QL1C('z');
 }
 
 Segment::Segment()
@@ -305,8 +305,8 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
 {
     const QString inPath = elem.attribute(AttrId::d);
 
-    if (inPath.contains("nan")) {
-        elem.setAttribute(AttrId::d, "");
+    if (inPath.contains(QL1S("nan"))) {
+        elem.setAttribute(AttrId::d, QString());
         return;
     }
     m_elem = elem;
@@ -316,7 +316,7 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     // paths without segments or with first segment not 'moveto' are invalid
     if (segList.isEmpty() || segList.first().command != Command::MoveTo) {
         if (Keys.flag(Key::RemoveInvisibleElements))
-            elem.setAttribute(AttrId::d, "");
+            elem.setAttribute(AttrId::d, QString());
         return;
     }
 
@@ -327,6 +327,7 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     if (segList.at(1).command == Command::EllipticalArc)
         isOnlyAbsolute = true;
 
+    // TODO: calc bbox after cleaning. But now it causes problems.
     if (Keys.flag(Key::RemoveOutsideElements)) {
         if (!elem.hasAttribute(AttrId::bbox))
             calcBoundingBox(segList);
@@ -351,15 +352,15 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     if (canApplyTransform && !isOnlyAbsolute) {
         if (isTsPathShorter()) {
             *isPathApplyed = true;
-            elem.setAttribute(AttrId::d, elem.attribute("dts"));
-            QString newStroke = elem.attribute("stroke-width-new");
-            if (!newStroke.isEmpty() && newStroke != "1")
+            elem.setAttribute(AttrId::d, elem.attribute(QL1S("dts")));
+            QString newStroke = elem.attribute(QL1S("stroke-width-new"));
+            if (!newStroke.isEmpty() && newStroke != QL1S("1"))
                 elem.setAttribute(AttrId::stroke_width, newStroke);
             else
                 elem.removeAttribute(AttrId::stroke_width);
         }
-        elem.removeAttribute("stroke-width-new");
-        elem.removeAttribute("dts");
+        elem.removeAttribute(QL1S("stroke-width-new"));
+        elem.removeAttribute(QL1S("dts"));
     }
 }
 
@@ -459,7 +460,7 @@ void Path::splitToSegments(const QString &path, QList<Segment> &segList)
                 seg.x = sw.number() + offsetX;
                 seg.y = sw.number() + offsetY;
             } else {
-                qFatal("Error: wrong path format");
+                qFatal("wrong path format");
             }
             prevX = seg.x;
             prevY = seg.y;
@@ -481,14 +482,14 @@ void Path::calcNewStrokeWidth(const double scaleFactor)
             double strokeWidth
                 = toDouble(Tools::convertUnitsToPx(parentElem.attribute(AttrId::stroke_width)));
             QString sw = fromDouble(strokeWidth * scaleFactor, Round::Attribute);
-            m_elem.setAttribute("stroke-width-new", sw);
+            m_elem.setAttribute(QL1S("stroke-width-new"), sw);
             hasParentStrokeWidth = true;
             break;
         }
         parentElem = parentElem.parentElement();
     }
     if (!hasParentStrokeWidth) {
-        m_elem.setAttribute("stroke-width-new", fromDouble(scaleFactor, Round::Attribute));
+        m_elem.setAttribute(QL1S("stroke-width-new"), fromDouble(scaleFactor, Round::Attribute));
     }
 }
 
@@ -511,15 +512,15 @@ bool Path::applyTransform(QList<Segment> &segList)
     if (Keys.flag(Key::ConvertToRelative))
         segmentsToRelative(tsSegList, false);
     calcNewStrokeWidth(ts.scaleFactor());
-    m_elem.setAttribute("dts", segmentsToPath(tsSegList));
+    m_elem.setAttribute(QL1S("dts"), segmentsToPath(tsSegList));
     return true;
 }
 
 bool Path::isTsPathShorter()
 {
-    quint32 afterTransform = m_elem.attribute("dts").size();
-    if (m_elem.hasAttribute("stroke-width-new")) {
-        afterTransform += m_elem.attribute("stroke-width-new").size();
+    quint32 afterTransform = m_elem.attribute(QL1S("dts")).size();
+    if (m_elem.hasAttribute(QL1S("stroke-width-new"))) {
+        afterTransform += m_elem.attribute(QL1S("stroke-width-new")).size();
         // char count in ' stroke-width=\"\" '
         afterTransform += 17;
     }
@@ -567,17 +568,17 @@ void Path::segmentsToRelative(QList<Segment> &segList, bool onlyIfSourceWasRelat
     }
 }
 
-QString Path::findAttribute(const int &attrId)
+QString Path::findAttribute(const uint &attrId)
 {
     if (m_elem.isNull())
-        return "";
+        return QString();
     SvgElement parent = m_elem;
     while (!parent.isNull()) {
         if (parent.hasAttribute(attrId))
             return parent.attribute(attrId);
         parent = parent.parentElement();
     }
-    return "";
+    return QString();
 }
 
 bool isLineBasedSegment(const Segment &seg)
@@ -598,6 +599,7 @@ bool Path::removeZSegments(QList<Segment> &segList)
     QString stroke = findAttribute(AttrId::stroke);
     bool hasStroke = (!stroke.isEmpty() && stroke != V_none);
 
+    // FIXME: never used for some reason
     int lastMIdx = 0;
     QPointF prevM(segList.first().x, segList.first().y);
     for (int i = 1; i < segList.size(); ++i) {
@@ -926,7 +928,7 @@ void Path::processSegments(QList<Segment> &segList)
 QString Path::segmentsToPath(QList<Segment> &segList)
 {
     if (segList.size() == 1 || segList.isEmpty())
-        return "";
+        return QString();
 
     static const ushort dot   = '.';
     static const ushort space = ' ';
@@ -1135,8 +1137,8 @@ void Path::calcBoundingBox(const QList<Segment> &segList)
         }
     }
     m_elem.setAttribute(AttrId::bbox,
-                                  fromDouble(bbox.minx)
-                          + " " + fromDouble(bbox.miny)
-                          + " " + fromDouble(bbox.maxx - bbox.minx)
-                          + " " + fromDouble(bbox.maxy - bbox.miny));
+                                        fromDouble(bbox.minx)
+                          + QL1C(' ') + fromDouble(bbox.miny)
+                          + QL1C(' ') + fromDouble(bbox.maxx - bbox.minx)
+                          + QL1C(' ') + fromDouble(bbox.maxy - bbox.miny));
 }

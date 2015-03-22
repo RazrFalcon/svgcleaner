@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** SVG Cleaner is batch, tunable, crossplatform SVG cleaning program.
-** Copyright (C) 2012-2014 Evgeniy Reizner
+** Copyright (C) 2012-2015 Evgeniy Reizner
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -19,35 +19,13 @@
 **
 ****************************************************************************/
 
-#include <QVector>
-#include <cmath>
-
 #include "tools.h"
 
 Q_CORE_EXPORT double qstrtod(const char *s00, char const **se, bool *ok);
 
-bool isZero(double value)
-{
-    u_static double minValue = 1.0 / pow(10, Keys::get().coordinatesPrecision());
-    return (qAbs(value) < minValue);
-}
-
-bool isZeroTs(double value)
-{
-    u_static double minValue = 1.0 / pow(10, Keys::get().transformPrecision());
-    return (qAbs(value) < minValue);
-}
-
 QString fromDouble(double value, Round::RoundType type)
 {
-    int precision;
-    if (type == Round::Coordinate)
-        precision = Keys::get().coordinatesPrecision();
-    else if (type == Round::Attribute)
-        precision = Keys::get().attributesPrecision();
-    else
-        precision = Keys::get().transformPrecision();
-    return fromDouble(value, precision);
+    return fromDouble(value, Keys::get().precision(type));
 }
 
 QString fromDouble(double value, int precision)
@@ -154,9 +132,9 @@ int Tools::zerosAfterPoint(double value)
     return count;
 }
 
-double toDouble(const QString &str)
+double toDouble(const QString &str, bool *ok)
 {
-    return StringWalker(str).number(StringWalker::NoSkip);
+    return StringWalker(str).number(StringWalker::NoSkip, ok);
 }
 
 // check is space or non printable character
@@ -234,146 +212,146 @@ QString Tools::replaceColorName(const QString &color)
     static QHash<QString, QString> colors;
     if (!colors.isEmpty())
         return colors.value(color);
-    colors.insert("aliceblue", "#f0f8ff");
-    colors.insert("antiquewhite", "#faebd7");
-    colors.insert("aqua", "#00ffff");
-    colors.insert("aquamarine", "#7fffd4");
-    colors.insert("azure", "#f0ffff");
-    colors.insert("beige", "#f5f5dc");
-    colors.insert("bisque", "#ffe4c4");
-    colors.insert("black", "#000000");
-    colors.insert("blanchedalmond", "#ffebcd");
-    colors.insert("blue", "#0000ff");
-    colors.insert("blueviolet", "#8a2be2");
-    colors.insert("brown", "#a52a2a");
-    colors.insert("burlywood", "#deb887");
-    colors.insert("cadetblue", "#5f9ea0");
-    colors.insert("chartreuse", "#7fff00");
-    colors.insert("chocolate", "#d2691e");
-    colors.insert("coral", "#ff7f50");
-    colors.insert("cornflowerblue", "#6495ed");
-    colors.insert("cornsilk", "#fff8dc");
-    colors.insert("crimson", "#dc143c");
-    colors.insert("cyan", "#00ffff");
-    colors.insert("darkblue", "#00008b");
-    colors.insert("darkcyan", "#008b8b");
-    colors.insert("darkgoldenrod", "#b8860b");
-    colors.insert("darkgray", "#a9a9a9");
-    colors.insert("darkgreen", "#006400");
-    colors.insert("darkkhaki", "#bdb76b");
-    colors.insert("darkmagenta", "#8b008b");
-    colors.insert("darkolivegreen", "#556b2f");
-    colors.insert("darkorange", "#ff8c00");
-    colors.insert("darkorchid", "#9932cc");
-    colors.insert("darkred", "#8b0000");
-    colors.insert("darksalmon", "#e9967a");
-    colors.insert("darkseagreen", "#8fbc8f");
-    colors.insert("darkslateblue", "#483d8b");
-    colors.insert("darkslategray", "#2f4f4f");
-    colors.insert("darkturquoise", "#00ced1");
-    colors.insert("darkviolet", "#9400d3");
-    colors.insert("deeppink", "#ff1493");
-    colors.insert("deepskyblue", "#00bfff");
-    colors.insert("dimgray", "#696969");
-    colors.insert("dodgerblue", "#1e90ff");
-    colors.insert("firebrick", "#b22222");
-    colors.insert("floralwhite", "#fffaf0");
-    colors.insert("forestgreen", "#228b22");
-    colors.insert("fuchsia", "#ff00ff");
-    colors.insert("gainsboro", "#dcdcdc");
-    colors.insert("ghostwhite", "#f8f8ff");
-    colors.insert("gold", "#ffd700");
-    colors.insert("goldenrod", "#daa520");
-    colors.insert("gray", "#808080");
-    colors.insert("green", "#008000");
-    colors.insert("greenyellow", "#adff2f");
-    colors.insert("honeydew", "#f0fff0");
-    colors.insert("hotpink", "#ff69b4");
-    colors.insert("indianred", "#cd5c5c");
-    colors.insert("indigo", "#4b0082");
-    colors.insert("ivory", "#fffff0");
-    colors.insert("khaki", "#f0e68c");
-    colors.insert("lavender", "#e6e6fa");
-    colors.insert("lavenderblush", "#fff0f5");
-    colors.insert("lawngreen", "#7cfc00");
-    colors.insert("lemonchiffon", "#fffacd");
-    colors.insert("lightblue", "#add8e6");
-    colors.insert("lightcoral", "#f08080");
-    colors.insert("lightcyan", "#e0ffff");
-    colors.insert("lightgoldenrodyellow", "#fafad2");
-    colors.insert("lightgreen", "#90ee90");
-    colors.insert("lightgrey", "#d3d3d3");
-    colors.insert("lightpink", "#ffb6c1");
-    colors.insert("lightsalmon", "#ffa07a");
-    colors.insert("lightseagreen", "#20b2aa");
-    colors.insert("lightskyblue", "#87cefa");
-    colors.insert("lightslategray", "#778899");
-    colors.insert("lightsteelblue", "#b0c4de");
-    colors.insert("lightyellow", "#ffffe0");
-    colors.insert("lime", "#00ff00");
-    colors.insert("limegreen", "#32cd32");
-    colors.insert("linen", "#faf0e6");
-    colors.insert("magenta", "#ff00ff");
-    colors.insert("maroon", "#800000");
-    colors.insert("mediumaquamarine", "#66cdaa");
-    colors.insert("mediumblue", "#0000cd");
-    colors.insert("mediumorchid", "#ba55d3");
-    colors.insert("mediumpurple", "#9370db");
-    colors.insert("mediumseagreen", "#3cb371");
-    colors.insert("mediumslateblue", "#7b68ee");
-    colors.insert("mediumspringgreen", "#00fa9a");
-    colors.insert("mediumturquoise", "#48d1cc");
-    colors.insert("mediumvioletred", "#c71585");
-    colors.insert("midnightblue", "#191970");
-    colors.insert("mintcream", "#f5fffa");
-    colors.insert("mistyrose", "#ffe4e1");
-    colors.insert("moccasin", "#ffe4b5");
-    colors.insert("navajowhite", "#ffdead");
-    colors.insert("navy", "#000080");
-    colors.insert("oldlace", "#fdf5e6");
-    colors.insert("olive", "#808000");
-    colors.insert("olivedrab", "#6b8e23");
-    colors.insert("orange", "#ffa500");
-    colors.insert("orangered", "#ff4500");
-    colors.insert("orchid", "#da70d6");
-    colors.insert("palegoldenrod", "#eee8aa");
-    colors.insert("palegreen", "#98fb98");
-    colors.insert("paleturquoise", "#afeeee");
-    colors.insert("palevioletred", "#db7093");
-    colors.insert("papayawhip", "#ffefd5");
-    colors.insert("peachpuff", "#ffdab9");
-    colors.insert("peru", "#cd853f");
-    colors.insert("pink", "#ffc0cb");
-    colors.insert("plum", "#dda0dd");
-    colors.insert("powderblue", "#b0e0e6");
-    colors.insert("purple", "#800080");
-    colors.insert("red", "#ff0000");
-    colors.insert("rosybrown", "#bc8f8f");
-    colors.insert("royalblue", "#4169e1");
-    colors.insert("saddlebrown", "#8b4513");
-    colors.insert("salmon", "#fa8072");
-    colors.insert("sandybrown", "#f4a460");
-    colors.insert("seagreen", "#2e8b57");
-    colors.insert("seashell", "#fff5ee");
-    colors.insert("sienna", "#a0522d");
-    colors.insert("silver", "#c0c0c0");
-    colors.insert("skyblue", "#87ceeb");
-    colors.insert("slateblue", "#6a5acd");
-    colors.insert("slategray", "#708090");
-    colors.insert("snow", "#fffafa");
-    colors.insert("springgreen", "#00ff7f");
-    colors.insert("steelblue", "#4682b4");
-    colors.insert("tan", "#d2b48c");
-    colors.insert("teal", "#008080");
-    colors.insert("thistle", "#d8bfd8");
-    colors.insert("tomato", "#ff6347");
-    colors.insert("turquoise", "#40e0d0");
-    colors.insert("violet", "#ee82ee");
-    colors.insert("wheat", "#f5deb3");
-    colors.insert("white", "#ffffff");
-    colors.insert("whitesmoke", "#f5f5f5");
-    colors.insert("yellow", "#ffff00");
-    colors.insert("yellowgreen", "#9acd32");
+    colors.insert(QL1S("aliceblue"), QL1S("#f0f8ff"));
+    colors.insert(QL1S("antiquewhite"), QL1S("#faebd7"));
+    colors.insert(QL1S("aqua"), QL1S("#00ffff"));
+    colors.insert(QL1S("aquamarine"), QL1S("#7fffd4"));
+    colors.insert(QL1S("azure"), QL1S("#f0ffff"));
+    colors.insert(QL1S("beige"), QL1S("#f5f5dc"));
+    colors.insert(QL1S("bisque"), QL1S("#ffe4c4"));
+    colors.insert(QL1S("black"), QL1S("#000000"));
+    colors.insert(QL1S("blanchedalmond"), QL1S("#ffebcd"));
+    colors.insert(QL1S("blue"), QL1S("#0000ff"));
+    colors.insert(QL1S("blueviolet"), QL1S("#8a2be2"));
+    colors.insert(QL1S("brown"), QL1S("#a52a2a"));
+    colors.insert(QL1S("burlywood"), QL1S("#deb887"));
+    colors.insert(QL1S("cadetblue"), QL1S("#5f9ea0"));
+    colors.insert(QL1S("chartreuse"), QL1S("#7fff00"));
+    colors.insert(QL1S("chocolate"), QL1S("#d2691e"));
+    colors.insert(QL1S("coral"), QL1S("#ff7f50"));
+    colors.insert(QL1S("cornflowerblue"), QL1S("#6495ed"));
+    colors.insert(QL1S("cornsilk"), QL1S("#fff8dc"));
+    colors.insert(QL1S("crimson"), QL1S("#dc143c"));
+    colors.insert(QL1S("cyan"), QL1S("#00ffff"));
+    colors.insert(QL1S("darkblue"), QL1S("#00008b"));
+    colors.insert(QL1S("darkcyan"), QL1S("#008b8b"));
+    colors.insert(QL1S("darkgoldenrod"), QL1S("#b8860b"));
+    colors.insert(QL1S("darkgray"), QL1S("#a9a9a9"));
+    colors.insert(QL1S("darkgreen"), QL1S("#006400"));
+    colors.insert(QL1S("darkkhaki"), QL1S("#bdb76b"));
+    colors.insert(QL1S("darkmagenta"), QL1S("#8b008b"));
+    colors.insert(QL1S("darkolivegreen"), QL1S("#556b2f"));
+    colors.insert(QL1S("darkorange"), QL1S("#ff8c00"));
+    colors.insert(QL1S("darkorchid"), QL1S("#9932cc"));
+    colors.insert(QL1S("darkred"), QL1S("#8b0000"));
+    colors.insert(QL1S("darksalmon"), QL1S("#e9967a"));
+    colors.insert(QL1S("darkseagreen"), QL1S("#8fbc8f"));
+    colors.insert(QL1S("darkslateblue"), QL1S("#483d8b"));
+    colors.insert(QL1S("darkslategray"), QL1S("#2f4f4f"));
+    colors.insert(QL1S("darkturquoise"), QL1S("#00ced1"));
+    colors.insert(QL1S("darkviolet"), QL1S("#9400d3"));
+    colors.insert(QL1S("deeppink"), QL1S("#ff1493"));
+    colors.insert(QL1S("deepskyblue"), QL1S("#00bfff"));
+    colors.insert(QL1S("dimgray"), QL1S("#696969"));
+    colors.insert(QL1S("dodgerblue"), QL1S("#1e90ff"));
+    colors.insert(QL1S("firebrick"), QL1S("#b22222"));
+    colors.insert(QL1S("floralwhite"), QL1S("#fffaf0"));
+    colors.insert(QL1S("forestgreen"), QL1S("#228b22"));
+    colors.insert(QL1S("fuchsia"), QL1S("#ff00ff"));
+    colors.insert(QL1S("gainsboro"), QL1S("#dcdcdc"));
+    colors.insert(QL1S("ghostwhite"), QL1S("#f8f8ff"));
+    colors.insert(QL1S("gold"), QL1S("#ffd700"));
+    colors.insert(QL1S("goldenrod"), QL1S("#daa520"));
+    colors.insert(QL1S("gray"), QL1S("#808080"));
+    colors.insert(QL1S("green"), QL1S("#008000"));
+    colors.insert(QL1S("greenyellow"), QL1S("#adff2f"));
+    colors.insert(QL1S("honeydew"), QL1S("#f0fff0"));
+    colors.insert(QL1S("hotpink"), QL1S("#ff69b4"));
+    colors.insert(QL1S("indianred"), QL1S("#cd5c5c"));
+    colors.insert(QL1S("indigo"), QL1S("#4b0082"));
+    colors.insert(QL1S("ivory"), QL1S("#fffff0"));
+    colors.insert(QL1S("khaki"), QL1S("#f0e68c"));
+    colors.insert(QL1S("lavender"), QL1S("#e6e6fa"));
+    colors.insert(QL1S("lavenderblush"), QL1S("#fff0f5"));
+    colors.insert(QL1S("lawngreen"), QL1S("#7cfc00"));
+    colors.insert(QL1S("lemonchiffon"), QL1S("#fffacd"));
+    colors.insert(QL1S("lightblue"), QL1S("#add8e6"));
+    colors.insert(QL1S("lightcoral"), QL1S("#f08080"));
+    colors.insert(QL1S("lightcyan"), QL1S("#e0ffff"));
+    colors.insert(QL1S("lightgoldenrodyellow"), QL1S("#fafad2"));
+    colors.insert(QL1S("lightgreen"), QL1S("#90ee90"));
+    colors.insert(QL1S("lightgrey"), QL1S("#d3d3d3"));
+    colors.insert(QL1S("lightpink"), QL1S("#ffb6c1"));
+    colors.insert(QL1S("lightsalmon"), QL1S("#ffa07a"));
+    colors.insert(QL1S("lightseagreen"), QL1S("#20b2aa"));
+    colors.insert(QL1S("lightskyblue"), QL1S("#87cefa"));
+    colors.insert(QL1S("lightslategray"), QL1S("#778899"));
+    colors.insert(QL1S("lightsteelblue"), QL1S("#b0c4de"));
+    colors.insert(QL1S("lightyellow"), QL1S("#ffffe0"));
+    colors.insert(QL1S("lime"), QL1S("#00ff00"));
+    colors.insert(QL1S("limegreen"), QL1S("#32cd32"));
+    colors.insert(QL1S("linen"), QL1S("#faf0e6"));
+    colors.insert(QL1S("magenta"), QL1S("#ff00ff"));
+    colors.insert(QL1S("maroon"), QL1S("#800000"));
+    colors.insert(QL1S("mediumaquamarine"), QL1S("#66cdaa"));
+    colors.insert(QL1S("mediumblue"), QL1S("#0000cd"));
+    colors.insert(QL1S("mediumorchid"), QL1S("#ba55d3"));
+    colors.insert(QL1S("mediumpurple"), QL1S("#9370db"));
+    colors.insert(QL1S("mediumseagreen"), QL1S("#3cb371"));
+    colors.insert(QL1S("mediumslateblue"), QL1S("#7b68ee"));
+    colors.insert(QL1S("mediumspringgreen"), QL1S("#00fa9a"));
+    colors.insert(QL1S("mediumturquoise"), QL1S("#48d1cc"));
+    colors.insert(QL1S("mediumvioletred"), QL1S("#c71585"));
+    colors.insert(QL1S("midnightblue"), QL1S("#191970"));
+    colors.insert(QL1S("mintcream"), QL1S("#f5fffa"));
+    colors.insert(QL1S("mistyrose"), QL1S("#ffe4e1"));
+    colors.insert(QL1S("moccasin"), QL1S("#ffe4b5"));
+    colors.insert(QL1S("navajowhite"), QL1S("#ffdead"));
+    colors.insert(QL1S("navy"), QL1S("#000080"));
+    colors.insert(QL1S("oldlace"), QL1S("#fdf5e6"));
+    colors.insert(QL1S("olive"), QL1S("#808000"));
+    colors.insert(QL1S("olivedrab"), QL1S("#6b8e23"));
+    colors.insert(QL1S("orange"), QL1S("#ffa500"));
+    colors.insert(QL1S("orangered"), QL1S("#ff4500"));
+    colors.insert(QL1S("orchid"), QL1S("#da70d6"));
+    colors.insert(QL1S("palegoldenrod"), QL1S("#eee8aa"));
+    colors.insert(QL1S("palegreen"), QL1S("#98fb98"));
+    colors.insert(QL1S("paleturquoise"), QL1S("#afeeee"));
+    colors.insert(QL1S("palevioletred"), QL1S("#db7093"));
+    colors.insert(QL1S("papayawhip"), QL1S("#ffefd5"));
+    colors.insert(QL1S("peachpuff"), QL1S("#ffdab9"));
+    colors.insert(QL1S("peru"), QL1S("#cd853f"));
+    colors.insert(QL1S("pink"), QL1S("#ffc0cb"));
+    colors.insert(QL1S("plum"), QL1S("#dda0dd"));
+    colors.insert(QL1S("powderblue"), QL1S("#b0e0e6"));
+    colors.insert(QL1S("purple"), QL1S("#800080"));
+    colors.insert(QL1S("red"), QL1S("#ff0000"));
+    colors.insert(QL1S("rosybrown"), QL1S("#bc8f8f"));
+    colors.insert(QL1S("royalblue"), QL1S("#4169e1"));
+    colors.insert(QL1S("saddlebrown"), QL1S("#8b4513"));
+    colors.insert(QL1S("salmon"), QL1S("#fa8072"));
+    colors.insert(QL1S("sandybrown"), QL1S("#f4a460"));
+    colors.insert(QL1S("seagreen"), QL1S("#2e8b57"));
+    colors.insert(QL1S("seashell"), QL1S("#fff5ee"));
+    colors.insert(QL1S("sienna"), QL1S("#a0522d"));
+    colors.insert(QL1S("silver"), QL1S("#c0c0c0"));
+    colors.insert(QL1S("skyblue"), QL1S("#87ceeb"));
+    colors.insert(QL1S("slateblue"), QL1S("#6a5acd"));
+    colors.insert(QL1S("slategray"), QL1S("#708090"));
+    colors.insert(QL1S("snow"), QL1S("#fffafa"));
+    colors.insert(QL1S("springgreen"), QL1S("#00ff7f"));
+    colors.insert(QL1S("steelblue"), QL1S("#4682b4"));
+    colors.insert(QL1S("tan"), QL1S("#d2b48c"));
+    colors.insert(QL1S("teal"), QL1S("#008080"));
+    colors.insert(QL1S("thistle"), QL1S("#d8bfd8"));
+    colors.insert(QL1S("tomato"), QL1S("#ff6347"));
+    colors.insert(QL1S("turquoise"), QL1S("#40e0d0"));
+    colors.insert(QL1S("violet"), QL1S("#ee82ee"));
+    colors.insert(QL1S("wheat"), QL1S("#f5deb3"));
+    colors.insert(QL1S("white"), QL1S("#ffffff"));
+    colors.insert(QL1S("whitesmoke"), QL1S("#f5f5f5"));
+    colors.insert(QL1S("yellow"), QL1S("#ffff00"));
+    colors.insert(QL1S("yellowgreen"), QL1S("#9acd32"));
     return colors.value(color);
 }
 
@@ -401,7 +379,7 @@ QString Tools::convertUnitsToPx(const QString &text, double baseValue)
         unit = LengthType::em;
 
     // note that all relative units depends on users screen dpi
-    // and cleaner use 90dpi as default
+    // and SVG Cleaner use 90dpi as default
 
     if (unit == LengthType::pt)
         number = number * 1.25;
@@ -434,6 +412,12 @@ StringWalker::StringWalker(const QString &text)
     end = str + text.size();
 }
 
+StringWalker::StringWalker(const QChar *astr, int size)
+{
+    str = astr;
+    end = str + size;
+}
+
 int StringWalker::jumpTo(const QChar &c)
 {
     int len = 0;
@@ -457,6 +441,11 @@ int StringWalker::jumpToSpace()
 QString StringWalker::readBefore(int len) const
 {
     return QString(str - len, len);
+}
+
+uint StringWalker::readBeforeId(int len) const
+{
+    return hash(str - len, len);
 }
 
 void StringWalker::next()
@@ -486,18 +475,13 @@ bool StringWalker::isValid() const
     return str;
 }
 
-QChar StringWalker::current() const
+const QChar &StringWalker::current() const
 {
     return *str;
 }
 
-const QChar *&StringWalker::data()
-{
-    return str;
-}
-
 // the number() code underneath is from QtSvg module (qsvghandler.cpp) (LGPLv2 license)
-double StringWalker::number(Opt opt)
+double StringWalker::number(Opt opt, bool *ok)
 {
     skipSpaces();
 
@@ -538,10 +522,13 @@ double StringWalker::number(Opt opt)
         }
     }
 
+    if (ok)
+        *ok = (str == end);
+
     temp[pos] = '\0';
 
     double val;
-    if (!exponent && pos < 10) {
+    if (!exponent && pos <= 10) {
         int ival = 0;
         const char *t = temp;
         bool neg = false;
@@ -570,8 +557,7 @@ double StringWalker::number(Opt opt)
         if (neg)
             val = -val;
     } else {
-        bool ok = false;
-        val = qstrtod(temp, 0, &ok);
+        val = qstrtod(temp, 0, 0);
     }
 
     skipSpaces();

@@ -167,9 +167,8 @@ double &TransformMatrix::operator()(int row, int column)
 
 // http://www.w3.org/TR/SVG/coords.html#EstablishingANewUserSpace
 
-TransformPrivate::TransformPrivate() : QSharedData()
+TransformPrivate::TransformPrivate() : QSharedData(), isChanged(true)
 {
-    isChanged = true;
 }
 
 QString TransformPrivate::simplified() const

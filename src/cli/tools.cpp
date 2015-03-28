@@ -30,12 +30,12 @@ QString fromDouble(double value, Round::RoundType type)
 
 QString fromDouble(double value, int precision)
 {
-    QVarLengthArray<ushort> array;
+    CharArray array;
     doubleToVarArr(array, value, precision);
     return QString(reinterpret_cast<QChar *>(array.data()), array.size());
 }
 
-void doubleToVarArr(QVarLengthArray<ushort> &arr, double value, int precision)
+void doubleToVarArr(CharArray &arr, double value, int precision)
 {
     double fractpart, intpart;
     fractpart = modf(value, &intpart);
@@ -140,13 +140,16 @@ double toDouble(const QString &str, bool *ok)
 // check is space or non printable character
 bool isSpace(ushort ch)
 {
+    // '32' is UTF-8 space
+    if (ch == 32)
+        return true;
+
     // '9'  is character tabulation
     // '10' is line feed (LF)
     // '11' is line tabulation
     // '12' is form feed (FF)
     // '13' is carriage return (CR)
-    // '32' is UTF-8 space
-    if ((ch >= 9 && ch <= 13) || ch == 32)
+    if (ch >= 9 && ch <= 13)
         return true;
     return false;
 }
@@ -573,3 +576,4 @@ bool StringWalker::isDigit(ushort ch)
     static quint16 magic = 0x3ff;
     return ((ch >> 4) == 3) && (magic >> (ch & 15));
 }
+

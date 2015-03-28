@@ -420,7 +420,7 @@ public:
     virtual bool isComment() const     { return false; }
     virtual bool isText() const        { return false; }
 
-    virtual void save(QString&, int, int) const;
+    virtual void save(QString &s, int depth, int indent) const;
 
     // vars
     QAtomicInt ref;
@@ -435,8 +435,8 @@ class SvgElementPrivate : public SvgNodePrivate
 {
 public:
     SvgElementPrivate(SvgDocumentPrivate *, SvgNodePrivate *parent, const QString &name);
-    virtual bool isElement() const { return true; }
-    virtual void save(QString &s, int, int) const;
+    bool isElement() const { return true; }
+    void save(QString &s, int depth, int indent) const;
 
     // vars
     QString name; // tag name
@@ -450,8 +450,8 @@ class SvgCommentPrivate : public SvgNodePrivate
 {
 public:
     SvgCommentPrivate(SvgDocumentPrivate*, SvgNodePrivate *parent, const QString &val);
-    virtual bool isComment() const { return true; }
-    virtual void save(QString &s, int, int) const;
+    bool isComment() const { return true; }
+    void save(QString &s, int depth, int indent) const;
 
     // vars
     QString value;
@@ -461,8 +461,8 @@ class SvgTextPrivate : public SvgNodePrivate
 {
 public:
     SvgTextPrivate(SvgDocumentPrivate *, SvgNodePrivate *parent, const QString &val);
-    virtual bool isText() const { return true; }
-    virtual void save(QString &s, int, int) const;
+    bool isText() const { return true; }
+    void save(QString &s, int depth, int indent) const;
 
     // vars
     bool isDtd;
@@ -473,8 +473,8 @@ class SvgDeclarationPrivate : public SvgNodePrivate
 {
 public:
     SvgDeclarationPrivate(SvgDocumentPrivate *, SvgNodePrivate *parent, const QString &data);
-    virtual bool isDeclaration() const { return true; }
-    virtual void save(QString &s, int, int) const;
+    bool isDeclaration() const { return true; }
+    void save(QString &s, int depth, int indent) const;
 
     // vars
     QString value;
@@ -930,9 +930,9 @@ SvgElementPrivate::SvgElementPrivate(SvgDocumentPrivate *d, SvgNodePrivate *p,
     name = tagname;
 }
 
-QString appendAttribute(const QString &name, const QString &value)
+void appendAttribute(QString &s, const QString &name, const QString &value)
 {
-    return QL1C(' ') + name + QL1S("=\"") + value + QL1C('\"');
+    s += QL1C(' ') + name + QL1S("=\"") + value + QL1C('\"');
 }
 
 // TODO: sort attributes
@@ -950,7 +950,9 @@ void SvgElementPrivate::save(QString &s, int depth, int indent) const
     s += QL1C('<') + name;
 
     // save default attributes
-    foreach (const SvgAttribute &a, attributes.values()) {
+    SvgAttributeHash::const_iterator it = attributes.constBegin();
+    for (; it != attributes.constEnd(); ++it) {
+        const SvgAttribute a = it.value();
         // do not save attributes with empty value
         if (a.isReference()) {
             Q_ASSERT_X(a.referencedElement().isUsed() == true, "link saving",
@@ -961,7 +963,7 @@ void SvgElementPrivate::save(QString &s, int depth, int indent) const
                 value = QL1C('#') + a.referencedElement().id();
             else
                 value = urlPrefix + a.referencedElement().id() + QL1C(')');
-            s += appendAttribute(attrIdToStr(a.id()), value);
+            appendAttribute(s, attrIdToStr(a.id()), value);
         } else if (a.isTransform()) {
             QString transformName;
             if (name == E_linearGradient || name == E_radialGradient)
@@ -973,13 +975,13 @@ void SvgElementPrivate::save(QString &s, int depth, int indent) const
 
             QString ts = a.transform().simplified();
             if (!ts.isEmpty())
-                s += appendAttribute(transformName, ts);
+                appendAttribute(s, transformName, ts);
         } else if (a.isDefault()) {
             if (!a.value().isEmpty())
-                s += appendAttribute(attrIdToStr(a.id()), a.value());
+                appendAttribute(s, attrIdToStr(a.id()), a.value());
         } else if (a.isExternal()) {
             if (!a.value().isEmpty())
-                s += appendAttribute(a.name(), a.value());
+                appendAttribute(s, a.name(), a.value());
             else
                 qWarning("attribute '%s' cannot be empty", qPrintable(a.name()));
         } else {
@@ -1380,14 +1382,13 @@ void SvgElement::removeLinkedElement(const QString &id)
 {
     CheckData();
 
-    bool flag = false;
-    foreach (const SvgElement &e, ToElem(impl)->linkedElemList) {
-        if (e.id() == id) {
-            flag = ToElem(impl)->linkedElemList.removeOne(e);
+    uint listSize = ToElem(impl)->linkedElemList.size();
+    for (uint i = 0; i < listSize; ++i) {
+        if (ToElem(impl)->linkedElemList.at(i).id() == id) {
+            ToElem(impl)->linkedElemList.removeAt(i);
             break;
         }
     }
-    Q_ASSERT(flag == true);
 }
 
 SvgElementList SvgElement::linkedElements() const
@@ -1410,10 +1411,15 @@ bool SvgElement::hasParentAttribute(uint attrId)
     return false;
 }
 
-QString SvgElement::parentAttribute(uint attrId)
+QString SvgElement::parentAttribute(uint attrId, bool includeCurrentElem)
 {
     CheckData(QString());
-    SvgNodePrivate *parent = impl->ownerNode;
+    SvgNodePrivate *parent = 0;
+    if (includeCurrentElem)
+        parent = impl;
+    else
+        parent = impl->ownerNode;
+
     while (parent) {
         if (parent->isElement()) {
             SvgElementPrivate *e = ((SvgElementPrivate *)parent);
@@ -1823,7 +1829,7 @@ bool SvgDocument::fromString(const QString &text)
     return true;
 }
 
-QString SvgDocument::toString(int indent) const
+const QString SvgDocument::toString(int indent) const
 {
     QString str;
     save(str, indent);
@@ -1984,8 +1990,7 @@ SvgAttribute::SvgAttribute(uint aid, const SvgElement &elem)
 {
     Q_ASSERT(aid != 0);
 
-    SvgAttributeData *p = new SvgAttributeData;
-    p->type = SvgAttributeData::Reference;
+    ReferenceSvgAttributeData *p = new ReferenceSvgAttributeData;
     p->id = aid;
     p->linked = elem;
     if (p->id == AttrId::xlink_href)
@@ -2003,8 +2008,7 @@ SvgAttribute::SvgAttribute(uint aid, const QString &avalue)
 {
     Q_ASSERT(aid != 0);
 
-    SvgAttributeData *p = new SvgAttributeData;
-    p->type = SvgAttributeData::Default;
+    DefaultSvgAttributeData *p = new DefaultSvgAttributeData;
     p->id = aid;
     p->value = avalue;
     if (Properties::presentationAttributesIds.contains(aid))
@@ -2016,8 +2020,7 @@ SvgAttribute::SvgAttribute(const Transform &ts)
 {
     Q_ASSERT(ts.isValid() == true);
 
-    SvgAttributeData *p = new SvgAttributeData;
-    p->type = SvgAttributeData::TTransform;
+    TransformSvgAttributeData *p = new TransformSvgAttributeData;
     p->id = AttrId::transform;
     p->transform = ts;
     impl = p;
@@ -2025,8 +2028,7 @@ SvgAttribute::SvgAttribute(const Transform &ts)
 
 SvgAttribute::SvgAttribute(const QString &aname, const QString &avalue)
 {
-    SvgAttributeData *p = new SvgAttributeData;
-    p->type = SvgAttributeData::External;
+    ExternalSvgAttributeData *p = new ExternalSvgAttributeData;
     p->name = aname;
     p->value = avalue;
     impl = p;
@@ -2067,7 +2069,7 @@ QString SvgAttribute::name() const
     if (impl->type != SvgAttributeData::External)
         return attrIdToStr(impl->id);
     else
-        return impl->name;
+        return static_cast<ExternalSvgAttributeData*>(impl.data())->name;
     return QString();
 }
 
@@ -2078,7 +2080,7 @@ QString SvgAttribute::value() const
     CheckData(QString());
 
     if (impl->type != SvgAttributeData::TTransform) {
-        if (isReference() && impl->linked.isNull())
+        if (isReference() && static_cast<ReferenceSvgAttributeData*>(impl.data())->linked.isNull())
             return QString();
         return impl->value;
     }
@@ -2116,7 +2118,7 @@ SvgElement SvgAttribute::referencedElement() const
     if (impl->type == SvgAttributeData::Default)
         return SvgElement();
     if (impl->type == SvgAttributeData::Reference)
-        return impl->linked;
+        return static_cast<ReferenceSvgAttributeData*>(impl.data())->linked;
 
     qFatal("current attribute is not link");
     return SvgElement();
@@ -2126,7 +2128,7 @@ Transform SvgAttribute::transform() const
 {
     CheckData(Transform());
     if (impl->type == SvgAttributeData::TTransform)
-        return impl->transform;
+        return static_cast<TransformSvgAttributeData*>(impl.data())->transform;
     qFatal("current attribute is not transform");
     return Transform();
 }
@@ -2165,4 +2167,3 @@ bool SvgAttribute::isReference() const
     CheckData(false);
     return impl->type == SvgAttributeData::Reference;
 }
-

@@ -38,6 +38,8 @@
 
 #include <cmath>
 
+typedef QVarLengthArray<ushort,65> CharArray;
+
 static inline bool isZero(double value)
 {
     u_static const double minValue = 1.0 / pow(10, Keys::get().coordinatesPrecision());
@@ -53,7 +55,7 @@ static inline bool isZeroTs(double value)
 QString fromDouble(double value, Round::RoundType type = Round::Coordinate);
 QString fromDouble(double value, int precision);
 double toDouble(const QString &str, bool *ok = 0);
-void doubleToVarArr(QVarLengthArray<ushort> &arr, double value, int precision = 6);
+void doubleToVarArr(CharArray &arr, double value, int precision = 6);
 bool isSpace(ushort ch);
 
 class Tools

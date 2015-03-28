@@ -611,7 +611,7 @@ const QHash<QString,uint> allAttributesHash()
     return hash;
 }
 
-const QHash<uint,QString> allAttributesHashInv()
+const QHash<uint,QString>& allAttributesHashInv()
 {
     static QHash<uint,QString> hash;
     if (hash.isEmpty()) {

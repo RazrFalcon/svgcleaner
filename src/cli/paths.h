@@ -22,7 +22,7 @@
 #ifndef PATHS_H
 #define PATHS_H
 
-#include <QVector>
+#include <QVarLengthArray>
 
 #include "transform.h"
 #include "svgdom.h"
@@ -60,8 +60,8 @@ public:
     Segment();
     void setTransform(Transform &ts);
     void toRelative(double xLast, double yLast);
-    void coords(QVector<double> &points);
-    QList<Segment> toCurve(double prevX, double prevY) const;
+    void coords(QVarLengthArray<double, 6> &points);
+    QVarLengthArray<Segment, 3> toCurve(double prevX, double prevY) const;
 
     QChar command;
     // store original value
@@ -82,7 +82,7 @@ public:
 
 private:
     QPointF rotatePoint(double x, double y, double rad) const;
-    QList<QPointF> arcToCurve(ArcStruct arc) const;
+    QVarLengthArray<QPointF, 9> arcToCurve(ArcStruct arc) const;
 };
 
 class Path
@@ -90,7 +90,7 @@ class Path
 public:
     explicit Path() {}
     void processPath(SvgElement elem, bool canApplyTransform, bool *isPathApplyed);
-    QString segmentsToPath(QList<Segment> &segList);
+    QString segmentsToPath(const QList<Segment> &segList);
 
 private:
     SvgElement m_elem;
@@ -103,7 +103,6 @@ private:
     bool applyTransform(QList<Segment> &segList);
     bool isTsPathShorter();
     void fixRelative(QList<Segment> &segList);
-    QString findAttribute(const uint &attrId);
 
     // segments processing
     bool removeZSegments(QList<Segment> &segList);

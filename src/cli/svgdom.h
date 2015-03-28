@@ -22,8 +22,6 @@
 #ifndef SVGDOM_H
 #define SVGDOM_H
 
-#include <QtCore/QTextStream>
-
 #include "enums.h"
 #include "transform.h"
 
@@ -114,7 +112,7 @@ private:
     friend class SvgDocument;
     friend class SvgElement;
 
-    void save(QString &, int) const;
+    void save(QString &str, int indent) const;
 };
 
 class SvgDocument : public SvgNode
@@ -140,7 +138,7 @@ public:
 
     bool loadFile(const QString &filePath);
     bool fromString(const QString &text);
-    QString toString(int = 1) const;
+    const QString toString(int indent = 1) const;
     QString lastError() const;
 
 private:
@@ -192,7 +190,7 @@ public:
     QString tagName() const;
     void setTagName(const QString &name);
     bool hasParentAttribute(uint attrId);
-    QString parentAttribute(uint attrId);
+    QString parentAttribute(uint attrId, bool includeCurrentElem = false);
     int attributesCount() const;
     QString defIdFromAttribute(const uint &attrId) const;
     bool hasImportantAttrs(const IntList &ignoreList = IntList());
@@ -240,17 +238,44 @@ private:
 class SvgAttributeData : public QSharedData
 {
 public:
-    SvgAttributeData() : QSharedData() { id = 0; isStyle = false; type = None; }
+    SvgAttributeData() : QSharedData(), id(0), isStyle(false), type(None) {}
 
     enum Types { None, Default, External, TTransform, Reference };
 
     uint id;
-    QString name;
     QString value;
     bool isStyle;
-    Transform transform;
-    SvgElement linked;
     Types type;
+};
+
+class DefaultSvgAttributeData : public SvgAttributeData
+{
+public:
+    DefaultSvgAttributeData() : SvgAttributeData() { type = Default; }
+};
+
+class ExternalSvgAttributeData : public SvgAttributeData
+{
+public:
+    ExternalSvgAttributeData() : SvgAttributeData() { type = External; }
+
+    QString name;
+};
+
+class TransformSvgAttributeData : public SvgAttributeData
+{
+public:
+    TransformSvgAttributeData() : SvgAttributeData() { type = TTransform; }
+
+    Transform transform;
+};
+
+class ReferenceSvgAttributeData : public SvgAttributeData
+{
+public:
+    ReferenceSvgAttributeData() : SvgAttributeData() { type = Reference; }
+
+    SvgElement linked;
 };
 
 class SvgAttribute

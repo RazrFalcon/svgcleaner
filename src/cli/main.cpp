@@ -219,7 +219,7 @@ void processFile(const QString &inPath, const QString &outPath)
 
     // save file
     QFile outFile(outPath);
-    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (!outFile.open(QIODevice::WriteOnly))
         qFatal("could not write output file");
 
     int indent = 1;
@@ -348,7 +348,6 @@ void ownMessageOutput(QtMsgType type, const char *msg)
     }
 }
 
-#include <QElapsedTimer>
 int main(int argc, char *argv[])
 {
 #ifdef Q_OS_UNIX

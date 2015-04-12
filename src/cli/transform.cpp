@@ -450,7 +450,7 @@ void TransformPrivate::calcParameters(const TransformMatrix &matrix)
     if (b < c)
         angle = -angle;
 
-//    qDebug() << "calc" << m_xScale << m_yScale << m_xSkew << m_ySkew << m_angle;
+//    qDebug() << "calc" << xScale << yScale << xSkew << ySkew << angle;
 
     // detect all the transformations inside the matrix
 
@@ -571,6 +571,9 @@ QRectF Transform::transformRect(const QRectF &rect)
     if (!impl)
         return QRectF();
 
+    // cannot apply skew transform to rect
+    Q_ASSERT(isSkew() == false);
+
     double xList[4];
     double yList[4];
 
@@ -649,14 +652,14 @@ double Transform::scaleFactor() const
     return impl->xScale;
 }
 
-bool Transform::isProportionalScale()
+bool Transform::isProportionalScale() const
 {
     if (!impl)
         return false;
     return impl->types.testFlag(TransformPrivate::ProportionalScale);
 }
 
-bool Transform::isMirrored()
+bool Transform::isMirrored() const
 {
     if (!impl)
         return false;
@@ -664,21 +667,21 @@ bool Transform::isMirrored()
            || impl->types.testFlag(TransformPrivate::HorizontalMirror);
 }
 
-bool Transform::isSkew()
+bool Transform::isSkew() const
 {
     if (!impl)
         return false;
     return impl->types.testFlag(TransformPrivate::Skew);
 }
 
-bool Transform::isRotating()
+bool Transform::isRotating() const
 {
     if (!impl)
         return false;
     return impl->types.testFlag(TransformPrivate::Rotate);
 }
 
-bool Transform::isTranslate()
+bool Transform::isTranslate() const
 {
     if (!impl)
         return false;
@@ -710,6 +713,14 @@ TransformPrivate::Types Transform::type() const
 QDebug operator<<(QDebug dbg, const Transform &t)
 {
     TransformMatrix m = t.matrix();
-    dbg << m(0,0) << m(1,0) << m(0,1) << m(1,1) << m(0,2) << m(1,2);
+    dbg << "Transform (" << m(0,0) << m(1,0) << m(0,1) << m(1,1) << m(0,2) << m(1,2) << ")";
+    if (t.isProportionalScale())
+        dbg << "ProportionalScale";
+    if (t.isMirrored())
+        dbg << "Mirrored";
+    if (t.isSkew())
+        dbg << "Skew";
+    if (t.isRotating())
+        dbg << "Rotating";
     return dbg.space();
 }

@@ -1396,10 +1396,15 @@ SvgElementList SvgElement::linkedElements() const
     return ToElem(impl)->linkedElemList;
 }
 
-bool SvgElement::hasParentAttribute(uint attrId)
+bool SvgElement::hasParentAttribute(uint attrId, bool includeCurrentElem)
 {
     CheckData(false);
-    SvgNodePrivate *parent = impl->ownerNode;
+    SvgNodePrivate *parent = 0;
+    if (includeCurrentElem)
+        parent = impl;
+    else
+        parent = impl->ownerNode;
+
     while (parent) {
         if (parent->isElement()) {
             SvgElementPrivate *e = ((SvgElementPrivate *)parent);

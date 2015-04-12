@@ -1248,7 +1248,6 @@ void Remover::removeElementsOutsideTheViewbox()
             QRectF rect(toDouble(pList.at(0)), toDouble(pList.at(1)),
                         toDouble(pList.at(2)), toDouble(pList.at(3)));
 
-
             if (rect.width() == 0 && rect.height() == 0) {
                 smartElementRemove(elem);
                 continue;
@@ -1260,8 +1259,12 @@ void Remover::removeElementsOutsideTheViewbox()
             if (rect.height() == 0)
                 rect.setHeight(1);
 
-            if (elem.bboxTransform().isValid())
+            if (elem.bboxTransform().isValid()) {
+                // cannot apply skew transform to rect
+                if (elem.bboxTransform().isSkew())
+                    continue;
                 rect = elem.bboxTransform().transformRect(rect);
+            }
 
             QString stroke = parentAttribute(elem, AttrId::stroke);
             if (!stroke.isEmpty() && stroke != V_none) {
@@ -1272,14 +1275,15 @@ void Remover::removeElementsOutsideTheViewbox()
                 rect.adjust(-sw/2, -sw/2, sw, sw);
             }
 
-//            // create bounding rect for visual debug
+            // create bounding rect for visual debug
 //            SvgElement rectElem = document().createElement(QL1S("rect"));
 //            rectElem.setAttribute(AttrId::x, fromDouble(rect.x()));
 //            rectElem.setAttribute(AttrId::y, fromDouble(rect.y()));
 //            rectElem.setAttribute(AttrId::width, fromDouble(rect.width()));
 //            rectElem.setAttribute(AttrId::height, fromDouble(rect.height()));
 //            rectElem.setAttribute(QL1S("style"), QL1S("fill:none;stroke:red"));
-//            elem.parentElement().insertBefore(rectElem, elem);
+//            rectElem.setAttribute(QL1S("from-id"), elem.id());
+//            svgElement().appendChild(rectElem);
 
             if (!viewBox.intersects(rect)) {
                 smartElementRemove(elem);

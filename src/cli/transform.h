@@ -98,11 +98,11 @@ public:
     QString simplified();
     QString simplified() const;
     double scaleFactor() const;
-    bool isProportionalScale();
-    bool isMirrored();
-    bool isSkew();
-    bool isRotating();
-    bool isTranslate();
+    bool isProportionalScale() const;
+    bool isMirrored() const;
+    bool isSkew() const;
+    bool isRotating() const;
+    bool isTranslate() const;
     TransformMatrix matrix() const;
     QString matrixString() const;
     TransformPrivate::Types type() const;

@@ -189,7 +189,7 @@ public:
     IntList styleAttributesList() const;
     QString tagName() const;
     void setTagName(const QString &name);
-    bool hasParentAttribute(uint attrId);
+    bool hasParentAttribute(uint attrId, bool includeCurrentElem = false);
     QString parentAttribute(uint attrId, bool includeCurrentElem = false);
     int attributesCount() const;
     QString defIdFromAttribute(const uint &attrId) const;

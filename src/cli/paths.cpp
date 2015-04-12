@@ -217,29 +217,91 @@ QVarLengthArray<QPointF, 9> Segment::arcToCurve(ArcStruct arc) const
     return list;
 }
 
-// FIXME: add s, q, t segments
-QVarLengthArray<Segment, 3> Segment::toCurve(double prevX, double prevY) const
+Segment quadToCurve(double x0, double y0, double x1, double y1, double x2, double y2)
+{
+    static const double v1 = 1.0 / 3.0;
+    static const double v2 = 2.0 / 3.0;
+
+    Segment seg;
+    seg.command = Command::CurveTo;
+    seg.absolute = true;
+    seg.x1 = x0 + (x1-x0) * v2;
+    seg.y1 = y0 + (y1-y0) * v2;
+    seg.x2 = x1 + (x2-x1) * v1;
+    seg.y2 = y1 + (y2-y1) * v1;
+    seg.x  = x2;
+    seg.y  = y2;
+    return seg;
+}
+
+Segment lineToCurve(double x1, double y1, double x2, double y2)
+{
+    Segment seg;
+    seg.command = Command::CurveTo;
+    seg.absolute = true;
+    seg.x1 = x1;
+    seg.y1 = y1;
+    seg.x2 = x2;
+    seg.y2 = y2;
+    seg.x  = x2;
+    seg.y  = y2;
+    return seg;
+}
+
+QVarLengthArray<Segment, 3> Segment::toCurve(const Segment &prevSeg, const Segment &prevSeg2) const
 {
     QVarLengthArray<Segment, 3> segList;
-    if (command == Command::LineTo)
+    if (command == Command::HorizontalLineTo)
+    {
+        segList.append(lineToCurve(prevSeg.x, prevSeg.y, x, prevSeg.y));
+    }
+    else if (command == Command::VerticalLineTo)
+    {
+        segList.append(lineToCurve(prevSeg.x, prevSeg.y, prevSeg.x, y));
+    }
+    else if (command == Command::LineTo)
+    {
+        segList.append(lineToCurve(prevSeg.x, prevSeg.y, x, y));
+    }
+    else if (command == Command::SmoothCurveTo)
     {
         Segment seg;
         seg.command = Command::CurveTo;
         seg.absolute = true;
-        seg.srcCmd = false;
-        seg.x1 = prevX;
-        seg.y1 = prevY;
-        seg.x2 = x;
-        seg.y2 = y;
+        if (prevSeg.command == Command::CurveTo || prevSeg.command == Command::SmoothCurveTo) {
+            seg.x1 = prevSeg.x * 2 - prevSeg.x2;
+            seg.y1 = prevSeg.y * 2 - prevSeg.y2;
+        } else {
+            seg.x1 = prevSeg.x;
+            seg.y1 = prevSeg.y;
+        }
+        seg.x2 = x2;
+        seg.y2 = y2;
         seg.x  = x;
         seg.y  = y;
-        segList.reserve(1);
         segList.append(seg);
+    }
+    else if (command == Command::Quadratic)
+    {
+        segList.append(quadToCurve(prevSeg.x, prevSeg.y, x1, y1, x, y));
+    }
+    else if (command == Command::SmoothQuadratic)
+    {
+        Segment seg = prevSeg2;
+        if (prevSeg2.command == Command::Quadratic || prevSeg2.command == Command::SmoothQuadratic) {
+            seg.x1 = prevSeg2.x * 2 - prevSeg2.x1;
+            seg.y1 = prevSeg2.y * 2 - prevSeg2.y1;
+        } else {
+            seg.x1 = prevSeg2.x;
+            seg.y1 = prevSeg2.y;
+        }
+
+        segList.append(quadToCurve(prevSeg2.x1, prevSeg2.y1, seg.x1, seg.y1, x, y));
     }
     else if (command == Command::EllipticalArc)
     {
         if (!isZero(rx) && !isZero(ry)) {
-            ArcStruct arc = { prevX, prevY, rx, ry, xAxisRotation, largeArc,
+            ArcStruct arc = { prevSeg.x, prevSeg.y, rx, ry, xAxisRotation, largeArc,
                               sweep, x, y, QList<double>() };
             QVarLengthArray<QPointF, 9> list = arcToCurve(arc);
             segList.reserve(list.size()/3);
@@ -247,7 +309,6 @@ QVarLengthArray<Segment, 3> Segment::toCurve(double prevX, double prevY) const
                 Segment seg;
                 seg.command = Command::CurveTo;
                 seg.absolute = true;
-                seg.srcCmd = false;
                 seg.x1 = list.at(i).x();
                 seg.y1 = list.at(i).y();
                 seg.x2 = list.at(i+1).x();
@@ -289,7 +350,7 @@ void Segment::coords(QVarLengthArray<double, 6> &points)
             || command == Command::SmoothQuadratic)
         points << x << y;
     else if (command == Command::HorizontalLineTo)
-            points << x;
+        points << x;
     else if (command == Command::VerticalLineTo)
         points << y;
     else if (command == Command::SmoothCurveTo)
@@ -300,9 +361,35 @@ void Segment::coords(QVarLengthArray<double, 6> &points)
         points << rx << ry << xAxisRotation << largeArc << sweep << x << y;
 }
 
+QDebug operator<<(QDebug dbg, const Segment &s)
+{
+    if (s.command == Command::CurveTo)
+        dbg << QString(QL1S("CurveTo( %1,%2 - %3,%4 - %5,%6 )"))
+                   .arg(s.x1).arg(s.y1).arg(s.x2).arg(s.y2).arg(s.x).arg(s.y);
+    else if (s.command == Command::MoveTo)
+        dbg << "MoveTo(" << s.x << s.y << ")";
+    else if (s.command == Command::LineTo)
+        dbg << "LineTo(" << s.x << s.y << ")";
+    else if (s.command == Command::SmoothQuadratic)
+        dbg << "SmoothQuadratic(" << s.x << s.y << ")";
+    else if (s.command == Command::HorizontalLineTo)
+        dbg << "HorizontalLineTo(" << s.x << ")";
+    else if (s.command == Command::VerticalLineTo)
+        dbg << "VerticalLineTo(" << s.y << ")";
+    else if (s.command == Command::SmoothCurveTo)
+        dbg << "SmoothCurveTo(" << s.x2 << s.y2 << s.x << s.y << ")";
+    else if (s.command == Command::Quadratic)
+        dbg << "Quadratic(" << s.x1 << s.y1 << s.x << s.y << ")";
+    else if (s.command == Command::EllipticalArc)
+        dbg << "EllipticalArc(" << s.rx << s.ry << s.xAxisRotation
+            << s.largeArc << s.sweep << s.x << s.y << ")";
+
+    return dbg.space();
+}
+
 // New class
 
-void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathApplyed)
+void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isTransformApplied)
 {
     const QString inPath = elem.attribute(AttrId::d);
 
@@ -325,22 +412,20 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
     // can't be converted to relative coordinates
     // TODO: MA could be in subpath
     bool isOnlyAbsolute = false;
-    if (segList.at(1).command == Command::EllipticalArc)
+    if (segList.at(1).command == Command::EllipticalArc) {
         isOnlyAbsolute = true;
-
-    // TODO: calc bbox after cleaning. But now it causes problems.
-    if (Keys.flag(Key::RemoveOutsideElements)) {
-        if (!elem.hasAttribute(AttrId::bbox))
-            calcBoundingBox(segList);
+        canApplyTransform = false;
     }
 
     processSegments(segList);
-    if (canApplyTransform && !isOnlyAbsolute)
-        canApplyTransform = applyTransform(segList);
-    if (!isOnlyAbsolute && Keys.flag(Key::ConvertToRelative))
-        segmentsToRelative(segList, false);
-    else
-        segmentsToRelative(segList, true);
+
+    QList<Segment> tsSegList = segList;
+
+    if (Keys.flag(Key::RemoveOutsideElements))
+        elem.setAttribute(AttrId::bbox, calcBoundingBox(segList, true));
+
+    const bool convToRelative = !(!isOnlyAbsolute && Keys.flag(Key::ConvertToRelative));
+    segmentsToRelative(segList, convToRelative);
 
     // merge segments to path
     QString outPath = segmentsToPath(segList);
@@ -350,18 +435,33 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isPathAppl
         outPath = inPath;
     elem.setAttribute(AttrId::d, outPath);
 
-    if (canApplyTransform && !isOnlyAbsolute) {
+    // try to bake transforms into path
+    if (canApplyTransform) {
+        applyTransform(tsSegList);
+
+        if (Keys.flag(Key::RemoveOutsideElements))
+            elem.setAttribute(QL1S("bboxts"), calcBoundingBox(tsSegList, false));
+
+        processSegments(tsSegList);
+        if (Keys.flag(Key::ConvertToRelative))
+            segmentsToRelative(tsSegList, false);
+        calcNewStrokeWidth(m_elem.transform().scaleFactor());
+        m_elem.setAttribute(QL1S("dts"), segmentsToPath(tsSegList));
+
+        // apply transform only if it shorter
         if (isTsPathShorter()) {
-            *isPathApplyed = true;
+            *isTransformApplied = true;
             elem.setAttribute(AttrId::d, elem.attribute(QL1S("dts")));
             QString newStroke = elem.attribute(QL1S("stroke-width-new"));
             if (!newStroke.isEmpty() && newStroke != QL1S("1"))
                 elem.setAttribute(AttrId::stroke_width, newStroke);
             else
                 elem.removeAttribute(AttrId::stroke_width);
+            elem.setAttribute(AttrId::bbox, elem.attribute(QL1S("bboxts")));
         }
         elem.removeAttribute(QL1S("stroke-width-new"));
         elem.removeAttribute(QL1S("dts"));
+        elem.removeAttribute(QL1S("bboxts"));
     }
 }
 
@@ -399,6 +499,7 @@ QChar toLower(const QChar &c)
     return c;
 }
 
+// split path to segments and convert segments to absolute
 void Path::splitToSegments(const QString &path, QList<Segment> &segList)
 {
     StringWalker sw(path);
@@ -433,6 +534,7 @@ void Path::splitToSegments(const QString &path, QList<Segment> &segList)
             seg.command = toLower(cmd);
             if (seg.command != Command::ClosePath)
                 seg.absolute = isUpper(cmd);
+
             if (!seg.absolute) {
                 offsetX = prevX;
                 offsetY = prevY;
@@ -528,13 +630,16 @@ void Path::calcNewStrokeWidth(const double scaleFactor)
     }
 }
 
-bool Path::applyTransform(QList<Segment> &segList)
+void Path::applyTransform(QList<Segment> &tsSegList)
 {
-    QList<Segment> tsSegList = segList;
     Transform ts = m_elem.transform();
+
+    Segment prevSegment2;
     for (int i = 1; i < tsSegList.count(); ++i) {
         Segment prevSegment = tsSegList.at(i-1);
-        QVarLengthArray<Segment, 3> list = tsSegList.at(i).toCurve(prevSegment.x, prevSegment.y);
+        Segment currSeg = tsSegList.at(i);
+        QVarLengthArray<Segment, 3> list = tsSegList.at(i).toCurve(prevSegment, prevSegment2);
+        prevSegment2 = currSeg;
         if (!list.isEmpty()) {
             tsSegList.removeAt(i);
             for (int j = 0; j < list.count(); ++j)
@@ -543,33 +648,27 @@ bool Path::applyTransform(QList<Segment> &segList)
     }
     for (int i = 0; i < tsSegList.count(); ++i)
         tsSegList[i].setTransform(ts);
-
-    if (Keys.flag(Key::ConvertToRelative))
-        segmentsToRelative(tsSegList, false);
-    calcNewStrokeWidth(ts.scaleFactor());
-    m_elem.setAttribute(QL1S("dts"), segmentsToPath(tsSegList));
-    return true;
 }
 
 bool Path::isTsPathShorter()
 {
+    static const int sts = QString(QL1S(" stroke-width=\"\" ")).size();
+
     quint32 afterTransform = m_elem.attribute(QL1S("dts")).size();
     if (m_elem.hasAttribute(QL1S("stroke-width-new"))) {
         afterTransform += m_elem.attribute(QL1S("stroke-width-new")).size();
-        // char count in ' stroke-width=\"\" '
-        afterTransform += 17;
+        afterTransform += sts;
     }
 
     quint32 beforeTransform = m_elem.attribute(AttrId::d).size();
     if (m_elem.hasTransform()) {
         beforeTransform += m_elem.transform().simplified().size();
-        // char count in ' transform=\"\" '
-        beforeTransform += 14;
+        static const int tss = QString(QL1S(" transform=\"\" ")).size();
+        beforeTransform += tss;
     }
     if (m_elem.hasAttribute(AttrId::stroke_width)) {
         beforeTransform += m_elem.attribute(AttrId::stroke_width).size();
-        // char count in ' stroke-width=\"\" '
-        beforeTransform += 17;
+        beforeTransform += sts;
     }
 
     return (afterTransform < beforeTransform);
@@ -782,7 +881,8 @@ bool Path::convertSegments(QList<Segment> &segList)
 //                segList[i].srcCmd = false;
 //            }
         } else if (cmd == Command::CurveTo) {
-            bool isXY1Equal = isZero(seg.x1 - prevSeg.x1) && isZero(seg.y1 - prevSeg.y1);
+            bool isXY1Equal = isZero(seg.x1 - prevSeg.x) && isZero(seg.y1 - prevSeg.y);
+
             if (   isXY1Equal
                 && isZero(seg.x2 - prevSeg.x2)
                 && isZero(seg.x - prevSeg.x)
@@ -1055,6 +1155,8 @@ QString Path::segmentsToPath(const QList<Segment> &segList)
 
 // path bounding box calculating part
 
+// TODO: to separate class
+
 struct Box
 {
     double minx;
@@ -1090,11 +1192,11 @@ QPointF findDotOnCurve(const Bezier &b, double t)
     double t_3 = t_2 * t;
     double t1_2 = t1 * t1;
     double t1_3 = t1_2 * t1;
-    double x =   t1_3 * b.p_x
+    double x =  t1_3 * b.p_x
               + t1_2 * 3 * t * b.x1
               + t1 * 3 * t_2 * b.x2
               + t_3 * b.x;
-    double y =   t1_3 * b.p_y
+    double y =  t1_3 * b.p_y
               + t1_2 * 3 * t * b.y1
               + t1 * 3 * t_2 * b.y2
               + t_3 * b.y;
@@ -1103,14 +1205,14 @@ QPointF findDotOnCurve(const Bezier &b, double t)
 
 void curveExtremum(double a, double b, double c, const Bezier &bezier, Box &bbox)
 {
-    double t1 = (-b + sqrt(b * b - 4 * a * c)) / 2 / a;
-    double t2 = (-b - sqrt(b * b - 4 * a * c)) / 2 / a;
+    double t1 = (-b + sqrt(b * b - 4 * a * c)) / 2.0 / a;
+    double t2 = (-b - sqrt(b * b - 4 * a * c)) / 2.0 / a;
 
-    if (t1 > 0.0 && t1 < 1.0) {
+    if (t1 >= 0.0 && t1 <= 1.0) {
         QPointF p = findDotOnCurve(bezier, t1);
         updateBBox(bbox, p.x(), p.y());
     }
-    if (t2 > 0.0 && t2 < 1.0) {
+    if (t2 >= 0.0 && t2 <= 1.0) {
         QPointF p = findDotOnCurve(bezier, t2);
         updateBBox(bbox, p.x(), p.y());
     }
@@ -1132,17 +1234,23 @@ void curveBBox(const Bezier &bz, Box &bbox)
     curveExtremum(a, b, c, bz, bbox);
 }
 
-void Path::calcBoundingBox(const QList<Segment> &segList)
+// TODO: stroke are ignored
+QString Path::calcBoundingBox(const QList<Segment> &segList, bool convertToCurves)
 {
     // convert all segments to curve, exept m and z
     QList<Segment> tmpSegList = segList;
-    for (int i = 1; i < tmpSegList.size(); ++i) {
-        Segment prevSegment = tmpSegList.at(i-1);
-        QVarLengthArray<Segment, 3> list = tmpSegList.at(i).toCurve(prevSegment.x, prevSegment.y);
-        if (!list.isEmpty()) {
-            tmpSegList.removeAt(i);
-            for (int j = 0; j < list.count(); ++j)
-                tmpSegList.insert(i+j, list.at(j));
+    if (convertToCurves) {
+        Segment prevSegment2;
+        for (int i = 1; i < tmpSegList.size(); ++i) {
+            Segment prevSegment = tmpSegList.at(i-1);
+            Segment currSegment = tmpSegList.at(i);
+            QVarLengthArray<Segment, 3> list = tmpSegList.at(i).toCurve(prevSegment, prevSegment2);
+            prevSegment2 = currSegment;
+            if (!list.isEmpty()) {
+                tmpSegList.removeAt(i);
+                for (int j = 0; j < list.count(); ++j)
+                    tmpSegList.insert(i+j, list.at(j));
+            }
         }
     }
     // get all points
@@ -1158,9 +1266,9 @@ void Path::calcBoundingBox(const QList<Segment> &segList)
             curveBBox(bezier, bbox);
         }
     }
-    m_elem.setAttribute(AttrId::bbox,
-                                        fromDouble(bbox.minx)
-                          + QL1C(' ') + fromDouble(bbox.miny)
-                          + QL1C(' ') + fromDouble(bbox.maxx - bbox.minx)
-                          + QL1C(' ') + fromDouble(bbox.maxy - bbox.miny));
+
+    return                fromDouble(bbox.minx)
+            + QL1C(' ') + fromDouble(bbox.miny)
+            + QL1C(' ') + fromDouble(bbox.maxx - bbox.minx)
+            + QL1C(' ') + fromDouble(bbox.maxy - bbox.miny);
 }

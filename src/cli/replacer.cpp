@@ -83,10 +83,10 @@ void Replacer::processPaths()
             bool canApplyTransform = false;
             if (Keys.flag(Key::ApplyTransformsToPaths))
                 canApplyTransform = isPathValidToTransform(elem);
-            bool isPathApplyed = false;
-            Path().processPath(elem, canApplyTransform, &isPathApplyed);
+            bool isTransformApplied = false;
+            Path().processPath(elem, canApplyTransform, &isTransformApplied);
             if (canApplyTransform) {
-                if (isPathApplyed) {
+                if (isTransformApplied) {
                     updateLinkedDefTransform(elem);
                     elem.removeTransform();
                 }
@@ -104,28 +104,21 @@ void Replacer::processPaths()
     }
 }
 
+// TODO: transform paths with equal transforms and equal defs
+// 7zip.svg
 bool Replacer::isPathValidToTransform(SvgElement &pathElem)
 {
-    if (pathElem.hasTransform()) {
-        // non proportional transform could not be applied to path with stroke
-        bool hasStroke = false;
-        SvgElement parentElem = pathElem;
-        while (!parentElem.isNull()) {
-            if (parentElem.hasAttribute(AttrId::stroke)) {
-                if (parentElem.attribute(AttrId::stroke) != V_none) {
-                    hasStroke = true;
-                    break;
-                }
-            }
-            parentElem = parentElem.parentElement();
-        }
-        if (hasStroke) {
-            if (pathElem.transform().isProportionalScale())
+    if (!pathElem.hasTransform())
+        return false;
+
+    // non proportional transform could not be applied to path with stroke
+    if (pathElem.hasParentAttribute(AttrId::stroke, true)) {
+        if (pathElem.parentAttribute(AttrId::stroke, true) != V_none) {
+            if (!pathElem.transform().isProportionalScale())
                 return false;
         }
-    } else {
-        return false;
     }
+
     if (pathElem.hasAttribute(AttrId::clip_path) || pathElem.hasAttribute(AttrId::mask))
         return false;
     if (pathElem.isUsed())
@@ -137,6 +130,7 @@ bool Replacer::isPathValidToTransform(SvgElement &pathElem)
         if (!isBlurFilter(pathElem.referencedElement(AttrId::filter)))
             return false;
     }
+
 
     static const IntList attrList = IntList() << AttrId::fill << AttrId::stroke;
     foreach (const uint &attrId, attrList) {
@@ -850,6 +844,7 @@ void Replacer::finalFixes()
     element_loop (svgElement()) {
         QString tagName = elem.tagName();
 
+        // TODO: to internal attr
         elem.removeAttribute(AttrId::bbox);
 
         if (Keys.flag(Key::RemoveNotAppliedAttributes)) {
@@ -1201,10 +1196,9 @@ void Replacer::prepareLinkedStyles()
                     elem.setAttribute(attrId, V_none);
                 else if (Keys.flag(Key::RemoveUnusedXLinks))
                     elem.removeAttribute(attrId);
-                continue;
+            } else {
+                elem.setReferenceElement(attrId, defElem);
             }
-
-            elem.setReferenceElement(attrId, defElem);
         }
 
         if (elem.hasAttribute(AttrId::xlink_href)) {
@@ -1430,13 +1424,14 @@ void Replacer::mergeGradientsWithEqualStopElem()
 
 void Replacer::calcElementsBoundingBox()
 {
-    SvgElementList list = svgElement().childElements();
-    while (!list.isEmpty()) {
-        SvgElement elem = list.takeFirst();
+    element_loop (svgElement()) {
+        // cannot calculate bbox for element with transform
+        if (elem.hasTransform())
+            continue;
 
         if (elem.tagName() == E_rect) {
             elem.setAttribute(AttrId::bbox,
-                                          elem.attribute(AttrId::x)
+                                                elem.attribute(AttrId::x)
                                   + QL1C(' ') + elem.attribute(AttrId::y)
                                   + QL1C(' ') + elem.attribute(AttrId::width)
                                   + QL1C(' ') + elem.attribute(AttrId::height));
@@ -1445,7 +1440,7 @@ void Replacer::calcElementsBoundingBox()
             double x = elem.doubleAttribute(AttrId::cx) - r;
             double y = elem.doubleAttribute(AttrId::cy) - r;
             elem.setAttribute(AttrId::bbox,
-                                          fromDouble(x)
+                                                fromDouble(x)
                                   + QL1C(' ') + fromDouble(y)
                                   + QL1C(' ') + fromDouble(qAbs(r*2))
                                   + QL1C(' ') + fromDouble(qAbs(r*2)));
@@ -1455,15 +1450,12 @@ void Replacer::calcElementsBoundingBox()
             double x = elem.doubleAttribute(AttrId::cx) - rx;
             double y = elem.doubleAttribute(AttrId::cy) - ry;
             elem.setAttribute(AttrId::bbox,
-                                          fromDouble(x)
+                                                fromDouble(x)
                                   + QL1C(' ') + fromDouble(y)
                                   + QL1C(' ') + fromDouble(qAbs(rx*2))
                                   + QL1C(' ') + fromDouble(qAbs(ry*2)));
         }
         // all other basic shapes bounding boxes are calculated in Paths class
-
-        if (elem.hasChildrenElement())
-            list << elem.childElements();
     }
 }
 

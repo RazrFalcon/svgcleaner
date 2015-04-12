@@ -54,6 +54,7 @@ struct ArcStruct
     QList<double> recursive;
 };
 
+// TODO: split to subclasses
 class Segment
 {
 public:
@@ -61,10 +62,10 @@ public:
     void setTransform(Transform &ts);
     void toRelative(double xLast, double yLast);
     void coords(QVarLengthArray<double, 6> &points);
-    QVarLengthArray<Segment, 3> toCurve(double prevX, double prevY) const;
+    QVarLengthArray<Segment, 3> toCurve(const Segment &prevSeg, const Segment &prevSeg2) const;
 
     QChar command;
-    // store original value
+    // stores original value
     bool absolute;
     // is this command defined in source path
     bool srcCmd;
@@ -85,22 +86,24 @@ private:
     QVarLengthArray<QPointF, 9> arcToCurve(ArcStruct arc) const;
 };
 
+QDebug operator<<(QDebug dbg, const Segment &s);
+
 class Path
 {
 public:
     explicit Path() {}
-    void processPath(SvgElement elem, bool canApplyTransform, bool *isPathApplyed);
+    void processPath(SvgElement elem, bool canApplyTransform, bool *isTransformApplyed);
     QString segmentsToPath(const QList<Segment> &segList);
 
 private:
     SvgElement m_elem;
 
-    void calcBoundingBox(const QList<Segment> &segList);
+    QString calcBoundingBox(const QList<Segment> &tmpSegList, bool convertToCurves);
     void splitToSegments(const QString &path, QList<Segment> &segList);
     void processSegments(QList<Segment> &segList);
     void segmentsToRelative(QList<Segment> &segList, bool onlyIfSourceWasRelative);
     void calcNewStrokeWidth(const double scaleFactor);
-    bool applyTransform(QList<Segment> &segList);
+    void applyTransform(QList<Segment> &tsSegList);
     bool isTsPathShorter();
     void fixRelative(QList<Segment> &segList);
 

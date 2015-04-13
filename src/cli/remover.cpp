@@ -28,7 +28,7 @@
 // TODO: remove elements covered by other elements
 // Leomarc_sign_clearway_1.svg
 
-void Remover::cleanSvgElementAttribute()
+void Remover::cleanSvgElementAttribute() const
 {
     if (Keys.flag(Key::RemoveNotAppliedAttributes)) {
         StringSet ignoreAttr = Properties::presentationAttributes;
@@ -68,7 +68,7 @@ void Remover::cleanSvgElementAttribute()
     // TODO: add default attributes removing
 }
 
-void Remover::checkXlinkDeclaration()
+void Remover::checkXlinkDeclaration() const
 {
     bool isXlinkUsed = false;
     element_loop (svgElement()) {
@@ -87,7 +87,7 @@ void Remover::checkXlinkDeclaration()
         svgElement().setAttribute(QL1S("xmlns:xlink"), QL1S("http://www.w3.org/1999/xlink"));
 }
 
-void Remover::removeUnusedDefs()
+void Remover::removeUnusedDefs() const
 {
     bool isAnyRemoved = true;
     while (isAnyRemoved) {
@@ -114,7 +114,7 @@ void Remover::removeUnusedDefs()
     }
 }
 
-void Remover::removeUnusedDefsAttributes()
+void Remover::removeUnusedDefsAttributes() const
 {
     SvgElement elem = defsElement().firstChildElement();
     while (!elem.isNull()) {
@@ -145,7 +145,7 @@ void Remover::removeUnusedDefsAttributes()
     }
 }
 
-void Remover::removeDuplicatedDefs()
+void Remover::removeDuplicatedDefs() const
 {
     loop_children (defsElement()) {
         QString tag = elem.tagName();
@@ -160,7 +160,7 @@ void Remover::removeDuplicatedDefs()
     }
 }
 
-void Remover::detectEqualLinearGradients(SvgElement &elem1)
+void Remover::detectEqualLinearGradients(SvgElement &elem1) const
 {
     static const IntList gradientAttrs = IntList()
         << AttrId::transform << AttrId::xlink_href << AttrId::x1 << AttrId::y1 << AttrId::x2
@@ -204,7 +204,7 @@ void Remover::detectEqualLinearGradients(SvgElement &elem1)
     }
 }
 
-void Remover::detectEqualRadialGradients(SvgElement &elem1)
+void Remover::detectEqualRadialGradients(SvgElement &elem1) const
 {
     static const IntList gradientAttrs = IntList()
         << AttrId::transform << AttrId::xlink_href << AttrId::cx << AttrId::cy << AttrId::r
@@ -259,7 +259,7 @@ void Remover::detectEqualRadialGradients(SvgElement &elem1)
 }
 
 // TODO: process not only feGaussianBlur
-void Remover::detectEqualFilters(SvgElement &elem1)
+void Remover::detectEqualFilters(SvgElement &elem1) const
 {
     static const IntList filterAttrs = IntList()
         << AttrId::transform << AttrId::xlink_href << AttrId::x << AttrId::y << AttrId::width
@@ -312,7 +312,7 @@ void Remover::detectEqualFilters(SvgElement &elem1)
     }
 }
 
-void Remover::detectEqualClipPaths(SvgElement &elem1)
+void Remover::detectEqualClipPaths(SvgElement &elem1) const
 {
     SvgElement elem2 = defsElement().firstChildElement();
     while (!elem2.isNull()) {
@@ -366,7 +366,7 @@ void Remover::detectEqualClipPaths(SvgElement &elem1)
     }
 }
 
-void Remover::removeUnreferencedIds()
+void Remover::removeUnreferencedIds() const
 {
     // find
     StringSet m_allIdList;
@@ -414,7 +414,7 @@ void Remover::removeUnreferencedIds()
     }
 }
 
-void Remover::removeElements()
+void Remover::removeElements() const
 {
     static const QString metadata     = QL1S("metadata");
     static const QString sodipodi     = QL1S("sodipodi");
@@ -594,7 +594,7 @@ bool Remover::isDoctype(const QString &str)
     return false;
 }
 
-void Remover::removeElementsFinal()
+void Remover::removeElementsFinal() const
 {
     if (!Keys.flag(Key::RemoveInvisibleElements))
         return;
@@ -707,8 +707,8 @@ bool Remover::isElementInvisible2(SvgElement &elem)
     }
     if (!hasWrongParent) {
         // elements with no 'fill' and 'stroke' are invisible
-        QString stroke = parentAttribute(elem, AttrId::stroke);
-        if (    parentAttribute(elem, AttrId::fill) == V_none
+        QString stroke = elem.parentAttribute(AttrId::stroke, true);
+        if (    elem.parentAttribute(AttrId::fill, true) == V_none
             && (stroke == V_none || stroke.isEmpty())
             && !elem.isUsed()
             && elem.usesCount() == 0)
@@ -728,7 +728,7 @@ bool Remover::isElementInvisible2(SvgElement &elem)
     return false;
 }
 
-void Remover::removeAttributes()
+void Remover::removeAttributes() const
 {    
     element_loop (document().documentElement()) {
         if (!elem.hasAttributes())
@@ -867,7 +867,7 @@ void Remover::removeAttributes()
     removeNonElementAttributes();
 }
 
-void Remover::removeNonElementAttributes()
+void Remover::removeNonElementAttributes() const
 {
     IntList circle;
     circle << AttrId::transform << AttrId::cx << AttrId::cy << AttrId::r << AttrId::id;
@@ -894,7 +894,7 @@ void Remover::removeNonElementAttributes()
     }
 }
 
-void Remover::cleanPresentationAttributes()
+void Remover::cleanPresentationAttributes() const
 {
     element_loop (svgElement())
         cleanStyle(elem);
@@ -902,7 +902,7 @@ void Remover::cleanPresentationAttributes()
 
 // removes default value, only if parent style didn't contain same attribute
 // needed for all inherited attributes
-void Remover::cleanStyle(SvgElement &elem)
+void Remover::cleanStyle(SvgElement &elem) const
 {
     u_static bool isRemoveNotApplied = Keys.flag(Key::RemoveNotAppliedAttributes);
 
@@ -1005,7 +1005,7 @@ void Remover::cleanStyle(SvgElement &elem)
     }
 }
 
-void Remover::removeGroups()
+void Remover::removeGroups() const
 {
     IntList illegalGAttrList = IntList() << AttrId::mask << AttrId::clip_path << AttrId::filter;
 
@@ -1114,7 +1114,7 @@ void Remover::megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem,
     }
 }
 
-void Remover::ungroupSwitchElement()
+void Remover::ungroupSwitchElement() const
 {
     element_loop (svgElement()) {
         if (elem.tagName() != E_switch)
@@ -1154,7 +1154,7 @@ void Remover::ungroupSwitchElement()
     }
 }
 
-void Remover::ungroupAElement()
+void Remover::ungroupAElement() const
 {
     SvgElementList list = svgElement().childElements();
     while (!list.isEmpty()) {
@@ -1196,7 +1196,7 @@ void _setupTransformForBBox(const SvgElement &elem, const Transform &parentTs)
     }
 }
 
-void Remover::prepareViewBoxRect(QRectF &viewBox)
+void Remover::prepareViewBoxRect(QRectF &viewBox) const
 {
     if (svgElement().hasAttribute(AttrId::width) || svgElement().hasAttribute(AttrId::height)) {
         double w = viewBox.width();
@@ -1227,7 +1227,7 @@ void Remover::prepareViewBoxRect(QRectF &viewBox)
 // TODO: add blur support
 // TODO: better element removing (skadge_SVG_widgets_for_diagrams.svg)
 // TODO: remove 'image' elements (applications-other.svg)
-void Remover::removeElementsOutsideTheViewbox()
+void Remover::removeElementsOutsideTheViewbox() const
 {
     QRectF viewBox = viewBoxRect();
     if (viewBox.isNull())
@@ -1266,9 +1266,9 @@ void Remover::removeElementsOutsideTheViewbox()
                 rect = elem.bboxTransform().transformRect(rect);
             }
 
-            QString stroke = parentAttribute(elem, AttrId::stroke);
+            QString stroke = elem.parentAttribute(AttrId::stroke, true);
             if (!stroke.isEmpty() && stroke != V_none) {
-                QString sws = parentAttribute(elem, AttrId::stroke_width);
+                QString sws = elem.parentAttribute(AttrId::stroke_width, true);
                 double sw = 1;
                 if (!sws.isEmpty())
                     sw = toDouble(sws);

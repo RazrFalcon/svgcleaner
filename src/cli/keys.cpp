@@ -93,7 +93,7 @@ namespace KeyStr {
     const QString ShortOutput                 = QL1S("--short-output");
 }
 
-Keys::Keys(QObject *parent) : QObject(parent)
+Keys::Keys()
 {
     flags = new QSet<int>;
     setPreset(Preset::Complete);
@@ -532,7 +532,7 @@ void Keys::setPreset(const QString &name)
     }
 }
 
-QString Keys::preset()
+QString Keys::preset() const
 {
     return m_preset;
 }

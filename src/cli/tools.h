@@ -25,76 +25,21 @@
 #include <QtDebug>
 #include <QVarLengthArray>
 
-#include "enums.h"
 #include "keys.h"
-
-// we cannot use static variables while unit testing
-// so replace 'static' with nothing
-#ifdef U_TEST
-# define u_static
-#else
-# define u_static static
-#endif
-
-#include <cmath>
 
 typedef QVarLengthArray<ushort,65> CharArray;
 
-static inline bool isZero(double value)
-{
-    u_static const double minValue = 1.0 / pow(10, Keys::get().coordinatesPrecision());
-    return (qAbs(value) < minValue);
-}
-
-static inline bool isZeroTs(double value)
-{
-    u_static const double minValue = 1.0 / pow(10, Keys::get().transformPrecision());
-    return (qAbs(value) < minValue);
-}
-
+bool isZero(double value);
+bool isZeroTs(double value);
 QString fromDouble(double value, Round::RoundType type = Round::Coordinate);
 QString fromDouble(double value, int precision);
 double toDouble(const QString &str, bool *ok = 0);
 void doubleToVarArr(CharArray &arr, double value, int precision = 6);
-bool isSpace(ushort ch);
 
 class Tools
 {
 public:
     static QString convertUnitsToPx(const QString &text, double baseValue = 0);
-    static QString trimColor(const QString &color);
-    static QVariantHash initDefaultStyleHash();
-    static int numbersBeforePoint(double value);
-    static int zerosAfterPoint(double value);
-
-private:
-    static QString replaceColorName(const QString &color);
-};
-
-class StringWalker
-{
-public:
-    enum Opt { NoSkip, SkipComma };
-
-    StringWalker(const QString &text);
-    StringWalker(const QChar *astr, int size);
-    int jumpTo(const QChar &c);
-    int jumpToSpace();
-    QString readBefore(int len) const;
-    uint readBeforeId(int len) const;
-    void next();
-    void next(int count);
-    void skipSpaces();
-    bool atEnd() const;
-    bool isValid() const;
-    const QChar& current() const;
-    double number(Opt opt = SkipComma, bool *ok = 0);
-
-private:
-    const QChar *str;
-    const QChar *end;
-
-    static bool isDigit(ushort ch);
 };
 
 #endif // TOOLS_H

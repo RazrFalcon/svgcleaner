@@ -28,34 +28,34 @@ class Remover : public BaseCleaner
 {
 public:
     explicit Remover(SvgDocument &doc) : BaseCleaner(doc) {}
-    void removeUnreferencedIds();
-    void removeUnusedDefs();
-    void removeUnusedDefsAttributes();
-    void removeDuplicatedDefs();
-    void removeElements();
-    void removeElementsFinal();
-    void removeNonElementAttributes();
-    void cleanSvgElementAttribute();
-    void checkXlinkDeclaration();
-    void removeAttributes();
-    void cleanPresentationAttributes();
-    void removeGroups();
-    void ungroupSwitchElement();
-    void ungroupAElement();
-    void removeElementsOutsideTheViewbox();
+    void removeUnreferencedIds() const;
+    void removeUnusedDefs() const;
+    void removeUnusedDefsAttributes() const;
+    void removeDuplicatedDefs() const;
+    void removeElements() const;
+    void removeElementsFinal() const;
+    void removeNonElementAttributes() const;
+    void cleanSvgElementAttribute() const;
+    void checkXlinkDeclaration() const;
+    void removeAttributes() const;
+    void cleanPresentationAttributes() const;
+    void removeGroups() const;
+    void ungroupSwitchElement() const;
+    void ungroupAElement() const;
+    void removeElementsOutsideTheViewbox() const;
 
 private:
-    void detectEqualLinearGradients(SvgElement &elem1);
-    void detectEqualRadialGradients(SvgElement &elem1);
-    void detectEqualFilters(SvgElement &elem1);
-    void detectEqualClipPaths(SvgElement &elem1);
-    void cleanStyle(SvgElement &elem);
-    bool isElementInvisible(SvgElement &elem);
-    bool isElementInvisible2(SvgElement &elem);
+    void detectEqualLinearGradients(SvgElement &elem1) const;
+    void detectEqualRadialGradients(SvgElement &elem1) const;
+    void detectEqualFilters(SvgElement &elem1) const;
+    void detectEqualClipPaths(SvgElement &elem1) const;
+    void cleanStyle(SvgElement &elem) const;
+    static bool isElementInvisible(SvgElement &elem);
+    static bool isElementInvisible2(SvgElement &elem);
     void megreGroupWithChild(SvgElement &groupElem, SvgElement &childElem,
                              bool isParentToChild) const;
-    bool isDoctype(const QString &str);
-    void prepareViewBoxRect(QRectF &viewBox);
+    static bool isDoctype(const QString &str);
+    void prepareViewBoxRect(QRectF &viewBox) const;
 };
 
 #endif // REMOVER_H

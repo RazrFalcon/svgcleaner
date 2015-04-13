@@ -25,7 +25,7 @@
 #include <QRectF>
 
 #include "transform.h"
-#include "svgdom.h"
+#include "svgdom/svgdom.h"
 #include "tools.h"
 
 #define Keys Keys::get()
@@ -42,24 +42,23 @@ public:
     SvgDocument document() const;
     SvgElement svgElement() const;
     SvgElement defsElement() const;
-    bool hasParent(const SvgElement &elem, const QString &tagName) const;
-    bool hasUsedParent(const SvgElement &elem);
-    QString parentAttribute(const SvgElement &elem, uint attrId) const;
-    QRectF viewBoxRect();
+    static bool hasParent(const SvgElement &elem, const QString &tagName);
+    static bool hasUsedParent(const SvgElement &elem);
+    QRectF viewBoxRect() const;
     static SvgElement svgElement(SvgDocument doc);
-    SvgElement smartElementRemove(SvgElement &rmElem, bool isReturnPrev = false) const;
-    void removeAndMoveToPrev(SvgElement &elem);
-    void removeAndMoveToPrevSibling(SvgElement &elem);
+    static SvgElement smartElementRemove(SvgElement &rmElem, bool isReturnPrev = false);
+    static void removeAndMoveToPrev(SvgElement &elem);
+    static void removeAndMoveToPrevSibling(SvgElement &elem);
     QString genFreeId() const;
-    void joinLinearGradients(SvgElement &parent, SvgElement &child) const;
-    bool isGradientStopsEqual(const SvgElement &elem1, const SvgElement &elem2);
+    static void joinLinearGradients(SvgElement &parent, SvgElement &child);
+    static bool isGradientStopsEqual(const SvgElement &elem1, const SvgElement &elem2);
 
 private:
     SvgDocument m_doc;
     SvgElement m_svgElem;
     SvgElement m_defsElem;
 
-    SvgElement defsElement(SvgDocument doc, SvgElement &svgElem);
+    static SvgElement defsElement(SvgDocument doc, SvgElement &svgElem);
 };
 
 #endif // BASECLEANER_H

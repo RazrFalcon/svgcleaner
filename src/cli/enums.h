@@ -22,14 +22,9 @@
 #ifndef ENUMS_H
 #define ENUMS_H
 
-#include <QSet>
 #include <QVariantHash>
 
-#define QL1S(x) QLatin1String(x)
-#define QL1C(x) QLatin1Char(x)
-
-typedef QSet<QString> StringSet;
-typedef QHash<uint,QString> IntHash;
+#include "mindef.h"
 
 extern const QString UrlPrefix;
 
@@ -378,8 +373,6 @@ uint attrStrToId(const QString &name);
 bool isDefaultAttribute(const QString &name);
 bool isDefaultAttribute(uint id);
 QHash<uint,QVariant> initDefaultStyleHash();
-
-uint hash(const QChar *p, int n);
-uint qHash(const QString &key);
+StringHash initColorsHash();
 
 #endif // ENUMS_H

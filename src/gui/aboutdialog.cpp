@@ -21,6 +21,8 @@
 
 #include "aboutdialog.h"
 
+// TODO: add changelog tab
+
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent)
 {

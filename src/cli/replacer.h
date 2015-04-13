@@ -29,40 +29,39 @@ class Replacer : public BaseCleaner
 {
 public:
     explicit Replacer(SvgDocument &doc) : BaseCleaner(doc) {}
-    void convertSizeToViewbox();
-    void processPaths();
-    void fixWrongAttr();
-    void convertUnits();
-    void convertColors();
-    void convertEntityData();
-    void convertCDATAStyle();
-    void prepareDefs();
-    void splitStyleAttributes();
-    void joinStyleAttr();
-    void sortDefs();
-    void roundNumericAttributes();
-    void prepareLinkedStyles();
-    void convertBasicShapes();
-    void mergeGradients();
-    void finalFixes();
-    void trimIds();
-    void calcElemAttrCount(const QString &text);
-    void groupTextElementsStyles();
-    void groupElementsByStyles();
-    void applyTransformToDefs();
-    void applyTransformToShapes();
-    void mergeGradientsWithEqualStopElem();
-    void calcElementsBoundingBox();
-    void replaceEqualElementsByUse();
-    void moveStyleFromUsedElemToUse();
+    void convertSizeToViewbox() const;
+    void processPaths() const;
+    void fixWrongAttr() const;
+    void convertUnits() const;
+    void convertColors() const;
+    void convertEntityData() const;
+    void convertCDATAStyle() const;
+    void prepareDefs() const;
+    void splitStyleAttributes() const;
+    void joinStyleAttr() const;
+    void sortDefs() const;
+    void roundNumericAttributes() const;
+    void prepareLinkedStyles() const;
+    void convertBasicShapes() const;
+    void mergeGradients() const;
+    void finalFixes() const;
+    void trimIds() const;
+    void groupTextElementsStyles() const;
+    void groupElementsByStyles() const;
+    void applyTransformToDefs() const;
+    void applyTransformToShapes() const;
+    void mergeGradientsWithEqualStopElem() const;
+    void calcElementsBoundingBox() const;
+    void replaceEqualElementsByUse() const;
+    void moveStyleFromUsedElemToUse() const;
 
 private:
-    bool isPathValidToTransform(SvgElement &pathElem);
-    bool isBlurFilter(const SvgElement &elem);
-    void updateLinkedDefTransform(SvgElement &elem);
+    bool isPathValidToTransform(SvgElement &pathElem) const;
+    static bool isBlurFilter(const SvgElement &elem);
+    void updateLinkedDefTransform(SvgElement &elem) const;
     static bool nodeByTagNameSort(const SvgElement &node1, const SvgElement &node2);
-    void calcNewStrokeWidth(SvgElement &elem, double scaleFactor);
-    void _groupElementsByStyles(SvgElement parentElem = SvgElement());
+    static void calcNewStrokeWidth(SvgElement &elem, double scaleFactor);
+    void _groupElementsByStyles(SvgElement parentElem = SvgElement()) const;
 };
 
 #endif // REPLACER_H

@@ -22,6 +22,8 @@
 #include <cmath>
 #include <qnumeric.h>
 
+#include "stringwalker.h"
+#include "mindef.h"
 #include "tools.h"
 #include "transform.h"
 
@@ -33,7 +35,6 @@ namespace TransformType {
     static const QString SkewX     = QL1S("skewX");
     static const QString SkewY     = QL1S("skewY");
 }
-
 
 class TransformMatrix
 {

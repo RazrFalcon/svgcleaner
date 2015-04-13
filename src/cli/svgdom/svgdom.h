@@ -22,8 +22,8 @@
 #ifndef SVGDOM_H
 #define SVGDOM_H
 
-#include "enums.h"
-#include "transform.h"
+#include "../enums.h"
+#include "../transform.h"
 
 class SvgDocumentPrivate;
 class SvgNodePrivate;
@@ -40,9 +40,6 @@ class SvgText;
 class SvgComment;
 class SvgAttribute;
 
-typedef QHash<QString,QString> StringHash;
-typedef QMap<QString,QString> StringMap;
-typedef QSet<QString> StringSet;
 typedef QList<SvgElement> SvgElementList;
 typedef QList<SvgNode> SvgNodeList;
 typedef QList<uint> IntList;
@@ -359,9 +356,6 @@ private:
 
 SvgElement prevElement(const SvgElement &elem);
 SvgElement prevSiblingElement(const SvgElement &elem);
-void removeAndMoveToPrev(SvgElement &elem);
-void removeAndMoveToPrevSibling(SvgElement &elem);
-void nextNode(SvgNode &node, const SvgNode &root);
 void nextElement(SvgElement &elem, const SvgElement &root, bool ignoreChild = false);
 
 #endif // SVGDOM_H

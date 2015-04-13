@@ -22,11 +22,9 @@
 #ifndef KEYS_H
 #define KEYS_H
 
+#include <QCoreApplication>
 #include <QStringList>
 #include <QHash>
-#include <QMap>
-#include <QSet>
-#include <QObject>
 
 namespace Round {
     enum RoundType { Coordinate, Transform, Attribute };
@@ -180,10 +178,9 @@ namespace KeyStr {
 }
 
 // singleton
-class Keys : public QObject
+class Keys
 {
-    // TODO: remove qobj dependency
-    Q_OBJECT
+    Q_DECLARE_TR_FUNCTIONS(Keys)
 
 public:
     static Keys& get() {
@@ -210,10 +207,10 @@ public:
     QList<int> completePresetKeys();
     QList<int> extremePresetKeys();
     void setPreset(const QString &name);
-    QString preset();
-    QStringList allKeys();
-    QString keyName(int keyId);
-    QString presetDescription(const QString &name);
+    QString preset() const;
+    static QStringList allKeys();
+    static QString keyName(int keyId);
+    static QString presetDescription(const QString &name);
 
 private:
     QHash<int, double> numHash;
@@ -224,7 +221,7 @@ private:
     int m_transformPrecision;
     QString m_preset;
 
-    Keys(QObject *parent = 0);
+    Keys();
     Keys(Keys const&);
     void operator=(Keys const&);
 };

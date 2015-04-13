@@ -22,9 +22,8 @@
 #include "basecleaner.h"
 #include "transform.h"
 
-BaseCleaner::BaseCleaner(SvgDocument doc)
+BaseCleaner::BaseCleaner(SvgDocument doc) : m_doc(doc)
 {
-    m_doc = doc;
     m_svgElem = svgElement(doc);
     m_defsElem = defsElement(doc, m_svgElem);
 }
@@ -71,7 +70,7 @@ SvgElement BaseCleaner::svgElement(SvgDocument doc)
     return SvgElement();
 }
 
-void BaseCleaner::joinLinearGradients(SvgElement &parent, SvgElement &child) const
+void BaseCleaner::joinLinearGradients(SvgElement &parent, SvgElement &child)
 {
     foreach (const SvgElement &elem, child.childElements())
         parent.appendChild(elem);
@@ -80,7 +79,7 @@ void BaseCleaner::joinLinearGradients(SvgElement &parent, SvgElement &child) con
 }
 
 // remove element with dependency checking
-SvgElement BaseCleaner::smartElementRemove(SvgElement &rmElem, bool isReturnPrev) const
+SvgElement BaseCleaner::smartElementRemove(SvgElement &rmElem, bool isReturnPrev)
 {
     if (rmElem.parentElement().tagName() == E_defs) {
         // if removed element is 'linearGradient'
@@ -149,7 +148,7 @@ void BaseCleaner::removeAndMoveToPrevSibling(SvgElement &elem)
     smartElementRemove(tElem);
 }
 
-bool BaseCleaner::hasParent(const SvgElement &elem, const QString &tagName) const
+bool BaseCleaner::hasParent(const SvgElement &elem, const QString &tagName)
 {
     SvgElement parent = elem.parentElement();
     while (!parent.isNull()) {
@@ -171,19 +170,7 @@ bool BaseCleaner::hasUsedParent(const SvgElement &elem)
     return false;
 }
 
-// TODO: remove
-QString BaseCleaner::parentAttribute(const SvgElement &elem, uint attrId) const
-{
-    SvgElement parent = elem;
-    while (!parent.isNull()) {
-        if (parent.hasAttribute(attrId))
-            return parent.attribute(attrId);
-        parent = parent.parentElement();
-    }
-    return QString();
-}
-
-QRectF BaseCleaner::viewBoxRect()
+QRectF BaseCleaner::viewBoxRect() const
 {
     QRectF rect;
     if (svgElement().hasAttribute(AttrId::viewBox)) {

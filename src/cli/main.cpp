@@ -155,11 +155,11 @@ void processFile(const QString &inPath, const QString &outPath)
     replacer.splitStyleAttributes();
     replacer.convertCDATAStyle();
     replacer.convertUnits();
-    replacer.convertColors();
     replacer.prepareDefs();
     replacer.fixWrongAttr();
     replacer.roundNumericAttributes();
     replacer.prepareLinkedStyles();
+    replacer.convertColors();
 
     // cleaning methods
     remover.cleanSvgElementAttribute();

@@ -19,7 +19,8 @@
 **
 ****************************************************************************/
 
-#include "paths.h"
+#include "paths/paths.h"
+#include "stringwalker.h"
 #include "replacer.h"
 
 // TODO: replace equal 'fill', 'stroke', 'stop-color', 'flood-color' and 'lighting-color' attr
@@ -31,7 +32,7 @@
 // TODO: maybe move frequently used styles to CDATA
 // TODO: rename element id when changing tagname
 
-void Replacer::convertSizeToViewbox()
+void Replacer::convertSizeToViewbox() const
 {
     if (!svgElement().hasAttribute(AttrId::viewBox)) {
         if (svgElement().hasAttribute(AttrId::width) && svgElement().hasAttribute(AttrId::height)) {
@@ -62,7 +63,7 @@ void Replacer::convertSizeToViewbox()
 //       Anonymous_Flag_of_South_Korea.svg
 // TODO: join paths with equal styles to one 'd' attr
 // TODO: split and replace with 'use', paths which contains equal subpaths
-void Replacer::processPaths()
+void Replacer::processPaths() const
 {
     bool skip = true;
     foreach (const int &id, Keys.pathsKeysId()) {
@@ -106,7 +107,7 @@ void Replacer::processPaths()
 
 // TODO: transform paths with equal transforms and equal defs
 // 7zip.svg
-bool Replacer::isPathValidToTransform(SvgElement &pathElem)
+bool Replacer::isPathValidToTransform(SvgElement &pathElem) const
 {
     if (!pathElem.hasTransform())
         return false;
@@ -164,7 +165,7 @@ bool Replacer::isBlurFilter(const SvgElement &elem)
     return false;
 }
 
-void Replacer::updateLinkedDefTransform(SvgElement &elem)
+void Replacer::updateLinkedDefTransform(SvgElement &elem) const
 {
     static const IntList attrList = IntList() << AttrId::fill << AttrId::stroke << AttrId::filter;
     foreach (const uint &attrId, attrList) {
@@ -204,7 +205,7 @@ public:
 // FIXME: parent styles should be set to elem before moving to defs
 //        address-book-new.svg
 // TODO: reuse groups
-void Replacer::replaceEqualElementsByUse()
+void Replacer::replaceEqualElementsByUse() const
 {
     static const IntList rectAttrs = IntList()
         << AttrId::x << AttrId::y << AttrId::width << AttrId::height << AttrId::rx << AttrId::ry;
@@ -319,7 +320,7 @@ void Replacer::replaceEqualElementsByUse()
 
 // TODO: process use element which is used too
 // webmichl_wristwatch_1_-_chronometer.svg
-void Replacer::moveStyleFromUsedElemToUse()
+void Replacer::moveStyleFromUsedElemToUse() const
 {
     element_loop (svgElement()) {
 
@@ -362,7 +363,7 @@ void Replacer::moveStyleFromUsedElemToUse()
     }
 }
 
-void Replacer::convertUnits()
+void Replacer::convertUnits() const
 {
     QRectF rect = viewBoxRect();
     // TODO: merge code
@@ -445,7 +446,7 @@ void Replacer::convertUnits()
                     || fontSizeStr.endsWith(LengthType::em)
                     || fontSizeStr.endsWith(LengthType::Percent))
                 {
-                    QString parentFontSize = parentAttribute(elem.parentElement(), AttrId::font_size);
+                    QString parentFontSize = elem.parentAttribute(AttrId::font_size);
                     if (parentFontSize.isEmpty() || parentFontSize == V_zero)
                         qFatal("could not calculate relative font-size");
                     QString newFontSize = Tools::convertUnitsToPx(fontSizeStr,
@@ -481,7 +482,7 @@ void Replacer::convertUnits()
                        attrValue = Tools::convertUnitsToPx(attrValue, rect.height());
                 }
             } else if (attrValue.endsWith(LengthType::ex) || attrValue.endsWith(LengthType::em)) {
-                double fontSize = toDouble(parentAttribute(elem, AttrId::font_size));
+                double fontSize = toDouble(elem.parentAttribute(AttrId::font_size, true));
                 if (fontSize == 0)
                     qFatal("could not convert em/ex values "
                            "without font-size attribute is set");
@@ -494,7 +495,7 @@ void Replacer::convertUnits()
     }
 }
 
-void Replacer::convertColors()
+void Replacer::convertColors() const
 {
     static const bool isConvertColors
             = (Keys.flag(Key::ConvertColorToRRGGBB) || Keys.flag(Key::ConvertRRGGBBToRGB));
@@ -509,9 +510,75 @@ void Replacer::convertColors()
             if (!elem.hasAttribute(attrId))
                 continue;
 
+            if (elem.hasReference(attrId))
+                continue;
+
             QString value = elem.attribute(attrId);
-            if (!value.isEmpty() && value != V_none && !value.startsWith(UrlPrefix))
-                elem.setAttribute(attrId, Tools::trimColor(value));
+            if (value == V_none)
+                continue;
+
+            // attribute cannot contain url as string
+            // if it does - remove it
+            if (value.startsWith(UrlPrefix)) {
+                elem.removeAttribute(attrId);
+                continue;
+            }
+
+            QString newColor = value.toLower();
+
+            // convert 'rgb (255, 255, 255)' to #RRGGBB
+            if (Keys.flag(Key::ConvertColorToRRGGBB)) {
+                if (newColor.contains(QL1S("rgb"))) {
+                    StringWalker sw(newColor);
+                    QVector<double> nums;
+                    nums.reserve(3);
+                    while (!sw.atEnd()) {
+                        sw.jumpTo(QL1C('('));
+                        sw.skipSpaces();
+                        sw.next();
+                        for (int i = 0; i < 3; ++i) {
+                            nums << sw.number();
+                            if (sw.current() == LengthType::Percent)
+                                sw.next();
+                            if (sw.current() == QL1C(','))
+                                sw.next();
+                        }
+                        sw.jumpTo(QL1C(')'));
+                        sw.next();
+                    }
+                    // convert 'rgb (100%, 100%, 100%)' to 'rgb (255, 255, 255)'
+                    if (newColor.contains(LengthType::Percent)) {
+                        for (int i = 0; i < 3; ++i)
+                            nums[i] = nums.at(i) * 255 / 100;
+                    }
+                    newColor = QL1C('#');
+                    foreach (const double &value, nums)
+                        newColor += QString::number((int)value, 16).rightJustified(2, QL1C('0'));
+                }
+
+                // check is color set by name
+                if (!newColor.contains(QL1C('#'))) {
+                    QString colorHash = initColorsHash().value(newColor);
+                    if (!colorHash.isEmpty())
+                        newColor = colorHash;
+                }
+            }
+
+            if (Keys.flag(Key::ConvertRRGGBBToRGB)) {
+                if (newColor.startsWith(QL1C('#'))) {
+                    // try to convert #rrggbb to #rgb
+                    if (newColor.size() == 7) { // #000000
+                        int inter = 0;
+                        for (int i = 1; i < 6; i += 2) {
+                            if (newColor.at(i) == newColor.at(i+1))
+                                inter++;
+                        }
+                        if (inter == 3)
+                            newColor = QL1C('#') + newColor.at(1) + newColor.at(3) + newColor.at(5);
+                    }
+                }
+            }
+            elem.setAttribute(attrId, newColor);
         }
     }
 }
@@ -589,7 +656,7 @@ IntHash splitStyle(const QString &style, SvgElement &elem)
  *
  * Only link and style supported.
  */
-void Replacer::convertEntityData()
+void Replacer::convertEntityData() const
 {
     SvgNodeList nodeList = document().childNodes();
     QString text;
@@ -670,7 +737,7 @@ void Replacer::convertEntityData()
 }
 
 // TODO: rewrite parsing (atlas.svg)
-void Replacer::convertCDATAStyle()
+void Replacer::convertCDATAStyle() const
 {
     QStringList styleList;
     element_loop (document().documentElement()) {
@@ -734,7 +801,7 @@ void Replacer::convertCDATAStyle()
     }
 }
 
-void Replacer::prepareDefs()
+void Replacer::prepareDefs() const
 {
     // move all gradient, filters, etc. to 'defs' element
     element_loop (svgElement()) {
@@ -775,7 +842,7 @@ void Replacer::prepareDefs()
     svgElement().insertBefore(defsElement(), svgElement().firstChildElement());
 }
 
-void Replacer::fixWrongAttr()
+void Replacer::fixWrongAttr() const
 {
     IntList tmpList = IntList() << AttrId::fill << AttrId::stroke;
     element_loop (svgElement()) {
@@ -839,7 +906,7 @@ void Replacer::fixWrongAttr()
 }
 
 // TODO: remove spaces from 'enable-background' attr
-void Replacer::finalFixes()
+void Replacer::finalFixes() const
 {
     element_loop (svgElement()) {
         QString tagName = elem.tagName();
@@ -901,7 +968,7 @@ void plusOne(QList<int> &list, int offset = 0)
 }
 
 // convert id names to short one using custom numeral system
-void Replacer::trimIds()
+void Replacer::trimIds() const
 {
     static QList<QChar> charList;
     if (charList.isEmpty()) {
@@ -955,7 +1022,7 @@ struct AttrData {
 };
 
 // TODO: remove 'tspan' without attributes
-void Replacer::groupTextElementsStyles()
+void Replacer::groupTextElementsStyles() const
 {
     IntList importantAttrs;
     importantAttrs << AttrId::x << AttrId::y << AttrId::dx << AttrId::dy << AttrId::rotate
@@ -1094,7 +1161,7 @@ void Replacer::groupTextElementsStyles()
     }
 }
 
-void Replacer::sortDefs()
+void Replacer::sortDefs() const
 {
     // sort only not used definitions
     SvgElementList list = defsElement().childElements();
@@ -1116,7 +1183,7 @@ bool Replacer::nodeByTagNameSort(const SvgElement &node1, const SvgElement &node
     return node1.tagName() < node2.tagName();
 }
 
-void Replacer::roundNumericAttributes()
+void Replacer::roundNumericAttributes() const
 {
     IntList listBasedAttrList;
     listBasedAttrList << AttrId::stdDeviation << AttrId::baseFrequency << AttrId::dx
@@ -1176,7 +1243,7 @@ void Replacer::roundNumericAttributes()
     }
 }
 
-void Replacer::prepareLinkedStyles()
+void Replacer::prepareLinkedStyles() const
 {
     QHash<QString,SvgElement> defs;
     // must be callen only after all defs is moved to 'defs' group
@@ -1223,7 +1290,7 @@ void Replacer::prepareLinkedStyles()
 // TODO: check converting without default attributes
 
 // http://www.w3.org/TR/SVG/shapes.html
-void Replacer::convertBasicShapes()
+void Replacer::convertBasicShapes() const
 {
     element_loop (svgElement()) {
         QString ctag = elem.tagName();
@@ -1245,11 +1312,11 @@ void Replacer::convertBasicShapes()
                                                         << A_rx << A_ry);
                 }
             } else if (ctag == E_polyline || ctag == E_polygon) {
-                QList<Segment> segmentList;
+                QList<PathSegment> segmentList;
                 QString path = elem.attribute(AttrId::points).simplified();
                 StringWalker sw(path);
                 while (!sw.atEnd()) {
-                    Segment seg;
+                    PathSegment seg;
                     seg.command = Command::MoveTo;
                     seg.absolute = true;
                     seg.srcCmd = segmentList.isEmpty();
@@ -1258,7 +1325,7 @@ void Replacer::convertBasicShapes()
                     segmentList.append(seg);
                 }
                 if (ctag == E_polygon) {
-                    Segment seg;
+                    PathSegment seg;
                     seg.command = Command::ClosePath;
                     seg.absolute = false;
                     seg.srcCmd = true;
@@ -1275,7 +1342,7 @@ void Replacer::convertBasicShapes()
     }
 }
 
-void Replacer::splitStyleAttributes()
+void Replacer::splitStyleAttributes() const
 {
     element_loop (document().documentElement()) {
         if (elem.tagName().contains(E_feFlood))
@@ -1288,7 +1355,7 @@ void Replacer::splitStyleAttributes()
     }
 }
 
-void Replacer::joinStyleAttr()
+void Replacer::joinStyleAttr() const
 {
     SvgElement elem = document().documentElement();
     SvgElement root = elem;
@@ -1305,7 +1372,7 @@ void Replacer::joinStyleAttr()
     }
 }
 
-void Replacer::mergeGradients()
+void Replacer::mergeGradients() const
 {
     loop_children (defsElement()) {
 
@@ -1389,7 +1456,7 @@ void Replacer::mergeGradients()
  *
  */
 
-void Replacer::mergeGradientsWithEqualStopElem()
+void Replacer::mergeGradientsWithEqualStopElem() const
 {
     SvgElement elem1 = defsElement().firstChildElement();
     while (!elem1.isNull()) {
@@ -1422,7 +1489,7 @@ void Replacer::mergeGradientsWithEqualStopElem()
     }
 }
 
-void Replacer::calcElementsBoundingBox()
+void Replacer::calcElementsBoundingBox() const
 {
     element_loop (svgElement()) {
         // cannot calculate bbox for element with transform
@@ -1478,7 +1545,7 @@ void Replacer::calcElementsBoundingBox()
  * </g>
  */
 
-void Replacer::groupElementsByStyles()
+void Replacer::groupElementsByStyles() const
 {
     _groupElementsByStyles();
 }
@@ -1487,7 +1554,7 @@ void Replacer::groupElementsByStyles()
 //       demo.svg, applications-development.svg
 // TODO: group non successively used attributes
 //       Anonymous_City_flag_of_Gijon_Asturies_Spain.svg
-void Replacer::_groupElementsByStyles(SvgElement parentElem)
+void Replacer::_groupElementsByStyles(SvgElement parentElem) const
 {
     // first start
     if (parentElem.isNull())
@@ -1625,7 +1692,7 @@ void Replacer::_groupElementsByStyles(SvgElement parentElem)
     }
 }
 
-void Replacer::applyTransformToDefs()
+void Replacer::applyTransformToDefs() const
 {
     // call only before Remover::removeUnusedDefsAttributes(),
     // because it can broke transform applying to attributes which was removed
@@ -1675,7 +1742,7 @@ void Replacer::applyTransformToDefs()
     }
 }
 
-void Replacer::applyTransformToShapes()
+void Replacer::applyTransformToShapes() const
 {
     // TODO: add another shapes
 
@@ -1748,6 +1815,7 @@ void Replacer::applyTransformToShapes()
     }
 }
 
+// TODO: merge with Paths::calcNewStrokeWidth
 void Replacer::calcNewStrokeWidth(SvgElement &elem, double scaleFactor)
 {
     SvgElement parentElem = elem;

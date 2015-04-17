@@ -79,6 +79,7 @@ namespace KeyStr {
     const QString RemoveTinySegments          = QL1S("--remove-tiny-segments");
     const QString ConvertSegments             = QL1S("--convert-segments");
     const QString ApplyTransformsToPaths      = QL1S("--apply-transforms-to-paths");
+    const QString ForceApplyTransformsToPaths = QL1S("--force-apply-transforms-to-paths");
 
     const QString CreateViewbox               = QL1S("--create-viewbox");
     const QString ConvertColorToRRGGBB        = QL1S("--colors-to-rrggbb");
@@ -236,6 +237,8 @@ void Keys::prepareDescription()
                     tr("Convert segments into shorter equivalent, when possible"));
     descHash.insert(Key::ApplyTransformsToPaths,
                     tr("Apply transform matrices, when possible"));
+    descHash.insert(Key::ForceApplyTransformsToPaths,
+                    tr("Force transform matrices applying"));
 
     descHash.insert(Key::CreateViewbox,
                     tr("Convert 'height' and 'width' attributes into 'viewBox' attribute"));
@@ -330,6 +333,13 @@ QList<int> Keys::pathsKeysId()
         << Key::RemoveTinySegments
         << Key::ConvertSegments
         << Key::ApplyTransformsToPaths;
+    return list;
+}
+
+QList<int> Keys::pathsUtilsKeysId()
+{
+    static QList<int> list = QList<int>()
+        << Key::ForceApplyTransformsToPaths;
     return list;
 }
 
@@ -450,6 +460,8 @@ QStringList Keys::allKeys()
         << KeyStr::RemoveTinySegments
         << KeyStr::ConvertSegments
         << KeyStr::ApplyTransformsToPaths
+
+        << KeyStr::ForceApplyTransformsToPaths
 
         << KeyStr::CreateViewbox
         << KeyStr::ConvertColorToRRGGBB

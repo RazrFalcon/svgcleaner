@@ -93,6 +93,8 @@ enum Key {
     ConvertSegments,
     ApplyTransformsToPaths,
 
+    ForceApplyTransformsToPaths,
+
     CreateViewbox,
     ConvertColorToRRGGBB,
     ConvertRRGGBBToRGB,
@@ -162,6 +164,7 @@ namespace KeyStr {
     extern const QString RemoveTinySegments;
     extern const QString ConvertSegments;
     extern const QString ApplyTransformsToPaths;
+    extern const QString ForceApplyTransformsToPaths;
 
     extern const QString CreateViewbox;
     extern const QString ConvertColorToRRGGBB;
@@ -201,6 +204,7 @@ public:
     QList<int> attributesKeysId();
     QList<int> attributesUtilsKeysId();
     QList<int> pathsKeysId();
+    QList<int> pathsUtilsKeysId();
     QList<int> optimizationsKeysId();
     QList<int> optimizationsUtilsKeysId();
     QList<int> basicPresetKeys();

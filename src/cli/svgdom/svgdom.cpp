@@ -43,7 +43,6 @@
 #include "svgparser.h"
 #include "svgdom.h"
 
-#define CheckData(_retValue) if (!impl) return _retValue
 #define ToDoc(x) static_cast<SvgDocumentPrivate *>(x)
 #define ToElem(x) static_cast<SvgElementPrivate *>(x)
 
@@ -138,7 +137,6 @@ class SvgDocumentPrivate : public SvgNodePrivate
 {
 public:
     SvgDocumentPrivate();
-    ~SvgDocumentPrivate() {}
     bool isDocument() const { return true; }
 
     // vars:
@@ -167,6 +165,16 @@ SvgNodePrivate::~SvgNodePrivate()
 
     while (p) {
         n = p->next;
+
+        // remove all links before node delete or detach
+        if (p->isElement()) {
+            SvgElementPrivate *e = ToElem(p);
+            if (!e->linkedElemList.isEmpty()) {
+                e->attributes.clear();
+                e->linkedElemList.clear();
+            }
+        }
+
         if (!p->ref.deref())
             delete p;
         else

@@ -64,7 +64,7 @@ public:
     SvgNode &operator= (const SvgNode &);
     bool operator== (const SvgNode &) const;
     bool operator!= (const SvgNode &) const;
-    ~SvgNode();
+    virtual ~SvgNode();
 
     SvgNode insertBefore(const SvgNode &newChild, const SvgNode &refChild);
     void removeChild(const SvgNode &oldChild);
@@ -236,6 +236,7 @@ class SvgAttributeData : public QSharedData
 {
 public:
     SvgAttributeData() : QSharedData(), id(0), isStyle(false), type(None) {}
+    virtual ~SvgAttributeData() {}
 
     enum Types { None, Default, External, TTransform, Reference };
 

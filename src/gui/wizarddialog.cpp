@@ -242,6 +242,12 @@ void WizardDialog::initPathsPage()
         chBox->setProperty("key", key);
         lay->addWidget(chBox);
     }
+    addUtilsLabel(lay);
+    foreach (const int &key, Keys::get().pathsUtilsKeysId()) {
+        QCheckBox *chBox = new QCheckBox(Keys::get().description(key), this);
+        chBox->setProperty("key", key);
+        lay->addWidget(chBox);
+    }
     lay->addStretch();
 }
 

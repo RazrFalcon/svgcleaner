@@ -481,7 +481,7 @@ void TransformPrivate::calcParameters(const TransformMatrix &matrix)
 
 Transform::Transform(const QString &text)
 {
-    impl = new TransformPrivate();
+    impl = new TransformPrivate;
     if (text.isEmpty())
         impl->calcMatrixes(QString());
     else
@@ -490,7 +490,7 @@ Transform::Transform(const QString &text)
 
 Transform::Transform(const QChar *str, int size)
 {
-    impl = new TransformPrivate();
+    impl = new TransformPrivate;
     if (size == 0)
         impl->calcMatrixes(QString());
     else
@@ -530,8 +530,7 @@ bool Transform::isNull() const
 
 bool Transform::isValid() const
 {
-    if (!impl)
-        return false;
+    CheckData(false);
     return !(   qFuzzyCompare(impl->a, 1.0)
              && isZeroTs(impl->b)
              && isZeroTs(impl->c)
@@ -540,37 +539,28 @@ bool Transform::isValid() const
              && isZero(impl->f));
 }
 
-void Transform::clear()
-{
-    impl = 0;
-}
-
 void Transform::append(const Transform &ts)
 {
-    if (!impl)
-        return;
+    CheckData();
     impl->calcParameters(matrix() * ts.matrix());
 }
 
 void Transform::setOldXY(double prevX, double prevY)
 {
-    if (!impl)
-        return;
+    CheckData();
     impl->oldX = prevX;
     impl->oldY = prevY;
 }
 
 void Transform::divide(const QString &text)
 {
-    if (!impl)
-        return;
+    CheckData();
     impl->divide(text);
 }
 
 QRectF Transform::transformRect(const QRectF &rect)
 {
-    if (!impl)
-        return QRectF();
+    CheckData(QRect());
 
     // cannot apply skew transform to rect
     Q_ASSERT(isSkew() == false);
@@ -611,15 +601,13 @@ QRectF Transform::transformRect(const QRectF &rect)
 
 double Transform::newX() const
 {
-    if (!impl)
-        return 0;
+    CheckData(0);
     return impl->a * impl->oldX + impl->c * impl->oldY + impl->e;
 }
 
 double Transform::newY() const
 {
-    if (!impl)
-        return 0;
+    CheckData(0);
     return impl->b * impl->oldX + impl->d * impl->oldY + impl->f;
 }
 
@@ -630,8 +618,7 @@ Transform::Transform(TransformPrivate *t)
 
 QString Transform::simplified()
 {
-    if (!impl)
-        return QString();
+    CheckData(QString());
     if (impl->isChanged) {
         impl->lastSimplified = impl->simplified();
         impl->isChanged = false;
@@ -641,58 +628,50 @@ QString Transform::simplified()
 
 QString Transform::simplified() const
 {
-    if (!impl)
-        return QString();
+    CheckData(QString());
     return impl->simplified();
 }
 
 double Transform::scaleFactor() const
 {
-    if (!impl)
-        return 0;
+    CheckData(0);
     return impl->xScale;
 }
 
 bool Transform::isProportionalScale() const
 {
-    if (!impl)
-        return false;
+    CheckData(false);
     return impl->types.testFlag(TransformPrivate::ProportionalScale);
 }
 
 bool Transform::isMirrored() const
 {
-    if (!impl)
-        return false;
+    CheckData(false);
     return    impl->types.testFlag(TransformPrivate::VertiacalMirror)
            || impl->types.testFlag(TransformPrivate::HorizontalMirror);
 }
 
 bool Transform::isSkew() const
 {
-    if (!impl)
-        return false;
+    CheckData(false);
     return impl->types.testFlag(TransformPrivate::Skew);
 }
 
 bool Transform::isRotating() const
 {
-    if (!impl)
-        return false;
+    CheckData(false);
     return impl->types.testFlag(TransformPrivate::Rotate);
 }
 
 bool Transform::isTranslate() const
 {
-    if (!impl)
-        return false;
+    CheckData(false);
     return impl->types.testFlag(TransformPrivate::Translate);
 }
 
 TransformMatrix Transform::matrix() const
 {
-    if (!impl)
-        return TransformMatrix();
+    CheckData(TransformMatrix());
     return impl->matrix();
 }
 
@@ -706,8 +685,7 @@ QString Transform::matrixString() const
 
 TransformPrivate::Types Transform::type() const
 {
-    if (!impl)
-        return TransformPrivate::Types();
+    CheckData(TransformPrivate::Types());
     return impl->types;
 }
 

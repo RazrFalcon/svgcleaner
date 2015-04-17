@@ -33,11 +33,11 @@ class TransformPrivate : public QSharedData
 {
 public:
     TransformPrivate();
-    ~TransformPrivate() {}
 
     QString simplified() const;
-    void divide(const QString &text);
     TransformMatrix matrix() const;
+
+    void divide(const QString &text);
     QList<TransformMatrix> parseTransform(const QString &text);
     QList<TransformMatrix> parseTransform(const QChar *str, int size);
     void calcMatrixes(const QString &text);
@@ -87,7 +87,6 @@ public:
     bool operator!= (const Transform &t) const;
     bool isNull() const;
     bool isValid() const;
-    void clear();
 
     void append(const Transform &ts);
     void setOldXY(double prevX, double prevY);

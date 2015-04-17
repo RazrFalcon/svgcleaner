@@ -57,7 +57,7 @@ SvgParser::TokenType SvgParser::readNext()
     m_attrExtHash.clear();
     m_name.clear();
     m_value.clear();
-    m_transform.clear();
+    m_transform = Transform();
 
     TokenType token = identify(&str);
     if (token == ProcessingInstruction) {

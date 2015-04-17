@@ -27,6 +27,8 @@
 #define QL1S(x) QLatin1String(x)
 #define QL1C(x) QLatin1Char(x)
 
+#define CheckData(_retValue) if (!impl) return _retValue
+
 typedef QSet<QString> StringSet;
 typedef QHash<uint,QString> IntHash;
 typedef QHash<QString,QString> StringHash;

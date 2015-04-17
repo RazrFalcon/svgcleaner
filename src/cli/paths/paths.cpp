@@ -97,7 +97,7 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isTransfor
         m_elem.setAttribute(QL1S("dts"), segmentsToPath(tsSegList));
 
         // apply transform only if it shorter
-        if (isTsPathShorter()) {
+        if (isTsPathShorter() || Keys.flag(Key::ForceApplyTransformsToPaths)) {
             *isTransformApplied = true;
             elem.setAttribute(AttrId::d, elem.attribute(QL1S("dts")));
             QString newStroke = elem.attribute(QL1S("stroke-width-new"));

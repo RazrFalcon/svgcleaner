@@ -59,6 +59,7 @@ enum Key {
     RemoveDuplicatedDefs,
     RemoveOutsideElements,
     ReplaceEqualEltsByUse,
+    ReplaceEqualPathsByUse,
     UngroupContainers,
     MergeGradients,
     RemoveTinyGaussianBlur,
@@ -129,6 +130,7 @@ namespace KeyStr {
     extern const QString RemoveDuplicatedDefs;
     extern const QString RemoveOutsideElements;
     extern const QString ReplaceEqualEltsByUse;
+    extern const QString ReplaceEqualPathsByUse;
     extern const QString UngroupContainers;
     extern const QString MergeGradients;
 

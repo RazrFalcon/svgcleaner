@@ -53,11 +53,13 @@ struct ArcStruct
     QList<double> recursive;
 };
 
-// TODO: split to subclasses
 class PathSegment
 {
 public:
     PathSegment();
+    bool operator== (const PathSegment &s) const;
+    bool operator!= (const PathSegment &s) const;
+
     void setTransform(Transform &ts);
     void toRelative(double xLast, double yLast);
     void coords(QVarLengthArray<double, 6> &points);
@@ -84,6 +86,8 @@ private:
     QPointF rotatePoint(double x, double y, double rad) const;
     QVarLengthArray<QPointF, 9> arcToCurve(ArcStruct arc) const;
 };
+
+typedef QList<PathSegment> PathSegmentList;
 
 QDebug operator<<(QDebug dbg, const PathSegment &s);
 

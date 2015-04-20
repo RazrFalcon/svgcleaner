@@ -19,6 +19,8 @@
 **
 ****************************************************************************/
 
+#include <QtDebug>
+
 #include <cmath>
 #include <qnumeric.h>
 
@@ -193,7 +195,6 @@ QString TransformPrivate::simplified() const
     Types type = types;
     type &= ~(ProportionalScale);
 
-    // [1 0 0 1 tx ty] = translate
     if (type == Translate)
     {
         if (f != 0) {
@@ -207,7 +208,7 @@ QString TransformPrivate::simplified() const
             newPoints << fromDouble(e, Round::Coordinate);
         }
         transform = TransformType::Translate;
-    } // [sx 0 0 sy 0 0] = scale
+    }
     else if (type == Scale)
     {
         if (a != d) {
@@ -221,14 +222,14 @@ QString TransformPrivate::simplified() const
             newPoints << fromDouble(a, Round::Transform);
         }
         transform = TransformType::Scale;
-    } // [cos(a) sin(a) -sin(a) cos(a) 0 0] = rotate
-    else if (type == Rotate)
+    }
+    else if (type == Rotate && !isZeroTs(b-c))
     {
         if (angle == 0)
             return QString();
         transform = TransformType::Rotate;
         newPoints << fromDouble(angle, Round::Transform);
-    } // [1 0 tan(a) 1 0 0] = skewX, [1 tan(a) 0 1 0 0] = skewY
+    }
     else if (type == Skew)
     {
         if (xSkew == 0 && ySkew == 0)
@@ -254,7 +255,7 @@ QString TransformPrivate::simplified() const
     else if (type == (HorizontalMirror | VertiacalMirror))
     {
         transform = TransformType::Scale;
-        newPoints << QL1S("-1") << QL1S("-1");
+        newPoints << QL1S("-1");
     }
     else
     {
@@ -330,13 +331,8 @@ QList<TransformMatrix> TransformPrivate::parseTransform(const QChar *str, int si
         while (sw.current() == QL1C(','))
             sw.next();
 
-        QString transformType;
-
-        while (sw.current() != QL1C('(')) {
-            if (sw.current() != QL1C(' '))
-                transformType += sw.current();
-            sw.next();
-        }
+        const QString transformType = sw.readBefore(sw.jumpTo(QL1C('('))).trimmed();
+        // skip '('
         sw.next();
 
         double cx = 0;
@@ -442,34 +438,37 @@ void TransformPrivate::calcParameters(const TransformMatrix &matrix)
 
     xScale = sqrt(a*a + c*c);
     yScale = sqrt(b*b + d*d);
-    xSkew = atan(b)*(180.0/M_PI);
-    ySkew = atan(c)*(180.0/M_PI);
+
+    xSkew = ySkew = 0;
+    if (!isZeroTs(qAbs(b) - qAbs(c))) {
+        xSkew = 180/M_PI * atan2(d, c) - 90;
+        ySkew = 180/M_PI * atan2(b, a);
+    }
+
     angle = atan(-b/a)*(180/M_PI);
     if (qIsNaN(angle))
         qFatal("rotation is NaN");
 
-    if (b < c)
+    if (b < c || b > c)
         angle = -angle;
 
 //    qDebug() << "calc" << xScale << yScale << xSkew << ySkew << angle;
 
     // detect all the transformations inside the matrix
 
-    types = Types();
-
-    if (f != 0 || e != 0)
+    if (!isZeroTs(f) || !isZeroTs(e))
         types |= Translate;
 
-    if ((isZeroTs(qAbs(b) - qAbs(c)) && b != 0) || !isZero(angle))
+    if (!isZeroTs(b - c) || !isZero(angle))
         types |= Rotate;
 
-    if (xScale != 1 || yScale != 1)
+    if ((!isZeroTs(xScale - 1) || !isZeroTs(yScale - 1)))
         types |= Scale;
 
-    if (isZeroTs(xScale - yScale))
+    if (isZeroTs(xScale - yScale) && !isZeroTs(xScale - 1))
         types |= ProportionalScale;
 
-    if (xSkew != 0 || ySkew != 0)
+    if (!isZeroTs(xSkew) || !isZeroTs(ySkew))
         types |= Skew;
 
     if (xScale < 0 || a < 0)
@@ -545,11 +544,17 @@ void Transform::append(const Transform &ts)
     impl->calcParameters(matrix() * ts.matrix());
 }
 
-void Transform::setOldXY(double prevX, double prevY)
+void Transform::applyTranform(double &x, double &y) const
 {
-    CheckData();
-    impl->oldX = prevX;
-    impl->oldY = prevY;
+    double oldX = x;
+    double oldY = y;
+    applyTranform(oldX, oldY, x, y);
+}
+
+void Transform::applyTranform(double oldX, double oldY, double &newX, double &newY) const
+{
+    newX = impl->a * oldX + impl->c * oldY + impl->e;
+    newY = impl->b * oldX + impl->d * oldY + impl->f;
 }
 
 void Transform::divide(const QString &text)
@@ -568,21 +573,10 @@ QRectF Transform::transformRect(const QRectF &rect)
     double xList[4];
     double yList[4];
 
-    setOldXY(rect.x(), rect.y());
-    xList[0] = newX();
-    yList[0] = newY();
-
-    setOldXY(rect.x() + rect.width(), rect.y());
-    xList[1] = newX();
-    yList[1] = newY();
-
-    setOldXY(rect.x(), rect.y() + rect.height());
-    xList[2] = newX();
-    yList[2] = newY();
-
-    setOldXY(rect.x() + rect.width(), rect.y() + rect.height());
-    xList[3] = newX();
-    yList[3] = newY();
+    applyTranform(rect.x(),     rect.y(),      xList[0], yList[0]);
+    applyTranform(rect.right(), rect.y(),      xList[1], yList[1]);
+    applyTranform(rect.x(),     rect.bottom(), xList[2], yList[2]);
+    applyTranform(rect.right(), rect.bottom(), xList[3], yList[3]);
 
     double minx, miny, maxx, maxy;
     minx = maxx = xList[0];
@@ -597,18 +591,6 @@ QRectF Transform::transformRect(const QRectF &rect)
         miny = qMin(y, miny);
     }
     return QRectF(minx, miny, maxx - minx, maxy - miny);
-}
-
-double Transform::newX() const
-{
-    CheckData(0);
-    return impl->a * impl->oldX + impl->c * impl->oldY + impl->e;
-}
-
-double Transform::newY() const
-{
-    CheckData(0);
-    return impl->b * impl->oldX + impl->d * impl->oldY + impl->f;
 }
 
 Transform::Transform(TransformPrivate *t)
@@ -636,6 +618,12 @@ double Transform::scaleFactor() const
 {
     CheckData(0);
     return impl->xScale;
+}
+
+bool Transform::isScale() const
+{
+    CheckData(false);
+    return impl->types.testFlag(TransformPrivate::Scale);
 }
 
 bool Transform::isProportionalScale() const
@@ -693,6 +681,10 @@ QDebug operator<<(QDebug dbg, const Transform &t)
 {
     TransformMatrix m = t.matrix();
     dbg << "Transform (" << m(0,0) << m(1,0) << m(0,1) << m(1,1) << m(0,2) << m(1,2) << ")";
+    if (t.isTranslate())
+        dbg << "Translate";
+    if (t.isScale())
+        dbg << "Scale";
     if (t.isProportionalScale())
         dbg << "ProportionalScale";
     if (t.isMirrored())

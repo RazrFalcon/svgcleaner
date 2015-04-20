@@ -48,42 +48,81 @@ PathSegment::PathSegment()
     sweep    = false;
 }
 
+bool PathSegment::operator==(const PathSegment &s) const
+{
+    if (command != s.command)
+        return false;
+
+    if (command == Command::CurveTo) {
+        if (   isZero(x - s.x)
+            && isZero(y - s.y)
+            && isZero(x1 - s.x1)
+            && isZero(y1 - s.y1)
+            && isZero(x2 - s.x2)
+            && isZero(y2 - s.y2))
+            return true;
+    }
+    else if (   command == Command::MoveTo
+             || command == Command::LineTo
+             || command == Command::SmoothQuadratic)
+    {
+        if (isZero(x - s.x) && isZero(y - s.y))
+            return true;
+    }
+    else if (command == Command::HorizontalLineTo) {
+        if (isZero(x - s.x))
+            return true;
+    }
+    else if (s.command == Command::VerticalLineTo) {
+        if (isZero(y - s.y))
+            return true;
+    }
+    else if (s.command == Command::SmoothCurveTo) {
+        if (   isZero(x - s.x) && isZero(y - s.y)
+            && isZero(x2 - s.x2) && isZero(y2 - s.y2))
+            return true;
+    }
+    else if (s.command == Command::Quadratic) {
+        if (   isZero(x - s.x) && isZero(y - s.y)
+            && isZero(x1 - s.x1) && isZero(y1 - s.y1))
+            return true;
+    }
+    else if (s.command == Command::EllipticalArc) {
+        if (   isZero(x - s.x) && isZero(y - s.y)
+            && isZero(rx - s.rx) && isZero(ry - s.ry)
+            && isZero(xAxisRotation - s.xAxisRotation)
+            && largeArc == s.largeArc
+            && sweep == s.sweep)
+            return true;
+    }
+    else if (s.command == Command::ClosePath) {
+        return true;
+    }
+
+    return false;
+}
+
+bool PathSegment::operator!=(const PathSegment &s) const
+{
+    return !(*this == s);
+}
+
 void PathSegment::setTransform(Transform &ts)
 {
     if (   command == Command::MoveTo
         || command == Command::LineTo
         || command == Command::SmoothQuadratic) {
-        ts.setOldXY(x, y);
-        x = ts.newX();
-        y = ts.newY();
+        ts.applyTranform(x, y);
     } else if (command == Command::CurveTo) {
-        ts.setOldXY(x, y);
-        x = ts.newX();
-        y = ts.newY();
-
-        ts.setOldXY(x1, y1);
-        x1 = ts.newX();
-        y1 = ts.newY();
-
-        ts.setOldXY(x2, y2);
-        x2 = ts.newX();
-        y2 = ts.newY();
+        ts.applyTranform(x, y);
+        ts.applyTranform(x1, y1);
+        ts.applyTranform(x2, y2);
     } else if (command == Command::SmoothCurveTo) {
-        ts.setOldXY(x, y);
-        x = ts.newX();
-        y = ts.newY();
-
-        ts.setOldXY(x2, y2);
-        x2 = ts.newX();
-        y2 = ts.newY();
+        ts.applyTranform(x, y);
+        ts.applyTranform(x2, y2);
     } else if (command == Command::Quadratic) {
-        ts.setOldXY(x, y);
-        x = ts.newX();
-        y = ts.newY();
-
-        ts.setOldXY(x1, y1);
-        x1 = ts.newX();
-        y1 = ts.newY();
+        ts.applyTranform(x, y);
+        ts.applyTranform(x1, y1);
     }
 }
 

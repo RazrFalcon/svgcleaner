@@ -19,23 +19,9 @@
 **
 ****************************************************************************/
 
-#include <cmath>
-
 #include "stringwalker.h"
 #include "enums.h"
 #include "tools.h"
-
-bool isZero(double value)
-{
-    u_static const double minValue = 1.0 / pow(10, Keys::get().coordinatesPrecision());
-    return (qAbs(value) < minValue);
-}
-
-bool isZeroTs(double value)
-{
-    u_static const double minValue = 1.0 / pow(10, Keys::get().transformPrecision());
-    return (qAbs(value) < minValue);
-}
 
 QString fromDouble(double value, Round::RoundType type)
 {
@@ -144,7 +130,7 @@ double toDouble(const QString &str, bool *ok)
 }
 
 // http://www.w3.org/TR/SVG11/coords.html#Units
-QString Tools::convertUnitsToPx(const QString &text, double baseValue)
+QString convertUnitsToPx(const QString &text, double baseValue)
 {
     QString unit;
     double number = 0;

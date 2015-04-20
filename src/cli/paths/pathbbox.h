@@ -30,7 +30,7 @@ class PathBBox
 {
 public:
     PathBBox() {}
-    static QString calcBoundingBox(const QList<PathSegment> &segList, bool convertToCurves);
+    static QString calcBoundingBox(const PathSegmentList &segList, bool convertToCurves);
 };
 
 #endif // PATHBBOX_H

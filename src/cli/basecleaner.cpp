@@ -127,7 +127,7 @@ SvgElement BaseCleaner::smartElementRemove(SvgElement &rmElem, bool isReturnPrev
         }
     }
 
-    // alse process all children items
+    // also process all children items
     loop_children (rmElem)
         smartElementRemove(elem);
 
@@ -190,7 +190,6 @@ QString BaseCleaner::genFreeId() const
     return QL1S("SVGCleanerId_") + document().takeFreeId();
 }
 
-// TODO: maybe store colors as QColor
 bool BaseCleaner::isGradientStopsEqual(const SvgElement &elem1, const SvgElement &elem2)
 {
     if (elem1.childElementCount() != elem2.childElementCount())
@@ -208,7 +207,6 @@ bool BaseCleaner::isGradientStopsEqual(const SvgElement &elem1, const SvgElement
         if (child1.tagName() != child2.tagName())
             return false;
 
-        // TODO: test which attribute is usually different first and sort checks
         if (   child1.attribute(AttrId::offset, V_zero)
             != child2.attribute(AttrId::offset, V_zero))
             return false;

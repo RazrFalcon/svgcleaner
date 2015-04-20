@@ -19,6 +19,8 @@
 **
 ****************************************************************************/
 
+#include <QVector>
+
 #include "paths/paths.h"
 #include "stringwalker.h"
 #include "replacer.h"
@@ -66,7 +68,7 @@ void Replacer::convertSizeToViewbox() const
 void Replacer::processPaths() const
 {
     bool skip = true;
-    foreach (const int &id, Keys.pathsKeysId()) {
+    foreach (const int &id, Keys.pathsKeysId() + Keys.pathsUtilsKeysId()) {
         if (Keys.flag(id)) {
             skip = false;
             break;
@@ -75,32 +77,126 @@ void Replacer::processPaths() const
     if (skip)
         return;
 
-    SvgElementList list = svgElement().childElements();
-    while (!list.isEmpty()) {
-        SvgElement elem = list.takeFirst();
+    element_loop (svgElement()) {
+        if (elem.tagName() != E_path)
+            continue;
 
-        bool removed = false;
-        if (elem.tagName() == E_path) {
-            bool canApplyTransform = false;
-            if (Keys.flag(Key::ApplyTransformsToPaths))
-                canApplyTransform = isPathValidToTransform(elem);
-            bool isTransformApplied = false;
-            Path().processPath(elem, canApplyTransform, &isTransformApplied);
-            if (canApplyTransform) {
-                if (isTransformApplied) {
-                    updateLinkedDefTransform(elem);
-                    elem.removeTransform();
-                }
-            }
-            if (elem.attribute(AttrId::d).isEmpty()) {
-                smartElementRemove(elem);
-                removed = true;
+        bool canApplyTransform = false;
+        if (Keys.flag(Key::ApplyTransformsToPaths))
+            canApplyTransform = isPathValidToTransform(elem);
+        bool isTransformApplied = false;
+        Path().processPath(elem, canApplyTransform, &isTransformApplied);
+        if (canApplyTransform) {
+            if (isTransformApplied) {
+                updateLinkedDefTransform(elem);
+                elem.removeTransform();
             }
         }
+        if (elem.attribute(AttrId::d).isEmpty())
+            elem = smartElementRemove(elem, true);
+    }
+}
 
-        if (!removed) {
-            if (elem.hasChildrenElement())
-                list << elem.childElements();
+
+/*!
+    \page equal-paths-to-use.html
+    \title Replace paths with only first segments different by the 'use'
+
+    If paths are different only by start position - we can replace them.
+    Before:
+    \code
+        <path d="m 10 20 l 15 -10 l 28 40 l -15 10 z"/>
+        <path d="m 60 30 l 15 -10 l 28 40 l -15 10 z"/>
+    \endcode
+    After:
+    \code
+        <path id="p" d="m 10 20 l 15 -10 l 28 40 l -15 10 z"/>
+        <use x="50" y="10" xlink:href="#p"/>
+    \endcode
+*/
+struct Paths {
+    SvgElement elem;
+    Transform absTr;
+    PathSegmentList segList;
+};
+
+void Replacer::replaceEqualPathsWithUse() const
+{
+    QList<Paths> pathsList;
+    element_loop (svgElement()) {
+        if (    elem.tagName() == E_path
+            && !hasParent(elem, Element::E_defs)
+            && !elem.isUsed())
+        {
+            Paths p;
+            p.elem = elem;
+            p.absTr = elem.absoluteTransform();
+            p.segList = elem.attributeItem(AttrId::d).segList();
+            pathsList << p;
+        }
+    }
+
+    for (int i = 0; i < pathsList.size(); ++i) {
+        SvgElement elem1 = pathsList.at(i).elem;
+        if (elem1.hasStyleAttributes())
+            continue;
+        const Transform ats1 = pathsList.at(i).absTr;
+        const PathSegmentList segList1 = pathsList.at(i).segList;
+
+        // TODO: check paths before current
+        // for (int j = 0; j < pathsList.size(); ++j) {
+        for (int j = i+1; j < pathsList.size(); ++j) {
+            if (elem1 == pathsList.at(j).elem)
+                continue;
+
+            const PathSegmentList segList2 = pathsList.at(j).segList;
+
+            if (segList1.size() != segList2.size())
+                continue;
+
+            // first/Move segments must be different
+            if (segList1.first() == segList2.first())
+                continue;
+
+            bool isEqual = true;
+            // skip first segment in both lists
+            for (int k = 1; k < segList1.size(); ++k) {
+                if (segList1.at(k) != segList2.at(k)) {
+                    isEqual = false;
+                    break;
+                }
+            }
+            if (!isEqual)
+                continue;
+
+            const Transform ats2 = pathsList.at(j).absTr;
+            // both elements should have transform
+            if (!ats1.isNull() && !ats2.isNull()) {
+                // only translate transform supported by SVG
+                if (ats1.type() != TransformPrivate::Translate)
+                    continue;
+                // only paths with equal transform can be reused
+                if (ats1 != ats2)
+                    continue;
+            } else if (!ats1.isNull() || !ats2.isNull()) {
+                // skip if only one element has transform
+                continue;
+            }
+
+            SvgElement elem2 = pathsList.at(j).elem;
+            elem2.setTagName(Element::E_use);
+            if (elem1.attribute(AttrId::id).isEmpty())
+                elem1.setAttribute(AttrId::id, genFreeId());
+            elem2.setReferenceElement(AttrId::xlink_href, elem1);
+            elem2.setAttribute(AttrId::x, fromDouble(segList2.first().x - segList1.first().x));
+            elem2.setAttribute(AttrId::y, fromDouble(segList2.first().y - segList1.first().y));
+            elem2.removeAttribute(AttrId::bbox);
+            elem2.removeAttribute(AttrId::transform);
+
+            elem2.removeAttribute(AttrId::d);
+
+            pathsList.removeAt(j);
+            j--;
         }
     }
 }
@@ -262,6 +358,8 @@ void Replacer::replaceEqualElementsByUse() const
         EqElement mainEqElem = elemList.takeFirst();
         QList<EqElement> equalElems;
 
+        // TODO: hash compare too slow
+        // atlas.svg
         for (int j = 0; j < elemList.size(); ++j) {
             if (   mainEqElem.elem.tagName() == elemList.at(j).elem.tagName()
                 && mainEqElem.elem != elemList.at(j).elem
@@ -292,7 +390,7 @@ void Replacer::replaceEqualElementsByUse() const
         if (newElem.isNull()) {
             newElem = document().createElement(mainEqElem.elem.tagName());
             foreach (const uint &attrId, mainEqElem.attrHash.keys())
-                newElem.setAttribute(attrId, mainEqElem.attrHash.value(attrId));
+                newElem.setAttribute(mainEqElem.elem.attributeItem(attrId));
             defsElement().appendChild(newElem);
             defsPathsList << newElem;
         }
@@ -303,7 +401,7 @@ void Replacer::replaceEqualElementsByUse() const
 
         // convert elements to 'use'
         equalElems << mainEqElem;
-        foreach (EqElement eqElem, equalElems) {
+        foreach (const EqElement &eqElem, equalElems) {
             if (eqElem.elem == newElem)
                 continue;
 
@@ -336,8 +434,8 @@ void Replacer::moveStyleFromUsedElemToUse() const
         SvgElementList usedElemList = elem.linkedElements();
 
         // use elem cannot overwrite style properties of used element
-        foreach (SvgElement usedElem, usedElemList) {
-            foreach (const SvgAttribute &attr, elem.attributesList()) {
+        foreach (const SvgAttribute &attr, elem.attributesList()) {
+            foreach (SvgElement usedElem, usedElemList) {
                 if (attr.isStyle())
                     usedElem.removeAttribute(attr.id());
             }
@@ -368,24 +466,24 @@ void Replacer::convertUnits() const
     QRectF rect = viewBoxRect();
     // TODO: merge code
     SvgAttribute attr = svgElement().attributeItem(AttrId::width);
-    if (!attr.isNull()) {
+    if (!attr.isNone()) {
         QString value = attr.value();
         if (value.contains(LengthType::Percent) && rect.isNull())
             qFatal("could not convert width in percentage into px without viewBox");
         bool ok;
-        double width = toDouble(Tools::convertUnitsToPx(value, rect.width()), &ok);
+        double width = toDouble(convertUnitsToPx(value, rect.width()), &ok);
         if (!ok)
             qFatal("could not convert width to px");
         attr.setValue(fromDouble(width));
     }
 
     attr = svgElement().attributeItem(AttrId::height);
-    if (!attr.isNull()) {
+    if (!attr.isNone()) {
         QString value = attr.value();
         if (value.contains(LengthType::Percent) && rect.isNull())
             qFatal("could not convert height in percentage into px without viewBox");
         bool ok;
-        double height = toDouble(Tools::convertUnitsToPx(value, rect.height()), &ok);
+        double height = toDouble(convertUnitsToPx(value, rect.height()), &ok);
         if (!ok)
             qFatal("could not convert height to px");
         attr.setValue(fromDouble(height));
@@ -417,20 +515,20 @@ void Replacer::convertUnits() const
                         static QRectF m_viewBoxRect = viewBoxRect();
                         if (m_viewBoxRect.isNull())
                             qFatal("could not detect viewBox");
-                        elem.setAttribute(attrId, Tools::convertUnitsToPx(value, m_viewBoxRect.width()));
+                        elem.setAttribute(attrId, convertUnitsToPx(value, m_viewBoxRect.width()));
                     }
                     else if (value.endsWith(LengthType::em) || value.endsWith(LengthType::ex)) {
                         QString fontSizeStr = elem.parentAttribute(AttrId::font_size);
-                        double fontSize = toDouble(Tools::convertUnitsToPx(fontSizeStr));
+                        double fontSize = toDouble(convertUnitsToPx(fontSizeStr));
                         if (fontSize == 0)
                             qFatal("could not convert em/ex values "
                                    "without font-size attribute is set.");
-                        elem.setAttribute(attrId, Tools::convertUnitsToPx(value, fontSize));
+                        elem.setAttribute(attrId, convertUnitsToPx(value, fontSize));
                     } else {
-                        elem.setAttribute(attrId, Tools::convertUnitsToPx(value));
+                        elem.setAttribute(attrId, convertUnitsToPx(value));
                     }
                 } else {
-                    elem.setAttribute(attrId, Tools::convertUnitsToPx(value));
+                    elem.setAttribute(attrId, convertUnitsToPx(value));
                 }
                 num = toDouble(elem.attribute(attrId));
             }
@@ -449,14 +547,14 @@ void Replacer::convertUnits() const
                     QString parentFontSize = elem.parentAttribute(AttrId::font_size);
                     if (parentFontSize.isEmpty() || parentFontSize == V_zero)
                         qFatal("could not calculate relative font-size");
-                    QString newFontSize = Tools::convertUnitsToPx(fontSizeStr,
+                    QString newFontSize = convertUnitsToPx(fontSizeStr,
                                                                   toDouble(parentFontSize));
                     if (newFontSize == V_zero)
                         elem.removeAttribute(AttrId::font_size);
                     else
                         elem.setAttribute(AttrId::font_size, newFontSize);
                 } else {
-                    QString newFontSize = Tools::convertUnitsToPx(fontSizeStr);
+                    QString newFontSize = convertUnitsToPx(fontSizeStr);
                     elem.setAttribute(AttrId::font_size, newFontSize);
                 }
             }
@@ -477,18 +575,18 @@ void Replacer::convertUnits() const
                 if (currTag != E_radialGradient && currTag != E_linearGradient) {
                     QString attrName = attrIdToStr(attrId);
                     if (attrName.contains(A_x) || attrId == AttrId::width)
-                        attrValue = Tools::convertUnitsToPx(attrValue, rect.width());
+                        attrValue = convertUnitsToPx(attrValue, rect.width());
                     else if (attrName.contains(A_y) || attrId == AttrId::height)
-                       attrValue = Tools::convertUnitsToPx(attrValue, rect.height());
+                       attrValue = convertUnitsToPx(attrValue, rect.height());
                 }
             } else if (attrValue.endsWith(LengthType::ex) || attrValue.endsWith(LengthType::em)) {
                 double fontSize = toDouble(elem.parentAttribute(AttrId::font_size, true));
                 if (fontSize == 0)
                     qFatal("could not convert em/ex values "
                            "without font-size attribute is set");
-                attrValue = Tools::convertUnitsToPx(attrValue, fontSize);
+                attrValue = convertUnitsToPx(attrValue, fontSize);
             } else {
-                attrValue = Tools::convertUnitsToPx(attrValue);
+                attrValue = convertUnitsToPx(attrValue);
             }
             elem.setAttribute(attrId, attrValue);
         }
@@ -1057,17 +1155,21 @@ void Replacer::groupTextElementsStyles() const
             TransformPrivate::Types tsType = ts.type();
             tsType &= ~(TransformPrivate::ProportionalScale);
             if (tsType == TransformPrivate::Translate) {
-                ts.setOldXY(elem.doubleAttribute(AttrId::x), elem.doubleAttribute(AttrId::y));
-                elem.setAttribute(AttrId::x, fromDouble(ts.newX()));
-                elem.setAttribute(AttrId::y, fromDouble(ts.newY()));
+                double x, y;
+                ts.applyTranform(elem.doubleAttribute(AttrId::x),
+                                 elem.doubleAttribute(AttrId::y), x, y);
+                elem.setAttribute(AttrId::x, fromDouble(x));
+                elem.setAttribute(AttrId::y, fromDouble(y));
                 elem.removeTransform();
 
                 tspan = elem.firstChildElement();
                 tspan_root = elem;
                 while (!tspan.isNull()) {
-                    ts.setOldXY(tspan.doubleAttribute(AttrId::x), tspan.doubleAttribute(AttrId::y));
-                    tspan.setAttribute(AttrId::x, fromDouble(ts.newX()));
-                    tspan.setAttribute(AttrId::y, fromDouble(ts.newY()));
+                    double x, y;
+                    ts.applyTranform(tspan.doubleAttribute(AttrId::x),
+                                     tspan.doubleAttribute(AttrId::y), x, y);
+                    tspan.setAttribute(AttrId::x, fromDouble(x));
+                    tspan.setAttribute(AttrId::y, fromDouble(y));
                     nextElement(tspan, tspan_root);
                 }
             }
@@ -1243,6 +1345,7 @@ void Replacer::roundNumericAttributes() const
     }
 }
 
+#include <QtDebug>
 void Replacer::prepareLinkedStyles() const
 {
     QHash<QString,SvgElement> defs;
@@ -1294,50 +1397,56 @@ void Replacer::convertBasicShapes() const
 {
     element_loop (svgElement()) {
         QString ctag = elem.tagName();
-        if (ctag == E_polygon || ctag == E_polyline || ctag == E_line || ctag == E_rect) {
-            QString dAttr;
-            if (ctag == E_line) {
-                dAttr = QString(QL1S("M %1,%2 %3,%4"))
-                        .arg(elem.attribute(AttrId::x1, QL1S("0")), elem.attribute(AttrId::y1, QL1S("0")),
-                             elem.attribute(AttrId::x2, QL1S("0")), elem.attribute(AttrId::y2, QL1S("0")));
-                elem.removeAttributes(QStringList() << A_x1 << A_y1 << A_x2 << A_y2);
-            } else if (ctag == E_rect) {
-                if (elem.doubleAttribute(AttrId::rx) == 0 || elem.doubleAttribute(AttrId::ry) == 0) {
-                    double x = elem.doubleAttribute(AttrId::x);
-                    double y = elem.doubleAttribute(AttrId::y);
-                    double x1 = x + elem.doubleAttribute(AttrId::width);
-                    double y1 = y + elem.doubleAttribute(AttrId::height);
-                    dAttr = QString(QL1S("M %1,%2 H%3 V%4 H%1 z")).arg(x).arg(y).arg(x1).arg(y1);
-                    elem.removeAttributes(QStringList() << A_x << A_y << A_width << A_height
-                                                        << A_rx << A_ry);
-                }
-            } else if (ctag == E_polyline || ctag == E_polygon) {
-                QList<PathSegment> segmentList;
-                QString path = elem.attribute(AttrId::points).simplified();
-                StringWalker sw(path);
-                while (!sw.atEnd()) {
-                    PathSegment seg;
-                    seg.command = Command::MoveTo;
-                    seg.absolute = true;
-                    seg.srcCmd = segmentList.isEmpty();
-                    seg.x = sw.number();
-                    seg.y = sw.number();
-                    segmentList.append(seg);
-                }
-                if (ctag == E_polygon) {
-                    PathSegment seg;
-                    seg.command = Command::ClosePath;
-                    seg.absolute = false;
-                    seg.srcCmd = true;
-                    segmentList.append(seg);
-                }
-                dAttr = Path().segmentsToPath(segmentList);
-                elem.removeAttribute(AttrId::points);
+        if (!(ctag == E_polygon || ctag == E_polyline || ctag == E_line || ctag == E_rect))
+            continue;
+
+        QString dAttrStr;
+        PathSegmentList segList;
+        if (ctag == E_line) {
+            dAttrStr = QString(QL1S("M %1,%2 %3,%4"))
+                         .arg(elem.attribute(AttrId::x1, QL1S("0")),
+                              elem.attribute(AttrId::y1, QL1S("0")),
+                              elem.attribute(AttrId::x2, QL1S("0")),
+                              elem.attribute(AttrId::y2, QL1S("0")));
+            segList = Path().pathToSegments(dAttrStr);
+            elem.removeAttributes(QStringList() << A_x1 << A_y1 << A_x2 << A_y2);
+        } else if (ctag == E_rect) {
+            if (elem.doubleAttribute(AttrId::rx) == 0 || elem.doubleAttribute(AttrId::ry) == 0) {
+                double x = elem.doubleAttribute(AttrId::x);
+                double y = elem.doubleAttribute(AttrId::y);
+                double x1 = x + elem.doubleAttribute(AttrId::width);
+                double y1 = y + elem.doubleAttribute(AttrId::height);
+                dAttrStr = QString(QL1S("M %1,%2 H%3 V%4 H%1 z")).arg(x).arg(y).arg(x1).arg(y1);
+                segList = Path().pathToSegments(dAttrStr);
+                elem.removeAttributes(QStringList() << A_x << A_y << A_width << A_height
+                                                    << A_rx << A_ry);
             }
-            if (!dAttr.isEmpty()) {
-                elem.setAttribute(AttrId::d, dAttr);
-                elem.setTagName(E_path);
+        } else if (ctag == E_polyline || ctag == E_polygon) {
+            QString path = elem.attribute(AttrId::points).simplified();
+            StringWalker sw(path);
+            while (!sw.atEnd()) {
+                PathSegment seg;
+                seg.command = Command::MoveTo;
+                seg.absolute = true;
+                seg.srcCmd = segList.isEmpty();
+                seg.x = sw.number();
+                seg.y = sw.number();
+                segList.append(seg);
             }
+            if (ctag == E_polygon) {
+                PathSegment seg;
+                seg.command = Command::ClosePath;
+                seg.absolute = false;
+                seg.srcCmd = true;
+                segList.append(seg);
+            }
+            dAttrStr = Path().segmentsToPath(segList);
+            elem.removeAttribute(AttrId::points);
+        }
+        if (!dAttrStr.isEmpty()) {
+            Q_ASSERT(segList.isEmpty() == false);
+            elem.setAttribute(SvgAttribute(segList, dAttrStr));
+            elem.setTagName(E_path);
         }
     }
 }
@@ -1395,6 +1504,8 @@ void Replacer::mergeGradients() const
             elem = defsElement().firstChildElement();
             continue;
         }
+
+        // FIXME: this
 
         // If linearGradient linked to linearGradient, which has used by one or more elements
         // and all of this elements are linearGradient's -
@@ -1497,30 +1608,30 @@ void Replacer::calcElementsBoundingBox() const
             continue;
 
         if (elem.tagName() == E_rect) {
-            elem.setAttribute(AttrId::bbox,
-                                                elem.attribute(AttrId::x)
-                                  + QL1C(' ') + elem.attribute(AttrId::y)
-                                  + QL1C(' ') + elem.attribute(AttrId::width)
-                                  + QL1C(' ') + elem.attribute(AttrId::height));
+            QString str = elem.attribute(AttrId::x)
+                            + QL1C(' ') + elem.attribute(AttrId::y)
+                            + QL1C(' ') + elem.attribute(AttrId::width)
+                            + QL1C(' ') + elem.attribute(AttrId::height);
+            elem.setAttribute(AttrId::bbox, str);
         } else if (elem.tagName() == E_circle) {
             double r = elem.doubleAttribute(AttrId::r);
             double x = elem.doubleAttribute(AttrId::cx) - r;
             double y = elem.doubleAttribute(AttrId::cy) - r;
-            elem.setAttribute(AttrId::bbox,
-                                                fromDouble(x)
-                                  + QL1C(' ') + fromDouble(y)
-                                  + QL1C(' ') + fromDouble(qAbs(r*2))
-                                  + QL1C(' ') + fromDouble(qAbs(r*2)));
+            QString str = fromDouble(x)
+                            + QL1C(' ') + fromDouble(y)
+                            + QL1C(' ') + fromDouble(qAbs(r*2))
+                            + QL1C(' ') + fromDouble(qAbs(r*2));
+            elem.setAttribute(AttrId::bbox, str);
         } else if (elem.tagName() == E_ellipse) {
             double rx = elem.doubleAttribute(AttrId::rx);
             double ry = elem.doubleAttribute(AttrId::ry);
             double x = elem.doubleAttribute(AttrId::cx) - rx;
             double y = elem.doubleAttribute(AttrId::cy) - ry;
-            elem.setAttribute(AttrId::bbox,
-                                                fromDouble(x)
-                                  + QL1C(' ') + fromDouble(y)
-                                  + QL1C(' ') + fromDouble(qAbs(rx*2))
-                                  + QL1C(' ') + fromDouble(qAbs(ry*2)));
+            QString str = fromDouble(x)
+                            + QL1C(' ') + fromDouble(y)
+                            + QL1C(' ') + fromDouble(qAbs(rx*2))
+                            + QL1C(' ') + fromDouble(qAbs(ry*2));
+            elem.setAttribute(AttrId::bbox, str);
         }
         // all other basic shapes bounding boxes are calculated in Paths class
     }
@@ -1704,14 +1815,15 @@ void Replacer::applyTransformToDefs() const
             if (elem.hasTransform()) {
                 Transform gts = elem.transform();
                 if (gts.isProportionalScale()) {
-                    gts.setOldXY(elem.doubleAttribute(AttrId::x1),
-                                 elem.doubleAttribute(AttrId::y1));
-                    elem.setAttribute(AttrId::x1, fromDouble(gts.newX()));
-                    elem.setAttribute(AttrId::y1, fromDouble(gts.newY()));
-                    gts.setOldXY(elem.doubleAttribute(AttrId::x2),
-                                 elem.doubleAttribute(AttrId::y2));
-                    elem.setAttribute(AttrId::x2, fromDouble(gts.newX()));
-                    elem.setAttribute(AttrId::y2, fromDouble(gts.newY()));
+                    double x, y;
+                    gts.applyTranform(elem.doubleAttribute(AttrId::x1),
+                                      elem.doubleAttribute(AttrId::y1), x, y);
+                    elem.setAttribute(AttrId::x1, fromDouble(x));
+                    elem.setAttribute(AttrId::y1, fromDouble(y));
+                    gts.applyTranform(elem.doubleAttribute(AttrId::x2),
+                                      elem.doubleAttribute(AttrId::y2), x, y);
+                    elem.setAttribute(AttrId::x2, fromDouble(x));
+                    elem.setAttribute(AttrId::y2, fromDouble(y));
                     elem.removeTransform();
                 }
             }
@@ -1719,16 +1831,17 @@ void Replacer::applyTransformToDefs() const
             if (elem.hasTransform()) {
                 Transform gts = elem.transform();
                 if (!gts.isMirrored() && gts.isProportionalScale() && !gts.isRotating()) {
-                    gts.setOldXY(elem.doubleAttribute(AttrId::fx),
-                                 elem.doubleAttribute(AttrId::fy));
+                    double x, y;
+                    gts.applyTranform(elem.doubleAttribute(AttrId::fx),
+                                      elem.doubleAttribute(AttrId::fy), x, y);
                     if (elem.hasAttribute(AttrId::fx))
-                        elem.setAttribute(AttrId::fx, fromDouble(gts.newX()));
+                        elem.setAttribute(AttrId::fx, fromDouble(x));
                     if (elem.hasAttribute(AttrId::fy))
-                        elem.setAttribute(AttrId::fy, fromDouble(gts.newY()));
-                    gts.setOldXY(elem.doubleAttribute(AttrId::cx),
-                                 elem.doubleAttribute(AttrId::cy));
-                    elem.setAttribute(AttrId::cx, fromDouble(gts.newX()));
-                    elem.setAttribute(AttrId::cy, fromDouble(gts.newY()));
+                        elem.setAttribute(AttrId::fy, fromDouble(y));
+                    gts.applyTranform(elem.doubleAttribute(AttrId::cx),
+                                      elem.doubleAttribute(AttrId::cy), x, y);
+                    elem.setAttribute(AttrId::cx, fromDouble(x));
+                    elem.setAttribute(AttrId::cy, fromDouble(y));
 
                     elem.setAttribute(AttrId::r, fromDouble(elem.doubleAttribute(AttrId::r)
                                                             * gts.scaleFactor()));
@@ -1790,10 +1903,13 @@ void Replacer::applyTransformToShapes() const
                 if (   !ts.isMirrored()
                     && !ts.isRotating()
                     && !ts.isSkew()
-                    &&  ts.isProportionalScale()) {
-                    ts.setOldXY(elem.doubleAttribute(AttrId::x), elem.doubleAttribute(AttrId::y));
-                    elem.setAttribute(AttrId::x, fromDouble(ts.newX()));
-                    elem.setAttribute(AttrId::y, fromDouble(ts.newY()));
+                    &&  ts.isProportionalScale())
+                {
+                    double x, y;
+                    ts.applyTranform(elem.doubleAttribute(AttrId::x),
+                                     elem.doubleAttribute(AttrId::y), x, y);
+                    elem.setAttribute(AttrId::x, fromDouble(x));
+                    elem.setAttribute(AttrId::y, fromDouble(y));
                     const double sf = ts.scaleFactor();
                     QString newW = fromDouble(elem.doubleAttribute(AttrId::width) * sf);
                     elem.setAttribute(AttrId::width, newW);
@@ -1822,7 +1938,7 @@ void Replacer::calcNewStrokeWidth(SvgElement &elem, double scaleFactor)
     bool hasParentStrokeWidth = false;
     while (!parentElem.isNull()) {
         if (parentElem.hasAttribute(AttrId::stroke_width)) {
-            double strokeWidth = Tools::convertUnitsToPx(parentElem.attribute(AttrId::stroke_width))
+            double strokeWidth = convertUnitsToPx(parentElem.attribute(AttrId::stroke_width))
                                     .toDouble();
             QString sw = fromDouble(strokeWidth * scaleFactor, Round::Attribute);
             elem.setAttribute(AttrId::stroke_width, sw);

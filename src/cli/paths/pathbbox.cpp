@@ -107,16 +107,17 @@ void curveBBox(const Bezier &bz, Box &bbox)
 }
 
 // TODO: stroke are ignored
-QString PathBBox::calcBoundingBox(const QList<PathSegment> &segList, bool convertToCurves)
+QString PathBBox::calcBoundingBox(const PathSegmentList &segList, bool convertToCurves)
 {
     // convert all segments to curve, exept m and z
-    QList<PathSegment> tmpSegList = segList;
+    PathSegmentList tmpSegList = segList;
     if (convertToCurves) {
         PathSegment prevSegment2;
         for (int i = 1; i < tmpSegList.size(); ++i) {
             PathSegment prevSegment = tmpSegList.at(i-1);
             PathSegment currSegment = tmpSegList.at(i);
-            QVarLengthArray<PathSegment, 3> list = tmpSegList.at(i).toCurve(prevSegment, prevSegment2);
+            QVarLengthArray<PathSegment, 3> list = tmpSegList.at(i).toCurve(prevSegment,
+                                                                            prevSegment2);
             prevSegment2 = currSegment;
             if (!list.isEmpty()) {
                 tmpSegList.removeAt(i);

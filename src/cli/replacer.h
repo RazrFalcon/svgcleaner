@@ -31,6 +31,7 @@ public:
     explicit Replacer(SvgDocument &doc) : BaseCleaner(doc) {}
     void convertSizeToViewbox() const;
     void processPaths() const;
+    void replaceEqualPathsWithUse() const;
     void fixWrongAttr() const;
     void convertUnits() const;
     void convertColors() const;

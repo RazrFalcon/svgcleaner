@@ -48,6 +48,7 @@ namespace KeyStr {
     const QString RemoveDuplicatedDefs        = QL1S("--remove-duplicated-defs");
     const QString RemoveOutsideElements       = QL1S("--remove-outside-elts");
     const QString ReplaceEqualEltsByUse       = QL1S("--equal-elts-to-use");
+    const QString ReplaceEqualPathsByUse      = QL1S("--equal-paths-to-use");
     const QString UngroupContainers           = QL1S("--ungroup-containers");
     const QString MergeGradients              = QL1S("--merge-gradients");
 
@@ -173,6 +174,8 @@ void Keys::prepareDescription()
                     tr("Remove elements which are outside the viewbox"));
     descHash.insert(Key::ReplaceEqualEltsByUse,
                     tr("Replace equal elements by the 'use'"));
+    descHash.insert(Key::ReplaceEqualPathsByUse,
+                    tr("Replace paths with only first segments different by the 'use'"));
     descHash.insert(Key::UngroupContainers,
                     tr("Ungroup container elements, when possible"));
     descHash.insert(Key::RemoveDuplicatedDefs,
@@ -285,6 +288,7 @@ QList<int> Keys::elementsKeysId()
         << Key::RemoveDuplicatedDefs
         << Key::RemoveOutsideElements
         << Key::ReplaceEqualEltsByUse
+        << Key::ReplaceEqualPathsByUse
         << Key::UngroupContainers
         << Key::MergeGradients
         << Key::RemoveTinyGaussianBlur;
@@ -427,6 +431,7 @@ QStringList Keys::allKeys()
         << KeyStr::RemoveDuplicatedDefs
         << KeyStr::RemoveOutsideElements
         << KeyStr::ReplaceEqualEltsByUse
+        << KeyStr::ReplaceEqualPathsByUse
         << KeyStr::UngroupContainers
         << KeyStr::MergeGradients
         << KeyStr::RemoveTinyGaussianBlur

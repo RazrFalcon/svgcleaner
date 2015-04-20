@@ -89,14 +89,14 @@ public:
     bool isValid() const;
 
     void append(const Transform &ts);
-    void setOldXY(double prevX, double prevY);
+    void applyTranform(double &x, double &y) const;
+    void applyTranform(double oldX, double oldY, double &newX, double &newY) const;
     void divide(const QString &text);
     QRectF transformRect(const QRectF &rect);
-    double newX() const;
-    double newY() const;
     QString simplified();
     QString simplified() const;
     double scaleFactor() const;
+    bool isScale() const;
     bool isProportionalScale() const;
     bool isMirrored() const;
     bool isSkew() const;

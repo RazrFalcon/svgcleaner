@@ -54,10 +54,8 @@ SvgParser::TokenType SvgParser::readNext()
         return NoToken;
 
     m_attrHash.clear();
-    m_attrExtHash.clear();
     m_name.clear();
     m_value.clear();
-    m_transform = Transform();
 
     TokenType token = identify(&str);
     if (token == ProcessingInstruction) {
@@ -240,14 +238,21 @@ void SvgParser::parseElement()
         if (nameLength > 0) {
             if (   attrId == AttrId::transform
                 || attrId == AttrId::gradientTransform
-                || attrId == AttrId::patternTransform) {
-                m_transform = Transform(str-nameLength, nameLength);
+                || attrId == AttrId::patternTransform)
+            {
+                Transform ts(str-nameLength, nameLength);
+                if (ts.isValid())
+                    m_attrHash.insert(AttrId::transform, SvgAttribute(ts));
             } else {
                 QString attrValue = QString(str-nameLength, nameLength);
                 if (attrName.isEmpty()) {
-                    m_attrHash.insert(attrId, attrValue);
+                    if (attrId == AttrId::d)
+                        m_attrHash.insert(AttrId::d,
+                                          SvgAttribute(PathSegmentList(), attrValue));
+                    else
+                        m_attrHash.insert(attrId, SvgAttribute(attrId, attrValue));
                 } else {
-                    m_attrExtHash.insert(attrName, attrValue);
+                    m_attrHash.insert(attrId, SvgAttribute(attrName, attrValue));
                 }
             }
         }

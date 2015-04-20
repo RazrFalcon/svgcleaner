@@ -1039,9 +1039,7 @@ void Remover::removeGroups() const
              * after:
              * <rect id="2"/>
             */
-            // TODO: ungroup used group
             if (    elem.childElementCount() == 1
-                // && !elem.isUsed()
                 && !elem.firstChildElement().isUsed()
                 && !elem.hasAttributes(illegalGAttrList))
             {

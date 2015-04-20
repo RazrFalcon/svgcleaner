@@ -230,6 +230,7 @@ namespace AttrId {
     extern const uint alignment_baseline;
     extern const uint baseFrequency;
     extern const uint baseline_shift;
+    // TODO: this is internal attribute and it should not be saved to output file
     extern const uint bbox;
     extern const uint block_progression;
     extern const uint class_;

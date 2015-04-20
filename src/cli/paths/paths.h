@@ -33,26 +33,27 @@ class Path
 public:
     explicit Path() {}
     void processPath(SvgElement elem, bool canApplyTransform, bool *isTransformApplyed);
-    QString segmentsToPath(const QList<PathSegment> &segList);
+    QString segmentsToPath(const PathSegmentList &segList) const;
+    PathSegmentList pathToSegments(const QString &path) const;
 
 private:
     SvgElement m_elem;
 
-    void splitToSegments(const QString &path, QList<PathSegment> &segList);
-    void processSegments(QList<PathSegment> &segList);
-    void segmentsToRelative(QList<PathSegment> &segList, bool onlyIfSourceWasRelative);
+    void splitToSegments(const QString &path, PathSegmentList &segList) const;
+    void processSegments(PathSegmentList &segList);
+    void segmentsToRelative(PathSegmentList &segList, bool onlyIfSourceWasRelative);
     void calcNewStrokeWidth(const double scaleFactor);
-    void applyTransform(QList<PathSegment> &tsSegList);
+    void applyTransform(PathSegmentList &tsSegList);
     bool isTsPathShorter();
-    void fixRelative(QList<PathSegment> &segList);
+    void fixRelative(PathSegmentList &segList);
 
     // segments processing
-    bool removeZSegments(QList<PathSegment> &segList);
-    bool removeUnneededMoveToSegments(QList<PathSegment> &segList);
-    bool removeTinySegments(QList<PathSegment> &segList);
-    bool convertSegments(QList<PathSegment> &segList);
-    bool joinSegments(QList<PathSegment> &segList);
-    void removeStrokeLinecap(QList<PathSegment> &segList);
+    bool removeZSegments(PathSegmentList &segList);
+    bool removeUnneededMoveToSegments(PathSegmentList &segList);
+    bool removeTinySegments(PathSegmentList &segList);
+    bool convertSegments(PathSegmentList &segList);
+    bool joinSegments(PathSegmentList &segList);
+    void removeStrokeLinecap(PathSegmentList &segList);
 };
 
 #endif // PATHS_H

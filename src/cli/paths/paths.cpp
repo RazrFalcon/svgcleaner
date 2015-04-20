@@ -47,7 +47,7 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isTransfor
     }
     m_elem = elem;
 
-    QList<PathSegment> segList;
+    PathSegmentList segList;
     splitToSegments(inPath, segList);
     // paths without segments or with first segment not 'moveto' are invalid
     if (segList.isEmpty() || segList.first().command != Command::MoveTo) {
@@ -67,7 +67,7 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isTransfor
 
     processSegments(segList);
 
-    QList<PathSegment> tsSegList = segList;
+    PathSegmentList tsSegList = segList;
 
     if (Keys.flag(Key::RemoveOutsideElements))
         elem.setAttribute(AttrId::bbox, PathBBox::calcBoundingBox(segList, true));
@@ -81,7 +81,7 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isTransfor
     // set old path, if new is longer
     if (outPath.size() > inPath.size())
         outPath = inPath;
-    elem.setAttribute(AttrId::d, outPath);
+    elem.setAttribute(SvgAttribute(segList, outPath));
 
     // try to bake transforms into path
     if (canApplyTransform) {
@@ -94,12 +94,12 @@ void Path::processPath(SvgElement elem, bool canApplyTransform, bool *isTransfor
         if (Keys.flag(Key::ConvertToRelative))
             segmentsToRelative(tsSegList, false);
         calcNewStrokeWidth(m_elem.transform().scaleFactor());
-        m_elem.setAttribute(QL1S("dts"), segmentsToPath(tsSegList));
+        elem.setAttribute(QL1S("dts"), segmentsToPath(tsSegList));
 
         // apply transform only if it shorter
         if (isTsPathShorter() || Keys.flag(Key::ForceApplyTransformsToPaths)) {
             *isTransformApplied = true;
-            elem.setAttribute(AttrId::d, elem.attribute(QL1S("dts")));
+            elem.setAttribute(SvgAttribute(tsSegList, elem.attribute(QL1S("dts"))));
             QString newStroke = elem.attribute(QL1S("stroke-width-new"));
             if (!newStroke.isEmpty() && newStroke != QL1S("1"))
                 elem.setAttribute(AttrId::stroke_width, newStroke);
@@ -148,7 +148,7 @@ QChar toLower(const QChar &c)
 }
 
 // split path to segments and convert segments to absolute
-void Path::splitToSegments(const QString &path, QList<PathSegment> &segList)
+void Path::splitToSegments(const QString &path, PathSegmentList &segList) const
 {
     StringWalker sw(path);
     QChar cmd;
@@ -258,6 +258,13 @@ void Path::splitToSegments(const QString &path, QList<PathSegment> &segList)
         segList.clear();
 }
 
+PathSegmentList Path::pathToSegments(const QString &path) const
+{
+    PathSegmentList segList;
+    splitToSegments(path, segList);
+    return segList;
+}
+
 void Path::calcNewStrokeWidth(const double scaleFactor)
 {
     SvgElement parentElem = m_elem;
@@ -265,7 +272,7 @@ void Path::calcNewStrokeWidth(const double scaleFactor)
     while (!parentElem.isNull()) {
         if (parentElem.hasAttribute(AttrId::stroke_width)) {
             double strokeWidth
-                = toDouble(Tools::convertUnitsToPx(parentElem.attribute(AttrId::stroke_width)));
+                = toDouble(convertUnitsToPx(parentElem.attribute(AttrId::stroke_width)));
             QString sw = fromDouble(strokeWidth * scaleFactor, Round::Attribute);
             m_elem.setAttribute(QL1S("stroke-width-new"), sw);
             hasParentStrokeWidth = true;
@@ -278,7 +285,7 @@ void Path::calcNewStrokeWidth(const double scaleFactor)
     }
 }
 
-void Path::applyTransform(QList<PathSegment> &tsSegList)
+void Path::applyTransform(PathSegmentList &tsSegList)
 {
     Transform ts = m_elem.transform();
 
@@ -322,7 +329,7 @@ bool Path::isTsPathShorter()
     return (afterTransform < beforeTransform);
 }
 
-void Path::segmentsToRelative(QList<PathSegment> &segList, bool onlyIfSourceWasRelative)
+void Path::segmentsToRelative(PathSegmentList &segList, bool onlyIfSourceWasRelative)
 {
     double lastX = 0;
     double lastY = 0;
@@ -350,6 +357,44 @@ void Path::segmentsToRelative(QList<PathSegment> &segList, bool onlyIfSourceWasR
     }
 }
 
+void Path::processSegments(PathSegmentList &segList)
+{
+    removeStrokeLinecap(segList);
+    bool isPathChanged = true;
+    while (isPathChanged)
+    {
+        // TODO: add new key for it
+        if (Keys.flag(Key::RemoveUnneededSymbols)) {
+            isPathChanged = removeZSegments(segList);
+            if (isPathChanged)
+                continue;
+
+            isPathChanged = removeUnneededMoveToSegments(segList);
+            if (isPathChanged)
+                continue;
+
+            isPathChanged = joinSegments(segList);
+            if (isPathChanged)
+                continue;
+        }
+
+        if (Keys.flag(Key::RemoveTinySegments)) {
+            isPathChanged = removeTinySegments(segList);
+            if (isPathChanged)
+                continue;
+        }
+
+        if (Keys.flag(Key::ConvertSegments)) {
+            isPathChanged = convertSegments(segList);
+            if (isPathChanged)
+                continue;
+        }
+
+        isPathChanged = false;
+    }
+    removeStrokeLinecap(segList);
+}
+
 bool isLineBasedSegment(const PathSegment &seg)
 {
     return    seg.command == Command::LineTo
@@ -357,7 +402,7 @@ bool isLineBasedSegment(const PathSegment &seg)
            || seg.command == Command::VerticalLineTo;
 }
 
-bool Path::removeZSegments(QList<PathSegment> &segList)
+bool Path::removeZSegments(PathSegmentList &segList)
 {
     if (segList.isEmpty())
         return false;
@@ -406,7 +451,7 @@ bool Path::removeZSegments(QList<PathSegment> &segList)
     return isRemoved;
 }
 
-bool Path::removeUnneededMoveToSegments(QList<PathSegment> &segList)
+bool Path::removeUnneededMoveToSegments(PathSegmentList &segList)
 {
     if (segList.isEmpty())
         return false;
@@ -428,7 +473,7 @@ bool Path::removeUnneededMoveToSegments(QList<PathSegment> &segList)
 }
 
 // BUG: do not remove segments at an acute angle
-bool Path::removeTinySegments(QList<PathSegment> &segList)
+bool Path::removeTinySegments(PathSegmentList &segList)
 {
     if (segList.isEmpty())
         return false;
@@ -498,7 +543,7 @@ bool Path::removeTinySegments(QList<PathSegment> &segList)
     return (segList.size() != oldSize);
 }
 
-bool Path::convertSegments(QList<PathSegment> &segList)
+bool Path::convertSegments(PathSegmentList &segList)
 {
     if (segList.isEmpty())
         return false;
@@ -585,7 +630,7 @@ bool isPointOnLine(const QPointF &p1, const QPointF &p2, const QPointF &point)
     return false;
 }
 
-bool Path::joinSegments(QList<PathSegment> &segList)
+bool Path::joinSegments(PathSegmentList &segList)
 {
     if (segList.isEmpty())
         return false;
@@ -633,7 +678,7 @@ bool Path::joinSegments(QList<PathSegment> &segList)
     return (segList.size() != oldSize);
 }
 
-void Path::removeStrokeLinecap(QList<PathSegment> &segList)
+void Path::removeStrokeLinecap(PathSegmentList &segList)
 {
     if (segList.isEmpty())
         return;
@@ -654,45 +699,7 @@ void Path::removeStrokeLinecap(QList<PathSegment> &segList)
         m_elem.removeAttribute(AttrId::stroke_linecap);
 }
 
-void Path::processSegments(QList<PathSegment> &segList)
-{
-    removeStrokeLinecap(segList);
-    bool isPathChanged = true;
-    while (isPathChanged)
-    {
-        // TODO: add new key for it
-        if (Keys.flag(Key::RemoveUnneededSymbols)) {
-            isPathChanged = removeZSegments(segList);
-            if (isPathChanged)
-                continue;
-
-            isPathChanged = removeUnneededMoveToSegments(segList);
-            if (isPathChanged)
-                continue;
-
-            isPathChanged = joinSegments(segList);
-            if (isPathChanged)
-                continue;
-        }
-
-        if (Keys.flag(Key::RemoveTinySegments)) {
-            isPathChanged = removeTinySegments(segList);
-            if (isPathChanged)
-                continue;
-        }
-
-        if (Keys.flag(Key::ConvertSegments)) {
-            isPathChanged = convertSegments(segList);
-            if (isPathChanged)
-                continue;
-        }
-
-        isPathChanged = false;
-    }
-    removeStrokeLinecap(segList);
-}
-
-QString Path::segmentsToPath(const QList<PathSegment> &segList)
+QString Path::segmentsToPath(const PathSegmentList &segList) const
 {
     if (segList.size() == 1 || segList.isEmpty())
         return QString();

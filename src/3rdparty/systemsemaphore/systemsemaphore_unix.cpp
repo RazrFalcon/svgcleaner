@@ -41,7 +41,6 @@
 
 #include <QCoreApplication>
 #include <QFile>
-#include <QtDebug>
 
 #include "systemsemaphore.h"
 #include "systemsemaphore_p.h"

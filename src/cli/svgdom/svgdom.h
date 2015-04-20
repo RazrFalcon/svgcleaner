@@ -24,6 +24,7 @@
 
 #include "../enums.h"
 #include "../transform.h"
+#include "../paths/pathsegment.h"
 
 class SvgDocumentPrivate;
 class SvgNodePrivate;
@@ -172,6 +173,7 @@ public:
     bool hasAttributes(const IntList &list) const;
     bool hasAttributes(const QStringList &list) const;
     bool hasAttributes() const;
+    bool hasStyleAttributes() const;
     QString id() const;
     SvgElement removeChild(const SvgElement &oldChild, bool returnPrevious = false);
     bool hasChildrenElement() const;
@@ -202,6 +204,8 @@ public:
     bool hasReferencedDefs() const;
     void removeReferenceElement(uint attrId);
 
+    void setPathAttribute(const PathSegmentList &segList, const QString &value);
+
     // linked elements processing
     void appendLinkedElement(const uint attrId, const SvgElement &elem);
     void removeLinkedElement(const QString &id);
@@ -216,9 +220,11 @@ public:
 
     // transform elements processing
     bool hasTransform() const;
+    bool hasAbsoluteTransform() const;
     void setTransform(const Transform &atransform, bool fromParent = false);
     void removeTransform();
     Transform transform() const;
+    Transform absoluteTransform() const;
 
     void setBBoxTransform(const Transform &transform);
     Transform bboxTransform() const;
@@ -230,15 +236,18 @@ private:
 
     friend class SvgDocument;
     friend class SvgNode;
+
+protected:
+    void setAttributeList(const SvgAttributeHash &hash);
 };
 
 class SvgAttributeData : public QSharedData
 {
 public:
-    SvgAttributeData() : QSharedData(), id(0), isStyle(false), type(None) {}
-    virtual ~SvgAttributeData() {}
+    enum Types { None, Default, External, TTransform, Reference, Path };
 
-    enum Types { None, Default, External, TTransform, Reference };
+    SvgAttributeData(Types t) : QSharedData(), id(0), isStyle(false), type(t) {}
+    virtual ~SvgAttributeData() {}
 
     uint id;
     QString value;
@@ -246,35 +255,49 @@ public:
     Types type;
 };
 
+// stores default SVG attributes as pair of unique  attribute id and string value
 class DefaultSvgAttributeData : public SvgAttributeData
 {
 public:
-    DefaultSvgAttributeData() : SvgAttributeData() { type = Default; }
+    DefaultSvgAttributeData() : SvgAttributeData(Default) {}
 };
 
+// stores undefined SVG attributes as pair of string name and string value
 class ExternalSvgAttributeData : public SvgAttributeData
 {
 public:
-    ExternalSvgAttributeData() : SvgAttributeData() { type = External; }
+    ExternalSvgAttributeData() : SvgAttributeData(External) { }
 
     QString name;
 };
 
+// stores SVG transform matrix
 class TransformSvgAttributeData : public SvgAttributeData
 {
 public:
-    TransformSvgAttributeData() : SvgAttributeData() { type = TTransform; }
+    TransformSvgAttributeData() : SvgAttributeData(TTransform) { id = AttrId::transform; }
 
     Transform transform;
 };
 
+// stores pointer to reference element, url or xlink
 class ReferenceSvgAttributeData : public SvgAttributeData
 {
 public:
-    ReferenceSvgAttributeData() : SvgAttributeData() { type = Reference; }
+    ReferenceSvgAttributeData() : SvgAttributeData(Reference) { }
 
     SvgElement linked;
 };
+
+// stores SVG path as string and as segment list
+class PathSvgAttributeData : public SvgAttributeData
+{
+public:
+    PathSvgAttributeData() : SvgAttributeData(Path) { id = AttrId::d; }
+
+    PathSegmentList segList;
+};
+
 
 class SvgAttribute
 {
@@ -285,10 +308,9 @@ public:
     SvgAttribute(const Transform &ts);
     SvgAttribute(const QString &aname, const QString &avalue);
     SvgAttribute(const SvgAttribute &a);
+    SvgAttribute(const PathSegmentList &list, const QString &avalue);
     bool operator== (const SvgAttribute &t) const;
     bool operator!= (const SvgAttribute &t) const;
-
-    bool isNull() const;
 
     uint id() const;
     QString name() const;
@@ -296,12 +318,15 @@ public:
     void setValue(const QString &text);
     SvgElement referencedElement() const;
     Transform transform() const;
+    PathSegmentList segList() const;
 
+    bool isNone() const;
     bool isDefault() const;
     bool isExternal() const;
     bool isTransform() const;
     bool isStyle() const;
     bool isReference() const;
+    bool isPath() const;
 
 private:
     QExplicitlySharedDataPointer<SvgAttributeData> impl;

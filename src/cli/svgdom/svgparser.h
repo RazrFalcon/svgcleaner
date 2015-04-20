@@ -24,6 +24,7 @@
 
 #include "../mindef.h"
 #include "../transform.h"
+#include "svgdom.h"
 
 class SvgParser
 {
@@ -47,14 +48,12 @@ public:
 
     TokenType readNext();
 
-    bool atEnd() const               { return (str == end || str->isNull()); }
-    bool hasError() const            { return m_error != NoError; }
-    ErrorType errorId() const        { return m_error; }
-    IntHash attributes() const       { return m_attrHash; }
-    StringHash attributesExt() const { return m_attrExtHash; }
-    QString name() const             { return m_name; }
-    QString value() const            { return m_value; }
-    Transform transform() const      { return m_transform; }
+    bool atEnd() const                  { return (str == end || str->isNull()); }
+    bool hasError() const               { return m_error != NoError; }
+    ErrorType errorId() const           { return m_error; }
+    SvgAttributeHash attributes() const { return m_attrHash; }
+    QString name() const                { return m_name; }
+    QString value() const               { return m_value; }
 
 private:
     // have to store full file content to prevent
@@ -68,9 +67,7 @@ private:
     // svg element data
     QString m_name;
     QString m_value;
-    IntHash m_attrHash;
-    StringHash m_attrExtHash;
-    Transform m_transform;
+    SvgAttributeHash m_attrHash;
 
     // parser vars
     bool m_isPrevElemEnded;

@@ -20,6 +20,7 @@
 ****************************************************************************/
 
 #include <QDir>
+#include <QtDebug>
 
 #ifdef USE_IPC
 #include <QSharedMemory>
@@ -37,7 +38,7 @@ void printLine(int keyId, const QString &desc = QString())
                           qPrintable(Keys.description(keyId)));
     else
         qDebug("  %s %s", qPrintable(Keys.keyName(keyId).leftJustified(35, QL1C(' '))),
-               qPrintable(desc));
+                          qPrintable(desc));
 }
 
 void printLine(const QString &key, const QString &desc)
@@ -195,6 +196,8 @@ void processFile(const QString &inPath, const QString &outPath)
         remover.removeGroups();
     }
     replacer.processPaths();
+    if (Keys.flag(Key::ReplaceEqualPathsByUse))
+        replacer.replaceEqualPathsWithUse();
     if (Keys.flag(Key::RemoveOutsideElements))
         remover.removeElementsOutsideTheViewbox();
     if (Keys.flag(Key::ReplaceEqualEltsByUse))
@@ -336,6 +339,7 @@ void slaveMessageOutput(QtMsgType type, const char *msg)
 }
 #endif
 
+// TODO: fix msgbox on Win
 void ownMessageOutput(QtMsgType type, const char *msg)
 {
     if (type == QtFatalMsg) {
@@ -354,7 +358,6 @@ int main(int argc, char *argv[])
     setlocale(LC_ALL, "");
 #endif
     QLocale::setDefault(QLocale::English);
-
 
     QStringList argList = arguments(argc, argv);
     // remove executable path

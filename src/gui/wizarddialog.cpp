@@ -61,14 +61,15 @@ void WizardDialog::initGUI()
 #endif
 
     // setup type radioButtons
-    connect(radioBtn1, SIGNAL(clicked()), this, SLOT(onRadioSelected()));
-    connect(radioBtn2, SIGNAL(clicked()), this, SLOT(onRadioSelected()));
-    connect(radioBtn3, SIGNAL(clicked()), this, SLOT(onRadioSelected()));
-    QString str = "radioBtn";
-    Settings settings;
-    str.append(settings.string(SettingKey::Wizard::SaveMode, "1"));
-    QRadioButton *rbtn = findChild<QRadioButton *>(str);
-    rbtn->click();
+    radioBtn1->setProperty("Mode", 1);
+    radioBtn2->setProperty("Mode", 2);
+    radioBtn3->setProperty("Mode", 3);
+    connect(radioBtn1, SIGNAL(toggled(bool)), this, SLOT(onRadioSelected(bool)));
+    connect(radioBtn2, SIGNAL(toggled(bool)), this, SLOT(onRadioSelected(bool)));
+    connect(radioBtn3, SIGNAL(toggled(bool)), this, SLOT(onRadioSelected(bool)));
+    QString str = "radioBtn" + Settings().string(SettingKey::Wizard::SaveMode, "1");
+    findChild<QRadioButton *>(str)->toggle();
+    onRadioSelected(true);
 
     connect(chBoxRecursive, SIGNAL(toggled(bool)), treeView, SLOT(setRecursive(bool)));
 
@@ -291,13 +292,12 @@ void WizardDialog::setPathList(const QStringList &list)
         treeView->addRootPath(path);
 }
 
-void WizardDialog::onRadioSelected()
+void WizardDialog::onRadioSelected(bool flag)
 {
+    if (!flag)
+        return;
     frameOutDir->setVisible(radioBtn1->isChecked());
     frameRename->setVisible(radioBtn2->isChecked());
-    QRadioButton *rBtn = qobject_cast<QRadioButton *>(sender());
-    Settings settings;
-    settings.setValue(SettingKey::Wizard::SaveMode, rBtn->accessibleName());
 }
 
 void WizardDialog::on_cmbBoxPreset_currentIndexChanged(const QString &presetName)
@@ -547,17 +547,6 @@ void WizardDialog::createWarning(const QString &text)
     QMessageBox::warning(this, tr("Warning"), text, QMessageBox::Ok);
 }
 
-QString WizardDialog::findLabel(const QString &accessibleName)
-{
-    for (int i = 1; i < stackedWidget->count(); ++i) {
-        foreach(QLabel *lbl, stackedWidget->widget(i)->findChildren<QLabel *>()) {
-            if (lbl->accessibleName() == accessibleName)
-                return lbl->text();
-        }
-    }
-    return QString();
-}
-
 void WizardDialog::saveSettings()
 {
     Settings settings;
@@ -572,6 +561,14 @@ void WizardDialog::saveSettings()
     settings.setValue(SettingKey::Wizard::Preset,           cmbBoxPreset->currentIndex());
     settings.setValue(SettingKey::Wizard::CompressLevel,    cmbBoxCompress->currentIndex());
     settings.setValue(SettingKey::Wizard::ThreadsCount,     spinBoxThreads->value());
+
+    foreach (QRadioButton *rBtn, widget->findChildren<QRadioButton*>()) {
+        if (rBtn->isChecked()) {
+            settings.setValue(SettingKey::Wizard::SaveMode, rBtn->property("Mode").toInt());
+            break;
+        }
+    }
+
     bool isCustom = false;
     QStringList list = argsList(&isCustom);
     if (isCustom)

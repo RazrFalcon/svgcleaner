@@ -266,9 +266,6 @@
              </property>
              <item>
               <widget class="QRadioButton" name="radioBtn1">
-               <property name="accessibleName">
-                <string notr="true">1</string>
-               </property>
                <property name="text">
                 <string>save cleaned files into the output folder</string>
                </property>
@@ -279,9 +276,6 @@
              </item>
              <item>
               <widget class="QRadioButton" name="radioBtn2">
-               <property name="accessibleName">
-                <string notr="true">2</string>
-               </property>
                <property name="text">
                 <string>save cleaned files into the current folder</string>
                </property>
@@ -292,9 +286,6 @@
              </item>
              <item>
               <widget class="QRadioButton" name="radioBtn3">
-               <property name="accessibleName">
-                <string notr="true">3</string>
-               </property>
                <property name="text">
                 <string>overwrite original files</string>
                </property>

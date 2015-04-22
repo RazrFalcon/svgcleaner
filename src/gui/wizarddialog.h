@@ -44,7 +44,6 @@ private:
 private:
     bool checkForWarnings();
     QString compressValue() const;
-    QString findLabel(const QString &accessibleName);
     QStringList argsList(bool *isCustom) const;
     void createWarning(const QString &text);
     void loadSettings();
@@ -66,7 +65,7 @@ private slots:
     void on_btnOpenOutDir_clicked();
     void on_buttonBox_clicked(QAbstractButton *button);
     void on_cmbBoxPreset_currentIndexChanged(const QString &presetName);
-    void onRadioSelected();
+    void onRadioSelected(bool flag);
     void on_btnAddFiles_clicked();
     void on_btnAddFolder_clicked();
 

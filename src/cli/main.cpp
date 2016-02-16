@@ -21,6 +21,7 @@
 
 #include <QDir>
 #include <QtDebug>
+#include <locale.h>
 
 #ifdef USE_IPC
 #include <QSharedMemory>

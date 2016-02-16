@@ -278,18 +278,9 @@ QString TransformPrivate::simplified() const
     }
 
     transform += QL1S("(");
-    bool isTrim = Keys::get().flag(Key::RemoveUnneededSymbols);
     for (int i = 0; i < newPoints.size(); ++i) {
         if (i != 0) {
-            if (isTrim) {
-                if ( newPoints.at(i).startsWith(QL1C('.'))
-                        || newPoints.at(i).at(0).isDigit()
-                        || newPoints.at(i).startsWith(QL1C('-'))
-                      )
-                    transform += QL1S(" ");
-            } else {
-                transform +=QL1S(" ");
-            }
+              transform +=QL1S(" ");
         }
         transform += newPoints.at(i);
     }

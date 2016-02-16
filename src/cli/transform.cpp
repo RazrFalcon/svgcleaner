@@ -282,9 +282,10 @@ QString TransformPrivate::simplified() const
     for (int i = 0; i < newPoints.size(); ++i) {
         if (i != 0) {
             if (isTrim) {
-                if ((!newPoints.at(i-1).contains(QL1C('.'))
-                     && newPoints.at(i).startsWith(QL1C('.')))
-                        || newPoints.at(i).at(0).isDigit())
+                if ( newPoints.at(i).startsWith(QL1C('.'))
+                        || newPoints.at(i).at(0).isDigit()
+                        || newPoints.at(i).startsWith(QL1C('-'))
+                      )
                     transform += QL1S(" ");
             } else {
                 transform +=QL1S(" ");

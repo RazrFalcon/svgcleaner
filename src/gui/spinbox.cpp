@@ -19,7 +19,12 @@
 **
 ****************************************************************************/
 
-#include <QtGui/QHBoxLayout>
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QHBoxLayout>
+#else
+    #include <QtGui/QHBoxLayout>
+#endif
 
 #include "spinbox.h"
 

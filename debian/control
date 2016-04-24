@@ -3,10 +3,10 @@ Section: graphics
 Priority: extra
 Maintainer: Evgeniy Raizner <razrfalcon@gmail.com>
 Standards-Version: 3.9.5
-Build-Depends: debhelper (>= 7), cdbs, qt4-qmake, build-essential, libqt4-dev
+Build-Depends: debhelper (>= 7), cdbs, qt5-qmake, build-essential, qtbase5-dev, libqt5svg5-dev
 Homepage: https://launchpad.net/svg-cleaner
 
 Package: svgcleaner
-Depends: libqt4-core, libqt4-gui, libqt4-svg, libqt4-xml, p7zip-full, xdg-utils, ${shlibs:Depends}
+Depends: libqt5core5a, libqt5gui5, libqt5svg5, libqt5widgets5, p7zip-full, xdg-utils, ${shlibs:Depends}
 Architecture: any
 Description: Batch, tunable, crossplatform SVG cleaning program.

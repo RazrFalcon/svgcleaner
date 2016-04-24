@@ -18,8 +18,14 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 **
 ****************************************************************************/
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QApplication>
+    #include <QDataStream>
+#else
+    #include <QtGui/QApplication>
+#endif
 
-#include <QtGui/QApplication>
 #include <QtCore/QDir>
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QFileInfo>
@@ -270,7 +276,6 @@ void CleanerThread::exit()
     if (!m_proc.isNull()) {
         stopProcess();
     }
-    emit finished();
 #endif
 }
 

@@ -22,8 +22,14 @@
 #ifndef ICONSWIDGET_H
 #define ICONSWIDGET_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QLabel>
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QWidget>
+    #include <QLabel>
+#else
+    #include <QtGui/QWidget>
+    #include <QtGui/QLabel>
+#endif
 
 class IconsWidget : public QWidget
 {

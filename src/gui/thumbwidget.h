@@ -22,7 +22,12 @@
 #ifndef THUMBWIDGET_H
 #define THUMBWIDGET_H
 
-#include <QtGui/QFrame>
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QFrame>
+#else
+    #include <QtGui/QFrame>
+#endif
 
 #include "arguments.h"
 #include "ui_thumbwidget.h"

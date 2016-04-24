@@ -22,8 +22,15 @@
 #ifndef FILESVIEW_H
 #define FILESVIEW_H
 
-#include <QtGui/QTreeView>
-#include <QtGui/QItemDelegate>
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QTreeView>
+    #include <QItemDelegate>
+#else
+    #include <QtGui/QTreeView>
+    #include <QtGui/QItemDelegate>
+#endif
+
 #include <QtCore/QAbstractItemModel>
 #include <QtCore/QModelIndex>
 #include <QtCore/QList>

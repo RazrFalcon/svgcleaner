@@ -22,7 +22,12 @@
 #ifndef WIZARDDIALOG_H
 #define WIZARDDIALOG_H
 
-#include <QtGui/QDialog>
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QDialog>
+#else
+    #include <QtGui/QDialog>
+#endif
 
 #include "arguments.h"
 #include "ui_wizarddialog.h"

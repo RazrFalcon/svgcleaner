@@ -20,10 +20,20 @@
 ****************************************************************************/
 
 #include <QtGui/QDropEvent>
-#include <QtGui/QMessageBox>
-#include <QtGui/QHeaderView>
+
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QMessageBox>
+    #include <QHeaderView>
+    #include <QApplication>
+    #include <QMimeData>
+#else
+    #include <QtGui/QMessageBox>
+    #include <QtGui/QHeaderView>
+    #include <QtGui/QApplication>
+#endif
+
 #include <QtGui/QPainter>
-#include <QtGui/QApplication>
 #include <QtCore/QDir>
 #include <QtCore/QUrl>
 #include <QtDebug>
@@ -330,7 +340,14 @@ TreeItem* TreeModel::addFolder(const QString &text, TreeItem *parent)
         parent = rootItem;
     TreeItem *folderItem = new TreeItem(text, parent);
     parent->appendChild(folderItem);
-    reset();
+
+    #if QT_VERSION >= 0x050000
+        beginResetModel();
+        endResetModel();
+    #else
+        reset();
+    #endif
+
     return folderItem;
 }
 
@@ -339,7 +356,13 @@ void TreeModel::addFile(const QString &text, TreeItem *parent)
     if (!parent)
         parent = rootItem;
     parent->appendChild(new TreeItem(text, parent));
-    reset();
+    
+    #if QT_VERSION >= 0x050000
+        beginResetModel();
+        endResetModel();
+    #else
+        reset();
+    #endif
 }
 
 void TreeModel::removeRootItem(const QModelIndex &itemIndex)
@@ -361,8 +384,15 @@ FilesView::FilesView(QWidget *parent) :
     ButtonDelegate *delegate = new ButtonDelegate(this);
     connect(delegate, SIGNAL(removePath(QModelIndex)), this, SLOT(onRemovePath(QModelIndex)));
     setItemDelegateForColumn(1, delegate);
-    header()->setResizeMode(0, QHeaderView::Stretch);
-    header()->setResizeMode(1, QHeaderView::Fixed);
+
+    #if QT_VERSION >= 0x050000
+        header()->setSectionResizeMode(0, QHeaderView::Stretch);
+        header()->setSectionResizeMode(1, QHeaderView::Fixed);
+    #else
+        header()->setResizeMode(0, QHeaderView::Stretch);
+        header()->setResizeMode(1, QHeaderView::Fixed);
+    #endif
+
     header()->setDefaultSectionSize(header()->minimumSectionSize());
 }
 

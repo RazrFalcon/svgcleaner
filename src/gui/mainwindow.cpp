@@ -24,9 +24,18 @@
 #include <QtCore/QTimer>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPixmapCache>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
-#include <QtGui/QShortcut>
+
+#if QT_VERSION >= 0x050000
+    #include <QMenu>
+    #include <QMessageBox>
+    #include <QShortcut>
+    #include <QtConcurrent>
+#else
+    #include <QtGui/QMenu>
+    #include <QtGui/QMessageBox>
+    #include <QtGui/QShortcut>
+#endif
+
 #include <QtGui/QWheelEvent>
 #include <QtDebug>
 

@@ -24,6 +24,10 @@
 
 #include <QSet>
 
+#if QT_VERSION >= 0x050000
+#include <QMap>
+#endif
+
 #define QL1S(x) QLatin1String(x)
 #define QL1C(x) QLatin1Char(x)
 
@@ -35,7 +39,13 @@ typedef QHash<QString,QString> StringHash;
 typedef QMap<QString,QString> StringMap;
 
 uint hash(const QChar *p, int n);
-uint qHash(const QString &key);
+
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    uint qHash(const QString&, uint seed);
+#else
+    uint qHash(const QString &key);
+#endif
 
 // we cannot use static variables while unit testing
 // so replace 'static' with nothing

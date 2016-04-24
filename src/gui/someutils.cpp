@@ -18,6 +18,10 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 **
 ****************************************************************************/
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QObject>
+#endif
 
 #include <QtCore/QTime>
 #include <QtCore/QStringList>

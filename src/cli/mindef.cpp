@@ -21,7 +21,11 @@
 
 #include "mindef.h"
 
-uint qHash(const QString &key)
+#if QT_VERSION >= 0x050000
+    uint qHash(const QString& key, uint seed)
+#else
+    uint qHash(const QString &key)
+#endif
 {
     return hash(key.unicode(), key.size());
 }

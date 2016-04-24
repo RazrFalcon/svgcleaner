@@ -23,9 +23,19 @@
 #define MAINWINDOW_H
 
 #include <QtCore/QElapsedTimer>
-#include <QtGui/QComboBox>
-#include <QtGui/QMainWindow>
-#include <QtGui/QDockWidget>
+
+#include <QtCore>
+
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QtWidgets/QComboBox>
+    #include <QMainWindow>
+    #include <QDockWidget>
+#else
+    #include <QtGui/QComboBox>
+    #include <QtGui/QMainWindow>
+    #include <QtGui/QDockWidget>
+#endif
 
 #include "cleanerthread.h"
 #include "arguments.h"

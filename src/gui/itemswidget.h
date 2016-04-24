@@ -22,7 +22,12 @@
 #ifndef ITEMSWIDGET_H
 #define ITEMSWIDGET_H
 
-#include <QtGui/QScrollArea>
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QScrollArea>
+#else
+    #include <QtGui/QScrollArea>
+#endif
 
 #include "thumbwidget.h"
 

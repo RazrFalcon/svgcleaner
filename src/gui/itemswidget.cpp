@@ -20,7 +20,12 @@
 ****************************************************************************/
 
 #include <QtGui/QResizeEvent>
-#include <QtGui/QScrollBar>
+
+#if QT_VERSION >= 0x050000
+    #include <QScrollBar>
+#else
+    #include <QtGui/QScrollBar>
+#endif
 
 #include <QtDebug>
 

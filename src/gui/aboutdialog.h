@@ -22,7 +22,13 @@
 #ifndef ABOUTDIALOG_H
 #define ABOUTDIALOG_H
 
-#include <QtGui/QDialog>
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+	#include <QDialog>
+#else
+	#include <QtGui/QDialog>
+#endif
+
 #include "ui_aboutdialog.h"
 
 class AboutDialog : public QDialog, public Ui::AboutDialog

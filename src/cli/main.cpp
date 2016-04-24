@@ -27,6 +27,12 @@
 #include <QSharedMemory>
 #include <QBuffer>
 #include "../3rdparty/systemsemaphore/systemsemaphore.h"
+
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QDataStream>
+#endif
+
 #endif
 
 #include "remover.h"
@@ -327,9 +333,16 @@ QStringList arguments(int &argc, char **argv)
 #ifdef USE_IPC
 SystemSemaphore *semaphore2 = 0;
 QString appLog;
+#if QT_VERSION >= 0x050000
+void slaveMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    appLog += msg + QL1S("\n");
+#else
 void slaveMessageOutput(QtMsgType type, const char *msg)
 {
     appLog += QString(QL1S(msg)) + QL1S("\n");
+#endif
+
     if (type == QtFatalMsg) {
         // emit to 'gui' that we crashed
         // crash will be detected by timeout anyway, but this way is much faster
@@ -341,8 +354,14 @@ void slaveMessageOutput(QtMsgType type, const char *msg)
 #endif
 
 // TODO: fix msgbox on Win
+#if QT_VERSION >= 0x050000
+void ownMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &strMsg)
+{
+    const char *msg = strMsg.toStdString().c_str();
+#else
 void ownMessageOutput(QtMsgType type, const char *msg)
 {
+#endif
     if (type == QtFatalMsg) {
         fprintf(stderr, "Error: %s\n", msg);
         exit(1);
@@ -390,7 +409,11 @@ int main(int argc, char *argv[])
         if (!sharedMemory.attach())
             qFatal("unable to attach to shared memory segment.");
 
-        qInstallMsgHandler(slaveMessageOutput);
+        #if QT_VERSION >= 0x050000
+            qInstallMessageHandler(slaveMessageOutput);
+        #else
+            qInstallMsgHandler(slaveMessageOutput);
+        #endif
 
         Keys.parseOptions(argList);
 
@@ -439,7 +462,11 @@ int main(int argc, char *argv[])
     else
 #endif
     {
-        qInstallMsgHandler(ownMessageOutput);
+        #if QT_VERSION >= 0x050000
+                qInstallMessageHandler(ownMessageOutput);
+        #else
+                qInstallMsgHandler(ownMessageOutput);
+        #endif
 
         QString inputFile  = argList.takeFirst();
         QString outputFile = argList.takeFirst();

@@ -22,7 +22,13 @@
 #ifndef DOCKWIDGET_H
 #define DOCKWIDGET_H
 
-#include <QtGui/QWidget>
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QWidget>
+#else
+    #include <QtGui/QWidget>
+#endif
+
 #include <QtCore/QElapsedTimer>
 
 #include "arguments.h"

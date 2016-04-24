@@ -20,10 +20,19 @@
 ****************************************************************************/
 
 #include <QtGui/QCloseEvent>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QScrollArea>
-#include <QtGui/QScrollBar>
+
+#if QT_VERSION >= 0x050000
+    #include <QFileDialog>
+    #include <QMessageBox>
+    #include <QScrollArea>
+    #include <QScrollBar>
+#else
+    #include <QtGui/QFileDialog>
+    #include <QtGui/QMessageBox>
+    #include <QtGui/QScrollArea>
+    #include <QtGui/QScrollBar>
+#endif
+
 #include <QtGui/QWheelEvent>
 #include <QtCore/QThread>
 #include <QtDebug>

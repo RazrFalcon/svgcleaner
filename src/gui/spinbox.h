@@ -22,10 +22,18 @@
 #ifndef SPINBOX_H
 #define SPINBOX_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QSpinBox>
-#include <QtGui/QDoubleSpinBox>
+#include <QtGlobal>
+#if QT_VERSION >= 0x050000
+    #include <QWidget>
+    #include <QLabel>
+    #include <QSpinBox>
+    #include <QDoubleSpinBox>
+#else
+    #include <QtGui/QWidget>
+    #include <QtGui/QLabel>
+    #include <QtGui/QSpinBox>
+    #include <QtGui/QDoubleSpinBox>
+#endif
 
 class SpinBox : public QWidget
 {

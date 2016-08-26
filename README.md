@@ -1,6 +1,6 @@
 ## svgcleaner
 
-**svgcleaner** could help you to clean up your SVG files from the unnecessary data.
+*svgcleaner* could help you to clean up your SVG files from the unnecessary data.
 
 ### Goals
 
@@ -11,7 +11,7 @@
 
 ### Usage
 
-```bash
+```
 svgcleaner in.svg out.svg
 ```
 
@@ -19,7 +19,7 @@ Use `--help` for a list of the cleaning options. And a [doc](docs/svgcleaner.rst
 
 ### GUI
 
-GUI is still in a early alpha.
+GUI is still in an early alpha.
 
 ### Charts
 
@@ -34,7 +34,7 @@ so we will compare with it.
 
 \* Yes, svgcleaner 0.6.2 is absolute garbage on this data set.
 
-![Alt text](correctness_chart_oxygen.png)
+![Alt text](data/correctness_chart_oxygen.png)
 
 #### Cleaning ratio
 
@@ -45,7 +45,7 @@ so we will compare with it.
 \* And again, svgcleaner 0.6.2 is kinda super, but since it breaks most
 of the files - it's pointless.
 
-![Alt text](ratio_chart_oxygen.png)
+![Alt text](data/ratio_chart_oxygen.png)
 
 #### Performance
 
@@ -83,7 +83,7 @@ CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")`
 
 ### Dependencies
 
-**svgcleaner** uses the latest stable Rust compiler.
+*svgcleaner* uses the latest stable Rust compiler.
 
 ### Building
 

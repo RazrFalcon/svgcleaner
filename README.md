@@ -1,15 +1,20 @@
-## svgcleaner
+# svgcleaner
 
 *svgcleaner* could help you to clean up your SVG files from the unnecessary data.
 
-### Goals
+## Usage
 
-1. **Correctness.** svgcleaner should not break a SVG file.
-1. **Cleaning ratio.** More is better.
-1. **Performance.** If something can be faster - it should be faster.
-   An average SVG file should be processed by less than 16ms on a modern PC.
+### Dependencies
 
-### Usage
+*svgcleaner* uses the latest stable Rust compiler.
+
+### Building
+
+```bash
+cargo build --release
+```
+
+### CLI
 
 ```
 svgcleaner in.svg out.svg
@@ -21,12 +26,19 @@ Use `--help` for a list of the cleaning options. And a [doc](docs/svgcleaner.rst
 
 GUI is still in an early alpha.
 
-### Charts
+## Goals
+
+1. **Correctness.** svgcleaner should not break a SVG file.
+1. **Cleaning ratio.** More is better.
+1. **Performance.** If something can be faster - it should be faster.
+   An average SVG file should be processed by less than 16ms on a modern PC.
+
+## Charts
 
 There are only one alternative to svgcleaner - [svgo](https://github.com/svg/svgo),
 so we will compare with it.
 
-#### Correctness
+### Correctness
 
 *Less is better.*
 
@@ -36,7 +48,7 @@ so we will compare with it.
 
 ![Alt text](data/correctness_chart_oxygen.png)
 
-#### Cleaning ratio
+### Cleaning ratio
 
 *More is better.*
 
@@ -47,7 +59,7 @@ of the files - it's pointless.
 
 ![Alt text](data/ratio_chart_oxygen.png)
 
-#### Performance
+### Performance
 
 *Less is better.*
 
@@ -80,16 +92,6 @@ CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")`
  - You can find links to the data sets [here](tools/files-testing/README.md).
 
  - You can repeat tests by yourself using [stats](tools/stats) app.
-
-### Dependencies
-
-*svgcleaner* uses the latest stable Rust compiler.
-
-### Building
-
-```bash
-cargo build --release
-```
 
 ### Roadmap
 V0.7

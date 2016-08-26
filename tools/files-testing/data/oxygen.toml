@@ -1,0 +1,438 @@
+[global]
+min_valid_ae = 200
+
+[[item]]
+name = "actions/small/22x22/edit-redo.svg"
+valid_ae = 1757
+
+[[item]]
+name = "actions/small/32x32/view-certificate.svg"
+valid_ae = 281
+
+[[item]]
+name = "actions/small/32x32/view-certificate-add.svg"
+valid_ae = 281
+
+[[item]]
+name = "actions/small/32x32/view-certificate-import.svg"
+valid_ae = 281
+
+[[item]]
+name = "actions/small/22x22/edit-image-face-recognize.svg"
+valid_ae = 887
+
+[[item]]
+name = "actions/small/22x22/edit-image-face-add.svg"
+valid_ae = 887
+
+[[item]]
+name = "actions/small/22x22/view-time-schedule-calculus.svg"
+valid_ae = 267
+
+[[item]]
+name = "actions/small/22x22/view-time-schedule-insert.svg"
+valid_ae = 264
+
+[[item]]
+name = "actions/small/22x22/document-edit-emcrypted.svg"
+valid_ae = 216
+
+[[item]]
+name = "actions/small/22x22/edit-image-face-detect.svg"
+valid_ae = 887
+
+[[item]]
+name = "actions/small/22x22/mixer-digital.svg"
+valid_ae = 376
+
+[[item]]
+name = "actions/small/22x22/view-time-schedule.svg"
+valid_ae = 264
+
+[[item]]
+name = "actions/small/22x22/view-table-of-contents-rtl.svg"
+valid_ae = 322
+
+[[item]]
+name = "actions/small/22x22/mixer-video.svg"
+valid_ae = 247
+
+[[item]]
+name = "actions/small/22x22/tool-animator.svg"
+valid_ae = 314
+
+[[item]]
+name = "actions/small/22x22/view-time-schedule-edit.svg"
+valid_ae = 264
+
+[[item]]
+name = "actions/small/22x22/view-ldap-resource.svg"
+valid_ae = 335
+
+[[item]]
+name = "actions/small/22x22/view-time-schedule-child-insert.svg"
+valid_ae = 249
+
+[[item]]
+name = "actions/small/22x22/edit-image-face-show.svg"
+valid_ae = 887
+
+[[item]]
+name = "actions/small/22x22/select-rectangular.svg"
+valid_ae = 566
+
+[[item]]
+name = "actions/small/22x22/insert-text.svg"
+valid_ae = 240
+
+[[item]]
+name = "actions/small/22x22/zoom-draw.svg"
+valid_ae = 444
+
+[[item]]
+name = "actions/small/22x22/view-table-of-contents-ltr.svg"
+valid_ae = 324
+
+[[item]]
+name = "actions/small/48x48/view-loan-asset.svg"
+valid_ae = 2235
+
+[[item]]
+name = "actions/small/48x48/edit-table-cell-merge.svg"
+valid_ae = 209
+
+[[item]]
+name = "actions/small/48x48/text-field.svg"
+valid_ae = 679
+
+[[item]]
+name = "actions/small/48x48/view-calendar-whatsnext.svg"
+valid_ae = 328
+
+[[item]]
+name = "actions/small/48x48/mail-send.svg"
+valid_ae = 329
+
+[[item]]
+name = "actions/small/48x48/view-bank-account-savings.svg"
+valid_ae = 2249
+
+[[item]]
+name = "actions/small/48x48/view-investment.svg"
+valid_ae = 2376
+
+[[item]]
+name = "actions/small/48x48/edit-table-cell-split.svg"
+valid_ae = 209
+
+[[item]]
+name = "actions/small/48x48/view-financial-transfer.svg"
+valid_ae = 1884
+
+[[item]]
+name = "actions/small/48x48/milestone.svg"
+valid_ae = 596
+
+[[item]]
+name = "devices/media-optical-video.svg"
+valid_ae = 206
+
+[[item]]
+name = "devices/media-optical-dvd-video.svg"
+valid_ae = 206
+
+[[item]]
+name = "devices/computer-laptop.svg"
+valid_ae = 212
+
+[[item]]
+name = "apps/internet-mail.svg"
+valid_ae = 401
+
+[[item]]
+name = "apps/kword.svg"
+valid_ae = 260
+
+[[item]]
+name = "apps/kuickshow.svg"
+valid_ae = 555
+
+[[item]]
+name = "emotes/small/22x22/face-embarrassed.svg"
+valid_ae = 2007
+
+[[item]]
+name = "mimetypes/small/48x48/text-x-po.svg"
+valid_ae = 575
+
+[[item]]
+name = "mimetypes/application-x-kvtml.svg"
+valid_ae = 396
+
+[[item]]
+name = "actions/small/22x22/view-calendar-whatsnext.svg"
+valid_ae = 354
+
+[[item]]
+name = "actions/small/32x32/view-loan-asset.svg"
+valid_ae = 2414
+info = "strange artifacts, cleaned actually looks better"
+
+[[item]]
+name = "actions/small/32x32/view-bank-account.svg"
+valid_ae = 2419
+info = "same as previous"
+
+[[item]]
+name = "actions/small/32x32/view-loan.svg"
+valid_ae = 2076
+info = "same as previous"
+
+[[item]]
+name = "actions/small/32x32/view-bank-account-savings.svg"
+valid_ae = 2416
+info = "same as previous"
+
+[[item]]
+name = "actions/small/32x32/taxes-finances.svg"
+valid_ae = 3806
+info = "same as previous"
+
+[[item]]
+name = "actions/small/32x32/view-financial-payment-mode.svg"
+valid_ae = 2416
+info = "same as previous"
+
+[[item]]
+name = "actions/small/32x32/view-investment.svg"
+valid_ae = 2416
+info = "same as previous"
+
+[[item]]
+name = "actions/small/32x32/view-bank-account-checking.svg"
+valid_ae = 1884
+info = "same as previous"
+
+[[item]]
+name = "actions/small/48x48/view-loan.svg"
+valid_ae = 2094
+info = "same as previous"
+
+[[item]]
+name = "actions/small/48x48/taxes-finances.svg"
+valid_ae = 3645
+info = "same as previous"
+
+[[item]]
+name = "actions/small/48x48/view-financial-payment-mode.svg"
+valid_ae = 2164
+info = "same as previous"
+
+[[item]]
+name = "actions/small/48x48/view-bank-account-checking.svg"
+valid_ae = 1475
+info = "same as previous"
+
+[[item]]
+name = "actions/small/48x48/view-bank-account.svg"
+valid_ae = 2166
+info = "same as previous"
+
+[[item]]
+name = "actions/small/32x32/view-financial-transfer.svg"
+valid_ae = 885
+info = "same as previous"
+
+[[item]]
+name = "actions/small/16x16/view-calendar-workweek.svg"
+valid_ae = 206
+
+[[item]]
+name = "devices/media-flash.svg"
+valid_ae = 2960
+info = "actually fixes an image"
+
+[[item]]
+name = "devices/small/16x16/camera-photo.svg"
+valid_ae = 1379
+
+[[item]]
+name = "devices/small/16x16/network-wireless.svg"
+valid_ae = 5715
+
+[[item]]
+name = "devices/small/22x22/multimedia-player-apple-ipod.svg"
+valid_ae = 690
+
+[[item]]
+name = "devices/small/22x22/camera-photo.svg"
+valid_ae = 757
+
+[[item]]
+name = "apps/nepomuk.svg"
+valid_ae = 234
+
+[[item]]
+name = "apps/preferences-system-power-management.svg"
+valid_ae = 3634
+
+[[item]]
+name = "apps/tagua.svg"
+valid_ae = 1171
+
+[[item]]
+name = "emotes/small/22x22/face-glasses.svg"
+valid_ae = 1865
+
+[[item]]
+name = "emotes/small/22x22/face-foot-in-mouth.svg"
+valid_ae = 1993
+
+[[item]]
+name = "emotes/small/22x22/face-surprise.svg"
+valid_ae = 1993
+
+[[item]]
+name = "emotes/small/22x22/face-crying.svg"
+valid_ae = 1762
+
+[[item]]
+name = "emotes/small/22x22/face-wink.svg"
+valid_ae = 1992
+
+[[item]]
+name = "emotes/small/22x22/face-confused.svg"
+valid_ae = 2028
+
+[[item]]
+name = "emotes/small/22x22/face-devilish.svg"
+valid_ae = 1806
+
+[[item]]
+name = "emotes/small/22x22/face-plain.svg"
+valid_ae = 1992
+
+[[item]]
+name = "emotes/small/22x22/face-smile.svg"
+valid_ae = 1993
+
+[[item]]
+name = "emotes/small/22x22/face-sleep.svg"
+valid_ae = 2007
+
+[[item]]
+name = "mimetypes/application-x-k3b.svg"
+valid_ae = 272
+
+[[item]]
+name = "mimetypes/hidef/application-vnd.oasis.opendocument.image.svg"
+valid_ae = 138
+
+[[item]]
+name = "mimetypes/hidef/application-x-k3b.svg"
+valid_ae = 272
+
+[[item]]
+name = "mimetypes/text-x-csharp.svg"
+valid_ae = 834
+
+[[item]]
+name = "mimetypes/text-x-po.svg"
+valid_ae = 539
+
+[[item]]
+name = "mimetypes/small/22x22/text-x-po.svg"
+valid_ae = 677
+
+[[item]]
+name = "mimetypes/small/64x64/application-x-font-afm.svg"
+valid_ae = 245
+
+[[item]]
+name = "mimetypes/small/64x64/application-x-font-type1.svg"
+valid_ae = 245
+
+[[item]]
+name = "mimetypes/small/64x64/application-x-k3b.svg"
+valid_ae = 272
+
+[[item]]
+name = "mimetypes/small/64x64/text-x-po.svg"
+valid_ae = 663
+
+[[item]]
+name = "mimetypes/small/64x64/text-x-adasrc.svg"
+valid_ae = 2280
+
+[[item]]
+name = "mimetypes/small/32x32/text-x-po.svg"
+valid_ae = 604
+
+[[item]]
+name = "places/small/32x32/mail-folder-sent.svg"
+valid_ae = 318
+
+[[item]]
+name = "places/small/48x48/folder-video.svg"
+valid_ae = 596
+
+[[item]]
+name = "categories/small/22x22/applications-games.svg"
+valid_ae = 655
+
+[[item]]
+name = "categories/small/22x22/applications-education.svg"
+valid_ae = 742
+
+[[item]]
+name = "actions/view-pim-summary.svg"
+valid_ae = 422
+
+[[item]]
+name = "actions/small/16x16/view-calendar-week.svg"
+valid_ae = 268
+
+[[item]]
+name = "actions/small/16x16/view-calendar-whatsnext.svg"
+valid_ae = 1799
+info = "webkit bug"
+
+[[item]]
+name = "actions/small/16x16/tool-animator.svg"
+valid_ae = 238
+
+[[item]]
+name = "categories/applications-education-university.svg"
+valid_ae = 596
+info = "only webkit renders differently"
+
+[[item]]
+name = "status/small/22x22/audio-volume-muted.svg"
+valid_ae = 253
+
+[[item]]
+name = "mimetypes/text-x-adasrc.svg"
+valid_ae = 2280
+
+[[item]]
+name = "mimetypes/hidef/text-x-po.svg"
+valid_ae = 514
+
+[[item]]
+name = "mimetypes/hidef/text-x-adasrc.svg"
+valid_ae = 2283
+
+[[item]]
+name = "apps/preferences-plugin.svg"
+ignore = true
+info = "Error: Element crosslink."
+
+[[item]]
+name = "apps/small/16x16/preferences-plugin.svg"
+ignore = true
+info = "Error: Element crosslink."
+
+[[item]]
+name = "devices/phone.svg"
+ignore = true
+info = "investigate"

@@ -1,8 +1,0 @@
-Simplified fork of QSystemSemaphore from QtCore module.
-
-- release() increase semaphore resource only by 1
-- acquire() has fixed timeout
-- removed error processing
-- only Windows and Linux(Posix) supported
-
-LGPL Licence.

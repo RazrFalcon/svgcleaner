@@ -1,0 +1,7 @@
+[package]
+name = "libtest"
+version = "0.1.0"
+authors = ["RazrFalcon <razrfalcon@gmail.com>"]
+
+[dependencies]
+walkdir = "0.1"

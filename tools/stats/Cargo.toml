@@ -1,0 +1,15 @@
+[package]
+name = "stats"
+version = "0.1.0"
+authors = ["RazrFalcon <razrfalcon@gmail.com>"]
+
+[dependencies]
+time = "0.1"
+
+[dependencies.clap]
+version = "2"
+default-features = false
+
+[dependencies.libtest]
+version = "*"
+path = "../libtest"

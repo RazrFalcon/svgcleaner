@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="100">
+  <defs>
+    <circle id="circle1" fill="url(#rg1)"
+            cx="50" cy="50" r="50"/>
+    <radialGradient id="rg1">
+      <stop offset="0" stop-color="yellow"/>
+      <stop offset="1" stop-color="green"/>
+    </radialGradient>
+    </defs>
+  <use xlink:href="#circle1"/>
+</svg>

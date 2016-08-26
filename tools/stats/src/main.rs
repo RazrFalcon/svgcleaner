@@ -158,12 +158,11 @@ fn main() {
     let svgo_path = m.value_of("svgo").unwrap();
 
     println!("");
-    let svgcleaner_stats = collect_stats(&data, input_dir, Cleaner::New(svgcleaner_path));
-    print_total_stats(&svgcleaner_stats);
-    // println!("");
-    // print_total_stats(&collect_stats(&data, input_dir, Cleaner::Old(svgcleaner_old_path)));
-    // println!("");
-    // print_total_stats(&collect_stats(&data, input_dir, Cleaner::Svgo(svgo_path)));
+    print_total_stats(&collect_stats(&data, input_dir, Cleaner::New(svgcleaner_path)));
+    println!("");
+    print_total_stats(&collect_stats(&data, input_dir, Cleaner::Old(svgcleaner_old_path)));
+    println!("");
+    print_total_stats(&collect_stats(&data, input_dir, Cleaner::Svgo(svgo_path)));
 
 }
 

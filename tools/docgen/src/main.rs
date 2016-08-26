@@ -226,7 +226,7 @@ fn gen_table(lines: &mut Iter<String>, data: &Data) -> String {
 
     fn gen_img_link(path: &str, workdir: &str) -> String {
         let relative = Path::new(path).strip_prefix(workdir).unwrap().to_str().unwrap();
-        format!(".. image:: {}", relative)
+        format!(".. image:: https://razrfalcon.github.io/svgcleaner/{}", relative)
     }
 
     let img_link_before = gen_img_link(&data.img_before_path, &data.workdir);

@@ -12,8 +12,10 @@ For example: 1 -> a, 51 -> aa, 113 -> ba and so on.
 .. <svg id="svg1">
 ..   <defs id="defs1">
 ..     <linearGradient id="linearGradient1">
-..       <stop id="stop1" offset="0" stop-color="yellow" />
-..       <stop id="stop2" offset="1" stop-color="green" />
+..       <stop id="stop1" offset="0"
+..             stop-color="yellow"/>
+..       <stop id="stop2" offset="1"
+..             stop-color="green"/>
 ..     </linearGradient>
 ..     <radialGradient id="radialGradient1"
 ..                     xlink:href="#linearGradient1"/>
@@ -25,12 +27,15 @@ For example: 1 -> a, 51 -> aa, 113 -> ba and so on.
 .. <svg id="a">
 ..   <defs id="b">
 ..     <linearGradient id="c">
-..       <stop id="d" offset="0" stop-color="yellow" />
-..       <stop id="e" offset="1" stop-color="green" />
+..       <stop id="d" offset="0"
+..             stop-color="yellow"/>
+..       <stop id="e" offset="1"
+..             stop-color="green"/>
 ..     </linearGradient>
 ..     <radialGradient id="f"
 ..                     xlink:href="#c"/>
 ..   </defs>
-..   <circle fill="url(#f)" cx="50" cy="50" r="45"/>
+..   <circle fill="url(#f)"
+..           cx="50" cy="50" r="45"/>
 .. </svg>
 .. END

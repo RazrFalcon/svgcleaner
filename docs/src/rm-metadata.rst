@@ -14,7 +14,8 @@ But since this element can be used by render software - this action is optional.
 ..     <rdf:RDF>
 ..       <cc:Work rdf:about="">
 ..         <dc:format>image/svg+xml</dc:format>
-..         <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+..         <dc:type
+            rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
 ..         <dc:title/>
 ..       </cc:Work>
 ..     </rdf:RDF>

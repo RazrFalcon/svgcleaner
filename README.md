@@ -6,7 +6,7 @@
 
 ### Dependencies
 
-*svgcleaner* uses the latest stable Rust compiler.
+You need the latest stable Rust compiler.
 
 ### Building
 
@@ -73,21 +73,22 @@ of the files - it's pointless.
 
  - Input files are stored on HDD, cleaned files was saved to tmpfs.
 
- - I know, that a performance comparison is not fair, since **svgo** have to restart nodejs
+ - I know, that a performance comparison is not fair, since `svgo` have to restart nodejs
 each time. But I don't know how to prevent it or ignore nodejs starting time.
 
- - New `svgcleaner` was running using default option.
+ - New `svgcleaner` was running using default options.
 
- - Old `svgcleaner` was running using default option with numeric `--*-precision=6`
+ - Old `svgcleaner` was running using default options with numeric `--*-precision=6`
    and `--create-viewbox` disabled.
 
- - `svgo` was running using default option with `--precision=6`.
+ - `svgo` was running using default options with `--precision=6`.
 
  - Render error in tests above indicates that file has more then 2% of changed pixels.
-   All images are rendered using QtWebKit and original resolution (no scaling down).
+   All images are rendered using QtWebKit in original resolution.
 
  - Used nodejs: `net-libs/nodejs-4.4.6(icu npm ssl -debug -snapshot -test
-CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")`
+CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")`.
+   I tried a latest version, 6.4.0, but it even slower.
 
  - You can find links to the data sets [here](tools/files-testing/README.md).
 

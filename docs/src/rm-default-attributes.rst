@@ -9,13 +9,15 @@ In example bellow we have ``circle`` element with ``fill`` and ``stroke`` attrib
 .. BEFORE
 .. <svg>
 ..   <g fill="red">
-..     <circle fill="black" stroke="none" cx="50" cy="50" r="45"/>
+..     <circle fill="black" stroke="none"
+..             cx="50" cy="50" r="45"/>
 ..   </g>
 .. </svg>
 .. AFTER
 .. <svg>
 ..   <g fill="red">
-..     <circle fill="black" cx="50" cy="50" r="45"/>
+..     <circle fill="black" cx="50"
+..             cy="50" r="45"/>
 ..   </g>
 .. </svg>
 .. END

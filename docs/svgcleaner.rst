@@ -18,8 +18,8 @@ CLI argument: ``--rm-comments``
 |   <!-- Comment -->                                                               |   <svg>                                                                         |
 |   <svg>                                                                          |     <circle style="stroke:black" fill="green"                                   |
 |     <!-- Comment -->                                                             |             cx="50" cy="50" r="45"/>                                            |
-|     <circle style="/* comment */stroke:black" fill="green"                       |   </svg>                                                                        |
-|             cx="50" cy="50" r="45"/>                                             |                                                                                 |
+|     <circle style="/* comment */stroke:black"                                    |   </svg>                                                                        |
+|             fill="green" cx="50" cy="50" r="45"/>                                |                                                                                 |
 |   </svg>                                                                         |                                                                                 |
 +----------------------------------------------------------------------------------+---------------------------------------------------------------------------------+
 | .. image:: https://razrfalcon.github.io/svgcleaner/images/before/rm-comments.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/rm-comments.svg |
@@ -123,20 +123,28 @@ All basic shapes can be represented as ``path``.
 
 CLI argument: ``--convert-shapes``
 
-+-------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-| Before (437b)                                                                                   | After (396b)                                                                               |
-+-------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-| .. code-block:: XML                                                                             | .. code-block:: XML                                                                        |
-|                                                                                                 |                                                                                            |
-|   <svg id="svg1">                                                                               |   <svg>                                                                                    |
-|     <rect id="rect1" x='10' y='10' width='80' height='80'/>                                     |     <path id="rect1" d='M 10 10 H 90 V 90 H 10 Z'/>                                        |
-|     <line id="line1" stroke="red" x1='10' y1='90' x2='90' y2='10'/>                             |     <path id="line1" stroke="red" d='M 10 90 L 90 10'/>                                    |
-|     <polyline id="polyline1" stroke="blue" fill="none" points="10 10 30 10 30 30 50 30 50 50"/> |     <path id="polyline1" stroke="blue" fill="none" d="M 10 10 30 10 30 30 50 30 50 50"/>   |
-|     <polygon id="polygon1" stroke="green" fill="none" points="10 10 10 30 30 30 30 50 50 50"/>  |     <path id="polygon1" stroke="green" fill="none" d="M 10 10 10 30 30 30 30 50 50 50 Z"/> |
-|   </svg>                                                                                        |   </svg>                                                                                   |
-+-------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-| .. image:: https://razrfalcon.github.io/svgcleaner/images/before/convert-shapes.svg             | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/convert-shapes.svg         |
-+-------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| Before (548b)                                                                       | After (466b)                                                                       |
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| .. code-block:: XML                                                                 | .. code-block:: XML                                                                |
+|                                                                                     |                                                                                    |
+|   <svg id="svg1">                                                                   |   <svg>                                                                            |
+|     <rect id="rect1" x='10' y='10'                                                  |     <path id="rect1"                                                               |
+|            width='80' height='80'/>                                                 |           d="M 10 10 H 90 V 90 H 10 Z"/>                                           |
+|     <line id="line1" stroke="red" x1='10'                                           |     <path id="line1" stroke="red"                                                  |
+|           y1='90' x2='90' y2='10'/>                                                 |           d="M 10 90 L 90 10"/>                                                    |
+|     <polyline id="polyline1" stroke="blue"                                          |     <path id="polyline1" stroke="blue"                                             |
+|               fill="none"                                                           |           fill="none"                                                              |
+|               points="10 10 30 10 30 30                                             |           d="M 10 10 30 10 30 30                                                   |
+|                       50 30 50 50"/>                                                |              50 30 50 50"/>                                                        |
+|     <polygon id="polygon1" stroke="green"                                           |     <path id="polygon1" stroke="green"                                             |
+|                 fill="none"                                                         |           fill="none"                                                              |
+|                 points="10 10 10 30 30 30                                           |           d="M 10 10 10 30                                                         |
+|                         30 50 50 50"/>                                              |              30 30 30 50 50 50 Z"/>                                                |
+|   </svg>                                                                            |   </svg>                                                                           |
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| .. image:: https://razrfalcon.github.io/svgcleaner/images/before/convert-shapes.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/convert-shapes.svg |
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
 
 
 Remove ``title`` element
@@ -195,7 +203,7 @@ But since this element can be used by render software - this action is optional.
 CLI argument: ``--rm-metadata``
 
 +----------------------------------------------------------------------------------+---------------------------------------------------------------------------------+
-| Before (571b)                                                                    | After (316b)                                                                    |
+| Before (580b)                                                                    | After (316b)                                                                    |
 +----------------------------------------------------------------------------------+---------------------------------------------------------------------------------+
 | .. code-block:: XML                                                              | .. code-block:: XML                                                             |
 |                                                                                  |                                                                                 |
@@ -206,7 +214,8 @@ CLI argument: ``--rm-metadata``
 |       <rdf:RDF>                                                                  |   </svg>                                                                        |
 |         <cc:Work rdf:about="">                                                   |                                                                                 |
 |           <dc:format>image/svg+xml</dc:format>                                   |                                                                                 |
-|           <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>       |                                                                                 |
+|           <dc:type                                                               |                                                                                 |
+|            rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>               |                                                                                 |
 |           <dc:title/>                                                            |                                                                                 |
 |         </cc:Work>                                                               |                                                                                 |
 |       </rdf:RDF>                                                                 |                                                                                 |
@@ -226,25 +235,33 @@ SVG can contain a lot of ``linearGradient`` elements, which may render exactly t
 CLI argument: ``--rm-dupl-lineargradient``
 
 +---------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-| Before (624b)                                                                               | After (434b)                                                                               |
+| Before (722b)                                                                               | After (488b)                                                                               |
 +---------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
 | .. code-block:: XML                                                                         | .. code-block:: XML                                                                        |
 |                                                                                             |                                                                                            |
 |   <svg>                                                                                     |   <svg>                                                                                    |
 |     <defs>                                                                                  |     <defs>                                                                                 |
 |       <linearGradient id="lg1">                                                             |       <linearGradient id="lg1">                                                            |
-|         <stop offset="0" stop-color="yellow"/>                                              |         <stop offset="0" stop-color="yellow"/>                                             |
-|         <stop offset="1" stop-color="green"/>                                               |         <stop offset="1" stop-color="green"/>                                              |
+|         <stop offset="0"                                                                    |         <stop offset="0"                                                                   |
+|               stop-color="yellow"/>                                                         |               stop-color="yellow"/>                                                        |
+|         <stop offset="1"                                                                    |         <stop offset="1"                                                                   |
+|               stop-color="green"/>                                                          |               stop-color="green"/>                                                         |
 |       </linearGradient>                                                                     |       </linearGradient>                                                                    |
 |       <linearGradient id="lg2">                                                             |     </defs>                                                                                |
-|         <stop offset="0" stop-color="yellow"/>                                              |     <circle fill="url(#lg1)" cx="50" cy="50" r="45"/>                                      |
-|         <stop offset="1" stop-color="green"/>                                               |     <circle fill="url(#lg1)" cx="100" cy="50" r="45"/>                                     |
-|       </linearGradient>                                                                     |     <circle fill="url(#lg1)" cx="150" cy="50" r="45"/>                                     |
-|       <linearGradient id="lg3" xlink:href="#lg2"/>                                          |   </svg>                                                                                   |
+|         <stop offset="0"                                                                    |     <circle fill="url(#lg1)"                                                               |
+|               stop-color="yellow"/>                                                         |             cx="50" cy="50" r="45"/>                                                       |
+|         <stop offset="1"                                                                    |     <circle fill="url(#lg1)"                                                               |
+|               stop-color="green"/>                                                          |             cx="100" cy="50" r="45"/>                                                      |
+|       </linearGradient>                                                                     |     <circle fill="url(#lg1)"                                                               |
+|       <linearGradient id="lg3"                                                              |             cx="150" cy="50" r="45"/>                                                      |
+|                       xlink:href="#lg2"/>                                                   |   </svg>                                                                                   |
 |     </defs>                                                                                 |                                                                                            |
-|     <circle fill="url(#lg1)" cx="50" cy="50" r="45"/>                                       |                                                                                            |
-|     <circle fill="url(#lg2)" cx="100" cy="50" r="45"/>                                      |                                                                                            |
-|     <circle fill="url(#lg3)" cx="150" cy="50" r="45"/>                                      |                                                                                            |
+|     <circle fill="url(#lg1)"                                                                |                                                                                            |
+|             cx="50" cy="50" r="45"/>                                                        |                                                                                            |
+|     <circle fill="url(#lg2)"                                                                |                                                                                            |
+|             cx="100" cy="50" r="45"/>                                                       |                                                                                            |
+|     <circle fill="url(#lg3)"                                                                |                                                                                            |
+|             cx="150" cy="50" r="45"/>                                                       |                                                                                            |
 |   </svg>                                                                                    |                                                                                            |
 +---------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
 | .. image:: https://razrfalcon.github.io/svgcleaner/images/before/rm-dupl-lineargradient.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/rm-dupl-lineargradient.svg |
@@ -259,24 +276,31 @@ SVG can contain a lot of ``radialGradient`` elements, which may render exactly t
 CLI argument: ``--rm-dupl-radialgradient``
 
 +---------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
-| Before (571b)                                                                               | After (381b)                                                                               |
+| Before (659b)                                                                               | After (425b)                                                                               |
 +---------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
 | .. code-block:: XML                                                                         | .. code-block:: XML                                                                        |
 |                                                                                             |                                                                                            |
 |   <svg>                                                                                     |   <svg>                                                                                    |
 |     <defs>                                                                                  |     <defs>                                                                                 |
 |       <radialGradient id="rg1">                                                             |       <radialGradient id="rg1">                                                            |
-|         <stop offset="0" stop-color="yellow"/>                                              |         <stop offset="0" stop-color="yellow"/>                                             |
-|         <stop offset="1" stop-color="green"/>                                               |         <stop offset="1" stop-color="green"/>                                              |
+|         <stop offset="0"                                                                    |         <stop offset="0"                                                                   |
+|               stop-color="yellow"/>                                                         |               stop-color="yellow"/>                                                        |
+|         <stop offset="1"                                                                    |         <stop offset="1"                                                                   |
+|               stop-color="green"/>                                                          |               stop-color="green"/>                                                         |
 |       </radialGradient>                                                                     |       </radialGradient>                                                                    |
 |       <linearGradient id="lg1">                                                             |     </defs>                                                                                |
-|         <stop offset="0" stop-color="yellow"/>                                              |     <circle fill="url(#rg1)" cx="50" cy="50" r="45"/>                                      |
-|         <stop offset="1" stop-color="green"/>                                               |     <circle fill="url(#rg1)" cx="100" cy="50" r="45"/>                                     |
+|         <stop offset="0"                                                                    |     <circle fill="url(#rg1)"                                                               |
+|               stop-color="yellow"/>                                                         |             cx="50" cy="50" r="45"/>                                                       |
+|         <stop offset="1"                                                                    |     <circle fill="url(#rg1)"                                                               |
+|               stop-color="green"/>                                                          |             cx="100" cy="50" r="45"/>                                                      |
 |       </linearGradient>                                                                     |   </svg>                                                                                   |
-|       <radialGradient id="rg2" xlink:href="#lg1"/>                                          |                                                                                            |
+|       <radialGradient id="rg2"                                                              |                                                                                            |
+|                       xlink:href="#lg1"/>                                                   |                                                                                            |
 |     </defs>                                                                                 |                                                                                            |
-|     <circle fill="url(#rg1)" cx="50" cy="50" r="45"/>                                       |                                                                                            |
-|     <circle fill="url(#rg2)" cx="100" cy="50" r="45"/>                                      |                                                                                            |
+|     <circle fill="url(#rg1)"                                                                |                                                                                            |
+|             cx="50" cy="50" r="45"/>                                                        |                                                                                            |
+|     <circle fill="url(#rg2)"                                                                |                                                                                            |
+|             cx="100" cy="50" r="45"/>                                                       |                                                                                            |
 |   </svg>                                                                                    |                                                                                            |
 +---------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
 | .. image:: https://razrfalcon.github.io/svgcleaner/images/before/rm-dupl-radialgradient.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/rm-dupl-radialgradient.svg |
@@ -343,22 +367,24 @@ For example: 1 -> a, 51 -> aa, 113 -> ba and so on.
 CLI argument: ``--trim-ids``
 
 +-------------------------------------------------------------------------------+------------------------------------------------------------------------------+
-| Before (500b)                                                                 | After (419b)                                                                 |
+| Before (522b)                                                                 | After (451b)                                                                 |
 +-------------------------------------------------------------------------------+------------------------------------------------------------------------------+
 | .. code-block:: XML                                                           | .. code-block:: XML                                                          |
 |                                                                               |                                                                              |
 |   <svg id="svg1">                                                             |   <svg id="a">                                                               |
 |     <defs id="defs1">                                                         |     <defs id="b">                                                            |
 |       <linearGradient id="linearGradient1">                                   |       <linearGradient id="c">                                                |
-|         <stop id="stop1" offset="0" stop-color="yellow" />                    |         <stop id="d" offset="0" stop-color="yellow" />                       |
-|         <stop id="stop2" offset="1" stop-color="green" />                     |         <stop id="e" offset="1" stop-color="green" />                        |
+|         <stop id="stop1" offset="0"                                           |         <stop id="d" offset="0"                                              |
+|               stop-color="yellow"/>                                           |               stop-color="yellow"/>                                          |
+|         <stop id="stop2" offset="1"                                           |         <stop id="e" offset="1"                                              |
+|               stop-color="green"/>                                            |               stop-color="green"/>                                           |
 |       </linearGradient>                                                       |       </linearGradient>                                                      |
 |       <radialGradient id="radialGradient1"                                    |       <radialGradient id="f"                                                 |
 |                       xlink:href="#linearGradient1"/>                         |                       xlink:href="#c"/>                                      |
 |     </defs>                                                                   |     </defs>                                                                  |
-|     <circle fill="url(#radialGradient1)"                                      |     <circle fill="url(#f)" cx="50" cy="50" r="45"/>                          |
-|             cx="50" cy="50" r="45"/>                                          |   </svg>                                                                     |
-|   </svg>                                                                      |                                                                              |
+|     <circle fill="url(#radialGradient1)"                                      |     <circle fill="url(#f)"                                                   |
+|             cx="50" cy="50" r="45"/>                                          |             cx="50" cy="50" r="45"/>                                         |
+|   </svg>                                                                      |   </svg>                                                                     |
 +-------------------------------------------------------------------------------+------------------------------------------------------------------------------+
 | .. image:: https://razrfalcon.github.io/svgcleaner/images/before/trim-ids.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/trim-ids.svg |
 +-------------------------------------------------------------------------------+------------------------------------------------------------------------------+
@@ -374,13 +400,14 @@ In example bellow we have ``circle`` element with ``fill`` and ``stroke`` attrib
 CLI argument: ``--rm-default-attributes``
 
 +--------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
-| Before (204b)                                                                              | After (190b)                                                                              |
+| Before (216b)                                                                              | After (202b)                                                                              |
 +--------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
 | .. code-block:: XML                                                                        | .. code-block:: XML                                                                       |
 |                                                                                            |                                                                                           |
 |   <svg>                                                                                    |   <svg>                                                                                   |
 |     <g fill="red">                                                                         |     <g fill="red">                                                                        |
-|       <circle fill="black" stroke="none" cx="50" cy="50" r="45"/>                          |       <circle fill="black" cx="50" cy="50" r="45"/>                                       |
+|       <circle fill="black" stroke="none"                                                   |       <circle fill="black" cx="50"                                                        |
+|               cx="50" cy="50" r="45"/>                                                     |               cy="50" r="45"/>                                                            |
 |     </g>                                                                                   |     </g>                                                                                  |
 |   </svg>                                                                                   |   </svg>                                                                                  |
 +--------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
@@ -396,14 +423,16 @@ By SVG spec we are allowed to remove some symbols from path notation without bre
 CLI argument: ``--trim-paths``
 
 +---------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
-| Before (232b)                                                                   | After (219b)                                                                   |
+| Before (251b)                                                                   | After (227b)                                                                   |
 +---------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
 | .. code-block:: XML                                                             | .. code-block:: XML                                                            |
 |                                                                                 |                                                                                |
 |   <svg>                                                                         |   <svg>                                                                        |
-|     <path fill="green" stroke="red" stroke-width="2"                            |     <path fill="green" stroke="red" stroke-width="2"                           |
-|           d="M 30 60 a 25 25 -30 1 1 50,-20 l 0.5 0.5 l 30 60 z"/>              |           d="M30 60a25 25-30 1 1 50-20l.5.5l30 60z"/>                          |
-|   </svg>                                                                        |   </svg>                                                                       |
+|     <path fill="green" stroke="red"                                             |     <path fill="green" stroke="red"                                            |
+|           stroke-width="2"                                                      |           stroke-width="2"                                                     |
+|           d="M 30 60 a 25 25 -30 1 1 50,-20                                     |           d="M30 60a25 25-30 1 1 50-20l.5.5l30 60z"/>                          |
+|              l 0.5 0.5 l 30 60 z"/>                                             |   </svg>                                                                       |
+|   </svg>                                                                        |                                                                                |
 +---------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
 | .. image:: https://razrfalcon.github.io/svgcleaner/images/before/trim-paths.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/trim-paths.svg |
 +---------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
@@ -417,13 +446,15 @@ If path segment has same type as previous - we can skip command specifier.
 CLI argument: ``--rm-dupl-cmd-in-paths``
 
 +-------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+
-| Before (220b)                                                                             | After (214b)                                                                             |
+| Before (239b)                                                                             | After (233b)                                                                             |
 +-------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+
 | .. code-block:: XML                                                                       | .. code-block:: XML                                                                      |
 |                                                                                           |                                                                                          |
 |   <svg>                                                                                   |   <svg>                                                                                  |
-|     <path d="M 10 10 L 90 10 L 90 90 L 10 90 L 10 10"                                     |     <path d="M 10 10 L 90 10 90 90 10 90 10 10"                                          |
-|           fill="none" stroke="red" stroke-width="2"/>                                     |           fill="none" stroke="red" stroke-width="2"/>                                    |
+|     <path d="M 10 10 L 90 10 L 90 90                                                      |     <path d="M 10 10 L 90 10 90 90                                                       |
+|              L 10 90 L 10 10"                                                             |              10 90 10 10"                                                                |
+|           fill="none" stroke="red"                                                        |           fill="none" stroke="red"                                                       |
+|           stroke-width="2"/>                                                              |           stroke-width="2"/>                                                             |
 |   </svg>                                                                                  |   </svg>                                                                                 |
 +-------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------+
 | .. image:: https://razrfalcon.github.io/svgcleaner/images/before/rm-dupl-cmd-in-paths.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/rm-dupl-cmd-in-paths.svg |
@@ -440,13 +471,15 @@ Elliptical arc curve segment has flags parameters, which can have values of ``0`
 CLI argument: ``--join-arcto-flags``
 
 +---------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------+
-| Before (212b)                                                                         | After (210b)                                                                         |
+| Before (231b)                                                                         | After (229b)                                                                         |
 +---------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------+
 | .. code-block:: XML                                                                   | .. code-block:: XML                                                                  |
 |                                                                                       |                                                                                      |
 |   <svg>                                                                               |   <svg>                                                                              |
-|     <path fill="green" stroke="red" stroke-width="2"                                  |     <path fill="green" stroke="red" stroke-width="2"                                 |
-|           d="M 30 60 a 25 25 -30 1 1 50 -20"/>                                        |           d="M 30 60 a 25 25 -30 1150 -20"/>                                         |
+|     <path fill="green" stroke="red"                                                   |     <path fill="green" stroke="red"                                                  |
+|           stroke-width="2"                                                            |           stroke-width="2"                                                           |
+|           d="M 30 60                                                                  |           d="M 30 60                                                                 |
+|              a 25 25 -30 1 1 50 -20"/>                                                |              a 25 25 -30 1150 -20"/>                                                 |
 |   </svg>                                                                              |   </svg>                                                                             |
 +---------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------+
 | .. image:: https://razrfalcon.github.io/svgcleaner/images/before/join-arcto-flags.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/join-arcto-flags.svg |
@@ -496,12 +529,14 @@ Simplify transform matrices into short equivalent when possible.
 CLI argument: ``--simplify-transforms``
 
 +------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
-| Before (197b)                                                                            | After (190b)                                                                            |
+| Before (217b)                                                                            | After (210b)                                                                            |
 +------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | .. code-block:: XML                                                                      | .. code-block:: XML                                                                     |
 |                                                                                          |                                                                                         |
 |   <svg>                                                                                  |   <svg>                                                                                 |
-|     <circle fill="green" cx="50" cy="50" r="45" transform="matrix(1 0 0 1 25 0)"/>       |     <circle fill="green" cx="50" cy="50" r="45" transform="translate(25)"/>             |
+|     <circle fill="green" cx="50"                                                         |     <circle fill="green" cx="50"                                                        |
+|             cy="50" r="45"                                                               |             cy="50" r="45"                                                              |
+|             transform="matrix(1 0 0 1 25 0)"/>                                           |             transform="translate(25)"/>                                                 |
 |   </svg>                                                                                 |   </svg>                                                                                |
 +------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------+
 | .. image:: https://razrfalcon.github.io/svgcleaner/images/before/simplify-transforms.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/simplify-transforms.svg |

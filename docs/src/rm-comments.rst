@@ -11,8 +11,8 @@ doesn't support comments inside attributes, so they will be removed anyway.
 .. <!-- Comment -->
 .. <svg>
 ..   <!-- Comment -->
-..   <circle style="/* comment */stroke:black" fill="green"
-..           cx="50" cy="50" r="45"/>
+..   <circle style="/* comment */stroke:black"
+..           fill="green" cx="50" cy="50" r="45"/>
 .. </svg>
 .. AFTER
 .. <svg>

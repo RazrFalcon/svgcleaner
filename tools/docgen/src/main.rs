@@ -298,7 +298,7 @@ fn gen_svg_file(lines: &Vec<String>, insert_xmlns_xlink: bool, col: Column, data
                     xmlns:xlink=\"http://www.w3.org/1999/xlink\" \
                     width=\"200\" height=\"100\""
     } else {
-        "<svg xmlns=\"http://www.w3.org/000/svg\" \
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" \
                     width=\"200\" height=\"100\""
     };
 

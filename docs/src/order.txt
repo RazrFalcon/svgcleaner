@@ -10,8 +10,10 @@ rm-dupl-lineargradient.rst
 rm-dupl-radialgradient.rst
 rm-nonsvg-attributes.rst
 rm-unref-ids.rst
+rm-text-attributes.rst
 trim-ids.rst
 rm-default-attributes.rst
+rm-xmlns-xlink-attribute.rst
 trim-paths.rst
 rm-dupl-cmd-in-paths.rst
 join-arcto-flags.rst

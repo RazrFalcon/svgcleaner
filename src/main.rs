@@ -23,7 +23,6 @@
 #[macro_use]
 extern crate clap;
 extern crate svgcleaner;
-extern crate time;
 
 use std::fs;
 
@@ -43,9 +42,9 @@ macro_rules! try_msg {
     })
 }
 
-fn main() {
-    let start = time::precise_time_ns();
+// TODO: add "Why clean" to readme
 
+fn main() {
     let app = prepare_app();
     let args = app.get_matches();
     if !check_values(&args) { return; }
@@ -104,9 +103,6 @@ fn main() {
     if value_t!(args, KEYS[Key::Quite], bool).unwrap() {
         return;
     }
-
-    let end = time::precise_time_ns();
-    println!("Elapsed: {:.4}ms", (end - start) as f64 / 1_000_000.0);
 
     let out_size = fs::File::open(out_file).unwrap().metadata().unwrap().len() as f64;
     let ratio = 100.0 - out_size / (raw.len() as f64) * 100.0;

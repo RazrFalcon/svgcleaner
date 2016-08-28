@@ -1,9 +1,13 @@
-Remove presentation attributes with default values
---------------------------------------------------
+Remove attributes with default values
+-------------------------------------
 
-We can remove presentation attributes with default values if they not covered by parent elements.
+We can remove attributes with default values if they are not covered by the parent elements.
+Some attributes do not support an inheritance, so we can remove them
+without checking a parent elements.
 
-In example bellow we have ``circle`` element with ``fill`` and ``stroke`` attributes, which have default values. We can't remove ``fill`` from ``circle``, because than rect will be filled red, but ``stroke`` can be easily removed.
+In the example below we have a ``circle`` element with a ``fill`` and a ``stroke`` attributes,
+which have default values. We can't remove a ``fill`` from a ``circle``, because than the rect
+will be filled with a red, but a ``stroke`` can be easily removed.
 
 .. GEN_TABLE
 .. BEFORE

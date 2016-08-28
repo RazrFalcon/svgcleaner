@@ -20,7 +20,9 @@
 **
 ****************************************************************************/
 
-use svgdom::Document;
+use super::short::{EId, AId};
+
+use svgdom::{Document};
 
 pub fn remove_default_attributes(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);
@@ -28,8 +30,6 @@ pub fn remove_default_attributes(doc: &Document) {
     for node in doc.descendants() {
         {
             let attrs = node.attributes();
-
-            // TODO: units-per-em and other non-presentation attributes
 
             for attr in attrs.values() {
                 if attr.is_presentation() {
@@ -45,6 +45,32 @@ pub fn remove_default_attributes(doc: &Document) {
                             }
                         }
                     }
+                } else {
+                    // check default values of an non-presentation attributes
+                    match attr.id {
+                        AId::UnitsPerEm => {
+                            if attr.value.as_string().unwrap() == "1000" {
+                                rm_list.push(attr.id);
+                            }
+
+                        }
+                        AId::Slope => {
+                            // there are two different 'slope': one for 'font-face'
+                            // and one for 'feFunc*'
+                            let v = attr.value.as_string().unwrap();
+                            if node.is_tag_id(EId::FontFace) && v == "0" {
+                                rm_list.push(attr.id);
+                            } else if v == "1" {
+                                rm_list.push(attr.id);
+                            }
+                        }
+                        _ => {}
+
+                        // TODO: 'x', 'y' attributes equal to 0 is default
+                        // TODO: 'width', 'height' of SVG elem is default to 100%
+                    }
+
+                    // TODO: add other
                 }
             }
         }
@@ -54,7 +80,6 @@ pub fn remove_default_attributes(doc: &Document) {
             for aid in &rm_list {
                 // we only hide default attributes, because they still can be useful
                 attrs_mut.get_mut(*aid).unwrap().visible = false;
-                // attrs.remove(aid.clone());
             }
         }
 

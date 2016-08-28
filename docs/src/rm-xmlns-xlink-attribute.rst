@@ -1,10 +1,8 @@
 Remove an unused ``xmlns:xlink`` attribute
 ------------------------------------------
 
-We can remove an ``xmlns:xlink`` attribute if document doesn't use an element
+We can remove a ``xmlns:xlink`` attribute if document doesn't use an element
 referencing via the ``xlink:href``.
-
-.. this example is kinda pointles, since `docgen` will insert `xmlns:xlink` anyway.
 
 .. GEN_TABLE
 .. NO_XMLNS_XLINK

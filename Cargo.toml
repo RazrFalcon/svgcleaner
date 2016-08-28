@@ -8,8 +8,10 @@ description = "svgcleaner could help you to clean up yours SVG files from the un
 readme = "README.md"
 
 [dependencies]
-svgdom = "0.0.1"
-time = "0.1"
+# latest public svgparser
+svgdom = { git = "https://github.com/RazrFalcon/libsvgdom.git" }
+# local copy
+# svgdom = { path = "../svgdom" }
 
 [dependencies.clap]
 version = "2"

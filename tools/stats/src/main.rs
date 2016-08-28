@@ -21,7 +21,7 @@ macro_rules! dir_iter {
 
 struct Data<'a> {
     work_dir: &'a str,
-    render_path: &'a str,
+    render_path: Option<&'a str>,
     threshold: u8,
 }
 
@@ -60,7 +60,6 @@ impl Default for FileStats {
             is_successful: false,
             orig_file_size: 0,
             new_file_size: 0,
-            // raster_ae: 0,
             elapsed_time: 0.0,
         }
     }
@@ -71,44 +70,6 @@ enum Cleaner<'a> {
     Old(&'a str),
     Svgo(&'a str),
 }
-
-// Results for: svgcleaner 0.6.90
-// Files cleaned with errors: 6 of 525
-// Size after/before: 2223262/3302557
-// Cleaning ratio: 32.68%
-// Cleaning time: 921.2ms total, 1.7546ms avg
-
-// Results for: svgcleaner 0.6
-// Files cleaned with errors: 351 of 525
-// Size after/before: 851539/3192070
-// Cleaning ratio: 73.32%
-// Cleaning time: 2529.0ms total, 4.8172ms avg
-
-// Results for: svgo 0.7.0
-// Files cleaned with errors: 280 of 525
-// Size after/before: 1914715/3250167
-// Cleaning ratio: 41.09%
-// Cleaning time: 98015.0ms total, 186.6953ms avg
-
-
-// oxygen
-// Results for: svgcleaner 0.6.90
-// Files cleaned with errors: 9 of 4941
-// Size after/before: 715059151/1277145470
-// Cleaning ratio: 44.01%
-// Cleaning time: 73299.9ms total, 14.8350ms avg
-
-// Results for: svgcleaner 0.6.2
-// Files cleaned with errors: 831 of 4941
-// Size after/before: 437987198/1277145470
-// Cleaning ratio: 65.71%
-// Cleaning time: 130052.1ms total, 26.3210ms avg
-
-// Results for: svgo 0.7.0
-// Files cleaned with errors: 201 of 4941
-// Size after/before: 585859923/1277145470
-// Cleaning ratio: 54.13%
-// Cleaning time: 2628064.2ms total, 531.8891ms avg
 
 fn main() {
     let m = App::new("svgcleaner-stats")
@@ -124,7 +85,7 @@ fn main() {
         .arg(Arg::with_name("render")
             .long("render").help("Sets path to SVG render")
             .value_name("PATH")
-            .required(true))
+            .required_unless("skip-errors-check"))
         .arg(Arg::with_name("svgcleaner")
             .long("svgcleaner").help("Sets path to current version of SVG Cleaner")
             .value_name("PATH")
@@ -141,13 +102,22 @@ fn main() {
             .long("threshold").help("Sets AE threshold in percent")
             .value_name("PERCENT")
             .default_value("0"))
+        .arg(Arg::with_name("skip-errors-check")
+            .long("skip-errors-check").help("Skips raster images compare, which is much faster"))
         .get_matches();
 
     let input_dir = m.value_of("input-data").unwrap();
 
+    let render;
+    if !m.is_present("skip-errors-check") {
+        render = Some(m.value_of("render").unwrap());
+    } else {
+        render = None;
+    }
+
     let data = Data {
         work_dir: m.value_of("workdir").unwrap(),
-        render_path: m.value_of("render").unwrap(),
+        render_path: render,
         threshold: value_t!(m, "threshold", u8).unwrap(),
     };
 
@@ -159,11 +129,10 @@ fn main() {
 
     println!("");
     print_total_stats(&collect_stats(&data, input_dir, Cleaner::New(svgcleaner_path)));
-    println!("");
-    print_total_stats(&collect_stats(&data, input_dir, Cleaner::Old(svgcleaner_old_path)));
-    println!("");
-    print_total_stats(&collect_stats(&data, input_dir, Cleaner::Svgo(svgo_path)));
-
+    // println!("");
+    // print_total_stats(&collect_stats(&data, input_dir, Cleaner::Old(svgcleaner_old_path)));
+    // println!("");
+    // print_total_stats(&collect_stats(&data, input_dir, Cleaner::Svgo(svgo_path)));
 }
 
 fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
@@ -211,6 +180,8 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
 fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     let svg_path_str = svg_path.to_str().unwrap();
 
+    let render_imgs = data.render_path.is_some();
+
     let mut stats = FileStats::default();
 
     let new_svg_path;
@@ -231,6 +202,16 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
         return stats;
     }
 
+    stats.orig_file_size = Path::new(svg_path).metadata().unwrap().len();
+    stats.new_file_size = new_svg_path.metadata().unwrap().len();
+    stats.elapsed_time = (end - start) as f64 / 1000000.0;
+
+    if !render_imgs {
+        stats.is_successful = true;
+        fs::remove_file(&new_svg_path).unwrap();
+        return stats;
+    }
+
     // render original file
     let orig_png_path;
     {
@@ -239,12 +220,10 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
         orig_png_path = Path::new(data.work_dir).join(file_name);
     }
     let orig_png_path_str = orig_png_path.to_str().unwrap();
-    // if !orig_png_path.exists() {
-        if !render_svg(&data.render_path, svg_path_str, orig_png_path_str) {
-            fs::remove_file(&new_svg_path).unwrap();
-            return stats;
-        }
-    // }
+    if !render_svg(&data.render_path.unwrap(), svg_path_str, orig_png_path_str) {
+        fs::remove_file(&new_svg_path).unwrap();
+        return stats;
+    }
 
     // render cleaned file
     let new_png_path;
@@ -254,7 +233,7 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
         new_png_path = Path::new(data.work_dir).join(file_name);
     }
     let new_png_path_str = new_png_path.to_str().unwrap();
-    if !render_svg(&data.render_path, new_svg_path_str, new_png_path_str) {
+    if !render_svg(&data.render_path.unwrap(), new_svg_path_str, new_png_path_str) {
         fs::remove_file(&new_svg_path).unwrap();
         fs::remove_file(&orig_png_path).unwrap();
         return stats;
@@ -283,9 +262,6 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     }
 
     stats.is_successful = is_successful;
-    stats.orig_file_size = Path::new(svg_path).metadata().unwrap().len();
-    stats.new_file_size = new_svg_path.metadata().unwrap().len();
-    stats.elapsed_time = (end - start) as f64 / 1000000.0;
 
     fs::remove_file(&new_svg_path).unwrap();
     fs::remove_file(&new_png_path).unwrap();

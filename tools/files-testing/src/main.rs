@@ -348,8 +348,11 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
             let mut s: String = String::from_utf8_lossy(&o.stdout).into_owned();
             s = s.trim().to_owned();
 
-            if s.find("Error").is_some() {
+            if !s.is_empty() {
                 println!("{}", s);
+            }
+
+            if s.find("Error").is_some() {
                 if    s.find("Error: Scripting is not supported.").is_some()
                    || s.find("Error: Animation is not supported.").is_some()
                    || s.find("Unsupported CSS at").is_some()

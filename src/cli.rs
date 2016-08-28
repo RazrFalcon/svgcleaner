@@ -41,8 +41,9 @@ pub enum Key {
     RemoveNonsvgAttributes,
     RemoveUnreferencedIds,
     TrimIds,
-    RemoveUnusedAttributes,
+    RemoveTextAttributes,
     RemoveDefaultAttributes,
+    RemoveXmlnsXlinkAttribute,
 
     TrimPaths,
     RemoveDuplCmdInPaths,
@@ -83,8 +84,9 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "rm-nonsvg-attributes",
     "rm-unref-ids",
     "trim-ids",
-    "rm-unused-attributes",
+    "rm-text-attributes",
     "rm-default-attributes",
+    "rm-xmlns-xlink-attribute",
 
     "trim-paths",
     "rm-dupl-cmd-in-paths",
@@ -113,6 +115,8 @@ macro_rules! gen_flag {
 
 // TODO: to code gen
 pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
+    debug_assert!(KEYS.0.len() - 1 == Key::Quite as usize);
+
     let mut a = App::new("svgcleaner")
         // .help(include_str!("../data/help.txt"))
         .version("0.6.9")
@@ -158,17 +162,19 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Remove unreferenced 'id' attributes", "true"));
     a = a.arg(gen_flag!(Key::TrimIds,
             "Trim 'id' attributes", "true"));
-    a = a.arg(gen_flag!(Key::RemoveUnusedAttributes,
-            "Remove unused attributes", "true"));
+    a = a.arg(gen_flag!(Key::RemoveTextAttributes,
+            "Remove text related-attributes if there is no text", "true"));
     a = a.arg(gen_flag!(Key::RemoveDefaultAttributes,
-            "Remove presentation attributes with default values", "true"));
+            "Remove attributes with default values", "true"));
+    a = a.arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute,
+            "Remove an unused xmlns:xlink attribute", "true"));
 
     // paths
     // TODO: disable paths processing
     a = a.arg(gen_flag!(Key::TrimPaths,
             "Use compact notation for paths", "true"));
     a = a.arg(gen_flag!(Key::RemoveDuplCmdInPaths,
-            "Remove subsequent segments commands from paths", "true"));
+            "Remove subsequent segments command from paths", "true"));
     a = a.arg(gen_flag!(Key::JoinArcToFlags,
             "Join ArcTo flags", "false"));
 

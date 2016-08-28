@@ -28,12 +28,12 @@ GUI is still in an early alpha.
 
 ## Goals
 
-1. **Correctness.** svgcleaner should not break a SVG file.
+1. **Correctness.** svgcleaner should not break an SVG file.
 1. **Cleaning ratio.** More is better.
 1. **Performance.** If something can be faster - it should be faster.
    An average SVG file should be processed by less than 16ms on a modern PC.
 
-## Charts
+### Charts
 
 There are only one alternative to svgcleaner - [svgo](https://github.com/svg/svgo),
 so we will compare with it.
@@ -54,7 +54,7 @@ so we will compare with it.
 
 ![Alt text](data/ratio_chart_W3C_SVG_11_TestSuite.png)
 
-\* And again, svgcleaner 0.6.2 is kinda super, but since it breaks most
+\* And again, svgcleaner 0.6.2 is kinda superb, but since it breaks most
 of the files - it's pointless.
 
 ![Alt text](data/ratio_chart_oxygen.png)
@@ -73,7 +73,7 @@ of the files - it's pointless.
 
  - Input files are stored on HDD, cleaned files was saved to tmpfs.
 
- - I know, that a performance comparison is not fair, since `svgo` have to restart nodejs
+ - I know that a performance comparison is not fair since `svgo` have to restart nodejs
 each time. But I don't know how to prevent it or ignore nodejs starting time.
 
  - New `svgcleaner` was running using default options.
@@ -88,7 +88,7 @@ each time. But I don't know how to prevent it or ignore nodejs starting time.
 
  - Used nodejs: `net-libs/nodejs-4.4.6(icu npm ssl -debug -snapshot -test
 CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")`.
-   I tried a latest version, 6.4.0, but it even slower.
+   I tried the latest version, 6.4.0, but it even slower.
 
  - You can find links to the data sets [here](tools/files-testing/README.md).
 
@@ -96,6 +96,7 @@ CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")`.
 
 ### Roadmap
 V0.7
+ - [x] Remove text related-attributes if there is no text.
  - [ ] Convert `width` and `height` attributes to `viewBox` attribute.
  - [ ] Ungroup groups.
  - [ ] Remove duplicated defs:
@@ -103,7 +104,7 @@ V0.7
    - [ ] `clipPath`
  - [ ] Remove invisible elements.
  - [ ] Convert units using specified DPI.
- - [ ] Group elements by style attributes.
+ - [ ] Group elements by the style attributes.
  - [ ] Remove `version` attribute.
  - [ ] Ungroup `switch` element.
  - [ ] Remove elements outside the viewbox.
@@ -127,6 +128,8 @@ V0.7
     - [ ] convert segments to shorter one
     - [ ] join segments
  - [ ] Numbers comparing using custom precision.
+ - [ ] Join font properties into the `font` attribute.
+ - [ ] Join sequential paths.
 
 Note, that current git version is pretty stable and ready to use.
 

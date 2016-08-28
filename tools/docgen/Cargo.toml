@@ -4,10 +4,6 @@ version = "0.1.0"
 authors = ["RazrFalcon <razrfalcon@gmail.com>"]
 license = "GPL-2.0"
 
-# [dependencies.svgdom]
-# version = "0.1"
-# path = "../../../svgdom"
-
 [dependencies.clap]
 version = "2"
 default-features = false

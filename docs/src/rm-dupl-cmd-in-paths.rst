@@ -1,7 +1,7 @@
-Remove subsequent segments commands from paths
-----------------------------------------------
+Remove subsequent segments command from paths
+---------------------------------------------
 
-If path segment has same type as previous - we can skip command specifier.
+If path segment has the same type as previous - we can skip command specifier.
 
 .. GEN_TABLE
 .. BEFORE

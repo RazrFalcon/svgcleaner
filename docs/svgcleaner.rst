@@ -3,7 +3,7 @@
 Remove XML comments
 -------------------
 
-We can remove all XML comments from SVG document, since they are not rendered either way.
+We can remove all XML comments from SVG document since they are not rendered either way.
 
 **Note:** ``svgdom`` library, which is used to process SVG file in SVG Cleaner,
 doesn't support comments inside attributes, so they will be removed anyway.
@@ -80,7 +80,7 @@ A link can be established via IRI or `FuncIRI <https://www.w3.org/TR/SVG/linking
 Also, we can remove any unreferenced elements inside the `defs` elements,
 since they are not rendered either way.
 
-**Note:** the ``font-face`` element should be ignored, because it applies to whole
+**Note:** the ``font-face`` element should be ignored, because it applies to the whole
 document and not to a specific node.
 
 CLI argument: ``--rm-unused-defs``
@@ -150,7 +150,7 @@ CLI argument: ``--convert-shapes``
 Remove ``title`` element
 ------------------------
 
-We can remove all `title <https://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements>`_  elements, since they are not rendered either way.
+We can remove all `title <https://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements>`_  elements since they are not rendered either way.
 
 But since this element can be used by render software - this action is optional.
 
@@ -173,7 +173,7 @@ CLI argument: ``--rm-title``
 Remove ``desc`` element
 ------------------------
 
-We can remove all `desc <https://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements>`_  elements, since they are not rendered either way.
+We can remove all `desc <https://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements>`_  elements since they are not rendered either way.
 
 But since this element can be used by render software - this action is optional.
 
@@ -196,7 +196,7 @@ CLI argument: ``--rm-desc``
 Remove ``metadata`` element
 ---------------------------
 
-We can remove all `metadata <https://www.w3.org/TR/SVG/metadata.html#MetadataElement>`_  elements, since they are not rendered either way.
+We can remove all `metadata <https://www.w3.org/TR/SVG/metadata.html#MetadataElement>`_  elements since they are not rendered either way.
 
 But since this element can be used by render software - this action is optional.
 
@@ -331,7 +331,7 @@ CLI argument: ``--rm-nonsvg-attributes``
 Remove unreferenced ``id`` attributes
 -------------------------------------
 
-We can remove ``id`` attribute from element, if this ``id`` doesn't used in any IRI/FuncIRI.
+We can remove ``id`` attribute from an element if this ``id`` doesn't use in any IRI/FuncIRI.
 
 **Note:** since SVG Cleaner works only with static/local SVG data and does not support
 SVG scripting via ``script`` element, we can only assume that ``id`` is not used.
@@ -355,12 +355,39 @@ CLI argument: ``--rm-unref-ids``
 +-----------------------------------------------------------------------------------+----------------------------------------------------------------------------------+
 
 
+Remove unused text-related attributes
+-------------------------------------
+
+We can remove text-related attributes, when there is no text.
+
+But since attributes like a `font` can impact a `length` values with a `em`/`ex` units
+- it's a bit more complicated. Also, the text itself can be defined in many different ways.
+
+CLI argument: ``--rm-text-attributes``
+
++-----------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+| Before (248b)                                                                           | After (233b)                                                                           |
++-----------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+| .. code-block:: XML                                                                     | .. code-block:: XML                                                                    |
+|                                                                                         |                                                                                        |
+|   <svg>                                                                                 |   <svg>                                                                                |
+|     <circle fill="green" font="Verdana"                                                 |     <circle fill="green"                                                               |
+|             cx="50" cy="50" r="45"/>                                                    |             cx="50" cy="50" r="45"/>                                                   |
+|     <text y="30" x="30" font-size="14pt">                                               |     <text y="30" x="30" font-size="14pt">                                              |
+|       Text                                                                              |       Text                                                                             |
+|     </text>                                                                             |     </text>                                                                            |
+|   </svg>                                                                                |   </svg>                                                                               |
++-----------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+| .. image:: https://razrfalcon.github.io/svgcleaner/images/before/rm-text-attributes.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/rm-text-attributes.svg |
++-----------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+
+
 Trim ``id`` attributes
 ----------------------
 
-Renames elements ``id`` attribute to shorter one. All IRI and FuncIRI will be updated too.
+Renames elements ``id`` attribute to a shorter one. All IRI and FuncIRI will be updated too.
 
-Shorter name generated via encoding serial number of this ``id`` attribute using range of acceptable chars: a-zA-Z0-9. Given that first char can't be 0-9.
+Shorter name generated by encoding a serial number of this ``id`` attribute using a range of acceptable chars: a-zA-Z0-9. Given that first char can't be 0-9.
 
 For example: 1 -> a, 51 -> aa, 113 -> ba and so on.
 
@@ -390,12 +417,16 @@ CLI argument: ``--trim-ids``
 +-------------------------------------------------------------------------------+------------------------------------------------------------------------------+
 
 
-Remove presentation attributes with default values
---------------------------------------------------
+Remove attributes with default values
+-------------------------------------
 
-We can remove presentation attributes with default values if they not covered by parent elements.
+We can remove attributes with default values if they are not covered by the parent elements.
+Some attributes do not support an inheritance, so we can remove them
+without checking a parent elements.
 
-In example bellow we have ``circle`` element with ``fill`` and ``stroke`` attributes, which have default values. We can't remove ``fill`` from ``circle``, because than rect will be filled red, but ``stroke`` can be easily removed.
+In the example below we have a ``circle`` element with a ``fill`` and a ``stroke`` attributes,
+which have default values. We can't remove a ``fill`` from a ``circle``, because than the rect
+will be filled with a red, but a ``stroke`` can be easily removed.
 
 CLI argument: ``--rm-default-attributes``
 
@@ -413,6 +444,27 @@ CLI argument: ``--rm-default-attributes``
 +--------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
 | .. image:: https://razrfalcon.github.io/svgcleaner/images/before/rm-default-attributes.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/rm-default-attributes.svg |
 +--------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+
+
+Remove an unused ``xmlns:xlink`` attribute
+------------------------------------------
+
+We can remove a ``xmlns:xlink`` attribute if document doesn't use an element
+referencing via the ``xlink:href``.
+
+CLI argument: ``--rm-xmlns-xlink-attribute``
+
++-----------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------+
+| Before (164b)                                                                                 | After (121b)                                                                                 |
++-----------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------+
+| .. code-block:: XML                                                                           | .. code-block:: XML                                                                          |
+|                                                                                               |                                                                                              |
+|   <svg xmlns:xlink="http://www.w3.org/1999/xlink">                                            |   <svg>                                                                                      |
+|     <circle fill="green" cx="50" cy="50" r="45"/>                                             |     <circle fill="green" cx="50" cy="50" r="45"/>                                            |
+|   </svg>                                                                                      |   </svg>                                                                                     |
++-----------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------+
+| .. image:: https://razrfalcon.github.io/svgcleaner/images/before/rm-xmlns-xlink-attribute.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/rm-xmlns-xlink-attribute.svg |
++-----------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------+
 
 
 Use compact notation for paths
@@ -438,10 +490,10 @@ CLI argument: ``--trim-paths``
 +---------------------------------------------------------------------------------+--------------------------------------------------------------------------------+
 
 
-Remove subsequent segments commands from paths
-----------------------------------------------
+Remove subsequent segments command from paths
+---------------------------------------------
 
-If path segment has same type as previous - we can skip command specifier.
+If path segment has the same type as previous - we can skip command specifier.
 
 CLI argument: ``--rm-dupl-cmd-in-paths``
 
@@ -497,12 +549,12 @@ Transforms precision
 
 Set numeric precision for ``a``, ``b``, ``c``, ``d`` values of transform matrix. 
 
-We need a separate option for them, because their values often very small and we need a decent precision to keep them correct.
+We need a separate option for them since their values often very small and we need a decent precision to keep them correct.
 
 Use #RGB notation when possible
 -------------------------------
 
-Use #RGB notation insted of #RRGGBB when possible.
+Use #RGB notation instead of #RRGGBB when possible.
 
 **NOTE:** by default all color stored as #RRGGBB, since libsvgdom doesn't stores colors original text representation.
 
@@ -546,7 +598,7 @@ CLI argument: ``--simplify-transforms``
 XML Indent
 ----------
 
-Set indent for XML nodes. Values between 0 and 4 indicates number of indent spaces. Value of ``-1`` indicates no indent.
+Set indent for XML nodes. Values between 0 and 4 indicate the number of indent spaces. The value of ''-1'' indicates no indent.
 
 CLI argument: ``--indent``
 

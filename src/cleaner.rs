@@ -64,8 +64,6 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
         remove_unused_defs(doc);
     }
 
-    // remove_invisible_elements(doc);
-
     if get_flag!(args, Key::RemoveDuplLinearGradients) {
         remove_dupl_linear_gradients(doc);
     }
@@ -76,6 +74,10 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
 
     if get_flag!(args, Key::RemoveDefaultAttributes) {
         remove_default_attributes(doc);
+    }
+
+    if get_flag!(args, Key::RemoveTextAttributes) {
+        remove_text_attributes(doc);
     }
 
     if get_flag!(args, Key::RemoveUnreferencedIds) {
@@ -93,7 +95,7 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
     // final fixes
 
     final_fixes(doc);
-    fix_xmlns_attribute(doc, get_flag!(args, Key::RemoveUnusedAttributes));
+    fix_xmlns_attribute(doc, get_flag!(args, Key::RemoveXmlnsXlinkAttribute));
 
     Ok(())
 }

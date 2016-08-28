@@ -25,7 +25,6 @@ use std::fmt;
 #[derive(PartialEq)]
 pub enum CleanerError {
     UnresolvedAttribute,
-    // CursorIsNotSupported,
     ScriptingIsNotSupported,
     AnimationIsNotSupported,
     BiggerFile,
@@ -36,8 +35,6 @@ impl fmt::Debug for CleanerError {
         match *self {
             CleanerError::UnresolvedAttribute =>
                 write!(f, "Unresolved attribute"),
-            // CleanerError::CursorIsNotSupported =>
-                // write!(f, "Cursor is not supported"),
             CleanerError::ScriptingIsNotSupported =>
                 write!(f, "Scripting is not supported"),
             CleanerError::AnimationIsNotSupported =>

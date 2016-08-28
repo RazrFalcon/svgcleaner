@@ -9,7 +9,7 @@ A link can be established via IRI or `FuncIRI <https://www.w3.org/TR/SVG/linking
 Also, we can remove any unreferenced elements inside the `defs` elements,
 since they are not rendered either way.
 
-**Note:** the ``font-face`` element should be ignored, because it applies to whole
+**Note:** the ``font-face`` element should be ignored, because it applies to the whole
 document and not to a specific node.
 
 .. GEN_TABLE

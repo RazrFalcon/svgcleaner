@@ -1,7 +1,7 @@
 Remove ``metadata`` element
 ---------------------------
 
-We can remove all `metadata <https://www.w3.org/TR/SVG/metadata.html#MetadataElement>`_  elements, since they are not rendered either way.
+We can remove all `metadata <https://www.w3.org/TR/SVG/metadata.html#MetadataElement>`_  elements since they are not rendered either way.
 
 But since this element can be used by render software - this action is optional.
 

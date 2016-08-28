@@ -1,10 +1,10 @@
-Remove unused text related attributes
+Remove unused text-related attributes
 -------------------------------------
 
-We can remove a text related attributes, when there are no text.
+We can remove text-related attributes, when there is no text.
 
-But since attributes like a `font` can impact a `length` values with an `em`/`ex` units
-- it's a bit more complicated. Also the text itself can be defined in many different ways.
+But since attributes like a `font` can impact a `length` values with a `em`/`ex` units
+- it's a bit more complicated. Also, the text itself can be defined in many different ways.
 
 .. GEN_TABLE
 .. BEFORE

@@ -1,7 +1,7 @@
 Remove unreferenced ``id`` attributes
 -------------------------------------
 
-We can remove ``id`` attribute from element, if this ``id`` doesn't used in any IRI/FuncIRI.
+We can remove ``id`` attribute from an element if this ``id`` doesn't use in any IRI/FuncIRI.
 
 **Note:** since SVG Cleaner works only with static/local SVG data and does not support
 SVG scripting via ``script`` element, we can only assume that ``id`` is not used.

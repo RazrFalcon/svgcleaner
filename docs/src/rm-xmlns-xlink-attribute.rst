@@ -1,0 +1,19 @@
+Remove an unused ``xmlns:xlink`` attribute
+------------------------------------------
+
+We can remove an ``xmlns:xlink`` attribute if document doesn't use an element
+referencing via the ``xlink:href``.
+
+.. this example is kinda pointles, since `docgen` will insert `xmlns:xlink` anyway.
+
+.. GEN_TABLE
+.. NO_XMLNS_XLINK
+.. BEFORE
+.. <svg xmlns:xlink="http://www.w3.org/1999/xlink">
+..   <circle fill="green" cx="50" cy="50" r="45"/>
+.. </svg>
+.. AFTER
+.. <svg>
+..   <circle fill="green" cx="50" cy="50" r="45"/>
+.. </svg>
+.. END

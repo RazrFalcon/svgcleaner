@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated with https://github.com/RazrFalcon/barh -->
+<svg height="181" shape-rendering="crispEdges" width="622" xmlns="http://www.w3.org/2000/svg">
+    <text font-family="Arial" font-size="16" font-weight="bold" x="132" y="16">
+        Cleaning ratio in Oxygen icon theme
+    </text>
+    <text font-family="Arial" font-size="16" x="4" y="58">
+        svgcleaner 0.6.9
+    </text>
+    <text font-family="Arial" font-size="16" x="4" y="91">
+        svgcleaner 0.6.2
+    </text>
+    <text font-family="Arial" font-size="16" x="48" y="124">
+        svgo 0.7.0
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="132" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="121" y="154">
+        0%
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="132" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="121" y="154">
+        0%
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="249" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="234" y="154">
+        25%
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="366" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="351" y="154">
+        50%
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="483" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="468" y="154">
+        75%
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="601" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="581" y="154">
+        100%
+    </text>
+    <rect fill="#3260cd" height="22" width="206" x="132" y="41"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="296" y="58">
+        44.01
+    </text>
+    <rect fill="#3260cd" height="22" width="308" x="132" y="74"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="398" y="91">
+        65.71
+    </text>
+    <rect fill="#3260cd" height="22" width="253" x="132" y="107"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="341" y="124">
+        54.13
+    </text>
+    <rect fill="#333" height="110" width="1" x="132" y="30"/>
+    <text font-family="Arial" font-size="16" font-style="italic" x="319" y="176">
+        Removed data
+    </text>
+</svg>

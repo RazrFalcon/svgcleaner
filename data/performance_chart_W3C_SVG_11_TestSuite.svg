@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated with https://github.com/RazrFalcon/barh -->
+<svg height="181" shape-rendering="crispEdges" width="622" xmlns="http://www.w3.org/2000/svg">
+    <text font-family="Arial" font-size="16" font-weight="bold" x="136" y="16">
+        Average cleaning time in W3C SVG 1.1 TestSuite
+    </text>
+    <text font-family="Arial" font-size="16" x="4" y="58">
+        svgcleaner 0.6.9
+    </text>
+    <text font-family="Arial" font-size="16" x="4" y="91">
+        svgcleaner 0.6.2
+    </text>
+    <text font-family="Arial" font-size="16" x="48" y="124">
+        svgo 0.7.0
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="136" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="121" y="154">
+        0ms
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="136" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="121" y="154">
+        0ms
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="251" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="232" y="154">
+        50ms
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="366" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="342" y="154">
+        100ms
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="481" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="457" y="154">
+        150ms
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="597" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="573" y="154">
+        200ms
+    </text>
+    <rect fill="#3260cd" height="22" width="4" x="136" y="41"/>
+    <rect fill="#999" height="1" width="12" x="140" y="52"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="154" y="58">
+        1.755
+    </text>
+    <rect fill="#3260cd" height="22" width="11" x="136" y="74"/>
+    <rect fill="#999" height="1" width="12" x="147" y="85"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="161" y="91">
+        4.817
+    </text>
+    <rect fill="#3260cd" height="22" width="430" x="136" y="107"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="504" y="124">
+        186.695
+    </text>
+    <rect fill="#333" height="110" width="1" x="136" y="30"/>
+    <text font-family="Arial" font-size="16" font-style="italic" x="354" y="176">
+        Time
+    </text>
+</svg>

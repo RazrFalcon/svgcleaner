@@ -1,0 +1,27 @@
+{
+    "title": "Total errors count in Oxygen icon theme",
+    "items_font": {
+        "family": "Arial",
+        "size": 12
+    },
+    "items": [
+        {
+            "name": "svgcleaner 0.6.9",
+            "value": 9
+        },
+        {
+            "name": "svgcleaner 0.6.2",
+            "value": 831
+        },
+        {
+            "name": "svgo 0.7.0",
+            "value": 201
+        }
+    ],
+    "hor_axis": {
+        "title": "Files",
+        "width": 500,
+        "max_value": 4941,
+        "ticks": [0, 1000, 2000, 3000, 4000, 4941]
+    }
+}

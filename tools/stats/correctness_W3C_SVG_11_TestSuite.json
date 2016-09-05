@@ -1,0 +1,27 @@
+{
+    "title": "Total errors count in W3C SVG 1.1 TestSuite",
+    "items_font": {
+        "family": "Arial",
+        "size": 12
+    },
+    "items": [
+        {
+            "name": "svgcleaner 0.6.9",
+            "value": 6
+        },
+        {
+            "name": "svgcleaner 0.6.2",
+            "value": 351
+        },
+        {
+            "name": "svgo 0.7.0",
+            "value": 280
+        }
+    ],
+    "hor_axis": {
+        "title": "Files",
+        "width": 500,
+        "max_value": 525,
+        "ticks": [0, 100, 200, 300, 400, 525]
+    }
+}

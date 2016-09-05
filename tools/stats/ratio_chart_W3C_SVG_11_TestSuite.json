@@ -1,0 +1,27 @@
+{
+    "title": "Cleaning ratio in W3C SVG 1.1 TestSuite",
+    "items_font": {
+        "family": "Arial",
+        "size": 12
+    },
+    "items": [
+        {
+            "name": "svgcleaner 0.6.9",
+            "value": 32.68
+        },
+        {
+            "name": "svgcleaner 0.6.2",
+            "value": 73.32
+        },
+        {
+            "name": "svgo 0.7.0",
+            "value": 41.09
+        }
+    ],
+    "hor_axis": {
+        "title": "Removed data",
+        "suffix": "%",
+        "width": 500,
+        "max_value": 100
+    }
+}

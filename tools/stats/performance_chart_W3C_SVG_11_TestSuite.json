@@ -1,0 +1,26 @@
+{
+    "title": "Average cleaning time in W3C SVG 1.1 TestSuite",
+    "items_font": {
+        "family": "Arial",
+        "size": 12
+    },
+    "items": [
+        {
+            "name": "svgcleaner 0.6.9",
+            "value": 1.755
+        },
+        {
+            "name": "svgcleaner 0.6.2",
+            "value": 4.817
+        },
+        {
+            "name": "svgo 0.7.0",
+            "value": 186.695
+        }
+    ],
+    "hor_axis": {
+        "title": "Time",
+        "width": 500,
+        "suffix": "ms"
+    }
+}

@@ -45,30 +45,29 @@ so we will compare with it.
 *Less is better.*
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/correctness_chart_W3C_SVG_11_TestSuite.svg)
-<img src="https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/correctness_chart_W3C_SVG_11_TestSuite.svg">
 
 \* Yes, svgcleaner 0.6.2 is absolute garbage on this data set.
 
-![Alt text](data/correctness_chart_oxygen.png)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/correctness_chart_oxygen.svg)
 
 ### Cleaning ratio
 
 *More is better.*
 
-![Alt text](data/ratio_chart_W3C_SVG_11_TestSuite.png)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/ratio_chart_W3C_SVG_11_TestSuite.svg)
 
 \* And again, svgcleaner 0.6.2 is kinda superb, but since it breaks most
 of the files - it's pointless.
 
-![Alt text](data/ratio_chart_oxygen.png)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/ratio_chart_oxygen.svg)
 
 ### Performance
 
 *Less is better.*
 
-![Alt text](data/performance_chart_W3C_SVG_11_TestSuite.png)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/performance_chart_W3C_SVG_11_TestSuite.svg)
 
-![Alt text](data/performance_chart_oxygen.png)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/performance_chart_oxygen.svg)
 
 #### Notes
 

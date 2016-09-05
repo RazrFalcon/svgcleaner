@@ -100,8 +100,8 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
     Ok(())
 }
 
-pub fn write_buffer(doc: &Document, opt: &WriteOptions) -> Vec<u8> {
-    let mut ouput_data = Vec::new();
+pub fn write_buffer(doc: &Document, capacity: usize, opt: &WriteOptions) -> Vec<u8> {
+    let mut ouput_data = Vec::with_capacity(capacity);
     doc.write_buf_opt(&opt, &mut ouput_data);
     ouput_data
 }

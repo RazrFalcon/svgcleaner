@@ -70,6 +70,8 @@ pub fn remove_text_attributes(doc: &Document) {
 
 // an 'em' and an 'ex' units are depend on current font
 fn has_em_ex_attributes(root: &Node) -> bool {
+    // TODO: pretty slow, run it rarely
+
     // NOTE: actually, em/ex can be set in not parsed attributes, which will be ignored,
     //       but it's probably near to impossible
 

@@ -8,6 +8,8 @@
 
 You need the latest stable Rust compiler.
 
+*svgcleaner* is based on [libsvgdom](https://github.com/RazrFalcon/libsvgdom).
+
 ### Building
 
 ```bash
@@ -130,6 +132,7 @@ V0.7
  - [ ] Numbers comparing using custom precision.
  - [ ] Join font properties into the `font` attribute.
  - [ ] Join sequential paths.
+ - [ ] Unix pipes.
 
 Note, that current git version is pretty stable and ready to use.
 

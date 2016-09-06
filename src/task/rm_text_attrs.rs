@@ -22,7 +22,7 @@
 
 use super::short::{EId, AId, Unit};
 
-use svgdom::{Document, Node, AttributeValue};
+use svgdom::{Document, Node, NodeType, AttributeValue};
 
 // It's self defined list of the text attributes. There are no such list in the SVG spec.
 static TEXT_ATTRIBUTES: &'static [AId] = &[
@@ -50,43 +50,93 @@ static TEXT_ATTRIBUTES: &'static [AId] = &[
 ];
 
 pub fn remove_text_attributes(doc: &Document) {
-    // check doc for text nodes
-    let has_text = doc.first_child().unwrap().has_text_children();
+    _remove_text_attributes(&doc.root());
 
-    for node in doc.descendants() {
-        // remove all the text attributes if no text in the children nodes
-        if !has_text && !has_em_ex_attributes(&node) {
-            // skip any checks, except ex/em, if doc do not have any text nodes
-            node.remove_attributes(&TEXT_ATTRIBUTES);
-        } else if    !node.has_text_children()
-                  && !node.is_tag_id(EId::FontFace)
-                  && !node.child_by_tag_id(EId::Tref).is_some()
-                  && !has_em_ex_attributes(&node)
-                  && !is_linked_text(&node) {
-            node.remove_attributes(&TEXT_ATTRIBUTES);
+    // check doc for text nodes
+    let has_text = doc.svg_element().unwrap().has_text_children();
+
+    // We can remove text attributes from the 'font-face' element
+    // only when there is no text in a whole doc.
+    // Can't do it inside '_remove_text_attributes'.
+    if !has_text {
+        for node in doc.descendants() {
+            if node.is_tag_id(EId::FontFace) {
+                node.remove_attributes(&TEXT_ATTRIBUTES);
+            }
         }
     }
 }
 
-// an 'em' and an 'ex' units are depend on current font
-fn has_em_ex_attributes(root: &Node) -> bool {
-    // TODO: pretty slow, run it rarely
+/// Returns `true` if all children do not have any data than depend on text attributes.
+fn _remove_text_attributes(root: &Node) -> bool {
+    // process tree recursively
+
+    // NOTE: not sure that it removes everything, at least it does not break anything.
+
+    // shorthand for no_text_data
+    let mut no_td = true;
+    for node in root.children() {
+        if !node.is_element() {
+            if node.node_type() == NodeType::Text {
+                no_td = false;
+            }
+
+            continue;
+        }
+
+        if node.has_children() {
+            // go deeper
+            let can_rm = _remove_text_attributes(&node);
+            if can_rm {
+                if !node.is_tag_id(EId::FontFace) {
+                    node.remove_attributes(&TEXT_ATTRIBUTES);
+                }
+            } else {
+                no_td = false;
+            }
+        } else {
+            // local version of the 'no_td'
+            let _no_td;
+            // only this parameters affect parent elements
+            if     node.has_text_children()
+                || node.is_tag_id(EId::Tref)
+                || has_em_ex_attributes(&node) {
+                _no_td = false;
+            } else {
+                _no_td = true;
+            }
+
+            if    _no_td
+               && !node.is_tag_id(EId::FontFace)
+               && !is_linked_text(&node) {
+                node.remove_attributes(&TEXT_ATTRIBUTES);
+            }
+
+            if !_no_td {
+                no_td = false;
+            }
+        }
+    }
+
+    no_td
+}
+
+fn has_em_ex_attributes(node: &Node) -> bool {
+    // an 'em' and an 'ex' units are depend on current font
 
     // NOTE: actually, em/ex can be set in not parsed attributes, which will be ignored,
     //       but it's probably near to impossible
 
-    for node in root.descendants() {
-        let attrs = node.attributes();
-        for attr in attrs.values() {
-            match attr.value {
-                AttributeValue::Length(ref len) => {
-                    match len.unit {
-                        Unit::Ex | Unit::Em => return true,
-                        _ => {}
-                    }
+    let attrs = node.attributes();
+    for attr in attrs.values() {
+        match attr.value {
+            AttributeValue::Length(ref len) => {
+                match len.unit {
+                    Unit::Ex | Unit::Em => return true,
+                    _ => {}
                 }
-                _ => {}
             }
+            _ => {}
         }
     }
 
@@ -140,13 +190,55 @@ b"<svg font='Verdana'>
 ");
 
     // we can remove text attributes from the 'font-face' element
-    // only when there is no text in whole doc
+    // only when there is no text in a whole doc
     test!(rm_text_2,
 b"<svg>
     <font-face font-family='Verdana'/>
 </svg>",
 "<svg>
     <font-face/>
+</svg>
+");
+
+    test!(rm_text_3,
+b"<svg>
+    <g font-family='Verdana'>
+        <text text-anchor='middle'>
+            text
+        </text>
+    </g>
+    <g font-family='Verdana'>
+        <rect/>
+    </g>
+</svg>",
+"<svg>
+    <g font-family='Verdana'>
+        <text text-anchor='middle'>
+            text
+        </text>
+    </g>
+    <g>
+        <rect/>
+    </g>
+</svg>
+");
+
+    test!(rm_text_4,
+b"<svg>
+    <g font-size='10'>
+        <rect width='10ex'/>
+    </g>
+    <g font-size='10'>
+        <rect width='10px'/>
+    </g>
+</svg>",
+"<svg>
+    <g font-size='10'>
+        <rect width='10ex'/>
+    </g>
+    <g>
+        <rect width='10px'/>
+    </g>
 </svg>
 ");
 
@@ -207,6 +299,28 @@ b"<svg>
         </text>
     </defs>
     <use font-size='50' xlink:href='#text'/>
+</svg>
+");
+
+    // do not take first node, take first element
+    test_eq!(keep_text_6,
+b"<!-- Comment -->
+<svg>
+    <text font-size='16'>
+        text
+    </text>
+</svg>
+");
+
+    test_eq!(keep_text_7,
+b"<svg>
+    <g font-size='10'>
+        <rect width='10'/>
+        <g>
+            <rect width='10ex'/>
+        </g>
+        <rect width='10'/>
+    </g>
 </svg>
 ");
 }

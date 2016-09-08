@@ -139,6 +139,8 @@ fn prepare_page(page_path: &str, data: &Data, out_buf: &mut BufWriter<File>) {
             if data.mode == DocMode::Cli {
                 // write CLI arg before table
                 write!(out_buf, "CLI argument: ``--{}``\n\n", basename(page_path)).unwrap();
+            } else {
+                writeln!(out_buf, "|\n").unwrap();
             }
 
             let table = gen_table(&mut lines_iter, &data);

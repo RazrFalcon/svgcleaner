@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** SVG Cleaner could help you to clean up your SVG files
+** svgcleaner could help you to clean up your SVG files
 ** from unnecessary data.
 ** Copyright (C) 2012-2016 Evgeniy Reizner
 **
@@ -46,7 +46,18 @@ macro_rules! try_msg {
 
 fn main() {
     let app = prepare_app();
-    let args = app.get_matches();
+
+    let args = match app.get_matches_safe() {
+        Ok(a) => a,
+        Err(mut e) => {
+            // change case before printing an error to match svgcleaner's format
+            if e.message.starts_with("error:") {
+                e.message = e.message.replace("error:", "Error:");
+            }
+            e.exit();
+        }
+    };
+
     if !check_values(&args) { return; }
     let parse_opt = gen_parse_options(&args);
     let write_opt = gen_write_options(&args);
@@ -101,7 +112,7 @@ fn main() {
     // save it
     try_msg!(save_file(&buf[..], out_file));
 
-    if value_t!(args, KEYS[Key::Quite], bool).unwrap() {
+    if value_t!(args, KEYS[Key::Quiet], bool).unwrap() {
         return;
     }
 

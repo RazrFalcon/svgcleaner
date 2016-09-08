@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** SVG Cleaner could help you to clean up your SVG files
+** svgcleaner could help you to clean up your SVG files
 ** from unnecessary data.
 ** Copyright (C) 2012-2016 Evgeniy Reizner
 **

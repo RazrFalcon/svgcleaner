@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Tests for all cleaning options.
 - Documentation for all cleaning options.
 - `--copy-on-error` option to copy original file to destination on error.
-- `--quite` option to suppress any output except warnings and errors.
+- `--quiet` option to suppress any output except warnings and errors.
 - `-remove-title` and `--remove-desc` which was a part of the `--remove-invisible-elts` option.
 - `--remove-text-attributes` which was a part of the the `--remove-notappl-atts` options.
 - `--remove-xmlns-xlink-attribute` to remove unused `xmlns:xlink` attribute.
@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Engine rewrite from C++ to Rust.
 - Move GUI to separate repository.
 - All CLI keys are completely new.
+- All CLI keys accepts bool value now.
 - Rename `--remove-proc-instr` to `--remove-declarations`.
 - Rename `--remove-nonsvg-elts` to `--remove-nonsvg-elements`.
 - Rename `--remove-metadata-elts` to `--remove-metadata`.
@@ -36,7 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Rename `--convert-basic-shapes` to `--convert-shapes`.
 - Rename `--transform-precision` to `--precision-transform`.
 - Rename `--coordinates-precision` to `--precision-coordinate`.
-- `--attributes-precision` is not part of the `--precision-coordinate`.
+- `--attributes-precision` is a part of the `--precision-coordinate` now.
 - Rename `--compact-output` to `--indent` with ability to set a custom indention value.
 - Split `--remove-unneeded-symbols` into `--trim-paths`, `--remove-dupl-cmd-in-paths`
   and `--join-arcto-flags`.

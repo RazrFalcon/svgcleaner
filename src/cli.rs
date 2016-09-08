@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** SVG Cleaner could help you to clean up your SVG files
+** svgcleaner could help you to clean up your SVG files
 ** from unnecessary data.
 ** Copyright (C) 2012-2016 Evgeniy Reizner
 **
@@ -56,7 +56,7 @@ pub enum Key {
     Indent,
 
     CopyOnError,
-    Quite,
+    Quiet,
 }
 
 pub struct KeysData<'a>(&'a [&'a str]);
@@ -99,7 +99,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "indent",
 
     "copy-on-error",
-    "quite",
+    "quiet",
 ]);
 
 macro_rules! gen_flag {
@@ -115,7 +115,7 @@ macro_rules! gen_flag {
 
 // TODO: to code gen
 pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
-    debug_assert!(KEYS.0.len() - 1 == Key::Quite as usize);
+    debug_assert!(KEYS.0.len() - 1 == Key::Quiet as usize);
 
     let mut a = App::new("svgcleaner")
         // .help(include_str!("../data/help.txt"))
@@ -163,7 +163,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     a = a.arg(gen_flag!(Key::TrimIds,
             "Trim 'id' attributes", "true"));
     a = a.arg(gen_flag!(Key::RemoveTextAttributes,
-            "Remove text related-attributes if there is no text", "true"));
+            "Remove text-related attributes if there is no text", "true"));
     a = a.arg(gen_flag!(Key::RemoveDefaultAttributes,
             "Remove attributes with default values", "true"));
     a = a.arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute,
@@ -197,7 +197,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     // other
     a = a.arg(gen_flag!(Key::CopyOnError,
             "Copy original file to destination on error", "false"));
-    a = a.arg(gen_flag!(Key::Quite,
+    a = a.arg(gen_flag!(Key::Quiet,
             "Show only warnings and errors", "false"));
 
     a
@@ -213,10 +213,10 @@ fn gen_precision_arg<'a>(key: &'a str, help: &'a str, def_value: &'a str) -> Arg
 }
 
 fn is_svg(val: String) -> Result<(), String> {
-    if val.ends_with(".svg") {
+    if val.ends_with(".svg") || val.ends_with(".SVG") {
         Ok(())
     } else {
-        Err(String::from("the file format must be svg."))
+        Err(String::from("The file format must be SVG."))
     }
 }
 
@@ -229,7 +229,7 @@ fn is_precision(val: String) -> Result<(), String> {
     if n >= 1 && n <= 8 {
         Ok(())
     } else {
-        Err(String::from("invalid precision value."))
+        Err(String::from("Invalid precision value."))
     }
 }
 
@@ -242,7 +242,7 @@ fn is_indent(val: String) -> Result<(), String> {
     if n >= -1 && n <= 4 {
         Ok(())
     } else {
-        Err(String::from("invalid indent value."))
+        Err(String::from("Invalid indent value."))
     }
 }
 
@@ -251,7 +251,7 @@ fn is_flag(val: String) -> Result<(), String> {
     if val == "true" || val == "false" {
         Ok(())
     } else {
-        Err(String::from("invalid flag value."))
+        Err(String::from("Invalid flag value."))
     }
 }
 

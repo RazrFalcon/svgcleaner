@@ -119,7 +119,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
 
     let mut a = App::new("svgcleaner")
         // .help(include_str!("../data/help.txt"))
-        .version("0.6.9")
+        .version("0.6.90")
         .about("svgcleaner could help you to clean up yours SVG \
                 files from the unnecessary data.")
         .arg(Arg::with_name("in-file")

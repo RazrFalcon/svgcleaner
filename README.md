@@ -26,7 +26,7 @@ Use `--help` for a list of the cleaning options. And a [doc](docs/svgcleaner.rst
 
 ### GUI
 
-GUI is still in an early alpha.
+You can get a GUI [here](https://github.com/RazrFalcon/svgcleaner-gui).
 
 ## Goals
 

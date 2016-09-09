@@ -121,6 +121,8 @@ All basic shapes can be represented as ``path``.
 
 ``circle``, ``ellipse`` and rounded ``rect``  are ignored, because their path representation will always be bigger than original.
 
+**Note:** shapes may render a bit differently depending on your user agent. You can use `shape-rendering <https://www.w3.org/TR/SVG/painting.html#ShapeRenderingProperty>`_ attribute to tweak it.
+
 CLI argument: ``--convert-shapes``
 
 +-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+

@@ -288,7 +288,7 @@ fn clean_with_new_cleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool
                 .arg(in_path)
                 .arg(out_path)
                 .arg("--copy-on-error=true")
-                .arg("--quite=true")
+                .arg("--quiet=true")
                 .output();
 
     match res {

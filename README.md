@@ -2,31 +2,21 @@
 
 *svgcleaner* could help you to clean up your SVG files from the unnecessary data.
 
-## Usage
+## Table of contents
 
-### Dependencies
-
-You need the latest stable Rust compiler.
-
-*svgcleaner* is based on [libsvgdom](https://github.com/RazrFalcon/libsvgdom).
-
-### Building
-
-```bash
-cargo build --release
-```
-
-### CLI
-
-```
-svgcleaner in.svg out.svg
-```
-
-Use `--help` for a list of the cleaning options. And a [doc](docs/svgcleaner.rst) for more details.
-
-### GUI
-
-You can get a GUI [here](https://github.com/RazrFalcon/svgcleaner-gui).
+  * [Goals](#goals)
+    * [Charts](#charts)
+      * [Correctness](#correctness)
+      * [Cleaning ratio](#cleaning-ratio)
+      * [Performance](#performance)
+      * [Notes](#notes)
+  * [Building](#building)
+  * [Usage](#usage)
+    * [CLI](#cli)
+    * [GUI](#gui)
+  * [Downloads](#downloads)
+  * [Roadmap](#roadmap)
+  * [License](#license)
 
 ## Goals
 
@@ -40,7 +30,7 @@ You can get a GUI [here](https://github.com/RazrFalcon/svgcleaner-gui).
 There are only one alternative to svgcleaner - [svgo](https://github.com/svg/svgo),
 so we will compare with it.
 
-### Correctness
+#### Correctness
 
 *Less is better.*
 
@@ -50,7 +40,7 @@ so we will compare with it.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/correctness_chart_oxygen.svg)
 
-### Cleaning ratio
+#### Cleaning ratio
 
 *More is better.*
 
@@ -61,7 +51,7 @@ of the files - it's pointless.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/ratio_chart_oxygen.svg)
 
-### Performance
+#### Performance
 
 *Less is better.*
 
@@ -96,7 +86,33 @@ CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")`.
 
  - You can repeat tests by yourself using [stats](tools/stats) app.
 
-### Roadmap
+## Building
+
+You need the latest stable [Rust](https://www.rust-lang.org/) compiler.
+
+```bash
+cargo build --release
+```
+
+## Usage
+
+### CLI
+
+```
+svgcleaner in.svg out.svg
+```
+
+Use `--help` for a list of the cleaning options. And a [doc](docs/svgcleaner.rst) for more details.
+
+### GUI
+
+You can get a GUI [here](https://github.com/RazrFalcon/svgcleaner-gui).
+
+## Downloads
+
+You can get a prebuild packages [here](https://github.com/RazrFalcon/svgcleaner-gui/releases).
+
+## Roadmap
 V0.7
  - [x] Remove text related-attributes if there is no text.
  - [ ] Convert `width` and `height` attributes to `viewBox` attribute.
@@ -136,6 +152,6 @@ V0.7
 
 Note, that current git version is pretty stable and ready to use.
 
-### License
+## License
 
-svgcleaner is licensed under the [GPL-2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
+*svgcleaner* is licensed under the [GPL-2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).

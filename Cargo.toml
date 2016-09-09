@@ -9,9 +9,11 @@ readme = "README.md"
 
 [dependencies]
 # latest public svgparser
-svgdom = { git = "https://github.com/RazrFalcon/libsvgdom.git" }
+# svgdom = { git = "https://github.com/RazrFalcon/libsvgdom.git" }
 # local copy
 # svgdom = { path = "../svgdom" }
+# from crates
+svgdom = "0.0.2"
 
 [dependencies.clap]
 version = "2"

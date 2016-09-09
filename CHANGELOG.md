@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [0.6.90] - 2016-09-09
 ### Added
 - Own SVG parsing implementation.
 - Tests for all cleaning options.
@@ -117,7 +117,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First public release with Perl backend and Qt GUI.
 
-[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.2...HEAD
+[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.90...HEAD
+[0.6.90]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.2...0.6.90
 [0.6.2]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.1...0.6.2
 [0.6.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6...0.6.1
 [0.6.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.5.1...0.6

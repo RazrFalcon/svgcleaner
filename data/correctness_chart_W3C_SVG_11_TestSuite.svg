@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Generated with https://github.com/RazrFalcon/barh -->
-<svg height="181" shape-rendering="crispEdges" width="622" xmlns="http://www.w3.org/2000/svg">
-    <text font-family="Arial" font-size="16" font-weight="bold" x="125" y="16">
+<svg height="181" shape-rendering="crispEdges" width="629" xmlns="http://www.w3.org/2000/svg">
+    <text font-family="Arial" font-size="16" font-weight="bold" x="132" y="16">
         Total errors count in W3C SVG 1.1 TestSuite
     </text>
     <text font-family="Arial" font-size="16" x="4" y="58">
-        svgcleaner 0.6.9
+        svgcleaner 0.6.91
     </text>
-    <text font-family="Arial" font-size="16" x="4" y="91">
+    <text font-family="Arial" font-size="16" x="11" y="91">
         svgcleaner 0.6.2
     </text>
-    <text font-family="Arial" font-size="16" x="48" y="124">
+    <text font-family="Arial" font-size="16" x="55" y="124">
         svgo 0.7.0
     </text>
-    <rect fill="#ccc" height="110" width="1" x="125" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="121" y="154">
+    <rect fill="#ccc" height="110" width="1" x="132" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="128" y="154">
         0
     </text>
-    <rect fill="#ccc" height="110" width="1" x="217" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="204" y="154">
+    <rect fill="#ccc" height="110" width="1" x="224" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="211" y="154">
         100
     </text>
-    <rect fill="#ccc" height="110" width="1" x="309" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="296" y="154">
+    <rect fill="#ccc" height="110" width="1" x="316" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="303" y="154">
         200
     </text>
-    <rect fill="#ccc" height="110" width="1" x="401" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="388" y="154">
+    <rect fill="#ccc" height="110" width="1" x="408" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="395" y="154">
         300
     </text>
-    <rect fill="#ccc" height="110" width="1" x="493" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="480" y="154">
+    <rect fill="#ccc" height="110" width="1" x="500" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="487" y="154">
         400
     </text>
-    <rect fill="#ccc" height="110" width="1" x="608" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="595" y="154">
+    <rect fill="#ccc" height="110" width="1" x="615" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="602" y="154">
         525
     </text>
-    <rect fill="#3260cd" height="22" width="5" x="125" y="41"/>
-    <rect fill="#999" height="1" width="12" x="130" y="52"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="144" y="58">
-        6
+    <rect fill="#3260cd" height="22" width="2" x="132" y="41"/>
+    <rect fill="#999" height="1" width="12" x="134" y="52"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="148" y="58">
+        3
     </text>
-    <rect fill="#3260cd" height="22" width="322" x="125" y="74"/>
-    <text fill="#fff" font-family="Arial" font-size="16" x="419" y="91">
+    <rect fill="#3260cd" height="22" width="322" x="132" y="74"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="426" y="91">
         351
     </text>
-    <rect fill="#3260cd" height="22" width="257" x="125" y="107"/>
-    <text fill="#fff" font-family="Arial" font-size="16" x="352" y="124">
+    <rect fill="#3260cd" height="22" width="257" x="132" y="107"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="359" y="124">
         280
     </text>
-    <rect fill="#333" height="110" width="1" x="125" y="30"/>
-    <text font-family="Arial" font-size="16" font-style="italic" x="354" y="176">
+    <rect fill="#333" height="110" width="1" x="132" y="30"/>
+    <text font-family="Arial" font-size="16" font-style="italic" x="361" y="176">
         Files
     </text>
 </svg>

@@ -1,6 +1,6 @@
 [package]
 name = "svgcleaner"
-version = "0.6.90"
+version = "0.6.91"
 authors = ["Evgeniy Reizner <razrfalcon@gmail.com>"]
 keywords = ["svg", "cleaner", "optimizer"]
 license = "GPL-2.0"
@@ -8,12 +8,12 @@ description = "svgcleaner could help you to clean up yours SVG files from the un
 readme = "README.md"
 
 [dependencies]
-# latest public svgparser
-# svgdom = { git = "https://github.com/RazrFalcon/libsvgdom.git" }
+# latest
+svgdom = { git = "https://github.com/RazrFalcon/libsvgdom.git" }
 # local copy
 # svgdom = { path = "../svgdom" }
 # from crates
-svgdom = "0.0.2"
+# svgdom = "0.0.2"
 
 [dependencies.clap]
 version = "2"

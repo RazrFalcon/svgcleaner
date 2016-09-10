@@ -113,13 +113,12 @@ macro_rules! gen_flag {
     )
 }
 
-// TODO: to code gen
 pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     debug_assert!(KEYS.0.len() - 1 == Key::Quiet as usize);
 
     let mut a = App::new("svgcleaner")
         // .help(include_str!("../data/help.txt"))
-        .version("0.6.90")
+        .version("0.6.91") // TODO: take from toml
         .about("svgcleaner could help you to clean up yours SVG \
                 files from the unnecessary data.")
         .arg(Arg::with_name("in-file")
@@ -170,7 +169,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Remove an unused xmlns:xlink attribute", "true"));
 
     // paths
-    // TODO: disable paths processing
+    // TODO: disable paths processing as option
     a = a.arg(gen_flag!(Key::TrimPaths,
             "Use compact notation for paths", "true"));
     a = a.arg(gen_flag!(Key::RemoveDuplCmdInPaths,

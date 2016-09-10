@@ -170,16 +170,6 @@ name = "shapes-ellipse-03-f.svg"
 valid_ae = 254
 
 [[item]]
-name = "pservers-pattern-03-f.svg"
-ignore = true
-info = "fallback color unsupported"
-
-[[item]]
-name = "pservers-pattern-09-f.svg"
-ignore = true
-info = "fallback color unsupported"
-
-[[item]]
 name = "fonts-desc-01-t.svg"
 ignore = true
 info = "strange, probably QtWebKit bug"
@@ -193,26 +183,6 @@ info = "invalid attribute processing 'fill=\"red !important\"'"
 name = "color-prop-04-t.svg"
 ignore = true
 info = "unsupported 'system' colors"
-
-[[item]]
-name = "render-elems-03-t.svg"
-ignore = true
-info = "elements inside nodes are unsupported"
-
-[[item]]
-name = "coords-viewattr-01-b.svg"
-ignore = true
-info = "elements inside nodes are unsupported"
-
-[[item]]
-name = "coords-viewattr-04-f.svg"
-ignore = true
-info = "elements inside nodes are unsupported"
-
-[[item]]
-name = "coords-viewattr-02-b.svg"
-ignore = true
-info = "elements inside nodes are unsupported"
 
 [[item]]
 name = "pservers-grad-20-b.svg"
@@ -253,11 +223,6 @@ info = "investigate"
 name = "text-ws-03-t.svg"
 ignore = true
 info = "investigate"
-
-[[item]]
-name = "filters-felem-01-b.svg"
-ignore = true
-info = "invalid filter fallback processing"
 
 [[item]]
 name = "struct-use-12-f.svg"

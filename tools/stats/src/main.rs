@@ -28,6 +28,7 @@ struct Data<'a> {
 struct TotalStats {
     title: String,
     cleaned_with_errors: u64,
+    unchanged: u64,
     total_input_size: u64,
     total_output_size: u64,
     files_count: u64,
@@ -39,6 +40,7 @@ impl Default for TotalStats {
         TotalStats {
             title: String::new(),
             cleaned_with_errors: 0,
+            unchanged: 0,
             total_input_size: 0,
             total_output_size: 0,
             files_count: 0,
@@ -167,6 +169,10 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
         total_stats.total_output_size += stats.new_file_size;
         total_stats.total_time += stats.elapsed_time;
 
+        if stats.orig_file_size == stats.new_file_size {
+            total_stats.unchanged += 1;
+        }
+
         if !stats.is_successful {
             total_stats.cleaned_with_errors += 1;
         }
@@ -273,8 +279,9 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
 
 fn print_total_stats(stats: &TotalStats) {
     println!("Results for: {}", stats.title);
-    println!("Files cleaned with errors: {} of {}",
-             stats.cleaned_with_errors, stats.files_count);
+    println!("Files count: {}", stats.files_count);
+    println!("Files cleaned with errors: {}", stats.cleaned_with_errors);
+    println!("Unchanged files: {}", stats.unchanged);
     println!("Size after/before: {}/{}",
              stats.total_output_size, stats.total_input_size);
     println!("Cleaning ratio: {:.2}%",
@@ -294,7 +301,7 @@ fn clean_with_new_cleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool
     match res {
         Ok(_) => {
             // let s = String::from_utf8_lossy(&o.stdout);
-            // if s.find("Error:").is_some() {
+            // if !s.is_empty() {
             //     print!("{}", s);
             // }
             return true;

@@ -353,19 +353,18 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
             }
 
             if s.find("Error").is_some() {
+                // list of "not errors"
                 if    s.find("Error: Scripting is not supported.").is_some()
                    || s.find("Error: Animation is not supported.").is_some()
-                   || s.find("Unsupported CSS at").is_some()
-                   || s.find("Expected '0 or 1'").is_some()
-                   || s.find("Expected 'segment command'").is_some() {
+                   || s.find("Error: Valid FuncIRI").is_some()
+                   || s.find("Error: Broken FuncIRI").is_some()
+                   || s.find("Error: Unsupported CSS at").is_some()
+                   || s.find("Error: Element crosslink").is_some()
+                   || s.find("Error: Unsupported ENTITY").is_some() {
                     return true;
                 }
                 return false;
             }
-
-            // if s.find("Warning").is_some() {
-            //     println!("{}", s);
-            // }
 
             return true;
         }

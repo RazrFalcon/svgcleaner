@@ -423,16 +423,6 @@ name = "mimetypes/hidef/text-x-adasrc.svg"
 valid_ae = 2283
 
 [[item]]
-name = "apps/preferences-plugin.svg"
-ignore = true
-info = "Error: Element crosslink."
-
-[[item]]
-name = "apps/small/16x16/preferences-plugin.svg"
-ignore = true
-info = "Error: Element crosslink."
-
-[[item]]
 name = "devices/phone.svg"
 ignore = true
 info = "investigate"

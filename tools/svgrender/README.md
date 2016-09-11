@@ -1,12 +1,14 @@
-A bit changed demo from the Qt dojo.
+# svgrender
 
-https://blog.qt.io/blog/2008/08/06/webkit-based-svg-rasterizer/
+Render SVG files using QtWebKit.
 
-### Dependencies
+A bit changed [demo](https://blog.qt.io/blog/2008/08/06/webkit-based-svg-rasterizer/) from the Qt dojo.
 
-Qt 5.5 (or any newer but with QtWebKit module, QtWebEngine is not supported)
+## Dependencies
 
-### Build
+Qt 5.5 (or any newer but with QtWebKit module, QtWebEngine is not supported).
+
+## Build
 
 ```bash
 qmake

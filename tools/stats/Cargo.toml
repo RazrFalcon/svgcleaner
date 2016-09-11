@@ -1,7 +1,8 @@
 [package]
 name = "stats"
 version = "0.1.0"
-authors = ["RazrFalcon <razrfalcon@gmail.com>"]
+authors = ["Evgeniy Reizner <razrfalcon@gmail.com>"]
+license = "MIT"
 
 [dependencies]
 time = "0.1"

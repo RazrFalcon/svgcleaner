@@ -1,8 +1,8 @@
 [package]
 name = "docgen"
 version = "0.1.0"
-authors = ["RazrFalcon <razrfalcon@gmail.com>"]
-license = "GPL-2.0"
+authors = ["Evgeniy Reizner <razrfalcon@gmail.com>"]
+license = "MIT"
 
 [dependencies.clap]
 version = "2"

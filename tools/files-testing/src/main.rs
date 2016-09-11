@@ -2,6 +2,7 @@
 extern crate libtest;
 extern crate clap;
 extern crate toml;
+extern crate time;
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -40,26 +41,30 @@ struct Data<'a> {
 fn main() {
     let m = App::new("files-testing")
         .arg(Arg::with_name("workdir")
-            .long("workdir").help("Sets path to work dir")
+            .long("workdir").help("Sets path to the work dir")
             .value_name("DIR")
             .required(true))
         .arg(Arg::with_name("input-data")
-            .long("input-data").help("Sets path to SVG files dir")
+            .long("input-data").help("Sets path to the SVG files dir")
             .value_name("DIR")
             .required(true))
         .arg(Arg::with_name("svgcleaner")
-            .long("svgcleaner").help("Sets path to current version of SVG Cleaner")
+            .long("svgcleaner").help("Sets path to the current version of SVG Cleaner")
             .value_name("PATH")
             .required(true))
         .arg(Arg::with_name("render")
-            .long("render").help("Sets path to SVG render")
+            .long("render").help("Sets path to the SVG render")
+            .value_name("PATH")
+            .required(true))
+        .arg(Arg::with_name("cache-db")
+            .long("cache-db").help("Sets path to the test cache db.")
             .value_name("PATH")
             .required(true))
         .arg(Arg::with_name("input-data-config")
-            .long("input-data-config").help("Sets path to input data config.")
+            .long("input-data-config").help("Sets path to the input data config.")
             .value_name("PATH"))
         .arg(Arg::with_name("continue")
-            .long("continue").help("Continue testing from last position."))
+            .long("continue").help("Continue testing from the last position."))
         // .arg(Arg::with_name("threshold")
         //     .long("threshold").help("Sets AE threshold in percent")
         //     .value_name("PERCENT")
@@ -114,9 +119,14 @@ fn main() {
         pos = 0;
     }
 
+    let cache = TestCache::init(m.value_of("cache-db").unwrap());
+
     // File::create("out.txt").unwrap();
 
-    run_tests(&data, input_dir, pos);
+    let start = time::precise_time_ns();
+    run_tests(&data, input_dir, pos, &cache);
+    let end = time::precise_time_ns();
+    println!("Elapsed: {}s", ((end - start) as f64 / 1000000.0) as u64 / 1000);
 }
 
 fn load_last_pos(work_dir: &str) -> usize {
@@ -217,7 +227,7 @@ fn gen_orig_png_dir(data: &Data, svg_path: &Path) -> PathBuf {
     Path::new(data.orig_pngs_dir).join(sub_path)
 }
 
-fn run_tests(data: &Data, input_dir: &str, start_pos: usize) {
+fn run_tests(data: &Data, input_dir: &str, start_pos: usize, cache: &TestCache) {
     let mut total = 0;
     for entry in dir_iter!(input_dir) {
         if entry.file_type().is_file() {
@@ -248,7 +258,7 @@ fn run_tests(data: &Data, input_dir: &str, start_pos: usize) {
             continue;
         }
 
-        if !run_test(data, &file_path) {
+        if !run_test(data, &file_path, cache) {
             println!("Test failed.");
             save_curr_pos(&data.work_dir, idx);
             break;
@@ -268,7 +278,7 @@ fn run_tests(data: &Data, input_dir: &str, start_pos: usize) {
     }
 }
 
-fn run_test(data: &Data, svg_path: &Path) -> bool {
+fn run_test(data: &Data, svg_path: &Path, cache: &TestCache) -> bool {
     let svg_path_str = svg_path.to_str().unwrap();
     let orig_file_name = svg_path.file_name().unwrap().to_str().unwrap();
     let new_svg_path = Path::new(data.work_dir).join(orig_file_name);
@@ -279,9 +289,21 @@ fn run_test(data: &Data, svg_path: &Path) -> bool {
         fs::remove_file(&new_svg_path).unwrap();
     }
 
-    // println!("Cleaning...");
     if !clean_svg(data.svgcleaner, svg_path_str, out_path) {
         return false;
+    }
+
+    let cache_id = cache.cache_id(svg_suffix);
+    match cache_id {
+        Some(id) => {
+            let new_hash = file_md5sum(out_path);
+            if cache.get_hash(id) == new_hash {
+                // if md5 is same as in cache - no need to render and compare images
+                fs::remove_file(&new_svg_path).unwrap();
+                return true;
+            }
+        }
+        None => {}
     }
 
     let new_png_path = gen_png_path(&out_path, "_new");
@@ -289,20 +311,18 @@ fn run_test(data: &Data, svg_path: &Path) -> bool {
 
     // render original svg
     let orig_png_path = gen_orig_png_dir(data, Path::new(svg_path)).with_extension("png");
+    let orig_png_path_str = orig_png_path.to_str().unwrap();
     if !orig_png_path.exists() {
-        // println!("Rendering: {}", orig_png_path.display());
-        if !render_svg(&data.render, svg_path_str, orig_png_path.to_str().unwrap()) {
+        if !render_svg(&data.render, svg_path_str, orig_png_path_str) {
             return false;
         }
     }
 
-    // println!("Rendering: {}", new_png_path);
     if !render_svg(&data.render, &out_path, &new_png_path) {
         return false;
     }
 
-    // println!("Comparing...");
-    let diff = match compare_imgs(&data.work_dir, &new_png_path, orig_png_path.to_str().unwrap(), &diff_path) {
+    let diff = match compare_imgs(&data.work_dir, &new_png_path, orig_png_path_str, &diff_path) {
         Some(d) => d,
         None => return false,
     };
@@ -313,6 +333,11 @@ fn run_test(data: &Data, svg_path: &Path) -> bool {
     };
 
     if diff <= valid_ae {
+        match cache_id {
+            Some(id) => cache.update_hash(id, &file_md5sum(&out_path)),
+            None => cache.append_hash(svg_suffix, &file_md5sum(&out_path)),
+        }
+
         fs::remove_file(&new_svg_path).unwrap();
         fs::remove_file(new_png_path).unwrap();
         fs::remove_file(diff_path).unwrap();

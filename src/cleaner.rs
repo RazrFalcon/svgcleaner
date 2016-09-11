@@ -33,9 +33,9 @@ use task::*;
 use error::CleanerError;
 
 pub fn load_file(path: &str) -> Result<Vec<u8>, io::Error> {
-    let mut file = fs::File::open(path).unwrap();
+    let mut file = try!(fs::File::open(path));
 
-    let length = file.metadata().unwrap().len() as usize;
+    let length = try!(file.metadata()).len() as usize;
 
     let mut v = Vec::with_capacity(length + 1);
     try!(file.read_to_end(&mut v));

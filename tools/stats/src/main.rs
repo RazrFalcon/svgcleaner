@@ -23,8 +23,10 @@ struct Data<'a> {
     work_dir: &'a str,
     render_path: Option<&'a str>,
     threshold: u8,
+    cache: TestCache,
 }
 
+// TODO: min/max time
 struct TotalStats {
     title: String,
     cleaned_with_errors: u64,
@@ -74,7 +76,7 @@ enum Cleaner<'a> {
 }
 
 fn main() {
-    let m = App::new("svgcleaner-stats")
+    let m = App::new("stats")
         .version("0.1.0")
         .arg(Arg::with_name("workdir")
             .long("workdir").help("Sets path to work dir")
@@ -88,22 +90,23 @@ fn main() {
             .long("render").help("Sets path to SVG render")
             .value_name("PATH")
             .required_unless("skip-errors-check"))
-        .arg(Arg::with_name("svgcleaner")
-            .long("svgcleaner").help("Sets path to current version of SVG Cleaner")
-            .value_name("PATH")
+        .arg(Arg::with_name("type")
+            .long("type").help("Sets type of SVG cleaning program.")
+            .value_name("NAME")
+            .possible_values(&["svgcleaner", "svgcleaner-old", "svgo"])
             .required(true))
-        .arg(Arg::with_name("svgcleaner-old")
-            .long("svgcleaner-old").help("Sets path to old version of SVG Cleaner")
-            .value_name("PATH")
-            .required(true))
-        .arg(Arg::with_name("svgo")
-            .long("svgo").help("Sets path to old version of SVGO")
+        .arg(Arg::with_name("cleaner")
+            .long("cleaner").help("Sets path to cleaning software")
             .value_name("PATH")
             .required(true))
         .arg(Arg::with_name("threshold")
             .long("threshold").help("Sets AE threshold in percent")
             .value_name("PERCENT")
             .default_value("0"))
+        .arg(Arg::with_name("cache-db")
+            .long("cache-db").help("Sets path to the test cache db.")
+            .value_name("PATH")
+            .required_unless("skip-errors-check"))
         .arg(Arg::with_name("skip-errors-check")
             .long("skip-errors-check").help("Skips raster images compare, which is much faster"))
         .get_matches();
@@ -121,20 +124,21 @@ fn main() {
         work_dir: m.value_of("workdir").unwrap(),
         render_path: render,
         threshold: value_t!(m, "threshold", u8).unwrap(),
+        cache: TestCache::init(m.value_of("cache-db").unwrap()),
     };
 
     create_dir(&data.work_dir);
 
-    let svgcleaner_path = m.value_of("svgcleaner").unwrap();
-    let svgcleaner_old_path = m.value_of("svgcleaner-old").unwrap();
-    let svgo_path = m.value_of("svgo").unwrap();
+    let cleaner_path = m.value_of("cleaner").unwrap();
 
-    println!("");
-    print_total_stats(&collect_stats(&data, input_dir, Cleaner::New(svgcleaner_path)));
-    // println!("");
-    // print_total_stats(&collect_stats(&data, input_dir, Cleaner::Old(svgcleaner_old_path)));
-    // println!("");
-    // print_total_stats(&collect_stats(&data, input_dir, Cleaner::Svgo(svgo_path)));
+    let stats = match m.value_of("type").unwrap() {
+        "svgcleaner" => collect_stats(&data, input_dir, Cleaner::New(cleaner_path)),
+        "svgcleaner-old" => collect_stats(&data, input_dir, Cleaner::Old(cleaner_path)),
+        "svgo" => collect_stats(&data, input_dir, Cleaner::Svgo(cleaner_path)),
+        _ => return,
+    };
+
+    print_total_stats(&stats)
 }
 
 fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
@@ -178,6 +182,8 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
         }
 
         idx += 1;
+
+        // break;
     }
 
     total_stats
@@ -186,7 +192,12 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
 fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     let svg_path_str = svg_path.to_str().unwrap();
 
-    let render_imgs = data.render_path.is_some();
+    let mut render_imgs = data.render_path.is_some();
+
+    let use_cache = match *cleaner {
+        Cleaner::New(_) => true,
+        _ => false,
+    };
 
     let mut stats = FileStats::default();
 
@@ -196,6 +207,7 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
         new_svg_path = Path::new(data.work_dir).join(file_name);
     }
     let new_svg_path_str = new_svg_path.to_str().unwrap();;
+    let svg_suffix = new_svg_path.strip_prefix(data.work_dir).unwrap().to_str().unwrap();
 
     let start = time::precise_time_ns();
     let res = match *cleaner {
@@ -211,6 +223,21 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     stats.orig_file_size = Path::new(svg_path).metadata().unwrap().len();
     stats.new_file_size = new_svg_path.metadata().unwrap().len();
     stats.elapsed_time = (end - start) as f64 / 1000000.0;
+
+    let cache_id = data.cache.cache_id(svg_suffix);
+
+    if render_imgs && use_cache {
+        match cache_id {
+            Some(id) => {
+                let new_hash = file_md5sum(new_svg_path_str);
+                if data.cache.get_hash(id) == new_hash {
+                    // if md5 is same as in cache - no need to render and compare images
+                    render_imgs = false;
+                }
+            }
+            None => {}
+        }
+    }
 
     if !render_imgs {
         stats.is_successful = true;
@@ -265,6 +292,13 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
             }
         }
         None => is_successful = false,
+    }
+
+    if is_successful && use_cache {
+        match cache_id {
+            Some(id) => data.cache.update_hash(id, &file_md5sum(&new_svg_path_str)),
+            None => data.cache.append_hash(svg_suffix, &file_md5sum(&new_svg_path_str)),
+        }
     }
 
     stats.is_successful = is_successful;

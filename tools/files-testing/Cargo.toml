@@ -1,10 +1,12 @@
 [package]
 name = "files-testing"
 version = "0.1.0"
-authors = ["RazrFalcon <razrfalcon@gmail.com>"]
+authors = ["Evgeniy Reizner <razrfalcon@gmail.com>"]
+license = "MIT"
 
 [dependencies]
 toml = "0.1"
+time = "0.1"
 
 [dependencies.clap]
 version = "2"

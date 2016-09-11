@@ -1,12 +1,72 @@
 extern crate walkdir;
+extern crate rusqlite;
+extern crate crypto;
 
 use std::io;
+use std::io::ErrorKind;
+use std::io::Read;
 use std::fs;
 use std::path;
 use std::process::Command;
-use std::io::ErrorKind;
+
+use crypto::digest::Digest;
 
 pub use walkdir::{WalkDir, WalkDirIterator};
+
+/// Very simple implementation of caching.
+pub struct TestCache {
+    connection: rusqlite::Connection,
+}
+
+impl TestCache {
+    pub fn init(path: &str) -> TestCache {
+        let is_exist = path::Path::new(path).exists();
+        let conn = rusqlite::Connection::open(path).unwrap();
+        if !is_exist {
+            conn.execute("CREATE TABLE Files (
+                          ID              INTEGER PRIMARY KEY,
+                          Path            TEXT NOT NULL,
+                          Md5Hash         TEXT NOT NULL
+                          )", &[]).unwrap();
+        }
+
+        TestCache {
+            connection: conn,
+        }
+    }
+
+    pub fn cache_id(&self, file_path: &str) -> Option<i64> {
+        // let h = hash(&file_path);
+        let mut stmt = self.connection.prepare("SELECT ID FROM Files WHERE Path=?").unwrap();
+        let mut rows = stmt.query(&[&file_path]).unwrap();
+        match rows.next() {
+            Some(res) => {
+                let id: i64 = res.unwrap().get(0);
+                Some(id)
+            }
+            None => None,
+        }
+    }
+
+    pub fn append_hash(&self, file_path: &str, md5: &str) {
+        let mut stmt = self.connection.prepare("INSERT INTO Files (Path, Md5Hash) \
+                                                VALUES (?, ?)").unwrap();
+        stmt.execute(&[&file_path, &md5]).unwrap();
+    }
+
+    pub fn get_hash(&self, id: i64) -> String {
+        let mut stmt = self.connection.prepare("SELECT Md5Hash FROM Files WHERE ID=?").unwrap();
+        let mut rows = stmt.query(&[&id]).unwrap();
+        let res = rows.next().unwrap().unwrap();
+        let h: String = res.get(0);
+        h
+    }
+
+    pub fn update_hash(&self, id: i64, md5: &str) {
+        let mut stmt = self.connection.prepare("UPDATE Files SET Md5Hash=? WHERE ID=?").unwrap();
+        stmt.execute(&[&id, &md5]).unwrap();
+    }
+}
 
 pub fn compare_imgs(work_dir: &str, path1: &str, path2: &str, path_diff: &str) -> Option<u32> {
     // compare -metric AE -fuzz 0.5% foo.png foo2.png diff.png
@@ -93,6 +153,7 @@ pub fn render_svg(render: &str, svg_path: &str, png_path: &str) -> bool {
             let s2 = s.split('\n').filter(|x| {
                    !x.find("QPainter::restore: Unbalanced save/restore").is_some()
                 && !x.find("QPainter::end: Painter ended with").is_some()
+                && !x.find("libGL error:").is_some()
             }).collect::<Vec<&str>>().join("\n");
 
             if !s2.is_empty() {
@@ -119,4 +180,22 @@ pub fn is_svg(entry: &walkdir::DirEntry) -> bool {
     } else {
         true
     }
+}
+
+pub fn file_md5sum(path: &str) -> String {
+    let mut sh = crypto::md5::Md5::new();
+    let d = load_file(path);
+    sh.input(&d);
+    sh.result_str()
+}
+
+pub fn load_file(path: &str) -> Vec<u8> {
+    let mut file = fs::File::open(path).unwrap();
+
+    let length = file.metadata().unwrap().len() as usize;
+
+    let mut v = Vec::with_capacity(length + 1);
+    file.read_to_end(&mut v).unwrap();
+
+    v
 }

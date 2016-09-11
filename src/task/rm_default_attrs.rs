@@ -20,14 +20,17 @@
 **
 ****************************************************************************/
 
-use super::short::{EId, AId};
+use super::short::{EId, AId, Unit};
 
-use svgdom::{Document};
+use svgdom::{Document, Attribute, AttributeValue};
+use svgdom::types::{Length};
 
 pub fn remove_default_attributes(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);
 
     for node in doc.descendants() {
+        let tag_name = node.tag_id().unwrap();
+
         {
             let attrs = node.attributes();
 
@@ -47,30 +50,9 @@ pub fn remove_default_attributes(doc: &Document) {
                     }
                 } else {
                     // check default values of an non-presentation attributes
-                    match attr.id {
-                        AId::UnitsPerEm => {
-                            if attr.value.as_string().unwrap() == "1000" {
-                                rm_list.push(attr.id);
-                            }
-
-                        }
-                        AId::Slope => {
-                            // there are two different 'slope': one for 'font-face'
-                            // and one for 'feFunc*'
-                            let v = attr.value.as_string().unwrap();
-                            if node.is_tag_id(EId::FontFace) && v == "0" {
-                                rm_list.push(attr.id);
-                            } else if v == "1" {
-                                rm_list.push(attr.id);
-                            }
-                        }
-                        _ => {}
-
-                        // TODO: 'x', 'y' attributes equal to 0 is default
-                        // TODO: 'width', 'height' of SVG elem is default to 100%
+                    if is_default(attr, tag_name) {
+                        rm_list.push(attr.id);
                     }
-
-                    // TODO: add other
                 }
             }
         }
@@ -85,6 +67,127 @@ pub fn remove_default_attributes(doc: &Document) {
 
         rm_list.clear();
     }
+}
+
+fn is_default(attr: &Attribute, tag_name: EId) -> bool {
+    // process only popular and simple attributes
+
+    // TODO: this elements should be processed differently
+    match tag_name {
+          EId::LinearGradient
+        | EId::RadialGradient => return false,
+        _ => {}
+    }
+
+    match attr.id {
+        AId::X | AId::Y => {
+            if tag_name == EId::GlyphRef {
+                return false;
+            }
+
+            if tag_name == EId::Mask || tag_name == EId::Filter {
+                if attr.value == AttributeValue::from((-10.0, Unit::Percent)) {
+                    return true;
+                }
+                return false;
+            }
+
+            match attr.value {
+                AttributeValue::Length(l) => {
+                    if l == Length::new(0.0, Unit::None) {
+                        return true;
+                    }
+                }
+                AttributeValue::LengthList(ref list) => {
+                    if tag_name == EId::Text && list.len() == 1 {
+                        if list[0] == Length::new(0.0, Unit::None) {
+                            return true;
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+        AId::Width | AId::Height => {
+            match tag_name {
+                EId::Svg => {
+                    if attr.value == AttributeValue::from((100.0, Unit::Percent)) {
+                        return true;
+                    }
+                }
+                EId::Pattern => {
+                    if attr.value == AttributeValue::from((0.0, Unit::None)) {
+                        return true;
+                    }
+                }
+                EId::Mask | EId::Filter => {
+                    if attr.value == AttributeValue::from((120.0, Unit::Percent)) {
+                        return true;
+                    }
+                }
+                _ => {}
+            }
+        }
+        AId::Rx | AId::Ry => {
+            if tag_name == EId::Rect {
+                // TODO: theoretically, we can have any Unit. Investigate it.
+                if attr.value == AttributeValue::from((0.0, Unit::None)) {
+                    return true;
+                }
+            }
+        }
+        AId::Cx | AId::Cy => {
+            if tag_name == EId::Circle || tag_name == EId::Ellipse {
+                if attr.value == AttributeValue::from((0.0, Unit::None)) {
+                    return true;
+                }
+            }
+        }
+        AId::RefX | AId::RefY => {
+            if tag_name == EId::Marker {
+                if attr.value == AttributeValue::from((0.0, Unit::None)) {
+                    return true;
+                }
+            }
+        }
+        AId::X1 | AId::Y1 => {
+            if tag_name == EId::Line {
+                if attr.value == AttributeValue::from((0.0, Unit::None)) {
+                    return true;
+                }
+            }
+        }
+        AId::X2 | AId::Y2 => {
+            if tag_name == EId::Line {
+                if attr.value == AttributeValue::from((0.0, Unit::None)) {
+                    return true;
+                }
+            }
+        }
+        AId::StdDeviation => {
+            if attr.value == AttributeValue::from((0.0, Unit::None)) {
+                return true;
+            }
+        }
+        AId::UnitsPerEm => {
+            if attr.value.as_string().unwrap() == "1000" {
+                return true;
+            }
+        }
+        AId::Slope => {
+            // there are two different 'slope': one for 'font-face'
+            // and one for 'feFunc*'
+            let v = attr.value.as_string().unwrap();
+            if tag_name == EId::FontFace && v == "0" {
+                return true;
+            } else if v == "1" {
+                return true;
+            }
+        }
+        _ => {}
+    }
+
+    false
 }
 
 #[cfg(test)]
@@ -116,12 +219,36 @@ b"<svg fill='#ff0000'>
 </svg>
 ");
 
-    test!(all,
+    test!(rm_svg_w_h,
+b"<svg width='100%' height='100%'/>",
+"<svg/>
+");
+
+    // x, y attributes inside 'text' elements are not Length rather LengthList
+    test!(rm_len_list,
 b"<svg>
-    <rect fill='#000000'/>
+    <text x='0'/>
 </svg>",
 "<svg>
-    <rect/>
+    <text/>
+</svg>
+");
+
+    test!(rm_mask,
+b"<svg>
+    <mask x='-10%' y='-10%' width='120%' height='120%'/>
+</svg>",
+"<svg>
+    <mask/>
+</svg>
+");
+
+    test!(rm_filter,
+b"<svg>
+    <filter x='-10%' y='-10%' width='120%' height='120%'/>
+</svg>",
+"<svg>
+    <filter/>
 </svg>
 ");
 }

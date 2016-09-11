@@ -370,7 +370,8 @@ valid_ae = 604
 
 [[item]]
 name = "places/small/32x32/mail-folder-sent.svg"
-valid_ae = 318
+valid_ae = 350
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
 
 [[item]]
 name = "places/small/48x48/folder-video.svg"
@@ -421,6 +422,106 @@ valid_ae = 514
 [[item]]
 name = "mimetypes/hidef/text-x-adasrc.svg"
 valid_ae = 2283
+
+[[item]]
+name = "status/media-playlist-repeat.svg"
+valid_ae = 374
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "emblems/small/8x8/emblem-encrypted-locked.svg"
+valid_ae = 8867
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "emblems/small/8x8/emblem-encrypted-unlocked.svg"
+valid_ae = 8867
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "actions/view-media-equalizer.svg"
+valid_ae = 347
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "actions/small/16x16/mail-message-new-list.svg"
+valid_ae = 510
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "actions/small/16x16/insert-button.svg"
+valid_ae = 792
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "actions/small/22x22/folder-sync.svg"
+valid_ae = 797
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "actions/small/22x22/mixer-line.svg"
+valid_ae = 660
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "actions/small/48x48/view-grid.svg"
+valid_ae = 206
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "devices/small/16x16/media-flash-sd-mmc.svg"
+valid_ae = 268
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "devices/small/16x16/audio-input-line.svg"
+valid_ae = 445
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "devices/small/22x22/audio-input-line.svg"
+valid_ae = 610
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "devices/audio-input-line.svg"
+valid_ae = 280
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "apps/preferences-plugin-script.svg"
+valid_ae = 347
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "mimetypes/small/22x22/image-vnd.dwg.svg"
+valid_ae = 348
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "mimetypes/small/22x22/image-vnd.dgn.svg"
+valid_ae = 331
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "mimetypes/small/32x32/image-vnd.dwg.svg"
+valid_ae = 418
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "mimetypes/small/32x32/image-vnd.dgn.svg"
+valid_ae = 415
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "mimetypes/small/48x48/image-vnd.dwg.svg"
+valid_ae = 248
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+
+[[item]]
+name = "mimetypes/small/48x48/image-vnd.dgn.svg"
+valid_ae = 248
+info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
 
 [[item]]
 name = "devices/phone.svg"

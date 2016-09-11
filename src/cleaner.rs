@@ -60,6 +60,9 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
     fix_invalid_attributes(doc);
     group_defs(doc);
 
+    // Manipulate with tree structure.
+    // Do not remove any attributes before this methods
+    // since they uses them.
     if get_flag!(args, Key::RemoveUnusedDefs) {
         remove_unused_defs(doc);
     }
@@ -72,6 +75,11 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
         remove_dupl_radial_gradients(doc);
     }
 
+    if get_flag!(args, Key::ConvertShapes) {
+        convert_shapes_to_paths(doc);
+    }
+
+    // now we can remove any unneeded attributes
     if get_flag!(args, Key::RemoveDefaultAttributes) {
         remove_default_attributes(doc);
     }
@@ -88,8 +96,8 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
         trim_ids(doc);
     }
 
-    if get_flag!(args, Key::ConvertShapes) {
-        convert_shapes_to_paths(doc);
+    if get_flag!(args, Key::RemoveUnusedCoordinates) {
+        remove_unused_coordinates(doc);
     }
 
     // final fixes

@@ -12,6 +12,7 @@ remove-nonsvg-attributes.rst
 remove-unreferenced-ids.rst
 trim-ids.rst
 remove-text-attributes.rst
+remove-unused-coordinates.rst
 remove-default-attributes.rst
 remove-xmlns-xlink-attribute.rst
 trim-paths.rst

@@ -42,6 +42,7 @@ pub enum Key {
     RemoveUnreferencedIds,
     TrimIds,
     RemoveTextAttributes,
+    RemoveUnusedCoordinates,
     RemoveDefaultAttributes,
     RemoveXmlnsXlinkAttribute,
 
@@ -85,6 +86,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-unreferenced-ids",
     "trim-ids",
     "remove-text-attributes",
+    "remove-unused-coordinates",
     "remove-default-attributes",
     "remove-xmlns-xlink-attribute",
 
@@ -163,6 +165,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Trim 'id' attributes", "true"));
     a = a.arg(gen_flag!(Key::RemoveTextAttributes,
             "Remove text-related attributes if there is no text", "true"));
+    a = a.arg(gen_flag!(Key::RemoveUnusedCoordinates,
+            "Remove unused coordinate attributes", "true"));
     a = a.arg(gen_flag!(Key::RemoveDefaultAttributes,
             "Remove attributes with default values", "true"));
     a = a.arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute,

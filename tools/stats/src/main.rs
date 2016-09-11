@@ -120,6 +120,8 @@ fn main() {
         render = None;
     }
 
+    // TODO: no need for cache in skip-errors-check mode
+
     let data = Data {
         work_dir: m.value_of("workdir").unwrap(),
         render_path: render,

@@ -33,6 +33,7 @@ pub use self::rm_dupl_defs::{remove_dupl_linear_gradients, remove_dupl_radial_gr
 pub use self::resolve_attrs::resolve_attributes;
 pub use self::rm_default_attrs::remove_default_attributes;
 pub use self::rm_text_attrs::remove_text_attributes;
+pub use self::rm_unused_coords::remove_unused_coordinates;
 
 #[macro_use]
 mod macros;
@@ -46,6 +47,7 @@ mod resolve_inherit;
 mod rm_default_attrs;
 mod rm_dupl_defs;
 mod rm_unref_ids;
+mod rm_unused_coords;
 mod rm_unused_defs;
 mod rm_text_attrs;
 mod trim_ids;

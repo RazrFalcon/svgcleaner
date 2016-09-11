@@ -64,7 +64,7 @@ pub fn radial_gradients(doc: &Document) {
 
 fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
     let nodes = doc.descendants().filter(|n| n.is_tag_id(eid))
-                .collect::<Vec<Node>>();
+                    .collect::<Vec<Node>>();
 
     let mut order = Vec::with_capacity(nodes.len());
     while order.len() != nodes.len() {
@@ -108,18 +108,15 @@ fn resolve_attribute(node: &Node, id: AId, def_value: Option<AttributeValue>)
     match node.attribute_value(AId::XlinkHref) {
         Some(av) => {
             match av {
-                AttributeValue::Link(ref_node) => return resolve_attribute(&ref_node, id, def_value),
+                AttributeValue::Link(ref_node) =>
+                    return resolve_attribute(&ref_node, id, def_value),
                 _ => unreachable!(),
             }
         }
         None => {
             match node.attribute_value(id) {
-                Some(v) => {
-                    return Some(v);
-                }
-                None => {
-                    return def_value;
-                }
+                Some(v) => return Some(v),
+                None => return def_value,
             }
         }
     }

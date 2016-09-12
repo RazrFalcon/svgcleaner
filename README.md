@@ -34,7 +34,7 @@ so we will compare with it.
 
 *Less is better.*
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/correctness_chart_W3C_SVG_11_TestSuite.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/20f82f763f193a22240136adf95d1d782765230f/data/correctness_chart_W3C_SVG_11_TestSuite.svg)
 
 \* Yes, svgcleaner 0.6.2 is absolute garbage on this data set.
 

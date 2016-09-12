@@ -29,7 +29,7 @@ use error::CleanerError;
 pub fn preclean_checks(doc: &Document) -> Result<(), CleanerError> {
     try!(check_for_unsupported_elements(doc));
     try!(check_for_script_attributes(doc));
-    // try!(check_for_cursor_attribute(doc));
+    try!(check_for_conditional_attributes(doc));
 
     Ok(())
 }
@@ -41,9 +41,6 @@ fn check_for_unsupported_elements(doc: &Document) -> Result<(), CleanerError> {
                 match *v {
                     TagName::Id(ref id) => {
                         match *id {
-                            // EId::Cursor => {
-                            //     return Err(CleanerError::CursorIsNotSupported);
-                            // }
                             EId::Script => {
                                 return Err(CleanerError::ScriptingIsNotSupported);
                             }
@@ -112,15 +109,29 @@ fn check_for_script_attributes(doc: &Document) -> Result<(), CleanerError> {
     Ok(())
 }
 
-// fn check_for_cursor_attribute(doc: &Document) -> Result<(), CleanerError> {
-//     for node in doc.descendants_svg() {
-//         if node.has_attribute(AId::Cursor) {
-//             return Err(CleanerError::CursorIsNotSupported);
-//         }
-//     }
+fn check_for_conditional_attributes(doc: &Document) -> Result<(), CleanerError> {
+    // TODO: what to do with 'requiredExtensions'?
 
-//     Ok(())
-// }
+    macro_rules! check_attr {
+        ($aid:expr, $node:expr) => (
+            let attrs = $node.attributes();
+            let s = attrs.get_value($aid).unwrap().as_string().unwrap();
+            if !s.is_empty() {
+                return Err(CleanerError::ConditionalProcessingIsNotSupported);
+            }
+        )
+    }
+
+    for node in doc.descendants() {
+        if node.has_attribute(AId::RequiredFeatures) {
+            check_attr!(AId::RequiredFeatures, node);
+        } else if node.has_attribute(AId::SystemLanguage) {
+            check_attr!(AId::SystemLanguage, node);
+        }
+    }
+
+    Ok(())
+}
 
 #[cfg(test)]
 mod tests {

@@ -170,6 +170,11 @@ name = "shapes-ellipse-03-f.svg"
 valid_ae = 254
 
 [[item]]
+name = "text-fonts-203-t.svg"
+valid_ae = 1596
+info = "Looks like a QtWebKit bug since Inkscape and Chromium renders equally."
+
+[[item]]
 name = "fonts-desc-01-t.svg"
 ignore = true
 info = "strange, probably QtWebKit bug"

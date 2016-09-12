@@ -112,7 +112,7 @@ b"<svg>
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
                 fix_xmlns_attribute(&doc, $rm_unused);
-                assert_eq_text!(doc_to_str_tests!(doc), $out_text);
+                assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
         )
     }

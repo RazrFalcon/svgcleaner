@@ -11,7 +11,7 @@ SVG scripting via ``script`` element, we can only assume that ``id`` is not used
 .. <svg id="svg1">
 ..   <circle id="circle1" fill="green"
 ..           cx="50" cy="50" r="50"/>
-..   <circle id="circle2" fill="blue"
+..   <circle id="circle2" fill="#023373"
 ..           cx="100" cy="50" r="50"/>
 ..   <use id="use1" x="100" xlink:href="#circle1"/>
 .. </svg>
@@ -19,7 +19,7 @@ SVG scripting via ``script`` element, we can only assume that ``id`` is not used
 .. <svg>
 ..   <circle id="circle1" fill="green"
 ..           cx="50" cy="50" r="50"/>
-..   <circle fill="blue"
+..   <circle fill="#023373"
 ..           cx="100" cy="50" r="50"/>
 ..   <use x="100" xlink:href="#circle1"/>
 .. </svg>

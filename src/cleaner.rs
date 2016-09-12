@@ -75,6 +75,10 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
         remove_dupl_radial_gradients(doc);
     }
 
+    if get_flag!(args, Key::UngroupGroups) {
+        ungroup_groups(doc);
+    }
+
     if get_flag!(args, Key::ConvertShapes) {
         convert_shapes_to_paths(doc);
     }

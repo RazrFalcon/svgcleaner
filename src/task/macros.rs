@@ -21,25 +21,25 @@
 ****************************************************************************/
 
 #[cfg(test)]
+macro_rules! write_opt_for_tests {
+    () => ({
+        use svgdom::WriteOptions;
+        let mut opt = WriteOptions::default();
+        opt.use_single_quote = true;
+        opt
+    })
+}
+
+#[cfg(test)]
 macro_rules! base_test {
     ($name:ident, $functor:expr, $in_text:expr, $out_text:expr) => (
         #[test]
         fn $name() {
             let doc = Document::from_data($in_text).unwrap();
             $functor(&doc);
-            assert_eq_text!(doc_to_str_tests!(doc), $out_text);
+            assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
         }
     )
-}
-
-#[cfg(test)]
-macro_rules! doc_to_str_tests {
-    ($doc:expr) => ({
-        use svgdom::WriteOptions;
-        let mut opt = WriteOptions::default();
-        opt.use_single_quote = true;
-        $doc.to_string_with_opt(&opt)
-    })
 }
 
 #[cfg(test)]

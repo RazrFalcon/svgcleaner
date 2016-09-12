@@ -64,7 +64,7 @@ impl TestCache {
 
     pub fn update_hash(&self, id: i64, md5: &str) {
         let mut stmt = self.connection.prepare("UPDATE Files SET Md5Hash=? WHERE ID=?").unwrap();
-        stmt.execute(&[&id, &md5]).unwrap();
+        stmt.execute(&[&md5, &id]).unwrap();
     }
 }
 

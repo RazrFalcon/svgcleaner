@@ -37,6 +37,7 @@ pub enum Key {
     RemoveMetadata,
     RemoveDuplLinearGradients,
     RemoveDuplRadialGradients,
+    UngroupGroups,
 
     RemoveNonsvgAttributes,
     RemoveUnreferencedIds,
@@ -81,6 +82,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-metadata",
     "remove-dupl-lineargradient",
     "remove-dupl-radialgradient",
+    "ungroup-groups",
 
     "remove-nonsvg-attributes",
     "remove-unreferenced-ids",
@@ -119,7 +121,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     debug_assert!(KEYS.0.len() - 1 == Key::Quiet as usize);
 
     let mut a = App::new("svgcleaner")
-        // .help(include_str!("../data/help.txt"))
+        // .help(include_str!("../data/help.txt")) // TODO: use custom help
         .version("0.6.91") // TODO: take from toml
         .about("svgcleaner could help you to clean up yours SVG \
                 files from the unnecessary data.")
@@ -155,6 +157,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Remove duplicated 'linearGradient' elements", "true"));
     a = a.arg(gen_flag!(Key::RemoveDuplRadialGradients,
             "Remove duplicated 'radialGradient' elements", "true"));
+    a = a.arg(gen_flag!(Key::UngroupGroups,
+            "Ungroup groups", "true"));
 
     // attributes
     a = a.arg(gen_flag!(Key::RemoveNonsvgAttributes,
@@ -182,6 +186,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Join ArcTo flags", "false"));
 
     // output
+    // TODO: try smaller default value
     a = a.arg(gen_precision_arg(KEYS[Key::PrecisionCoordinate],
             "Sets numeric precision for coordinates (1..8)", "6"));
     a = a.arg(gen_precision_arg(KEYS[Key::PrecisionTransform],

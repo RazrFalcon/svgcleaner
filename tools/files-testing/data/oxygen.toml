@@ -6,6 +6,10 @@ name = "actions/small/22x22/edit-redo.svg"
 valid_ae = 1757
 
 [[item]]
+name = "categories/applications-development-translation.svg"
+valid_ae = 346
+
+[[item]]
 name = "actions/small/32x32/view-certificate.svg"
 valid_ae = 281
 

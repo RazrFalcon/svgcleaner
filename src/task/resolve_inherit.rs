@@ -39,7 +39,7 @@ pub fn resolve_inherit(doc: &Document) -> Result<(), CleanerError> {
                     // &AttributeValue::String(ref v) => {
                     //     // TODO: remove in release
                     //     if v == "inherit" || v == "currentColor" {
-                    //         println!("Warning: unparsed value: {:?}.", attr);
+                    //         println!("Warning: unparsed value: {:?}.", attr.id);
                     //     }
                     // }
                     &AttributeValue::PredefValue(ref v) => {
@@ -103,7 +103,7 @@ mod tests {
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
                 resolve_inherit(&doc).unwrap();
-                assert_eq_text!(doc_to_str_tests!(doc), $out_text);
+                assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
         )
     }

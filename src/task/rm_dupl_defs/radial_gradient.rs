@@ -51,7 +51,7 @@ mod tests {
                 let doc = Document::from_data($in_text).unwrap();
                 resolve_attrs::radial_gradients(&doc);
                 remove_dupl_radial_gradients(&doc);
-                assert_eq!(doc_to_str_tests!(doc), $out_text);
+                assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
         )
     }

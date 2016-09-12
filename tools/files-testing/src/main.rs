@@ -370,22 +370,29 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
 
     match res {
         Ok(o) => {
-            let mut s: String = String::from_utf8_lossy(&o.stdout).into_owned();
-            s = s.trim().to_owned();
-
-            if !s.is_empty() {
-                println!("{}", s);
+            let se: String = String::from_utf8_lossy(&o.stderr).into_owned();
+            if !se.is_empty() {
+                println!("{}", se);
+                return false;
             }
 
-            if s.find("Error").is_some() {
+            let mut so: String = String::from_utf8_lossy(&o.stdout).into_owned();
+            so = so.trim().to_owned();
+
+            if !so.is_empty() {
+                println!("{}", so);
+            }
+
+            if so.find("Error").is_some() {
                 // list of "not errors"
-                if    s.find("Error: Scripting is not supported.").is_some()
-                   || s.find("Error: Animation is not supported.").is_some()
-                   || s.find("Error: Valid FuncIRI").is_some()
-                   || s.find("Error: Broken FuncIRI").is_some()
-                   || s.find("Error: Unsupported CSS at").is_some()
-                   || s.find("Error: Element crosslink").is_some()
-                   || s.find("Error: Unsupported ENTITY").is_some() {
+                if    so.find("Error: Scripting is not supported.").is_some()
+                   || so.find("Error: Animation is not supported.").is_some()
+                   || so.find("Error: Valid FuncIRI").is_some()
+                   || so.find("Error: Broken FuncIRI").is_some()
+                   || so.find("Error: Unsupported CSS at").is_some()
+                   || so.find("Error: Element crosslink").is_some()
+                   || so.find("Error: Conditional processing").is_some()
+                   || so.find("Error: Unsupported ENTITY").is_some() {
                     return true;
                 }
                 return false;

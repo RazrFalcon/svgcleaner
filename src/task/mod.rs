@@ -34,6 +34,7 @@ pub use self::resolve_attrs::resolve_attributes;
 pub use self::rm_default_attrs::remove_default_attributes;
 pub use self::rm_text_attrs::remove_text_attributes;
 pub use self::rm_unused_coords::remove_unused_coordinates;
+pub use self::ungroup_groups::ungroup_groups;
 
 #[macro_use]
 mod macros;
@@ -51,6 +52,7 @@ mod rm_unused_coords;
 mod rm_unused_defs;
 mod rm_text_attrs;
 mod trim_ids;
+mod ungroup_groups;
 
 /// Shorthand names for modules.
 mod short {

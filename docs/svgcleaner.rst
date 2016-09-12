@@ -309,6 +309,39 @@ CLI argument: ``--remove-dupl-radialgradient``
 +-------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
 
 
+Ungroup groups
+--------------
+
+Groups, aka ``g`` element, is one of the main SVG structure blocks,
+but in a lot of cases they do not impact rendering at all.
+
+Groups are useless:
+ - if the group is empty
+ - if the group has only one children
+ - if the group doesn't have any important attributes
+
+Then we can ungroup it and remove.
+
+CLI argument: ``--ungroup-groups``
+
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| Before (251b)                                                                       | After (215b)                                                                       |
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| .. code-block:: XML                                                                 | .. code-block:: XML                                                                |
+|                                                                                     |                                                                                    |
+|   <svg>                                                                             |   <svg>                                                                            |
+|     <g>                                                                             |     <circle fill="green" cx="50" cy="50" r="45"/>                                  |
+|       <circle fill="green" cx="50" cy="50" r="45"/>                                 |     <circle fill="#023373" cx="100" cy="50" r="45"/>                               |
+|       <g>                                                                           |   </svg>                                                                           |
+|         <circle fill="#023373" cx="100" cy="50" r="45"/>                            |                                                                                    |
+|       </g>                                                                          |                                                                                    |
+|     </g>                                                                            |                                                                                    |
+|   </svg>                                                                            |                                                                                    |
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| .. image:: https://razrfalcon.github.io/svgcleaner/images/before/ungroup-groups.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/ungroup-groups.svg |
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+
+
 Remove non-SVG attributes
 -------------------------
 
@@ -341,14 +374,14 @@ SVG scripting via ``script`` element, we can only assume that ``id`` is not used
 CLI argument: ``--remove-unreferenced-ids``
 
 +----------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
-| Before (317b)                                                                                | After (284b)                                                                                |
+| Before (320b)                                                                                | After (287b)                                                                                |
 +----------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------+
 | .. code-block:: XML                                                                          | .. code-block:: XML                                                                         |
 |                                                                                              |                                                                                             |
 |   <svg id="svg1">                                                                            |   <svg>                                                                                     |
 |     <circle id="circle1" fill="green"                                                        |     <circle id="circle1" fill="green"                                                       |
 |             cx="50" cy="50" r="50"/>                                                         |             cx="50" cy="50" r="50"/>                                                        |
-|     <circle id="circle2" fill="blue"                                                         |     <circle fill="blue"                                                                     |
+|     <circle id="circle2" fill="#023373"                                                      |     <circle fill="#023373"                                                                  |
 |             cx="100" cy="50" r="50"/>                                                        |             cx="100" cy="50" r="50"/>                                                       |
 |     <use id="use1" x="100" xlink:href="#circle1"/>                                           |     <use x="100" xlink:href="#circle1"/>                                                    |
 |   </svg>                                                                                     |   </svg>                                                                                    |

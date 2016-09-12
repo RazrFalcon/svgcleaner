@@ -24,9 +24,10 @@ use std::fmt;
 
 #[derive(PartialEq)]
 pub enum CleanerError {
-    UnresolvedAttribute,
+    UnresolvedAttribute, // TODO: which one
     ScriptingIsNotSupported,
     AnimationIsNotSupported,
+    ConditionalProcessingIsNotSupported,
     BiggerFile,
 }
 
@@ -41,6 +42,8 @@ impl fmt::Debug for CleanerError {
                 write!(f, "Animation is not supported"),
             CleanerError::BiggerFile =>
                 write!(f, "Cleaned file is bigger than original"),
+            CleanerError::ConditionalProcessingIsNotSupported =>
+                write!(f, "Conditional processing attributes is not supported"),
         }
     }
 }

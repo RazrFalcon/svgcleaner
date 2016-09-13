@@ -34,36 +34,36 @@ so we will compare with it.
 
 *Less is better.*
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/20f82f763f193a22240136adf95d1d782765230f/data/correctness_chart_W3C_SVG_11_TestSuite.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/correctness_chart_W3C_SVG_11_TestSuite.svg)
 
 \* Yes, svgcleaner 0.6.2 is absolute garbage on this data set.
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/correctness_chart_oxygen.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/correctness_chart_oxygen.svg)
 
 #### Cleaning ratio
 
 *More is better.*
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/ratio_chart_W3C_SVG_11_TestSuite.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/ratio_chart_W3C_SVG_11_TestSuite.svg)
 
 \* And again, svgcleaner 0.6.2 is kinda superb, but since it breaks most
 of the files - it's pointless.
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/ratio_chart_oxygen.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/ratio_chart_oxygen.svg)
 
 #### Performance
 
 *Less is better.*
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/performance_chart_W3C_SVG_11_TestSuite.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/performance_chart_W3C_SVG_11_TestSuite.svg)
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/master/data/performance_chart_oxygen.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/performance_chart_oxygen.svg)
 
 #### Notes
 
  - PC: i5-3570k@4.2GHz, Gentoo Linux Stable x86_64.
 
- - Input files are stored on HDD, cleaned files was saved to tmpfs.
+ - Input files are stored on HDD, cleaned files was saved to the `tmpfs`.
 
  - I know that a performance comparison is not fair since `svgo` have to restart nodejs
 each time. But I don't know how to prevent it or ignore nodejs starting time.
@@ -115,18 +115,18 @@ You can get a prebuild packages [here](https://github.com/RazrFalcon/svgcleaner-
 ## Roadmap
 V0.7
  - [x] Remove text related-attributes if there is no text.
- - [ ] Convert `width` and `height` attributes to `viewBox` attribute.
- - [ ] Ungroup groups.
+ - [x] Ungroup groups.
  - [ ] Remove duplicated defs:
    - [ ] `feGaussianBlur`
    - [ ] `clipPath`
  - [ ] Remove invisible elements.
+ - [ ] Remove invalid elements.
  - [ ] Convert units using specified DPI.
  - [ ] Group elements by the style attributes.
  - [ ] Remove `version` attribute.
  - [ ] Ungroup `switch` element.
  - [ ] Remove elements outside the viewbox.
- - [ ] Merge gradients.
+ - [x] Merge gradients.
  - [ ] Apply transforms to shapes:
    - [ ] paths
    - [ ] shapes
@@ -148,6 +148,7 @@ V0.7
  - [ ] Numbers comparing using custom precision.
  - [ ] Join font properties into the `font` attribute.
  - [ ] Join sequential paths.
+ - [ ] Join presentational attributes.
  - [ ] Unix pipes.
 
 Note, that current git version is pretty stable and ready to use.

@@ -38,6 +38,7 @@ pub enum Key {
     RemoveDuplLinearGradients,
     RemoveDuplRadialGradients,
     UngroupGroups,
+    MergeGradients,
 
     RemoveNonsvgAttributes,
     RemoveUnreferencedIds,
@@ -83,6 +84,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-dupl-lineargradient",
     "remove-dupl-radialgradient",
     "ungroup-groups",
+    "merge-gradients",
 
     "remove-nonsvg-attributes",
     "remove-unreferenced-ids",
@@ -159,6 +161,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Remove duplicated 'radialGradient' elements", "true"));
     a = a.arg(gen_flag!(Key::UngroupGroups,
             "Ungroup groups", "true"));
+    a = a.arg(gen_flag!(Key::MergeGradients,
+            "Merge gradients", "true"));
 
     // attributes
     a = a.arg(gen_flag!(Key::RemoveNonsvgAttributes,

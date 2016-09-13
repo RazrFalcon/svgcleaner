@@ -342,6 +342,42 @@ CLI argument: ``--ungroup-groups``
 +-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
 
 
+Merge gradients
+---------------
+
+Many SVG editors split gradient implementation into two parts:
+one element with ``stop`` children elements and one that linked to it.
+It can be useful if we have a lot of gradients with equal stop's, but if we have only one
+ - it became pointless.
+
+This option fixes it.
+
+CLI argument: ``--merge-gradients``
+
++--------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| Before (431b)                                                                        | After (362b)                                                                        |
++--------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| .. code-block:: XML                                                                  | .. code-block:: XML                                                                 |
+|                                                                                      |                                                                                     |
+|   <svg>                                                                              |   <svg>                                                                             |
+|     <defs>                                                                           |     <defs>                                                                          |
+|       <linearGradient id="lg1">                                                      |       <linearGradient id="lg2">                                                     |
+|         <stop offset="0"                                                             |         <stop offset="0"                                                            |
+|               stop-color="yellow"/>                                                  |               stop-color="yellow"/>                                                 |
+|         <stop offset="1"                                                             |         <stop offset="1"                                                            |
+|               stop-color="green"/>                                                   |               stop-color="green"/>                                                  |
+|       </linearGradient>                                                              |       </linearGradient>                                                             |
+|       <linearGradient id="lg2"                                                       |     </defs>                                                                         |
+|                       xlink:href="#lg1"/>                                            |     <circle fill="url(#lg2)"                                                        |
+|     </defs>                                                                          |             cx="50" cy="50" r="45"/>                                                |
+|     <circle fill="url(#lg2)"                                                         |   </svg>                                                                            |
+|             cx="50" cy="50" r="45"/>                                                 |                                                                                     |
+|   </svg>                                                                             |                                                                                     |
++--------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| .. image:: https://razrfalcon.github.io/svgcleaner/images/before/merge-gradients.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/merge-gradients.svg |
++--------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+
+
 Remove non-SVG attributes
 -------------------------
 

@@ -9,6 +9,7 @@ remove-metadata.rst
 remove-dupl-lineargradient.rst
 remove-dupl-radialgradient.rst
 ungroup-groups.rst
+merge-gradients.rst
 remove-nonsvg-attributes.rst
 remove-unreferenced-ids.rst
 trim-ids.rst

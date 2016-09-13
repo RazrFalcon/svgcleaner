@@ -79,6 +79,8 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
         _ => {}
     }
 
+    // TODO: theoretically, we can have any Unit. Investigate it.
+
     match attr.id {
         AId::X | AId::Y => {
             if tag_name == EId::GlyphRef {
@@ -128,14 +130,14 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
                 _ => {}
             }
         }
-        AId::Rx | AId::Ry => {
-            if tag_name == EId::Rect {
-                // TODO: theoretically, we can have any Unit. Investigate it.
-                if attr.value == AttributeValue::from((0.0, Unit::None)) {
-                    return true;
-                }
-            }
-        }
+        // temporary disabled since many render applications do not support this
+        // AId::Rx | AId::Ry => {
+        //     if tag_name == EId::Rect {
+        //         if attr.value == AttributeValue::from((0.0, Unit::None)) {
+        //             return true;
+        //         }
+        //     }
+        // }
         AId::Cx | AId::Cy => {
             if tag_name == EId::Circle || tag_name == EId::Ellipse {
                 if attr.value == AttributeValue::from((0.0, Unit::None)) {

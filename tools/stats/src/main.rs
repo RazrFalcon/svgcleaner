@@ -29,7 +29,7 @@ struct Data<'a> {
 // TODO: min/max time
 struct TotalStats {
     title: String,
-    cleaned_with_errors: u64,
+    cleaned_with_errors: Vec<String>,
     unchanged: u64,
     total_input_size: u64,
     total_output_size: u64,
@@ -41,7 +41,7 @@ impl Default for TotalStats {
     fn default() -> TotalStats {
         TotalStats {
             title: String::new(),
-            cleaned_with_errors: 0,
+            cleaned_with_errors: Vec::new(),
             unchanged: 0,
             total_input_size: 0,
             total_output_size: 0,
@@ -167,9 +167,10 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
         }
 
         let svg_path = entry.path();
-        let prefix = svg_path.strip_prefix(input_dir).unwrap();
-        println!("Processing {} of {}: {}", idx, total, prefix.to_str().unwrap());
-        let stats = file_stats(data, svg_path, &cleaner);
+        let path_suffix = svg_path.strip_prefix(input_dir).unwrap();
+        let path_suffix_str = path_suffix.to_str().unwrap();
+        println!("Processing {} of {}: {}", idx, total, path_suffix_str);
+        let stats = file_stats(data, svg_path, path_suffix_str, &cleaner);
 
         total_stats.total_input_size += stats.orig_file_size;
         total_stats.total_output_size += stats.new_file_size;
@@ -180,7 +181,7 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
         }
 
         if !stats.is_successful {
-            total_stats.cleaned_with_errors += 1;
+            total_stats.cleaned_with_errors.push(path_suffix_str.to_string());
         }
 
         idx += 1;
@@ -191,7 +192,7 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
     total_stats
 }
 
-fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
+fn file_stats(data: &Data, svg_path: &Path, path_suffix: &str, cleaner: &Cleaner) -> FileStats {
     let svg_path_str = svg_path.to_str().unwrap();
 
     let mut render_imgs = data.render_path.is_some();
@@ -208,8 +209,7 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
         let file_name = svg_path.file_name().unwrap();
         new_svg_path = Path::new(data.work_dir).join(file_name);
     }
-    let new_svg_path_str = new_svg_path.to_str().unwrap();;
-    let svg_suffix = new_svg_path.strip_prefix(data.work_dir).unwrap().to_str().unwrap();
+    let new_svg_path_str = new_svg_path.to_str().unwrap();
 
     let start = time::precise_time_ns();
     let res = match *cleaner {
@@ -226,7 +226,7 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     stats.new_file_size = new_svg_path.metadata().unwrap().len();
     stats.elapsed_time = (end - start) as f64 / 1000000.0;
 
-    let cache_id = data.cache.cache_id(svg_suffix);
+    let cache_id = data.cache.cache_id(path_suffix);
 
     if render_imgs && use_cache {
         match cache_id {
@@ -288,9 +288,9 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
                 let (w, h) = get_img_size(new_png_path_str);
                 let n = (v as f64 / (w * h) as f64) * 100.0;
                 is_successful = (n as u32) < (data.threshold as u32);
-                if !is_successful {
-                    println!("AE: {:.6}%", n);
-                }
+                // if !is_successful {
+                //     println!("AE: {:.6}%", n);
+                // }
             }
         }
         None => is_successful = false,
@@ -299,7 +299,7 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     if is_successful && use_cache {
         match cache_id {
             Some(id) => data.cache.update_hash(id, &file_md5sum(&new_svg_path_str)),
-            None => data.cache.append_hash(svg_suffix, &file_md5sum(&new_svg_path_str)),
+            None => data.cache.append_hash(path_suffix, &file_md5sum(&new_svg_path_str)),
         }
     }
 
@@ -316,7 +316,7 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
 fn print_total_stats(stats: &TotalStats) {
     println!("Results for: {}", stats.title);
     println!("Files count: {}", stats.files_count);
-    println!("Files cleaned with errors: {}", stats.cleaned_with_errors);
+    println!("Files cleaned with errors: {}", stats.cleaned_with_errors.len());
     println!("Unchanged files: {}", stats.unchanged);
     println!("Size after/before: {}/{}",
              stats.total_output_size, stats.total_input_size);
@@ -324,6 +324,7 @@ fn print_total_stats(stats: &TotalStats) {
              100.0 - (stats.total_output_size as f64 / stats.total_input_size as f64 * 100.0));
     println!("Cleaning time: {:.1}ms total, {:.4}ms avg",
              stats.total_time, stats.total_time / stats.files_count as f64);
+    println!("Broken files: {:?}", stats.cleaned_with_errors);
 }
 
 fn clean_with_new_cleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool {

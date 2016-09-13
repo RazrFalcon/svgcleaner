@@ -56,7 +56,7 @@ pub fn merge_gradients(doc: &Document) {
         }
 
         while let Some(n) = nodes.pop() {
-            n.detach();
+            n.remove();
         }
     }
 }

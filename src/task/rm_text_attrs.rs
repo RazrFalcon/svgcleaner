@@ -42,11 +42,12 @@ static TEXT_ATTRIBUTES: &'static [AId] = &[
     AId::GlyphOrientationVertical,
     AId::Kerning,
     AId::LetterSpacing,
+    AId::LineHeight,
     AId::TextAnchor,
     AId::TextDecoration,
-    AId::LineHeight,
     AId::WordSpacing,
     AId::WritingMode,
+    AId::XmlSpace,
 ];
 
 pub fn remove_text_attributes(doc: &Document) {

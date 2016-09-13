@@ -32,7 +32,7 @@ pub fn final_fixes(doc: &Document) {
     let svg = doc.root().child_by_tag_id(EId::Svg).unwrap();
     for child in svg.children() {
         if child.is_tag_id(EId::Defs) && !child.has_children() {
-            child.detach();
+            child.remove();
             break;
         }
     }

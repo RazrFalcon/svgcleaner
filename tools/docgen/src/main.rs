@@ -15,6 +15,7 @@ use std::path::{Path, PathBuf};
 use std::slice::Iter;
 
 // TODO: header support
+// TODO: add notes for examples
 
 #[derive(Clone,PartialEq)]
 enum DocMode {

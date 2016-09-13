@@ -40,13 +40,6 @@ macro_rules! check_attr {
     })
 }
 
-// macro_rules! borrow_attrs {
-//     ($node:expr, $attrs:ident, $obj:ident) => (
-//         let $obj = $node.attributes();
-//         let $attrs = $obj.borrow();
-//     )
-// }
-
 fn rm_loop(doc: &Document, eid: EId, attrs: &[AId]) {
     let mut lg_nodes = doc.descendants()
                         .filter(|ref n| n.is_tag_id(eid))
@@ -78,7 +71,7 @@ fn rm_loop(doc: &Document, eid: EId, attrs: &[AId]) {
                     None => {}
                 }
             }
-            node2.detach();
+            node2.remove();
 
             lg_nodes.remove(i2 - 1);
             i2 -= 1;
@@ -90,9 +83,6 @@ fn rm_loop(doc: &Document, eid: EId, attrs: &[AId]) {
 }
 
 fn is_attrs_equal(node1: &Node, node2: &Node, attrs: &[AId]) -> bool {
-    // borrow_attrs!(node1, attrs1, attrs_obj1);
-    // borrow_attrs!(node2, attrs2, attrs_obj2);
-
     let attrs1 = node1.attributes();
     let attrs2 = node2.attributes();
 
@@ -132,8 +122,6 @@ fn is_equal_stops(node1: &Node, node2: &Node) -> bool {
     let iter2 = node2.children();
 
     for (c1, c2) in iter1.zip(iter2) {
-        // borrow_attrs!(c1, attrs1, attrs_obj1);
-        // borrow_attrs!(c2, attrs2, attrs_obj2);
         let attrs1 = c1.attributes_mut();
         let attrs2 = c2.attributes_mut();
 

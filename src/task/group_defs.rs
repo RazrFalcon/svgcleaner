@@ -92,7 +92,7 @@ pub fn group_defs(doc: &Document) {
         for n in nodes {
             // unneeded defs already ungrouped and must be empty
             debug_assert!(n.has_children() == false);
-            n.detach();
+            n.remove();
         }
     }
 }

@@ -77,7 +77,7 @@ fn remove_unused_defs_impl(doc: &Document) -> bool {
     }
 
     for node in rm_nodes {
-        node.detach();
+        node.remove();
     }
 
     is_any_changed

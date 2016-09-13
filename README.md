@@ -120,11 +120,14 @@ V0.7
    - [ ] `feGaussianBlur`
    - [ ] `clipPath`
  - [ ] Remove invisible elements.
- - [ ] Remove invalid elements.
+   - [x] Invisible elements inside the `clipPath`.
+   - [ ] other...
+ - [ ] Remove invalid attributes.
+   - [ ] Remove attributes which does not belong to this element.
+   - [ ] Remove presentational attributes from elements inside `clipPath`.
  - [ ] Convert units using specified DPI.
  - [ ] Group elements by the style attributes.
- - [ ] Remove `version` attribute.
- - [ ] Ungroup `switch` element.
+ - [x] Remove `version` attribute.
  - [ ] Remove elements outside the viewbox.
  - [x] Merge gradients.
  - [ ] Apply transforms to shapes:
@@ -140,7 +143,7 @@ V0.7
  - [ ] Group text styles.
  - [ ] Process paths:
     - [ ] segments to relative
-    - [ ] remove Z segments
+    - [ ] remove ClosePath segments
     - [ ] remove unneeded MoveTo segments
     - [ ] remove tiny segments
     - [ ] convert segments to shorter one
@@ -150,6 +153,7 @@ V0.7
  - [ ] Join sequential paths.
  - [ ] Join presentational attributes.
  - [ ] Unix pipes.
+ - [ ] Process `enable-background`.
 
 Note, that current git version is pretty stable and ready to use.
 

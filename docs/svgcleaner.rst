@@ -175,7 +175,8 @@ CLI argument: ``--remove-title``
 Remove ``desc`` element
 ------------------------
 
-We can remove all `desc <https://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements>`_  elements since they are not rendered either way.
+We can remove all `desc <https://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements>`_
+elements since they are not rendered either way.
 
 But since this element can be used by render software - this action is optional.
 
@@ -376,6 +377,56 @@ CLI argument: ``--merge-gradients``
 +--------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
 | .. image:: https://razrfalcon.github.io/svgcleaner/images/before/merge-gradients.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/merge-gradients.svg |
 +--------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+
+
+Remove invisible elements
+-------------------------
+
+The collection of algorithms that detects invisible elements and removes them.
+
+CLI argument: ``--remove-invisible-elements``
+
++------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
+| Before (336b)                                                                                  | After (174b)                                                                                  |
++------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
+| .. code-block:: XML                                                                            | .. code-block:: XML                                                                           |
+|                                                                                                |                                                                                               |
+|   <svg>                                                                                        |   <svg>                                                                                       |
+|     <linearGradient id='lg1'/>                                                                 |     <circle fill="green"                                                                      |
+|     <clipPath id='cp1'/>                                                                       |             cx="50" cy="50" r="45"/>                                                          |
+|     <circle fill="green"                                                                       |   </svg>                                                                                      |
+|             cx="50" cy="50" r="45"/>                                                           |                                                                                               |
+|     <circle fill="green" clip-path='url(#cp1)'                                                 |                                                                                               |
+|             stroke='url(#lg1)'                                                                 |                                                                                               |
+|             cx="100" cy="50" r="45"/>                                                          |                                                                                               |
+|   </svg>                                                                                       |                                                                                               |
++------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
+| .. image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-invisible-elements.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-invisible-elements.svg |
++------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
+
+
+Remove version
+--------------
+
+Remove 'version' and 'baseProfile' attributes from the ``svg`` element.
+
+Some applications can rely on them, so someone may want to keep them.
+Even throw they usually useless.
+
+CLI argument: ``--remove-version``
+
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| Before (207b)                                                                       | After (174b)                                                                       |
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| .. code-block:: XML                                                                 | .. code-block:: XML                                                                |
+|                                                                                     |                                                                                    |
+|   <svg version="1.1" baseProfile="tiny">                                            |   <svg>                                                                            |
+|     <circle fill="green"                                                            |     <circle fill="green"                                                           |
+|             cx="50" cy="50" r="45"/>                                                |             cx="50" cy="50" r="45"/>                                               |
+|   </svg>                                                                            |   </svg>                                                                           |
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+| .. image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-version.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-version.svg |
++-------------------------------------------------------------------------------------+------------------------------------------------------------------------------------+
 
 
 Remove non-SVG attributes

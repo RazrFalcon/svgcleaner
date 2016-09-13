@@ -36,6 +36,8 @@ pub use self::rm_text_attrs::remove_text_attributes;
 pub use self::rm_unused_coords::remove_unused_coordinates;
 pub use self::ungroup_groups::ungroup_groups;
 pub use self::merge_gradients::merge_gradients;
+pub use self::rm_version::remove_version;
+pub use self::rm_invisible_elements::remove_invisible_elements;
 
 #[macro_use]
 mod macros;
@@ -55,6 +57,8 @@ mod rm_text_attrs;
 mod trim_ids;
 mod ungroup_groups;
 mod merge_gradients;
+mod rm_version;
+mod rm_invisible_elements;
 
 /// Shorthand names for modules.
 mod short {

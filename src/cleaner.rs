@@ -53,6 +53,10 @@ pub fn parse_data(data: &[u8], opt: &ParseOptions) -> Result<Document, Error> {
 pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> {
     try!(preclean_checks(doc));
 
+    // NOTE: Order is important.
+    //       Methods should not depend on each other, but for performance reasons
+    //       they should be executed in this order.
+
     // Prepare our document.
     // This methods is not optional.
     resolve_attributes(doc);
@@ -77,6 +81,10 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
 
     if get_flag!(args, Key::MergeGradients) {
         merge_gradients(doc);
+    }
+
+    if get_flag!(args, Key::RemoveInvisibleElements) {
+        remove_invisible_elements(doc);
     }
 
     if get_flag!(args, Key::UngroupGroups) {
@@ -106,6 +114,10 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
 
     if get_flag!(args, Key::RemoveUnusedCoordinates) {
         remove_unused_coordinates(doc);
+    }
+
+    if get_flag!(args, Key::RemoveVersion) {
+        remove_version(doc);
     }
 
     // final fixes

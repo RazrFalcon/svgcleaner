@@ -37,7 +37,7 @@ pub fn ungroup_groups(doc: &Document) {
 
         while let Some(g) = groups.pop() {
             ungroup_group(&g);
-            g.detach();
+            g.remove();
         }
     }
 }

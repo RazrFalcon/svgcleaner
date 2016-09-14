@@ -129,7 +129,7 @@ fn has_em_ex_attributes(node: &Node) -> bool {
     //       but it's probably near to impossible
 
     let attrs = node.attributes();
-    for attr in attrs.values() {
+    for attr in attrs.iter() {
         match attr.value {
             AttributeValue::Length(ref len) => {
                 match len.unit {

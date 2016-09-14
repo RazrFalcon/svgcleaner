@@ -110,7 +110,7 @@ fn _ungroup_groups(root: &Node, groups: &mut Vec<Node>) {
 }
 
 fn ungroup_group(g: &Node) {
-    for attr in g.attributes().values() {
+    for attr in g.attributes().iter() {
         for child in g.children() {
             if attr.id == AId::Opacity {
                 if child.has_attribute(attr.id) {

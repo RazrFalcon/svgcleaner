@@ -34,7 +34,7 @@ pub fn remove_default_attributes(doc: &Document) {
         {
             let attrs = node.attributes();
 
-            for attr in attrs.values() {
+            for attr in attrs.iter() {
                 if attr.is_presentation() {
                     if attr.check_is_default() {
                         match node.parent_attribute(attr.id) {

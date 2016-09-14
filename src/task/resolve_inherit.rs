@@ -34,7 +34,7 @@ pub fn resolve_inherit(doc: &Document) -> Result<(), CleanerError> {
 
         {
             let attrs = node.attributes();
-            for attr in attrs.values() {
+            for attr in attrs.iter() {
                 match &attr.value {
                     // &AttributeValue::String(ref v) => {
                     //     // TODO: remove in release

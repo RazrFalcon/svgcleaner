@@ -102,7 +102,7 @@ cargo build --release
 svgcleaner in.svg out.svg
 ```
 
-Use `--help` for a list of the cleaning options. And a [doc](docs/svgcleaner.rst) for more details.
+Use `--help` for a list of the cleaning options and the [doc](docs/svgcleaner.rst) for more details.
 
 ### GUI
 

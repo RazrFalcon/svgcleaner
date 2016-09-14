@@ -49,6 +49,7 @@ pub enum Key {
     RemoveUnusedCoordinates,
     RemoveDefaultAttributes,
     RemoveXmlnsXlinkAttribute,
+    RemoveNeedlessAttributes,
 
     TrimPaths,
     RemoveDuplCmdInPaths,
@@ -97,6 +98,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-unused-coordinates",
     "remove-default-attributes",
     "remove-xmlns-xlink-attribute",
+    "remove-needless-attributes",
 
     "trim-paths",
     "remove-dupl-cmd-in-paths",
@@ -187,6 +189,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Remove attributes with default values", "true"));
     a = a.arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute,
             "Remove an unused xmlns:xlink attribute", "true"));
+    a = a.arg(gen_flag!(Key::RemoveNeedlessAttributes,
+            "Remove atrributes that doesn't belong to this element", "true"));
 
     // paths
     // TODO: disable paths processing as option
@@ -204,9 +208,9 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     a = a.arg(gen_precision_arg(KEYS[Key::PrecisionTransform],
             "Sets numeric precision for transformations (1..8)", "8"));
     a = a.arg(gen_flag!(Key::TrimColors,
-            "Use #RGB notation when possible", "true"));
+            "Use #RGB notation", "true"));
     a = a.arg(gen_flag!(Key::SimplifyTransforms,
-            "Simplify transform matrices when possible", "true"));
+            "Simplify transform matrices", "true"));
     a = a.arg(Arg::with_name(KEYS[Key::Indent])
             .long(KEYS[Key::Indent])
             .help("Sets XML nodes indent (-1..4)")

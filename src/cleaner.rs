@@ -104,6 +104,10 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
         remove_text_attributes(doc);
     }
 
+    if get_flag!(args, Key::RemoveNeedlessAttributes) {
+        remove_needless_attributes(doc);
+    }
+
     if get_flag!(args, Key::RemoveUnreferencedIds) {
         remove_unreferenced_ids(doc);
     }

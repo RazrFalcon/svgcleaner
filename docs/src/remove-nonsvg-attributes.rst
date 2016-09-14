@@ -1,7 +1,8 @@
 Remove non-SVG attributes
 -------------------------
 
-We can remove any `non-SVG attributes <https://www.w3.org/TR/SVG/attindex.html>`_, since they are not rendered either way.
+We can remove any `non-SVG attributes <https://www.w3.org/TR/SVG/attindex.html>`_
+since they are not rendered either way.
 
 .. GEN_TABLE
 .. BEFORE

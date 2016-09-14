@@ -122,9 +122,12 @@ V0.7
  - [ ] Remove invisible elements.
    - [x] Invisible elements inside the `clipPath`.
    - [ ] other...
- - [ ] Remove invalid attributes.
-   - [ ] Remove attributes which does not belong to this element.
-   - [ ] Remove presentational attributes from elements inside `clipPath`.
+ - [ ] Remove needless attributes.
+   - [x] Remove attributes which does not belong to this element.
+     - [x] Basic shapes
+     - [ ] other...
+   - [x] Remove presentational attributes from elements inside `clipPath`.
+   - [ ] other...
  - [ ] Convert units using specified DPI.
  - [ ] Group elements by the style attributes.
  - [x] Remove `version` attribute.

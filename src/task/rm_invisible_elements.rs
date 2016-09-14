@@ -24,6 +24,8 @@ use super::short::{EId, AId};
 
 use svgdom::{Document, Node, AttributeValue};
 
+// TODO: process display="none"
+
 pub fn remove_invisible_elements(doc: &Document) {
     process_clip_path(doc);
 }

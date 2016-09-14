@@ -51,7 +51,8 @@ CLI argument: ``--remove-declarations``
 Remove non-SVG elements
 -----------------------
 
-We can remove any XML elements with `non-SVG tag names <https://www.w3.org/TR/SVG/eltindex.html>`_, since they are not rendered either way.
+We can remove any XML elements with `non-SVG tag names <https://www.w3.org/TR/SVG/eltindex.html>`_,
+since they are not rendered either way.
 
 CLI argument: ``--remove-nonsvg-elements``
 
@@ -119,9 +120,12 @@ Convert basic shapes into paths
 
 All basic shapes can be represented as ``path``.
 
-``circle``, ``ellipse`` and rounded ``rect``  are ignored, because their path representation will always be bigger than original.
+``circle``, ``ellipse`` and rounded ``rect``  are ignored, because their path representation will
+always be bigger than original.
 
-**Note:** shapes may render a bit differently depending on your user agent. You can use `shape-rendering <https://www.w3.org/TR/SVG/painting.html#ShapeRenderingProperty>`_ attribute to tweak it.
+**Note:** shapes may render a bit differently depending on your user agent.
+You can use `shape-rendering <https://www.w3.org/TR/SVG/painting.html#ShapeRenderingProperty>`_
+attribute to tweak it.
 
 CLI argument: ``--convert-shapes``
 
@@ -152,7 +156,8 @@ CLI argument: ``--convert-shapes``
 Remove ``title`` element
 ------------------------
 
-We can remove all `title <https://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements>`_  elements since they are not rendered either way.
+We can remove all `title <https://www.w3.org/TR/SVG/struct.html#DescriptionAndTitleElements>`_
+elements since they are not rendered either way.
 
 But since this element can be used by render software - this action is optional.
 
@@ -199,14 +204,15 @@ CLI argument: ``--remove-desc``
 Remove ``metadata`` element
 ---------------------------
 
-We can remove all `metadata <https://www.w3.org/TR/SVG/metadata.html#MetadataElement>`_  elements since they are not rendered either way.
+We can remove all `metadata <https://www.w3.org/TR/SVG/metadata.html#MetadataElement>`_
+elements since they are not rendered either way.
 
 But since this element can be used by render software - this action is optional.
 
 CLI argument: ``--remove-metadata``
 
 +--------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
-| Before (580b)                                                                        | After (316b)                                                                        |
+| Before (581b)                                                                        | After (316b)                                                                        |
 +--------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------+
 | .. code-block:: XML                                                                  | .. code-block:: XML                                                                 |
 |                                                                                      |                                                                                     |
@@ -218,7 +224,7 @@ CLI argument: ``--remove-metadata``
 |         <cc:Work rdf:about="">                                                       |                                                                                     |
 |           <dc:format>image/svg+xml</dc:format>                                       |                                                                                     |
 |           <dc:type                                                                   |                                                                                     |
-|            rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>                   |                                                                                     |
+|             rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>                  |                                                                                     |
 |           <dc:title/>                                                                |                                                                                     |
 |         </cc:Work>                                                                   |                                                                                     |
 |       </rdf:RDF>                                                                     |                                                                                     |
@@ -233,7 +239,8 @@ CLI argument: ``--remove-metadata``
 Remove duplicated ``linearGradient`` elements
 ---------------------------------------------
 
-SVG can contain a lot of ``linearGradient`` elements, which may render exactly the same. So we can remove duplicates and update links in elements, that uses it.
+SVG can contain a lot of ``linearGradient`` elements, which may render exactly the same.
+So we can remove duplicates and update links in elements, that uses it.
 
 CLI argument: ``--remove-dupl-lineargradient``
 
@@ -274,7 +281,8 @@ CLI argument: ``--remove-dupl-lineargradient``
 Remove duplicated ``radialGradient`` elements
 ---------------------------------------------
 
-SVG can contain a lot of ``radialGradient`` elements, which may render exactly the same. So we can remove duplicates and update links in elements, that uses it.
+SVG can contain a lot of ``radialGradient`` elements, which may render exactly the same.
+So we can remove duplicates and update links in elements, that uses it.
 
 CLI argument: ``--remove-dupl-radialgradient``
 
@@ -432,7 +440,8 @@ CLI argument: ``--remove-version``
 Remove non-SVG attributes
 -------------------------
 
-We can remove any `non-SVG attributes <https://www.w3.org/TR/SVG/attindex.html>`_, since they are not rendered either way.
+We can remove any `non-SVG attributes <https://www.w3.org/TR/SVG/attindex.html>`_
+since they are not rendered either way.
 
 CLI argument: ``--remove-nonsvg-attributes``
 
@@ -482,7 +491,8 @@ Trim ``id`` attributes
 
 Renames elements ``id`` attribute to a shorter one. All IRI and FuncIRI will be updated too.
 
-Shorter name generated by encoding a serial number of this ``id`` attribute using a range of acceptable chars: a-zA-Z0-9. Given that first char can't be 0-9.
+Shorter name generated by encoding a serial number of this ``id`` attribute using a range of
+acceptable chars: a-zA-Z0-9. Given that first char can't be 0-9.
 
 For example: 1 -> a, 51 -> aa, 113 -> ba and so on.
 
@@ -612,6 +622,34 @@ CLI argument: ``--remove-xmlns-xlink-attribute``
 +---------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------+
 
 
+Remove needless attributes
+---------------------------
+
+Remove attributes that doesn't belong to current element and have no effect on rendering.
+
+Unlike other cleaning options for attributes, this does not change attributes that can
+be used during rendering.
+
+CLI argument: ``--remove-needless-attributes``
+
++-------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
+| Before (339b)                                                                                   | After (267b)                                                                                   |
++-------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
+| .. code-block:: XML                                                                             | .. code-block:: XML                                                                            |
+|                                                                                                 |                                                                                                |
+|   <svg>                                                                                         |   <svg>                                                                                        |
+|     <clipPath id="cp1">                                                                         |     <clipPath id="cp1">                                                                        |
+|       <rect fill="red" stroke="red" stroke-width="50" width="75" height="75"/>                  |       <rect width="75" height="75"/>                                                           |
+|     </clipPath>                                                                                 |     </clipPath>                                                                                |
+|     <circle fill="green" d="M 10 20 L 30 40"                                                    |     <circle fill="green" clip-path="url(#cp1)"                                                 |
+|             clip-path="url(#cp1)"                                                               |             cx="50" cy="50" r="45"/>                                                           |
+|             cx="50" cy="50" r="45"/>                                                            |   </svg>                                                                                       |
+|   </svg>                                                                                        |                                                                                                |
++-------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
+| .. image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-needless-attributes.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-needless-attributes.svg |
++-------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------+
+
+
 Use compact notation for paths
 ------------------------------
 
@@ -661,7 +699,8 @@ CLI argument: ``--remove-dupl-cmd-in-paths``
 Join ArcTo flags
 ----------------
 
-Elliptical arc curve segment has flags parameters, which can have values of ``0`` or ``1``. Since we have fixed-width values, we can skip spaces between them.
+Elliptical arc curve segment has flags parameters, which can have values of ``0`` or ``1``.
+Since we have fixed-width values, we can skip spaces between them.
 
 **Note:** Sadly, but most of the viewers doesn't support such notation, even throw it's valid by SVG spec.
 
@@ -692,16 +731,18 @@ Set precision for numeric attributes, such as `<length> <https://www.w3.org/TR/S
 Transforms precision
 --------------------
 
-Set numeric precision for ``a``, ``b``, ``c``, ``d`` values of transform matrix. 
+Set numeric precision for ``a``, ``b``, ``c``, ``d`` values of transform matrix.
 
-We need a separate option for them since their values often very small and we need a decent precision to keep them correct.
+We need a separate option for them since their values often very small and we need
+a decent precision to keep them correct.
 
-Use #RGB notation when possible
--------------------------------
+Use #RGB notation
+-----------------
 
 Use #RGB notation instead of #RRGGBB when possible.
 
-**NOTE:** by default all color stored as #RRGGBB, since libsvgdom doesn't stores colors original text representation.
+**NOTE:** by default all color stored as #RRGGBB, since ``libsvgdom`` doesn't stores
+colors original text representation.
 
 CLI argument: ``--trim-colors``
 
@@ -718,8 +759,8 @@ CLI argument: ``--trim-colors``
 +----------------------------------------------------------------------------------+---------------------------------------------------------------------------------+
 
 
-Simplify transform matrices when possible
------------------------------------------
+Simplify transform matrices
+---------------------------
 
 Simplify transform matrices into short equivalent when possible.
 

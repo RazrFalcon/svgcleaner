@@ -1,7 +1,8 @@
 Remove non-SVG elements
 -----------------------
 
-We can remove any XML elements with `non-SVG tag names <https://www.w3.org/TR/SVG/eltindex.html>`_, since they are not rendered either way.
+We can remove any XML elements with `non-SVG tag names <https://www.w3.org/TR/SVG/eltindex.html>`_,
+since they are not rendered either way.
 
 .. GEN_TABLE
 .. BEFORE

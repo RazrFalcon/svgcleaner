@@ -1,7 +1,8 @@
 Remove ``metadata`` element
 ---------------------------
 
-We can remove all `metadata <https://www.w3.org/TR/SVG/metadata.html#MetadataElement>`_  elements since they are not rendered either way.
+We can remove all `metadata <https://www.w3.org/TR/SVG/metadata.html#MetadataElement>`_
+elements since they are not rendered either way.
 
 But since this element can be used by render software - this action is optional.
 
@@ -15,7 +16,7 @@ But since this element can be used by render software - this action is optional.
 ..       <cc:Work rdf:about="">
 ..         <dc:format>image/svg+xml</dc:format>
 ..         <dc:type
-            rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+..           rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
 ..         <dc:title/>
 ..       </cc:Work>
 ..     </rdf:RDF>

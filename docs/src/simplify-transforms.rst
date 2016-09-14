@@ -1,5 +1,5 @@
-Simplify transform matrices when possible
------------------------------------------
+Simplify transform matrices
+---------------------------
 
 Simplify transform matrices into short equivalent when possible.
 

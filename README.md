@@ -119,6 +119,7 @@ V0.7
  - [ ] Remove duplicated defs:
    - [ ] `feGaussianBlur`
    - [ ] `clipPath`
+   - [ ] other...
  - [ ] Remove invisible elements.
    - [x] Invisible elements inside the `clipPath`.
    - [ ] other...
@@ -128,7 +129,6 @@ V0.7
      - [ ] other...
    - [x] Remove presentational attributes from elements inside `clipPath`.
    - [ ] other...
- - [ ] Convert units using specified DPI.
  - [ ] Group elements by the style attributes.
  - [x] Remove `version` attribute.
  - [ ] Remove elements outside the viewbox.
@@ -139,24 +139,25 @@ V0.7
    - [ ] gradients
  - [ ] Replace equal elements by `use`:
    - [ ] `path`
-   - [ ] `rect`
-   - [ ] `circle`
-   - [ ] `ellipse`
+   - [ ] Basic shapes
    - [ ] other...
  - [ ] Group text styles.
  - [ ] Process paths:
-    - [ ] segments to relative
+    - [x] segments to relative
     - [ ] remove ClosePath segments
     - [ ] remove unneeded MoveTo segments
     - [ ] remove tiny segments
     - [ ] convert segments to shorter one
     - [ ] join segments
- - [ ] Numbers comparing using custom precision.
  - [ ] Join font properties into the `font` attribute.
  - [ ] Join sequential paths.
  - [ ] Join presentational attributes.
- - [ ] Unix pipes.
  - [ ] Process `enable-background`.
+
+V0.8
+ - [ ] Convert units using specified DPI.
+ - [ ] Numbers comparing using custom precision.
+ - [ ] Unix pipes.
 
 Note, that current git version is pretty stable and ready to use.
 

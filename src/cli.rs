@@ -51,6 +51,7 @@ pub enum Key {
     RemoveXmlnsXlinkAttribute,
     RemoveNeedlessAttributes,
 
+    PathsToRelative,
     TrimPaths,
     RemoveDuplCmdInPaths,
     JoinArcToFlags,
@@ -100,6 +101,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-xmlns-xlink-attribute",
     "remove-needless-attributes",
 
+    "paths-to-relative",
     "trim-paths",
     "remove-dupl-cmd-in-paths",
     "join-arcto-flags",
@@ -194,6 +196,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
 
     // paths
     // TODO: disable paths processing as option
+    a = a.arg(gen_flag!(Key::PathsToRelative,
+            "Convert path's segments into relative one", "true"));
     a = a.arg(gen_flag!(Key::TrimPaths,
             "Use compact notation for paths", "true"));
     a = a.arg(gen_flag!(Key::RemoveDuplCmdInPaths,

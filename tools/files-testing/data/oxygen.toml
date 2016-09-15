@@ -1,121 +1,21 @@
 [global]
-min_valid_ae = 200
-
-[[item]]
-name = "actions/small/22x22/edit-redo.svg"
-valid_ae = 1757
-
-[[item]]
-name = "categories/applications-development-translation.svg"
-valid_ae = 346
-
-[[item]]
-name = "actions/small/32x32/view-certificate.svg"
-valid_ae = 281
-
-[[item]]
-name = "actions/small/32x32/view-certificate-add.svg"
-valid_ae = 281
-
-[[item]]
-name = "actions/small/32x32/view-certificate-import.svg"
-valid_ae = 281
-
-[[item]]
-name = "actions/small/22x22/edit-image-face-recognize.svg"
-valid_ae = 887
-
-[[item]]
-name = "actions/small/22x22/edit-image-face-add.svg"
-valid_ae = 887
-
-[[item]]
-name = "actions/small/22x22/view-time-schedule-calculus.svg"
-valid_ae = 267
-
-[[item]]
-name = "actions/small/22x22/view-time-schedule-insert.svg"
-valid_ae = 264
-
-[[item]]
-name = "actions/small/22x22/document-edit-emcrypted.svg"
-valid_ae = 216
-
-[[item]]
-name = "actions/small/22x22/edit-image-face-detect.svg"
-valid_ae = 887
-
-[[item]]
-name = "actions/small/22x22/mixer-digital.svg"
-valid_ae = 376
-
-[[item]]
-name = "actions/small/22x22/view-time-schedule.svg"
-valid_ae = 264
-
-[[item]]
-name = "actions/small/22x22/view-table-of-contents-rtl.svg"
-valid_ae = 322
-
-[[item]]
-name = "actions/small/22x22/mixer-video.svg"
-valid_ae = 247
-
-[[item]]
-name = "actions/small/22x22/tool-animator.svg"
-valid_ae = 314
-
-[[item]]
-name = "actions/small/22x22/view-time-schedule-edit.svg"
-valid_ae = 264
-
-[[item]]
-name = "actions/small/22x22/view-ldap-resource.svg"
-valid_ae = 335
-
-[[item]]
-name = "actions/small/22x22/view-time-schedule-child-insert.svg"
-valid_ae = 249
-
-[[item]]
-name = "actions/small/22x22/edit-image-face-show.svg"
-valid_ae = 887
+min_valid_ae = 400
 
 [[item]]
 name = "actions/small/22x22/select-rectangular.svg"
 valid_ae = 566
 
 [[item]]
-name = "actions/small/22x22/insert-text.svg"
-valid_ae = 240
-
-[[item]]
 name = "actions/small/22x22/zoom-draw.svg"
 valid_ae = 444
-
-[[item]]
-name = "actions/small/22x22/view-table-of-contents-ltr.svg"
-valid_ae = 324
 
 [[item]]
 name = "actions/small/48x48/view-loan-asset.svg"
 valid_ae = 2235
 
 [[item]]
-name = "actions/small/48x48/edit-table-cell-merge.svg"
-valid_ae = 209
-
-[[item]]
 name = "actions/small/48x48/text-field.svg"
 valid_ae = 679
-
-[[item]]
-name = "actions/small/48x48/view-calendar-whatsnext.svg"
-valid_ae = 328
-
-[[item]]
-name = "actions/small/48x48/mail-send.svg"
-valid_ae = 329
 
 [[item]]
 name = "actions/small/48x48/view-bank-account-savings.svg"
@@ -126,10 +26,6 @@ name = "actions/small/48x48/view-investment.svg"
 valid_ae = 2376
 
 [[item]]
-name = "actions/small/48x48/edit-table-cell-split.svg"
-valid_ae = 209
-
-[[item]]
 name = "actions/small/48x48/view-financial-transfer.svg"
 valid_ae = 1884
 
@@ -138,24 +34,12 @@ name = "actions/small/48x48/milestone.svg"
 valid_ae = 596
 
 [[item]]
-name = "devices/media-optical-video.svg"
-valid_ae = 206
-
-[[item]]
-name = "devices/media-optical-dvd-video.svg"
-valid_ae = 206
-
-[[item]]
 name = "devices/computer-laptop.svg"
 valid_ae = 490
 
 [[item]]
 name = "apps/internet-mail.svg"
 valid_ae = 401
-
-[[item]]
-name = "apps/kword.svg"
-valid_ae = 260
 
 [[item]]
 name = "apps/kuickshow.svg"
@@ -168,14 +52,6 @@ valid_ae = 2007
 [[item]]
 name = "mimetypes/small/48x48/text-x-po.svg"
 valid_ae = 575
-
-[[item]]
-name = "mimetypes/application-x-kvtml.svg"
-valid_ae = 396
-
-[[item]]
-name = "actions/small/22x22/view-calendar-whatsnext.svg"
-valid_ae = 354
 
 [[item]]
 name = "actions/small/32x32/view-loan-asset.svg"
@@ -223,11 +99,6 @@ valid_ae = 2094
 info = "same as previous"
 
 [[item]]
-name = "actions/small/48x48/taxes-finances.svg"
-valid_ae = 3645
-info = "same as previous"
-
-[[item]]
 name = "actions/small/48x48/view-financial-payment-mode.svg"
 valid_ae = 2164
 info = "same as previous"
@@ -248,10 +119,6 @@ valid_ae = 885
 info = "same as previous"
 
 [[item]]
-name = "actions/small/16x16/view-calendar-workweek.svg"
-valid_ae = 206
-
-[[item]]
 name = "devices/media-flash.svg"
 valid_ae = 2960
 info = "actually fixes an image"
@@ -261,32 +128,12 @@ name = "devices/small/16x16/camera-photo.svg"
 valid_ae = 1379
 
 [[item]]
-name = "devices/small/16x16/network-wireless.svg"
-valid_ae = 5715
-
-[[item]]
-name = "devices/small/22x22/multimedia-player-apple-ipod.svg"
-valid_ae = 690
-
-[[item]]
 name = "devices/small/22x22/camera-photo.svg"
 valid_ae = 757
 
 [[item]]
-name = "apps/nepomuk.svg"
-valid_ae = 234
-
-[[item]]
-name = "apps/preferences-system-power-management.svg"
-valid_ae = 3634
-
-[[item]]
 name = "apps/tagua.svg"
 valid_ae = 1171
-
-[[item]]
-name = "emotes/small/22x22/face-glasses.svg"
-valid_ae = 1865
 
 [[item]]
 name = "emotes/small/22x22/face-foot-in-mouth.svg"
@@ -325,18 +172,6 @@ name = "emotes/small/22x22/face-sleep.svg"
 valid_ae = 2007
 
 [[item]]
-name = "mimetypes/application-x-k3b.svg"
-valid_ae = 272
-
-[[item]]
-name = "mimetypes/hidef/application-vnd.oasis.opendocument.image.svg"
-valid_ae = 138
-
-[[item]]
-name = "mimetypes/hidef/application-x-k3b.svg"
-valid_ae = 272
-
-[[item]]
 name = "mimetypes/text-x-csharp.svg"
 valid_ae = 834
 
@@ -349,18 +184,6 @@ name = "mimetypes/small/22x22/text-x-po.svg"
 valid_ae = 677
 
 [[item]]
-name = "mimetypes/small/64x64/application-x-font-afm.svg"
-valid_ae = 245
-
-[[item]]
-name = "mimetypes/small/64x64/application-x-font-type1.svg"
-valid_ae = 245
-
-[[item]]
-name = "mimetypes/small/64x64/application-x-k3b.svg"
-valid_ae = 272
-
-[[item]]
 name = "mimetypes/small/64x64/text-x-po.svg"
 valid_ae = 663
 
@@ -370,12 +193,7 @@ valid_ae = 2280
 
 [[item]]
 name = "mimetypes/small/32x32/text-x-po.svg"
-valid_ae = 604
-
-[[item]]
-name = "places/small/32x32/mail-folder-sent.svg"
-valid_ae = 350
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+valid_ae = 606
 
 [[item]]
 name = "places/small/48x48/folder-video.svg"
@@ -390,21 +208,9 @@ name = "categories/small/22x22/applications-education.svg"
 valid_ae = 742
 
 [[item]]
-name = "actions/view-pim-summary.svg"
-valid_ae = 422
-
-[[item]]
-name = "actions/small/16x16/view-calendar-week.svg"
-valid_ae = 268
-
-[[item]]
 name = "actions/small/16x16/view-calendar-whatsnext.svg"
 valid_ae = 1799
 info = "webkit bug"
-
-[[item]]
-name = "actions/small/16x16/tool-animator.svg"
-valid_ae = 238
 
 [[item]]
 name = "categories/applications-education-university.svg"
@@ -412,120 +218,238 @@ valid_ae = 596
 info = "only webkit renders differently"
 
 [[item]]
-name = "status/small/22x22/audio-volume-muted.svg"
-valid_ae = 253
-
-[[item]]
 name = "mimetypes/text-x-adasrc.svg"
 valid_ae = 2280
 
 [[item]]
 name = "mimetypes/hidef/text-x-po.svg"
-valid_ae = 514
+valid_ae = 515
 
 [[item]]
 name = "mimetypes/hidef/text-x-adasrc.svg"
 valid_ae = 2283
 
 [[item]]
-name = "status/media-playlist-repeat.svg"
-valid_ae = 374
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+name = "actions/small/16x16/tools-rip-audio-cd.svg"
+valid_ae = 420
+info = "tiny blur artifacts"
 
 [[item]]
-name = "emblems/small/8x8/emblem-encrypted-locked.svg"
-valid_ae = 8867
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "emblems/small/8x8/emblem-encrypted-unlocked.svg"
-valid_ae = 8867
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "actions/view-media-equalizer.svg"
-valid_ae = 347
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "actions/small/16x16/mail-message-new-list.svg"
-valid_ae = 510
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "actions/small/16x16/insert-button.svg"
-valid_ae = 792
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "actions/small/22x22/folder-sync.svg"
-valid_ae = 797
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "actions/small/22x22/mixer-line.svg"
-valid_ae = 660
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "actions/small/48x48/view-grid.svg"
-valid_ae = 206
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "devices/small/16x16/media-flash-sd-mmc.svg"
-valid_ae = 268
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "devices/small/16x16/audio-input-line.svg"
-valid_ae = 445
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "devices/small/22x22/audio-input-line.svg"
-valid_ae = 610
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "devices/audio-input-line.svg"
-valid_ae = 280
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "apps/preferences-plugin-script.svg"
-valid_ae = 347
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "mimetypes/small/22x22/image-vnd.dwg.svg"
-valid_ae = 348
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "mimetypes/small/22x22/image-vnd.dgn.svg"
-valid_ae = 331
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
-
-[[item]]
-name = "mimetypes/small/32x32/image-vnd.dwg.svg"
+name = "actions/small/16x16/tools-rip-video-cd.svg"
 valid_ae = 418
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+info = "tiny blur artifacts"
 
 [[item]]
-name = "mimetypes/small/32x32/image-vnd.dgn.svg"
-valid_ae = 415
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+name = "status/small/22x22/mail-read.svg"
+valid_ae = 1653
+info = "tiny blur artifacts"
 
 [[item]]
-name = "mimetypes/small/48x48/image-vnd.dwg.svg"
-valid_ae = 248
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+name = "status/user-away.svg"
+valid_ae = 2157
+info = "numeric rounding artifacts"
 
 [[item]]
-name = "mimetypes/small/48x48/image-vnd.dgn.svg"
-valid_ae = 248
-info = "QtWebKit handles rx/ry attributes of the rect element incorrectly."
+name = "status/user-busy.svg"
+valid_ae = 1083
+info = "numeric rounding artifacts"
+
+[[item]]
+name = "status/user-away-extended.svg"
+valid_ae = 2157
+info = "numeric rounding artifacts"
+
+[[item]]
+name = "status/user-invisible.svg"
+valid_ae = 1229
+
+[[item]]
+name = "status/user-offline.svg"
+valid_ae = 1084
+
+[[item]]
+name = "status/user-online.svg"
+valid_ae = 1190
+
+[[item]]
+name = "categories/applications-toys.svg"
+valid_ae = 1144
+
+[[item]]
+name = "categories/applications-education-preschool.svg"
+valid_ae = 1144
+
+[[item]]
+name = "actions/transform-move.svg"
+valid_ae = 820
+
+[[item]]
+name = "actions/view-pim-summary.svg"
+valid_ae = 435
+
+[[item]]
+name = "actions/small/16x16/download-later.svg"
+valid_ae = 1121
+
+[[item]]
+name = "actions/small/16x16/view-calendar-time-spent.svg"
+valid_ae = 1067
+
+[[item]]
+name = "actions/small/22x22/download-later.svg"
+valid_ae = 1336
+
+[[item]]
+name = "actions/small/22x22/edit-image-face-recognize.svg"
+valid_ae = 1164
+
+[[item]]
+name = "actions/small/22x22/edit-image-face-add.svg"
+valid_ae = 1146
+
+[[item]]
+name = "actions/small/22x22/view-calendar-time-spent.svg"
+valid_ae = 543
+
+[[item]]
+name = "actions/small/22x22/edit-redo.svg"
+valid_ae = 1763
+
+[[item]]
+name = "actions/small/22x22/window-duplicate.svg"
+valid_ae = 969
+
+[[item]]
+name = "actions/small/22x22/edit-image-face-show.svg"
+valid_ae = 1142
+
+[[item]]
+name = "actions/small/22x22/insert-image.svg"
+valid_ae = 494
+
+[[item]]
+name = "actions/small/32x32/download-later.svg"
+valid_ae = 1342
+
+[[item]]
+name = "actions/small/48x48/download-later.svg"
+valid_ae = 1360
+
+[[item]]
+name = "actions/small/48x48/edit-image-face-add.svg"
+valid_ae = 434
+
+[[item]]
+name = "actions/small/48x48/taxes-finances.svg"
+valid_ae = 3906
+
+[[item]]
+name = "devices/small/16x16/tablet.svg"
+valid_ae = 560
+
+[[item]]
+name = "devices/small/16x16/network-wireless.svg"
+valid_ae = 5729
+
+[[item]]
+name = "devices/small/16x16/video-display.svg"
+valid_ae = 448
+
+[[item]]
+name = "devices/small/16x16/computer-laptop.svg"
+valid_ae = 638
+
+[[item]]
+name = "devices/small/22x22/tablet.svg"
+valid_ae = 1163
+
+[[item]]
+name = "devices/small/22x22/video-display.svg"
+valid_ae = 1694
+
+[[item]]
+name = "devices/small/64x64/tablet.svg"
+valid_ae = 649
+
+[[item]]
+name = "devices/small/32x32/tablet.svg"
+valid_ae = 560
+
+[[item]]
+name = "devices/small/32x32/computer-laptop.svg"
+valid_ae = 638
+
+[[item]]
+name = "devices/small/48x48/tablet.svg"
+valid_ae = 1300
+
+[[item]]
+name = "devices/small/48x48/video-display.svg"
+valid_ae = 1480
+
+[[item]]
+name = "devices/small/48x48/computer-laptop.svg"
+valid_ae = 597
+
+[[item]]
+name = "apps/preferences-system-power-management.svg"
+valid_ae = 3846
+
+[[item]]
+name = "apps/small/16x16/preferences-system-windows-move.svg"
+valid_ae = 962
+
+[[item]]
+name = "emotes/small/22x22/face-glasses.svg"
+valid_ae = 1906
+
+[[item]]
+name = "mimetypes/small/48x48/application-vnd.sun.xml.calc.svg"
+valid_ae = 1552
+
+[[item]]
+name = "mimetypes/small/48x48/application-x-quattropro.svg"
+valid_ae = 1552
+
+[[item]]
+name = "mimetypes/small/48x48/application-vnd.oasis.opendocument.spreadsheet-template.svg"
+valid_ae = 1590
+
+[[item]]
+name = "mimetypes/small/48x48/application-x-gnumeric.svg"
+valid_ae = 1552
+
+[[item]]
+name = "mimetypes/small/48x48/application-vnd.stardivision.calc.svg"
+valid_ae = 1552
+
+[[item]]
+name = "mimetypes/small/48x48/x-office-spreadsheet.svg"
+valid_ae = 1552
+
+[[item]]
+name = "mimetypes/small/48x48/application-vnd.sun.xml.calc.template.svg"
+valid_ae = 1590
+
+[[item]]
+name = "mimetypes/small/48x48/application-x-applix-spreadsheet.svg"
+valid_ae = 1552
+
+[[item]]
+name = "mimetypes/small/48x48/application-vnd.ms-excel.svg"
+valid_ae = 1300
+
+[[item]]
+name = "mimetypes/small/48x48/application-vnd.oasis.opendocument.spreadsheet.svg"
+valid_ae = 1552
+
+[[item]]
+name = "mimetypes/small/48x48/text-csv.svg"
+valid_ae = 1552
+
+[[item]]
+name = "mimetypes/small/48x48/application-x-siag.svg"
+valid_ae = 1552
 
 [[item]]
 name = "devices/phone.svg"

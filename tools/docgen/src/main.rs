@@ -16,6 +16,8 @@ use std::slice::Iter;
 
 // TODO: header support
 // TODO: add notes for examples
+// TODO: ToC
+// TODO: FAQ
 
 #[derive(Clone,PartialEq)]
 enum DocMode {

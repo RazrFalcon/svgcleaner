@@ -442,12 +442,12 @@ fn clean_with_svgo(exe_path: &str, in_path: &str, out_path: &str) -> bool {
                 .output();
 
     match res {
-        Ok(o) => {
-            let s = String::from_utf8_lossy(&o.stdout);
-            if !s.is_empty() {
-                println!("{}", s);
-                return false;
-            }
+        Ok(_) => {
+            // let s = String::from_utf8_lossy(&o.stdout);
+            // if !s.is_empty() {
+            //     println!("{}", s);
+            //     return false;
+            // }
             return true;
         }
         Err(e) => {

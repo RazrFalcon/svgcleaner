@@ -96,6 +96,10 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
     }
 
     // now we can remove any unneeded attributes
+    if get_flag!(args, Key::PathsToRelative) {
+        paths::paths_to_relative(doc);
+    }
+
     if get_flag!(args, Key::RemoveDefaultAttributes) {
         remove_default_attributes(doc);
     }

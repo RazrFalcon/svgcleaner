@@ -347,6 +347,7 @@ fn run_test(data: &Data, svg_path: &Path, cache: &TestCache) -> bool {
         // fs::copy(orig_png_path, gen_png_path(&out_path, "_orig")).unwrap();
         println!("AE: {:?} of {:?}", diff, valid_ae);
 
+        // TODO: make optional
         // let file = fs::OpenOptions::new().append(true).open("out.txt").unwrap();
         // let mut out_buf = io::BufWriter::new(file);
         // out_buf.write(b"[[item]]\n").unwrap();
@@ -354,6 +355,7 @@ fn run_test(data: &Data, svg_path: &Path, cache: &TestCache) -> bool {
         // write!(out_buf, "valid_ae = {}\n\n", diff).unwrap();
 
         return false;
+        // return true;
     }
 }
 

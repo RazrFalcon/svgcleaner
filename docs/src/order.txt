@@ -20,6 +20,7 @@ remove-unused-coordinates.rst
 remove-default-attributes.rst
 remove-xmlns-xlink-attribute.rst
 remove-needless-attributes.rst
+paths-to-relative.rst
 trim-paths.rst
 remove-dupl-cmd-in-paths.rst
 join-arcto-flags.rst

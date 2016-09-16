@@ -39,6 +39,7 @@ pub use self::rm_unused_defs::remove_unused_defs;
 pub use self::rm_version::remove_version;
 pub use self::trim_ids::trim_ids;
 pub use self::ungroup_groups::ungroup_groups;
+pub use self::join_style_attrs::join_style_attributes;
 
 #[macro_use]
 mod macros;
@@ -61,6 +62,7 @@ mod rm_unused_defs;
 mod rm_version;
 mod trim_ids;
 mod ungroup_groups;
+mod join_style_attrs;
 pub mod paths;
 
 /// Shorthand names for modules.

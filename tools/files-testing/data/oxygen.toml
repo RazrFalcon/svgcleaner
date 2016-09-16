@@ -452,6 +452,10 @@ name = "mimetypes/small/48x48/application-x-siag.svg"
 valid_ae = 1552
 
 [[item]]
+name = "devices/small/22x22/multimedia-player-apple-ipod.svg"
+valid_ae = 690
+
+[[item]]
 name = "devices/phone.svg"
 ignore = true
 info = "investigate"

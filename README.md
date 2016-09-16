@@ -151,7 +151,7 @@ V0.7
     - [ ] join segments
  - [ ] Join font properties into the `font` attribute.
  - [ ] Join sequential paths.
- - [ ] Join presentational attributes.
+ - [x] Join presentational attributes.
  - [ ] Process `enable-background`.
 
 V0.8

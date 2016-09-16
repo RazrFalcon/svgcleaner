@@ -91,7 +91,7 @@ fn main() {
     };
 
     // clean it
-    match clean_doc(&doc, &args) {
+    match clean_doc(&doc, &args, &write_opt) {
         Ok(_) => {}
         Err(e) => {
             println!("Error: {:?}.", e);

@@ -50,7 +50,7 @@ pub fn parse_data(data: &[u8], opt: &ParseOptions) -> Result<Document, Error> {
     }
 }
 
-pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> {
+pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Result<(), CleanerError> {
     try!(preclean_checks(doc));
 
     // NOTE: Order is important.
@@ -132,6 +132,11 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches) -> Result<(), CleanerError> 
 
     final_fixes(doc);
     fix_xmlns_attribute(doc, get_flag!(args, Key::RemoveXmlnsXlinkAttribute));
+
+    // NOTE: must be run at last, since it breaks linking.
+    if get_flag!(args, Key::JoinStyleAttributes) {
+        join_style_attributes(doc, opt);
+    }
 
     Ok(())
 }

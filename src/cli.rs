@@ -50,6 +50,7 @@ pub enum Key {
     RemoveDefaultAttributes,
     RemoveXmlnsXlinkAttribute,
     RemoveNeedlessAttributes,
+    JoinStyleAttributes,
 
     PathsToRelative,
     TrimPaths,
@@ -100,6 +101,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-default-attributes",
     "remove-xmlns-xlink-attribute",
     "remove-needless-attributes",
+    "join-style-attributes",
 
     "paths-to-relative",
     "trim-paths",
@@ -192,7 +194,9 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     a = a.arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute,
             "Remove an unused xmlns:xlink attribute", "true"));
     a = a.arg(gen_flag!(Key::RemoveNeedlessAttributes,
-            "Remove atrributes that doesn't belong to this element", "true"));
+            "Remove attributes that doesn't belong to this element", "true"));
+    a = a.arg(gen_flag!(Key::JoinStyleAttributes,
+            "Join presentational attributes when it's shorter", "true"));
 
     // paths
     // TODO: disable paths processing as option

@@ -26,6 +26,7 @@ use svgdom::{ParseOptions, WriteOptions, ElementId};
 
 use std::ops::Index;
 
+#[derive(Clone,Copy)]
 pub enum Key {
     RemoveComments,
     RemoveDeclarations,
@@ -53,6 +54,7 @@ pub enum Key {
     JoinStyleAttributes,
 
     PathsToRelative,
+    RemoveUnusedSegments,
     TrimPaths,
     RemoveDuplCmdInPaths,
     JoinArcToFlags,
@@ -104,6 +106,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "join-style-attributes",
 
     "paths-to-relative",
+    "remove-unused-segments",
     "trim-paths",
     "remove-dupl-cmd-in-paths",
     "join-arcto-flags",
@@ -199,9 +202,10 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Join presentational attributes when it's shorter", "true"));
 
     // paths
-    // TODO: disable paths processing as option
     a = a.arg(gen_flag!(Key::PathsToRelative,
             "Convert path's segments into relative one", "true"));
+    a = a.arg(gen_flag!(Key::RemoveUnusedSegments,
+            "Remove unused path segments", "true"));
     a = a.arg(gen_flag!(Key::TrimPaths,
             "Use compact notation for paths", "true"));
     a = a.arg(gen_flag!(Key::RemoveDuplCmdInPaths,
@@ -210,11 +214,10 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Join ArcTo flags", "false"));
 
     // output
-    // TODO: try smaller default value
     a = a.arg(gen_precision_arg(KEYS[Key::PrecisionCoordinate],
-            "Sets numeric precision for coordinates (1..8)", "6"));
+            "Set numeric precision for coordinates (1..8)", "6"));
     a = a.arg(gen_precision_arg(KEYS[Key::PrecisionTransform],
-            "Sets numeric precision for transformations (1..8)", "8"));
+            "Set numeric precision for transformations (1..8)", "8"));
     a = a.arg(gen_flag!(Key::TrimColors,
             "Use #RGB notation", "true"));
     a = a.arg(gen_flag!(Key::SimplifyTransforms,
@@ -295,9 +298,21 @@ macro_rules! get_flag {
 
 // I don't know how to check it using `clap`, so here is manual checks.
 pub fn check_values(args: &ArgMatches) -> bool {
-    if !get_flag!(args, Key::TrimPaths) && get_flag!(args, Key::JoinArcToFlags) {
-        println!("Error: You can use '--{}=true' only with '--{}=true'.",
-            KEYS[Key::JoinArcToFlags], KEYS[Key::TrimPaths]);
+
+    fn check_value(args: &ArgMatches, flag: Key, dep: Key) -> bool {
+        if !get_flag!(args, dep) && get_flag!(args, flag) {
+            println!("Error: You can use '--{}=true' only with '--{}=true'.",
+                KEYS[flag], KEYS[dep]);
+            return false;
+        }
+        return true;
+    }
+
+    if !check_value(args, Key::JoinArcToFlags, Key::TrimPaths) {
+        return false;
+    }
+
+    if !check_value(args, Key::PathsToRelative, Key::RemoveUnusedSegments) {
         return false;
     }
 

@@ -20,18 +20,29 @@
 **
 ****************************************************************************/
 
+use clap::ArgMatches;
+
 use svgdom::{Document, AttributeValue};
 use svgdom::types::path::Path;
 
 use task::short::{EId, AId};
+use cli::{KEYS, Key};
 
-pub fn paths_to_relative(doc: &Document) {
+mod rm_unused;
+
+pub fn process_paths(doc: &Document, args: &ArgMatches) {
     for node in doc.descendants().filter(|n| n.is_tag_id(EId::Path)) {
+        // We can't process paths with marker, because if we remove all segments
+        // it will break rendering.
+        // TODO: do not remove first segment if node has marker
+        let has_marker = node.has_attributes(&[AId::Marker, AId::MarkerStart,
+                                               AId::MarkerMid, AId::MarkerEnd]);
+
         let mut attrs = node.attributes_mut();
         match attrs.get_mut(AId::D) {
             Some(attr) => {
                 match attr.value {
-                    AttributeValue::Path(ref mut path) => process_path(path),
+                    AttributeValue::Path(ref mut path) => process_path(path, has_marker, args),
                     _ => {}
                 }
             }
@@ -40,7 +51,13 @@ pub fn paths_to_relative(doc: &Document) {
     }
 }
 
-fn process_path(path: &mut Path) {
+fn process_path(path: &mut Path, has_marker: bool, args: &ArgMatches) {
+    path.to_absolute();
+
+    if get_flag!(args, Key::RemoveUnusedSegments) && !has_marker {
+        rm_unused::remove_unused_segments(path);
+    }
+
     path.to_relative();
 
     // NOTE: A relative path can be bigger, but usually only on few chars.

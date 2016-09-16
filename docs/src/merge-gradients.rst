@@ -3,8 +3,8 @@ Merge gradients
 
 Many SVG editors split gradient implementation into two parts:
 one element with ``stop`` children elements and one that linked to it.
-It can be useful if we have a lot of gradients with equal stop's, but if we have only one
- - it became pointless.
+It can be useful if we have a lot of gradients with equal stop's, but if we have only one - it
+became pointless.
 
 This option fixes it.
 

@@ -83,6 +83,17 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
         merge_gradients(doc);
     }
 
+    if get_flag!(args, Key::ConvertShapes) {
+        convert_shapes_to_paths(doc);
+    }
+
+    // NOTE: run before `remove_invisible_elements`, because this method can remove all
+    // segments from the path which makes it invisible.
+    if get_flag!(args, Key::PathsToRelative) {
+        // we only process path's segments if 'PathsToRelative' is enabled
+        paths::process_paths(doc, args);
+    }
+
     if get_flag!(args, Key::RemoveInvisibleElements) {
         remove_invisible_elements(doc);
     }
@@ -91,14 +102,7 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
         ungroup_groups(doc);
     }
 
-    if get_flag!(args, Key::ConvertShapes) {
-        convert_shapes_to_paths(doc);
-    }
-
     // now we can remove any unneeded attributes
-    if get_flag!(args, Key::PathsToRelative) {
-        paths::paths_to_relative(doc);
-    }
 
     if get_flag!(args, Key::RemoveDefaultAttributes) {
         remove_default_attributes(doc);

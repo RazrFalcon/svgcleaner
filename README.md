@@ -128,6 +128,7 @@ V0.7
      - [x] Basic shapes
      - [ ] other...
    - [x] Remove presentational attributes from elements inside `clipPath`.
+   - [ ] Remove `stroke-linecap` if the path is closed.
    - [ ] other...
  - [ ] Group elements by the style attributes.
  - [x] Remove `version` attribute.
@@ -144,11 +145,10 @@ V0.7
  - [ ] Group text styles.
  - [ ] Process paths:
     - [x] segments to relative
-    - [ ] remove ClosePath segments
-    - [ ] remove unneeded MoveTo segments
-    - [ ] remove tiny segments
+    - [x] remove ClosePath segments
+    - [x] remove unneeded MoveTo segments
     - [ ] convert segments to shorter one
-    - [ ] join segments
+    - [ ] join line-based segments
  - [ ] Join font properties into the `font` attribute.
  - [ ] Join sequential paths.
  - [x] Join presentational attributes.

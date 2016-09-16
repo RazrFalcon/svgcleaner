@@ -22,6 +22,7 @@ remove-xmlns-xlink-attribute.rst
 remove-needless-attributes.rst
 join-style-attributes.rst
 paths-to-relative.rst
+remove-unused-segments.rst
 trim-paths.rst
 remove-dupl-cmd-in-paths.rst
 join-arcto-flags.rst

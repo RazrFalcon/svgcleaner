@@ -16,9 +16,8 @@ we can convert all of them into relative one, which is generally shorter.
 .. AFTER
 .. <svg>
 ..   <path d="m 750 150 l 50 50 l 50 -50
-..            l 0 100 l 0 100
-..            l -50 -50 l -50 50
-..            l 0 -100 z"
+..            l 0 100 l 0 100 l -50 -50
+..            l -50 50 l 0 -100 z"
 ..         transform="scale(0.1)"
 ..         fill="green"/>
 .. </svg>

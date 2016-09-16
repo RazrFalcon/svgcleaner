@@ -356,8 +356,8 @@ Merge gradients
 
 Many SVG editors split gradient implementation into two parts:
 one element with ``stop`` children elements and one that linked to it.
-It can be useful if we have a lot of gradients with equal stop's, but if we have only one
- - it became pointless.
+It can be useful if we have a lot of gradients with equal stop's, but if we have only one - it
+became pointless.
 
 This option fixes it.
 
@@ -400,12 +400,12 @@ CLI argument: ``--remove-invisible-elements``
 | .. code-block:: XML                                                                            | .. code-block:: XML                                                                           |
 |                                                                                                |                                                                                               |
 |   <svg>                                                                                        |   <svg>                                                                                       |
-|     <linearGradient id='lg1'/>                                                                 |     <circle fill="green"                                                                      |
-|     <clipPath id='cp1'/>                                                                       |             cx="50" cy="50" r="45"/>                                                          |
+|     <linearGradient id="lg1"/>                                                                 |     <circle fill="green"                                                                      |
+|     <clipPath id="cp1"/>                                                                       |             cx="50" cy="50" r="45"/>                                                          |
 |     <circle fill="green"                                                                       |   </svg>                                                                                      |
 |             cx="50" cy="50" r="45"/>                                                           |                                                                                               |
-|     <circle fill="green" clip-path='url(#cp1)'                                                 |                                                                                               |
-|             stroke='url(#lg1)'                                                                 |                                                                                               |
+|     <circle fill="green" clip-path="url(#cp1)"                                                 |                                                                                               |
+|             stroke="url(#lg1)"                                                                 |                                                                                               |
 |             cx="100" cy="50" r="45"/>                                                          |                                                                                               |
 |   </svg>                                                                                       |                                                                                               |
 +------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------+
@@ -669,21 +669,43 @@ we can convert all of them into relative one, which is generally shorter.
 CLI argument: ``--paths-to-relative``
 
 +----------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------+
-| Before (286b)                                                                          | After (288b)                                                                          |
+| Before (286b)                                                                          | After (277b)                                                                          |
 +----------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------+
 | .. code-block:: XML                                                                    | .. code-block:: XML                                                                   |
 |                                                                                        |                                                                                       |
 |   <svg>                                                                                |   <svg>                                                                               |
 |     <path d="M 750 150 L 800 200 L 850 150                                             |     <path d="m 750 150 l 50 50 l 50 -50                                               |
-|              L 850 250 L 850 350 L 800 300                                             |              l 0 100 l 0 100                                                          |
-|              L 750 350 L 750 250 Z"                                                    |              l -50 -50 l -50 50                                                       |
-|           transform="scale(0.1)"                                                       |              l 0 -100 z"                                                              |
-|           fill="green"/>                                                               |           transform="scale(0.1)"                                                      |
-|   </svg>                                                                               |           fill="green"/>                                                              |
-|                                                                                        |   </svg>                                                                              |
+|              L 850 250 L 850 350 L 800 300                                             |              l 0 100 l 0 100 l -50 -50                                                |
+|              L 750 350 L 750 250 Z"                                                    |              l -50 50 l 0 -100 z"                                                     |
+|           transform="scale(0.1)"                                                       |           transform="scale(0.1)"                                                      |
+|           fill="green"/>                                                               |           fill="green"/>                                                              |
+|   </svg>                                                                               |   </svg>                                                                              |
 +----------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------+
 | .. image:: https://razrfalcon.github.io/svgcleaner/images/before/paths-to-relative.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/paths-to-relative.svg |
 +----------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------+
+
+
+Remove unused path segments
+---------------------------
+
+The collection of algorithms that removes unneeded segments from paths.
+
+**NOTE:** can be used only with ``--paths-to-relative``.
+
+CLI argument: ``--remove-unused-segments``
+
++---------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
+| Before (191b)                                                                               | After (158b)                                                                               |
++---------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
+| .. code-block:: XML                                                                         | .. code-block:: XML                                                                        |
+|                                                                                             |                                                                                            |
+|   <svg>                                                                                     |   <svg>                                                                                    |
+|     <path stroke="red"                                                                      |     <path stroke="red" d="M 10 10 V 50 Z"/>                                                |
+|           d="M 10 10 L 10 50 L 10 10 M 50 50 L 50 50"/>                                     |   </svg>                                                                                   |
+|   </svg>                                                                                    |                                                                                            |
++---------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
+| .. image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-unused-segments.svg | .. image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-unused-segments.svg |
++---------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------+
 
 
 Use compact notation for paths

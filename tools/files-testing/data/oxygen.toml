@@ -456,6 +456,10 @@ name = "devices/small/22x22/multimedia-player-apple-ipod.svg"
 valid_ae = 690
 
 [[item]]
+name = "actions/small/22x22/edit-image-face-detect.svg"
+valid_ae = 887
+
+[[item]]
 name = "devices/phone.svg"
 ignore = true
 info = "investigate"

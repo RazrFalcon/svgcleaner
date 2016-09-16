@@ -27,12 +27,18 @@ use svgdom::{Document, Node, AttributeValue};
 // TODO: process display="none"
 
 pub fn remove_invisible_elements(doc: &Document) {
-    process_clip_path(doc);
+    let mut is_any_removed = false;
+    process_paths(doc, &mut is_any_removed);
+    process_clip_paths(doc, &mut is_any_removed);
+
+    if is_any_removed {
+        super::remove_unused_defs(&doc);
+    }
 }
 
 // Remove invalid elements from 'clipPath' and if 'clipPath' is empty or became empty
 // - remove it and all elements that became invalid or unused.
-fn process_clip_path(doc: &Document) {
+fn process_clip_paths(doc: &Document, is_any_removed: &mut bool) {
     let mut nodes = Vec::with_capacity(16);
     let mut clip_paths = Vec::with_capacity(16);
 
@@ -56,16 +62,15 @@ fn process_clip_path(doc: &Document) {
     // Remove empty clipPath's.
     // Note, that all elements that used this clip path alse became invisible,
     // so we can remove them as well.
-    let is_rm_unused_defs = !clip_paths.is_empty();
+    if !clip_paths.is_empty() {
+        *is_any_removed = true;
+    }
+
     while let Some(n) = clip_paths.pop() {
         for link in n.linked_nodes() {
             link.remove();
         }
         n.remove();
-    }
-
-    if is_rm_unused_defs {
-        super::remove_unused_defs(&doc);
     }
 }
 
@@ -92,6 +97,45 @@ fn is_valid_clip_path_elem(node: &Node) -> bool {
     }
 
     is_valid_shape(node)
+}
+
+// Paths with empty 'd' attribute are invisible and we can remove them.
+fn process_paths(doc: &Document, is_any_removed: &mut bool) {
+    let mut paths = Vec::with_capacity(16);
+
+    fn is_invisible(node: &Node) -> bool {
+        if node.has_attribute(AId::D) {
+            let attrs = node.attributes();
+            match attrs.get_value(AId::D).unwrap() {
+                &AttributeValue::Path(ref d) => {
+                    if d.d.is_empty() {
+                        return true;
+                    }
+                }
+                // invalid value type
+                _ => return true,
+            }
+        } else {
+            // not set
+            return true;
+        }
+
+        return false;
+    }
+
+    for node in doc.descendants().filter(|n| n.is_tag_id(EId::Path)) {
+        if is_invisible(&node) {
+            paths.push(node.clone());
+        }
+    }
+
+    if !paths.is_empty() {
+        *is_any_removed = true;
+    }
+
+    while let Some(n) = paths.pop() {
+        n.remove();
+    }
 }
 
 #[cfg(test)]
@@ -169,6 +213,28 @@ b"<svg>
     <linearGradient id='lg1'/>
     <clipPath id='cp1'/>
     <rect clip-path='url(#cp1)' fill='url(#lg1)'/>
+</svg>",
+"<svg/>
+");
+
+    test!(rm_path_1,
+b"<svg>
+    <path/>
+</svg>",
+"<svg/>
+");
+
+    test!(rm_path_2,
+b"<svg>
+    <path d=''/>
+</svg>",
+"<svg/>
+");
+
+    test!(rm_path_3,
+b"<svg>
+    <linearGradient id='lg1'/>
+    <path d='' fill='url(#lg1)'/>
 </svg>",
 "<svg/>
 ");

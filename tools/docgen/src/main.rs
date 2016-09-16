@@ -18,6 +18,7 @@ use std::slice::Iter;
 // TODO: add notes for examples
 // TODO: ToC
 // TODO: FAQ
+// TODO: img to rawgit
 
 #[derive(Clone,PartialEq)]
 enum DocMode {

@@ -15,15 +15,19 @@ Then we can ungroup it and remove.
 .. BEFORE
 .. <svg>
 ..   <g>
-..     <circle fill="green" cx="50" cy="50" r="45"/>
+..     <circle fill="green" r="45"
+..             cx="50" cy="50"/>
 ..     <g>
-..       <circle fill="#023373" cx="100" cy="50" r="45"/>
+..       <circle fill="#023373" r="45"
+..               cx="100" cy="50"/>
 ..     </g>
 ..   </g>
 .. </svg>
 .. AFTER
 .. <svg>
-..   <circle fill="green" cx="50" cy="50" r="45"/>
-..   <circle fill="#023373" cx="100" cy="50" r="45"/>
+..   <circle fill="green" r="45"
+..           cx="50" cy="50"/>
+..   <circle fill="#023373" r="45"
+..           cx="100" cy="50"/>
 .. </svg>
 .. END

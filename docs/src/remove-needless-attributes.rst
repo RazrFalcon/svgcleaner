@@ -10,7 +10,9 @@ be used during rendering.
 .. BEFORE
 .. <svg>
 ..   <clipPath id="cp1">
-..     <rect fill="red" stroke="red" stroke-width="50" width="75" height="75"/>
+..     <rect fill="red" stroke="red"
+..           stroke-width="50" width="75"
+..           height="75"/>
 ..   </clipPath>
 ..   <circle fill="green" d="M 10 20 L 30 40"
 ..           clip-path="url(#cp1)"

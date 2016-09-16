@@ -9,7 +9,7 @@ But since this element can be used by render software - this action is optional.
 .. GEN_TABLE
 .. BEFORE
 .. <svg>
-..   <desc>SVG Cleaner</desc>
+..   <desc>svgcleaner</desc>
 ..   <circle fill="green" cx="50" cy="50" r="45"/>
 .. </svg>
 .. AFTER

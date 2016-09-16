@@ -1,3 +1,4 @@
+-- Elements
 remove-comments.rst
 remove-declarations.rst
 remove-nonsvg-elements.rst
@@ -11,6 +12,7 @@ remove-dupl-radialgradient.rst
 ungroup-groups.rst
 merge-gradients.rst
 remove-invisible-elements.rst
+-- Attributes
 remove-version.rst
 remove-nonsvg-attributes.rst
 remove-unreferenced-ids.rst
@@ -21,11 +23,13 @@ remove-default-attributes.rst
 remove-xmlns-xlink-attribute.rst
 remove-needless-attributes.rst
 join-style-attributes.rst
+-- Paths
 paths-to-relative.rst
 remove-unused-segments.rst
 trim-paths.rst
 remove-dupl-cmd-in-paths.rst
 join-arcto-flags.rst
+-- Output
 precision-coordinate.rst
 precision-transform.rst
 trim-colors.rst

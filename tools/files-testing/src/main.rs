@@ -49,7 +49,7 @@ fn main() {
             .value_name("DIR")
             .required(true))
         .arg(Arg::with_name("svgcleaner")
-            .long("svgcleaner").help("Sets path to the current version of SVG Cleaner")
+            .long("svgcleaner").help("Sets path to the current version of svgcleaner")
             .value_name("PATH")
             .required(true))
         .arg(Arg::with_name("render")

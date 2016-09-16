@@ -3,7 +3,7 @@ Remove XML declarations
 
 Removes XML declarations from SVG document.
 
-SVG Cleaner will remove all declarations, even though they are only allowed
+``svgcleaner`` will remove all declarations, even though they are only allowed
 at the start of the document.
 
 .. GEN_TABLE

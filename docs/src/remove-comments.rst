@@ -3,7 +3,7 @@ Remove XML comments
 
 We can remove all XML comments from SVG document since they are not rendered either way.
 
-**Note:** ``svgdom`` library, which is used to process SVG file in SVG Cleaner,
+**Note:** ``svgdom`` library, which is used to process SVG file in ``svgcleaner``,
 doesn't support comments inside attributes, so they will be removed anyway.
 
 .. GEN_TABLE

@@ -13,10 +13,10 @@ attribute to tweak it.
 .. GEN_TABLE
 .. BEFORE
 .. <svg id="svg1">
-..   <rect id="rect1" x='10' y='10'
-..          width='80' height='80'/>
-..   <line id="line1" stroke="red" x1='10'
-..         y1='90' x2='90' y2='10'/>
+..   <rect id="rect1" x="10" y="10"
+..          width="80" height="80"/>
+..   <line id="line1" stroke="red" x1="10"
+..         y1="90" x2="90" y2="10"/>
 ..   <polyline id="polyline1" stroke="blue"
 ..             fill="none"
 ..             points="10 10 30 10 30 30

@@ -1,7 +1,7 @@
 Remove version
 --------------
 
-Remove 'version' and 'baseProfile' attributes from the ``svg`` element.
+Remove ``version`` and ``baseProfile`` attributes from the ``svg`` element.
 
 Some applications can rely on them, so someone may want to keep them.
 Even throw they usually useless.

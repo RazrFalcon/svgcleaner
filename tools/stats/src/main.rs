@@ -26,15 +26,15 @@ struct Data<'a> {
     cache: TestCache,
 }
 
-// TODO: min/max time
-// TODO: count AE without threshold
 struct TotalStats {
     title: String,
     cleaned_with_errors: Vec<String>,
-    unchanged: u64,
+    // amount of files that has at least one changed pixel
+    cleaned_with_errors_all: u32,
+    unchanged: u32,
     total_input_size: u64,
     total_output_size: u64,
-    files_count: u64,
+    files_count: u32,
     total_time: f64,
 }
 
@@ -43,6 +43,7 @@ impl Default for TotalStats {
         TotalStats {
             title: String::new(),
             cleaned_with_errors: Vec::new(),
+            cleaned_with_errors_all: 0,
             unchanged: 0,
             total_input_size: 0,
             total_output_size: 0,
@@ -54,6 +55,8 @@ impl Default for TotalStats {
 
 struct FileStats {
     is_successful: bool,
+    // AE == 0
+    is_fully_successful: bool,
     orig_file_size: u64,
     new_file_size: u64,
     elapsed_time: f64,
@@ -63,6 +66,7 @@ impl Default for FileStats {
     fn default() -> FileStats {
         FileStats {
             is_successful: false,
+            is_fully_successful: false,
             orig_file_size: 0,
             new_file_size: 0,
             elapsed_time: 0.0,
@@ -153,7 +157,7 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
     }
 
     let mut total_stats = TotalStats::default();
-    total_stats.files_count = total as u64;
+    total_stats.files_count = total;
 
     total_stats.title = match &cleaner {
         &Cleaner::New(path) => "svgcleaner ".to_owned() + &detect_new_cleaner_ver(path).unwrap(),
@@ -183,6 +187,10 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
 
         if !stats.is_successful {
             total_stats.cleaned_with_errors.push(path_suffix_str.to_string());
+        }
+
+        if !stats.is_fully_successful {
+            total_stats.cleaned_with_errors_all += 1;
         }
 
         idx += 1;
@@ -244,6 +252,7 @@ fn file_stats(data: &Data, svg_path: &Path, path_suffix: &str, cleaner: &Cleaner
 
     if !render_imgs {
         stats.is_successful = true;
+        stats.is_fully_successful = true;
         fs::remove_file(&new_svg_path).unwrap();
         return stats;
     }
@@ -284,6 +293,7 @@ fn file_stats(data: &Data, svg_path: &Path, path_suffix: &str, cleaner: &Cleaner
         Some(v) => {
             if v == 0 {
                 is_successful = true;
+                stats.is_fully_successful = true;
             } else {
                 // error less than threshold% of image - is ok
                 let (w, h) = get_img_size(new_png_path_str);
@@ -317,7 +327,8 @@ fn file_stats(data: &Data, svg_path: &Path, path_suffix: &str, cleaner: &Cleaner
 fn print_total_stats(stats: &TotalStats) {
     println!("Results for: {}", stats.title);
     println!("Files count: {}", stats.files_count);
-    println!("Files cleaned with errors: {}", stats.cleaned_with_errors.len());
+    println!("Files cleaned with serious errors: {}", stats.cleaned_with_errors.len());
+    println!("Files cleaned with any errors: {}", stats.cleaned_with_errors_all);
     println!("Unchanged files: {}", stats.unchanged);
     println!("Size after/before: {}/{}",
              stats.total_output_size, stats.total_input_size);

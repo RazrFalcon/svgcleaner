@@ -32,6 +32,7 @@ pub fn remove_invisible_elements(doc: &Document) {
     process_display_attribute(doc, &mut is_any_removed);
     process_paths(doc, &mut is_any_removed);
     process_clip_paths(doc, &mut is_any_removed);
+    process_filter(doc, &mut is_any_removed);
 
     if is_any_removed {
         super::remove_unused_defs(&doc);
@@ -61,13 +62,13 @@ fn process_clip_paths(doc: &Document, is_any_removed: &mut bool) {
         }
     }
 
-    // Remove empty clipPath's.
-    // Note, that all elements that used this clip path alse became invisible,
-    // so we can remove them as well.
     if !clip_paths.is_empty() {
         *is_any_removed = true;
     }
 
+    // Remove empty clipPath's.
+    // Note, that all elements that uses this clip path also became invisible,
+    // so we can remove them as well.
     while let Some(n) = clip_paths.pop() {
         for link in n.linked_nodes() {
             link.remove();
@@ -165,6 +166,25 @@ fn process_display_attribute(doc: &Document, is_any_removed: &mut bool) {
     }
 
     while let Some(n) = nodes.pop() {
+        n.remove();
+    }
+}
+
+// remove 'filter' elements without children
+fn process_filter(doc: &Document, is_any_removed: &mut bool) {
+    let nodes: Vec<Node> = doc.descendants()
+                              .filter(|n| n.is_tag_id(EId::Filter) && !n.has_children()).collect();
+
+    if !nodes.is_empty() {
+        *is_any_removed = true;
+    }
+
+    // Note, that all elements that uses this filter also became invisible,
+    // so we can remove them as well.
+    for n in nodes {
+        for link in n.linked_nodes() {
+            link.remove();
+        }
         n.remove();
     }
 }
@@ -302,6 +322,21 @@ b"<svg>
     </g>
     <use xlink:href='#r1'/>
 </svg>
+");
+
+    test!(rm_filter_1,
+b"<svg>
+    <filter/>
+</svg>",
+"<svg/>
+");
+
+    test!(rm_filter_2,
+b"<svg>
+    <filter id='f1'/>
+    <rect filter='url(#f1)'/>
+</svg>",
+"<svg/>
 ");
 
 }

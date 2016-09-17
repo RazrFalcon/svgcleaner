@@ -69,7 +69,7 @@ impl TestCache {
 }
 
 pub fn compare_imgs(work_dir: &str, path1: &str, path2: &str, path_diff: &str) -> Option<u32> {
-    // compare -metric AE -fuzz 0.5% foo.png foo2.png diff.png
+    // compare -metric AE -fuzz 1% foo.png foo2.png diff.png
     let res = Command::new("compare").current_dir(work_dir)
                 .arg("-metric").arg("AE")
                 .arg("-fuzz").arg("1%")

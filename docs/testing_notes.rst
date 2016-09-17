@@ -61,3 +61,20 @@ Testing algorithm looks like this:
 .. [1] ``svgrender`` is based on QtWebKit, which is the best way to render SVG from CLI.
 
 .. [2] we use 2% threshold to filter anti-aliasing artifacts.
+
+Notes
+=====
+
+- PC: i5-3570k 3.8GHz, Gentoo Linux Stable x86_64.
+- Input files are stored on HDD, cleaned files was saved to the ``tmpfs``.
+- I know that a performance comparison is not fair since `svgo` have to restart nodejs
+  each time. But I don't know how to prevent it or ignore nodejs starting time.
+- ``svgcleaner`` 0.6.9 was running using default options.
+- ``svgcleaner`` 0.6.2 was running using default options with numeric ``--*-precision=6``
+  and ``--create-viewbox`` disabled.
+- ``svgo`` was running using default options with ``--precision=6``.
+- Used nodejs: ``net-libs/nodejs-4.4.6(icu npm ssl -debug -snapshot -test
+  CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")``.
+  I tried the latest version, 6.4.0, but it even slower.
+- You can find links to the data sets `here <../tools/files-testing/README.md>`_.
+- You can repeat tests by yourself using `stats <../tools/stats>`_ app.

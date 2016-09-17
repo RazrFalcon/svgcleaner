@@ -9,7 +9,6 @@
       * [Correctness](#correctness)
       * [Cleaning ratio](#cleaning-ratio)
       * [Performance](#performance)
-      * [Notes](#notes)
   * [Building](#building)
   * [Usage](#usage)
     * [CLI](#cli)
@@ -20,7 +19,7 @@
 
 ## Goals
 
-1. [**Correctness.**](docs/testing_notes.rst) svgcleaner should not break an SVG file.
+1. **Correctness.** svgcleaner should not break an SVG file.
 1. **Cleaning ratio.** More is better.
 1. **Performance.** If something can be faster - it should be faster.
    An average SVG file should be processed by less than 16ms on a modern PC.
@@ -29,6 +28,8 @@
 
 There are only one alternative to svgcleaner - [svgo](https://github.com/svg/svgo),
 so we will compare with it.
+
+See ['Testing notes'](docs/testing_notes.rst) for details.
 
 #### Correctness
 
@@ -58,33 +59,6 @@ of the files - it's pointless.
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/performance_chart_W3C_SVG_11_TestSuite.svg)
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/performance_chart_oxygen.svg)
-
-#### Notes
-
- - PC: i5-3570k@4.2GHz, Gentoo Linux Stable x86_64.
-
- - Input files are stored on HDD, cleaned files was saved to the `tmpfs`.
-
- - I know that a performance comparison is not fair since `svgo` have to restart nodejs
-each time. But I don't know how to prevent it or ignore nodejs starting time.
-
- - New `svgcleaner` was running using default options.
-
- - Old `svgcleaner` was running using default options with numeric `--*-precision=6`
-   and `--create-viewbox` disabled.
-
- - `svgo` was running using default options with `--precision=6`.
-
- - Render error in tests above indicates that file has more then 2% of changed pixels.
-   All images are rendered using QtWebKit in original resolution.
-
- - Used nodejs: `net-libs/nodejs-4.4.6(icu npm ssl -debug -snapshot -test
-CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")`.
-   I tried the latest version, 6.4.0, but it even slower.
-
- - You can find links to the data sets [here](tools/files-testing/README.md).
-
- - You can repeat tests by yourself using [stats](tools/stats) app.
 
 ## Building
 

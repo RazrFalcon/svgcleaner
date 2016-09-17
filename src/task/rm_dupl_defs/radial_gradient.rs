@@ -44,7 +44,7 @@ mod tests {
     use svgdom::{Document, WriteToString};
     use task::resolve_attrs;
 
-    macro_rules! test_rg {
+    macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
@@ -56,7 +56,7 @@ mod tests {
         )
     }
 
-    test_rg!(rm_1,
+    test!(rm_1,
 b"<svg>
     <defs>
         <radialGradient id='rg1' cx='0' cy='0' fx='5' fy='5' r='10'>
@@ -81,7 +81,7 @@ b"<svg>
 </svg>
 ");
 
-    test_rg!(rm_2,
+    test!(rm_2,
 b"<svg>
     <defs>
         <radialGradient id='rg1' cx='0' cy='0' fx='5' fy='5' r='10'/>
@@ -97,7 +97,7 @@ b"<svg>
 </svg>
 ");
 
-    test_rg!(rm_3,
+    test!(rm_3,
 b"<svg>
     <defs>
         <radialGradient id='rg1' cx='5' cy='5' fx='5' r='10'/>
@@ -113,7 +113,7 @@ b"<svg>
 </svg>
 ");
 
-    test_rg!(rm_4,
+    test!(rm_4,
 b"<svg>
     <defs>
         <radialGradient id='rg1' cx='5' cy='5' fx='5' \
@@ -134,7 +134,7 @@ b"<svg>
 </svg>
 ");
 
-    test_rg!(rm_5,
+    test!(rm_5,
 b"<svg>
     <radialGradient id='rg1'/>
     <radialGradient id='rg2' xlink:href='#rg1'/>
@@ -146,7 +146,7 @@ b"<svg>
 
 // TODO: this
 
-//     test_rg!(rm_6,
+//     test!(rm_6,
 // b"<svg>
 //     <radialGradient id='rg2' xlink:href='#rg1'/>
 //     <radialGradient id='rg1'/>
@@ -156,7 +156,7 @@ b"<svg>
 // </svg>
 // ");
 
-    test_rg!(rm_7,
+    test!(rm_7,
 b"<svg>
     <radialGradient id='rg1'/>
     <radialGradient id='rg2' xlink:href='#rg1'/>
@@ -167,7 +167,7 @@ b"<svg>
 </svg>
 ");
 
-    test_rg!(rm_8,
+    test!(rm_8,
 b"<svg>
     <lenearGradient id='lg1'/>
     <radialGradient id='rg1' xlink:href='#lg1'/>

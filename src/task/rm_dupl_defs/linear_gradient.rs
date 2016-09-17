@@ -43,7 +43,7 @@ mod tests {
     use svgdom::{Document, WriteToString};
     use task::resolve_attrs;
 
-    macro_rules! test_lg {
+    macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
@@ -55,7 +55,7 @@ mod tests {
         )
     }
 
-    test_lg!(rm_1,
+    test!(rm_1,
 b"<svg>
     <defs>
         <linearGradient id='lg1'>
@@ -80,7 +80,7 @@ b"<svg>
 </svg>
 ");
 
-    test_lg!(rm_2,
+    test!(rm_2,
 b"<svg>
     <defs>
         <linearGradient id='lg1'>
@@ -112,7 +112,7 @@ b"<svg>
 ");
 
     // different default attributes
-    test_lg!(rm_3,
+    test!(rm_3,
 b"<svg>
     <defs>
         <linearGradient id='lg1' x1='0%'/>
@@ -129,7 +129,7 @@ b"<svg>
 ");
 
     // no 'stop' elements
-    test_lg!(rm_4,
+    test!(rm_4,
 b"<svg>
     <defs>
         <linearGradient id='lg1'/>
@@ -142,6 +142,26 @@ b"<svg>
         <linearGradient id='lg1'/>
     </defs>
     <rect fill='url(#lg1)'/>
+</svg>
+");
+
+    test!(rm_5,
+b"<svg>
+    <linearGradient id='lg1'>
+        <stop/>
+    </linearGradient>
+    <linearGradient id='lg2' xlink:href='#lg1'/>
+    <linearGradient id='lg3' xlink:href='#lg1'/>
+    <rect fill='url(#lg2)'/>
+    <rect fill='url(#lg3)'/>
+</svg>",
+"<svg>
+    <linearGradient id='lg1'>
+        <stop/>
+    </linearGradient>
+    <linearGradient id='lg2' xlink:href='#lg1'/>
+    <rect fill='url(#lg2)'/>
+    <rect fill='url(#lg2)'/>
 </svg>
 ");
 }

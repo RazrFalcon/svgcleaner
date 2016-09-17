@@ -33,26 +33,26 @@ use svgdom::{Document, Node, AttributeValue};
 macro_rules! check_attr {
     ($attrs1:expr, $attrs2:expr, $id:expr, $def:expr) => ({
         let def = AttributeValue::from($def);
-        if     $attrs1.get_value($id.clone()).unwrap_or(&def)
-            != $attrs2.get_value($id.clone()).unwrap_or(&def) {
+        if     $attrs1.get_value($id).unwrap_or(&def)
+            != $attrs2.get_value($id).unwrap_or(&def) {
             return false;
         }
     })
 }
 
 fn rm_loop(doc: &Document, eid: EId, attrs: &[AId]) {
-    let mut lg_nodes = doc.descendants()
+    let mut nodes = doc.descendants()
                         .filter(|ref n| n.is_tag_id(eid))
                         .collect::<Vec<Node>>();
 
-    let mut len = lg_nodes.len();
+    let mut len = nodes.len();
     let mut i1 = 0;
     while i1 < len {
-        let node1 = lg_nodes[i1].clone();
+        let node1 = nodes[i1].clone();
 
         let mut i2 = i1 + 1;
         while i2 < len {
-            let node2 = lg_nodes[i2].clone();
+            let node2 = nodes[i2].clone();
             i2 += 1;
 
             if !is_attrs_equal(&node1, &node2, attrs) {
@@ -73,7 +73,7 @@ fn rm_loop(doc: &Document, eid: EId, attrs: &[AId]) {
             }
             node2.remove();
 
-            lg_nodes.remove(i2 - 1);
+            nodes.remove(i2 - 1);
             i2 -= 1;
             len -= 1;
         }
@@ -94,14 +94,8 @@ fn is_attrs_equal(node1: &Node, node2: &Node, attrs: &[AId]) -> bool {
         }
     }
 
-    if attrs2.contains(AId::XlinkHref) {
-        if attrs2.get_value(AId::XlinkHref).unwrap() != &AttributeValue::Link(node1.clone()) {
-            return false;
-        }
-    }
-
     for aid in attrs.iter() {
-        if attrs1.get_value(aid.clone()).unwrap() != attrs2.get_value(aid.clone()).unwrap() {
+        if attrs1.get_value(*aid).unwrap() != attrs2.get_value(*aid).unwrap() {
             return false;
         }
     }

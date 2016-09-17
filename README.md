@@ -8,7 +8,7 @@
     * [Charts](#charts)
       * [Correctness](#correctness)
       * [Cleaning ratio](#cleaning-ratio)
-      * [Performance](#performance)
+      * [Cleaning time](#cleaning-time)
   * [Building](#building)
   * [Usage](#usage)
     * [CLI](#cli)
@@ -53,13 +53,15 @@ of the files - it's pointless.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/ratio_chart_oxygen.svg)
 
-#### Performance
+#### Cleaning time
 
 *Less is better.*
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/performance_chart_W3C_SVG_11_TestSuite.svg)
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/performance_chart_oxygen.svg)
+
+\* Even through that current results are impressive, svgcleaner is still very slow.
 
 ## Building
 

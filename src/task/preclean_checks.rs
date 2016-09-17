@@ -22,7 +22,7 @@
 
 use super::short::{EId, AId};
 
-use svgdom::{Document, TagName};
+use svgdom::{Document, AttributeValue};
 
 use error::CleanerError;
 
@@ -30,34 +30,25 @@ pub fn preclean_checks(doc: &Document) -> Result<(), CleanerError> {
     try!(check_for_unsupported_elements(doc));
     try!(check_for_script_attributes(doc));
     try!(check_for_conditional_attributes(doc));
+    try!(check_for_external_xlink(doc));
 
     Ok(())
 }
 
 fn check_for_unsupported_elements(doc: &Document) -> Result<(), CleanerError> {
     for node in doc.descendants() {
-        match node.tag_name() {
-            Some(v) => {
-                match *v {
-                    TagName::Id(ref id) => {
-                        match *id {
-                            EId::Script => {
-                                return Err(CleanerError::ScriptingIsNotSupported);
-                            }
-                            EId::Animate |
-                            EId::Set |
-                            EId::AnimateMotion |
-                            EId::AnimateColor |
-                            EId::AnimateTransform => {
-                                return Err(CleanerError::AnimationIsNotSupported);
-                            }
-                            _ => {}
-                        }
-                    }
-                    TagName::Name(_) => {},
-                }
+        match node.tag_id().unwrap() {
+            EId::Script => {
+                return Err(CleanerError::ScriptingIsNotSupported);
             }
-            None => {}
+            EId::Animate |
+            EId::Set |
+            EId::AnimateMotion |
+            EId::AnimateColor |
+            EId::AnimateTransform => {
+                return Err(CleanerError::AnimationIsNotSupported);
+            }
+            _ => {}
         }
     }
 
@@ -89,20 +80,10 @@ static SCRIPT_ATTRIBUTES: &'static [AId] = &[
 
 fn check_for_script_attributes(doc: &Document) -> Result<(), CleanerError> {
     for node in doc.descendants() {
-        match node.tag_name() {
-            Some(v) => {
-                match *v {
-                    TagName::Id(_) => {
-                        for a in SCRIPT_ATTRIBUTES {
-                            if node.has_attribute(*a) {
-                                return Err(CleanerError::ScriptingIsNotSupported);
-                            }
-                        }
-                    }
-                    TagName::Name(_) => {},
-                }
+        for a in SCRIPT_ATTRIBUTES {
+            if node.has_attribute(*a) {
+                return Err(CleanerError::ScriptingIsNotSupported);
             }
-            None => {}
         }
     }
 
@@ -127,6 +108,32 @@ fn check_for_conditional_attributes(doc: &Document) -> Result<(), CleanerError> 
             check_attr!(AId::RequiredFeatures, node);
         } else if node.has_attribute(AId::SystemLanguage) {
             check_attr!(AId::SystemLanguage, node);
+        }
+    }
+
+    Ok(())
+}
+
+fn check_for_external_xlink(doc: &Document) -> Result<(), CleanerError> {
+    for node in doc.descendants() {
+        if !node.has_attribute(AId::XlinkHref) {
+            continue;
+        }
+
+        match node.tag_id().unwrap() {
+              EId::A
+            | EId::Image
+            | EId::FontFaceUri
+            | EId::FeImage => continue,
+            _ => {}
+        }
+
+        let attrs = node.attributes();
+        match attrs.get_value(AId::XlinkHref).unwrap() {
+            &AttributeValue::String(ref s) => {
+                return Err(CleanerError::ExternalHrefIsNotSupported(s.clone()));
+            }
+            _ => {}
         }
     }
 

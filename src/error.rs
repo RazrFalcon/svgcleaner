@@ -28,6 +28,7 @@ pub enum CleanerError {
     ScriptingIsNotSupported,
     AnimationIsNotSupported,
     ConditionalProcessingIsNotSupported,
+    ExternalHrefIsNotSupported(String),
     BiggerFile,
 }
 
@@ -44,6 +45,9 @@ impl fmt::Debug for CleanerError {
                 write!(f, "Cleaned file is bigger than original"),
             CleanerError::ConditionalProcessingIsNotSupported =>
                 write!(f, "Conditional processing attributes is not supported"),
+            CleanerError::ExternalHrefIsNotSupported(ref s) =>
+                write!(f, "The 'xlink:href' attribute is referencing an external object '{}', \
+                           which is not supported", s),
         }
     }
 }

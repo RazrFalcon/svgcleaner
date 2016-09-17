@@ -394,6 +394,7 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
                    || so.find("Error: Unsupported CSS at").is_some()
                    || so.find("Error: Element crosslink").is_some()
                    || so.find("Error: Conditional processing").is_some()
+                   || so.find("Error: The 'xlink:href' attribute").is_some()
                    || so.find("Error: Unsupported ENTITY").is_some() {
                     return true;
                 }

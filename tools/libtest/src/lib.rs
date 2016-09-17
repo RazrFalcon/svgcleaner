@@ -154,6 +154,7 @@ pub fn render_svg(render: &str, svg_path: &str, png_path: &str) -> bool {
                    !x.find("QPainter::restore: Unbalanced save/restore").is_some()
                 && !x.find("QPainter::end: Painter ended with").is_some()
                 && !x.find("libGL error:").is_some()
+                && !x.find("Image of format '' blocked").is_some()
             }).collect::<Vec<&str>>().join("\n");
 
             if !s2.is_empty() {

@@ -22,12 +22,14 @@
 
 use super::short::{EId, AId};
 
-use svgdom::{Document, Node, AttributeValue};
+use svgdom::{Document, Node, AttributeValue, ValueId};
 
-// TODO: process display="none"
+// TODO: process mask element
+// TODO: process visibility
 
 pub fn remove_invisible_elements(doc: &Document) {
     let mut is_any_removed = false;
+    process_display_attribute(doc, &mut is_any_removed);
     process_paths(doc, &mut is_any_removed);
     process_clip_paths(doc, &mut is_any_removed);
 
@@ -138,6 +140,35 @@ fn process_paths(doc: &Document, is_any_removed: &mut bool) {
     }
 }
 
+// Remove elements with 'display:none'.
+fn process_display_attribute(doc: &Document, is_any_removed: &mut bool) {
+    let mut nodes = Vec::with_capacity(16);
+
+    let mut iter = doc.descendants();
+    while let Some(node) = iter.next() {
+        // if elements has attribute 'display:none' and this element is not used - we can remove it
+        if node.has_attribute_with_value(AId::Display, ValueId::None) && !node.is_used() {
+            // all children must be unused to
+            if !node.descendants().any(|n| n.is_used()) {
+                // TODO: ungroup used elements and remove unused
+                nodes.push(node.clone());
+
+                if node.has_children() {
+                    iter.skip_children();
+                }
+            }
+        }
+    }
+
+    if !nodes.is_empty() {
+        *is_any_removed = true;
+    }
+
+    while let Some(n) = nodes.pop() {
+        n.remove();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -217,6 +248,15 @@ b"<svg>
 "<svg/>
 ");
 
+    test!(rm_clip_path_3,
+b"<svg>
+    <clipPath>
+        <rect display='none'/>
+    </clipPath>
+</svg>",
+"<svg/>
+");
+
     test!(rm_path_1,
 b"<svg>
     <path/>
@@ -237,6 +277,31 @@ b"<svg>
     <path d='' fill='url(#lg1)'/>
 </svg>",
 "<svg/>
+");
+
+    test!(rm_display_none_1,
+b"<svg>
+    <path display='none'/>
+</svg>",
+"<svg/>
+");
+
+    test!(rm_display_none_2,
+b"<svg>
+    <g display='none'>
+        <rect/>
+    </g>
+</svg>",
+"<svg/>
+");
+
+    test_eq!(skip_display_none_1,
+b"<svg>
+    <g display='none'>
+        <rect id='r1'/>
+    </g>
+    <use xlink:href='#r1'/>
+</svg>
 ");
 
 }

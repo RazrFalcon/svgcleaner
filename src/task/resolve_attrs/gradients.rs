@@ -252,7 +252,7 @@ b"<svg>
 </svg>
 ");
 
-    // This main test, because it check resolving order correctness.
+    // This is the main test, because it check resolving order correctness.
     test_rg!(resolve_6,
 b"<svg>
     <radialGradient id='rg2' cy='30' xlink:href='#rg1'/>

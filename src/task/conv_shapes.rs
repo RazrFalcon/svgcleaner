@@ -89,7 +89,8 @@ fn convert_rect(node: Node) {
         let rx = attrs.get_or(AId::Rx, &def_value).as_length().unwrap();
         let ry = attrs.get_or(AId::Ry, &def_value).as_length().unwrap();
 
-        // we converts only simple rects, not rounded
+        // we converts only simple rects, not rounded,
+        // because their path will be longer
         if rx.num != 0.0 || ry.num != 0.0 {
             return;
         }

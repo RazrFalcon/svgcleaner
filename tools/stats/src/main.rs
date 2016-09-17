@@ -27,6 +27,7 @@ struct Data<'a> {
 }
 
 // TODO: min/max time
+// TODO: count AE without threshold
 struct TotalStats {
     title: String,
     cleaned_with_errors: Vec<String>,

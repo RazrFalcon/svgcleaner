@@ -24,6 +24,7 @@ pub use self::conv_shapes::convert_shapes_to_paths;
 pub use self::final_fixes::{final_fixes, fix_xmlns_attribute};
 pub use self::fix_attrs::fix_invalid_attributes;
 pub use self::group_defs::group_defs;
+pub use self::join_style_attrs::join_style_attributes;
 pub use self::merge_gradients::merge_gradients;
 pub use self::preclean_checks::preclean_checks;
 pub use self::resolve_attrs::resolve_attributes;
@@ -39,7 +40,6 @@ pub use self::rm_unused_defs::remove_unused_defs;
 pub use self::rm_version::remove_version;
 pub use self::trim_ids::trim_ids;
 pub use self::ungroup_groups::ungroup_groups;
-pub use self::join_style_attrs::join_style_attributes;
 
 #[macro_use]
 mod macros;
@@ -47,6 +47,7 @@ mod conv_shapes;
 mod final_fixes;
 mod fix_attrs;
 mod group_defs;
+mod join_style_attrs;
 mod merge_gradients;
 mod preclean_checks;
 mod resolve_attrs;
@@ -62,7 +63,6 @@ mod rm_unused_defs;
 mod rm_version;
 mod trim_ids;
 mod ungroup_groups;
-mod join_style_attrs;
 pub mod paths;
 
 /// Shorthand names for modules.

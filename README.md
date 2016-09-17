@@ -20,7 +20,7 @@
 
 ## Goals
 
-1. **Correctness.** svgcleaner should not break an SVG file.
+1. [**Correctness.**](docs/testing_notes.rst) svgcleaner should not break an SVG file.
 1. **Cleaning ratio.** More is better.
 1. **Performance.** If something can be faster - it should be faster.
    An average SVG file should be processed by less than 16ms on a modern PC.
@@ -157,6 +157,8 @@ V0.7
 V0.8
  - [ ] Convert units using specified DPI.
  - [ ] Numbers comparing using custom precision.
+ - [ ] Simplify paths. Something like Inkscapes's 'Simplify', but lossless.
+       Have no idea how to make it. Hints [here](https://pomax.github.io/bezierinfo/#bsplines).
  - [ ] Unix pipes.
 
 Note, that current git version is pretty stable and ready to use.

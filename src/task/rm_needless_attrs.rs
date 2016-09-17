@@ -35,6 +35,10 @@ pub fn remove_needless_attributes(doc: &Document) {
             EId::Polyline | EId::Polygon => process_poly(&node),
             _ => {}
         }
+
+        // we can remove any 'color' attributes since they
+        // already resolved in 'resolve_inherit', which makes them pointless
+        node.remove_attribute(AId::Color);
     }
 }
 
@@ -48,7 +52,7 @@ fn process_clip_path(node: &Node) {
         // since they does not impact rendering.
         // https://www.w3.org/TR/SVG/masking.html#EstablishingANewClippingPath
         child.attributes_mut().retain(|a| {
-            !(a.is_fill() || a.is_stroke())
+            !(a.is_fill() || a.is_stroke() || a.id == AId::Opacity)
         });
     }
 }

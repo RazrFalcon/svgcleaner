@@ -14,6 +14,7 @@
     * [CLI](#cli)
     * [GUI](#gui)
   * [Downloads](#downloads)
+  * [Contributing and Issues](#contributing-and-issues)
   * [Roadmap](#roadmap)
   * [License](#license)
 
@@ -86,6 +87,10 @@ You can get a GUI [here](https://github.com/RazrFalcon/svgcleaner-gui).
 
 You can get a prebuild packages [here](https://github.com/RazrFalcon/svgcleaner-gui/releases).
 
+## Contributing and Issues
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
 ## Roadmap
 V0.7
  - [x] Remove text related-attributes if there is no text.
@@ -135,7 +140,7 @@ V0.8
        Have no idea how to make it. Hints [here](https://pomax.github.io/bezierinfo/#bsplines).
  - [ ] Unix pipes.
 
-Note, that current git version is pretty stable and ready to use.
+Note, that master branch is pretty stable and ready to use.
 
 ## License
 

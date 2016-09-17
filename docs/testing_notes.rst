@@ -1,4 +1,4 @@
-.. contents:: Testing notes
+.. contents::
 
 Rendering errors
 ================
@@ -28,12 +28,13 @@ And even this subset can be implemented with errors. So cleaned image can became
 only because rendering application will treat new data differently.
 
 There are lots of examples (which is not categorized yet):
- - These two paths are the same: ``M 10 -20 A 5.5 0.3 -4 1 1 0 -0.1``, ``M10-20A5.5.3-4 110-.1``.
-   Sadly, most of the application doesn't support such notation, even throw it's valid by SVG spec.
- - ``clipPath`` element can contain only specific elements, but some applications renders all of them.
-   So when ``svgcleaner`` removes invalid elements - the result image will be rendered differently,
-   even throw it's valid by SVG spec.
- - And so on...
+
+- These two paths are the same: ``M 10 -20 A 5.5 0.3 -4 1 1 0 -0.1``, ``M10-20A5.5.3-4 110-.1``.
+  Sadly, most of the application doesn't support such notation, even throw it's valid by SVG spec.
+- ``clipPath`` element can contain only specific elements, but some applications renders all of them.
+  So when ``svgcleaner`` removes invalid elements - the result image will be rendered differently,
+  even throw it's valid by SVG spec.
+- And so on...
 
 And again - such artifacts is not an error.
 
@@ -49,17 +50,13 @@ Testing method
 
 Testing algorithm looks like this:
 
- 1. Clean image with cleaning application.
+1. Clean image with cleaning application.
+#. Render original image using ``tools/svgrender`` [1]_.
+#. Render cleaned image using ``tools/svgrender`` [1]_.
+#. Compare images using imagemagick's ``compare``:
 
- #. Render original image using ``tools/svgrender`` [1]_.
-
- #. Render cleaned image using ``tools/svgrender`` [1]_.
-
- #. Compare images using imagemagick's ``compare``:
-
-    ``compare -metric AE -fuzz 1% orig.png cleaned.png diff.png``
-
- #. If AE value is bigger than 2% [2]_ of the image size - we have an error.
+   ``compare -metric AE -fuzz 1% orig.png cleaned.png diff.png``
+#. If AE value is bigger than 2% [2]_ of the image size - we have an error.
 
 .. [1] ``svgrender`` is based on QtWebKit, which is the best way to render SVG from CLI.
 

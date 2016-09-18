@@ -242,6 +242,11 @@ fn run_tests(data: &Data, input_dir: &str, start_pos: usize, cache: &TestCache) 
             continue;
         }
 
+        // skip symlinks
+        if !entry.file_type().is_file() {
+            continue;
+        }
+
         if idx < start_pos {
             idx += 1;
             continue;
@@ -395,7 +400,9 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
                    || so.find("Error: Element crosslink").is_some()
                    || so.find("Error: Conditional processing").is_some()
                    || so.find("Error: The 'xlink:href' attribute").is_some()
-                   || so.find("Error: Unsupported ENTITY").is_some() {
+                   || so.find("Error: Unsupported ENTITY").is_some()
+                   || so.find("Error: The 'use' element with").is_some()
+                   || so.find("Error: Cleaned file is bigger").is_some() {
                     return true;
                 }
                 return false;

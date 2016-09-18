@@ -167,7 +167,7 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
 
     let mut idx = 1;
     for entry in dir_iter!(input_dir) {
-        if entry.file_type().is_dir() {
+        if !entry.file_type().is_file() {
             continue;
         }
 

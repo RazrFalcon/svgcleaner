@@ -22,7 +22,7 @@
 
 use super::short::{EId, AId};
 
-use svgdom::{Document, Node};
+use svgdom::{Document, Node, AttributeValue};
 
 pub fn ungroup_groups(doc: &Document) {
     let mut groups = Vec::with_capacity(16);
@@ -146,7 +146,12 @@ fn ungroup_group(g: &Node) {
             }
 
             if !child.has_attribute(attr.id) {
-                child.set_attribute(attr.id, attr.value.clone());
+                match attr.value {
+                    AttributeValue::Link(ref iri) | AttributeValue::FuncLink(ref iri) => {
+                        child.set_link_attribute(attr.id, iri.clone()).unwrap();
+                    }
+                    _ => child.set_attribute(attr.id, attr.value.clone()),
+                }
             }
         }
     }
@@ -162,13 +167,27 @@ fn ungroup_group(g: &Node) {
 mod tests {
     use super::*;
     use svgdom::{Document, WriteToString};
+    use task::{group_defs, final_fixes, rm_unused_defs};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
+
+                // prepare defs
+                group_defs(&doc);
+
+                // actual test
                 ungroup_groups(&doc);
+
+                // We must check that we moved linked elements correctly.
+                // If we not, than referenced elements will be removed. Which is wrong.
+                rm_unused_defs::remove_unused_defs(&doc);
+
+                // removes `defs` element
+                final_fixes(&doc);
+
                 let mut opt = write_opt_for_tests!();
                 opt.transforms.simplify_matrix = true;
                 assert_eq_text!(doc.to_string_with_opt(&opt), $out_text);
@@ -319,11 +338,12 @@ b"<svg>
 
     test_eq!(skip_ungroup_5,
 b"<svg>
-    <clipPath>
+    <clipPath id='cp1'>
         <g transform='translate(5)'>
             <rect/>
         </g>
     </clipPath>
+    <rect clip-path='url(#cp1)'/>
 </svg>
 ");
 

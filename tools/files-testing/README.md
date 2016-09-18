@@ -27,11 +27,12 @@ stats \
  - http://www.w3.org/Graphics/SVG/Test/20110816/archives/W3C_SVG_11_TestSuite.tar.gz
  - https://sourceforge.net/projects/openiconlibrary/
  - https://openclipart.org/downloads/
- - https://www.archlinux.org/packages/extra/any/breeze-icons/
  - https://www.archlinux.org/packages/extra/any/oxygen-icons-svg/
+ - https://github.com/KDE/breeze-icons
  - https://github.com/linuxdeepin/deepin-icon-theme
  - https://github.com/GreenRaccoon23/archdroid-icon-theme
  - https://github.com/elementary/icons
+ - https://wiki.ubuntu.com/Artwork/Incoming/Karmic/Humanity_Icons?action=AttachFile&do=view&target=humanity_2.1.tar.gz
 
 ## Convert svgz to svg
 

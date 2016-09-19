@@ -137,13 +137,16 @@ macro_rules! gen_flag {
 pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     debug_assert!(KEYS.0.len() - 1 == Key::Quiet as usize);
 
+    // NOTE: We use custom help output, because `clap` doesn't support
+    //       args grouping.
+
     let mut a = App::new("svgcleaner")
-        // .help(include_str!("../data/help.txt")) // TODO: use custom help
+        .help(include_str!("../data/help.txt"))
         .version("0.6.91") // TODO: take from toml
         .about("svgcleaner could help you to clean up yours SVG \
                 files from the unnecessary data.")
         .arg(Arg::with_name("in-file")
-            .help("File to clean")
+            .help("Input file")
             .required(true)
             .index(1)
             .validator(is_svg))

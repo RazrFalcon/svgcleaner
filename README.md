@@ -95,11 +95,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## Roadmap
 V0.7
- - [x] Remove text related-attributes if there is no text.
+ - [x] Remove text-related attributes if there is no text.
  - [x] Ungroup groups.
  - [ ] Remove duplicated defs:
    - [ ] `feGaussianBlur`
-   - [ ] `clipPath`
    - [ ] other...
  - [ ] Remove invisible elements.
    - [x] Invisible elements inside the `clipPath`.
@@ -111,11 +110,14 @@ V0.7
    - [x] Remove presentational attributes from elements inside `clipPath`.
    - [ ] Remove `stroke-linecap` if the path is closed.
    - [ ] other...
- - [ ] Group elements by the style attributes.
+ - [ ] Group elements by style attributes.
+   - [x] Move to group if all attributes are equal
+   - [ ] Move to group if most attributes are equal
+   - [ ] Create own groups.
  - [x] Remove `version` attribute.
  - [ ] Remove elements outside the viewbox.
  - [x] Merge gradients.
- - [ ] Apply transforms to shapes:
+ - [ ] Apply transforms:
    - [ ] paths
    - [ ] shapes
    - [ ] gradients
@@ -128,12 +130,14 @@ V0.7
     - [x] segments to relative
     - [x] remove ClosePath segments
     - [x] remove unneeded MoveTo segments
-    - [ ] convert segments to shorter one
+    - [ ] convert segments into shorter one
     - [ ] join line-based segments
- - [ ] Join font properties into the `font` attribute.
  - [ ] Join sequential paths.
  - [x] Join presentational attributes.
  - [ ] Process `enable-background`.
+ - [ ] Test more files.
+ - [ ] Test files using all possible cleaning options combinations.
+ - [ ] Performance optimizations.
 
 V0.8
  - [ ] Convert units using specified DPI.

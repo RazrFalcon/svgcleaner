@@ -22,6 +22,7 @@ remove-unused-coordinates.rst
 remove-default-attributes.rst
 remove-xmlns-xlink-attribute.rst
 remove-needless-attributes.rst
+move-styles-to-group.rst
 join-style-attributes.rst
 -- Paths
 paths-to-relative.rst

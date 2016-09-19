@@ -728,6 +728,39 @@ CLI argument: ``--remove-needless-attributes``
 .. |after-remove-needless-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-needless-attributes.svg
 
 
+Move presentational attributes to the parent group
+--------------------------------------------------
+
+If all children of the group element have the same presentation attribute - we can move this
+attribute to the group and remove it from children.
+
+This method does not create new groups.
+
+CLI argument: ``--move-styles-to-group``
+
++-----------------------------------------+--------------------------------+
+| Before (317b)                           | After (291b)                   |
++-----------------------------------------+--------------------------------+
+| .. code-block:: XML                     | .. code-block:: XML            |
+|                                         |                                |
+|   <svg>                                 |   <svg>                        |
+|     <g>                                 |     <g fill="green">           |
+|       <circle fill="green"              |       <circle cx="50" cy="50"  |
+|               cx="50" cy="50" r="45"/>  |               r="45"/>         |
+|       <circle fill="green"              |       <circle cx="100" cy="50" |
+|               cx="100" cy="50" r="45"/> |               r="45"/>         |
+|       <circle fill="green"              |       <circle cx="150" cy="50" |
+|               cx="150" cy="50" r="45"/> |               r="45"/>         |
+|     </g>                                |     </g>                       |
+|   </svg>                                |   </svg>                       |
++-----------------------------------------+--------------------------------+
+| |before-move-styles-to-group|           | |after-move-styles-to-group|   |
++-----------------------------------------+--------------------------------+
+
+.. |before-move-styles-to-group| image:: https://razrfalcon.github.io/svgcleaner/images/before/move-styles-to-group.svg
+.. |after-move-styles-to-group| image:: https://razrfalcon.github.io/svgcleaner/images/after/move-styles-to-group.svg
+
+
 Join presentational attributes when it's shorter
 ------------------------------------------------
 

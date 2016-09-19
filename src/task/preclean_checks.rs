@@ -55,33 +55,11 @@ fn check_for_unsupported_elements(doc: &Document) -> Result<(), CleanerError> {
     Ok(())
 }
 
-static SCRIPT_ATTRIBUTES: &'static [AId] = &[
-    AId::Onabort,
-    AId::Onactivate,
-    AId::Onbegin,
-    AId::Onclick,
-    AId::Onend,
-    AId::Onerror,
-    AId::Onfocusin,
-    AId::Onfocusout,
-    AId::Onload,
-    AId::Onmousedown,
-    AId::Onmousemove,
-    AId::Onmouseout,
-    AId::Onmouseover,
-    AId::Onmouseup,
-    AId::Onrepeat,
-    AId::Onresize,
-    AId::Onscroll,
-    AId::Onunload,
-    AId::Onzoom,
-    AId::ContentScriptType,
-];
-
 fn check_for_script_attributes(doc: &Document) -> Result<(), CleanerError> {
     for node in doc.descendants() {
-        for a in SCRIPT_ATTRIBUTES {
-            if node.has_attribute(*a) {
+        let attrs = node.attributes();
+        for attr in attrs.iter() {
+            if attr.is_graphical_event() || attr.is_document_event() || attr.is_animation_event() {
                 return Err(CleanerError::ScriptingIsNotSupported);
             }
         }

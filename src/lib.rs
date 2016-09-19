@@ -20,12 +20,10 @@
 **
 ****************************************************************************/
 
-#[macro_use]
-extern crate clap;
+#[macro_use] extern crate clap;
 extern crate svgdom;
 
-#[macro_use]
-pub mod cli;
+#[macro_use] pub mod cli;
 pub mod cleaner;
 pub mod error;
 mod task;

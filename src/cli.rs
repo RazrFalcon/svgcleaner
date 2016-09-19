@@ -51,6 +51,7 @@ pub enum Key {
     RemoveDefaultAttributes,
     RemoveXmlnsXlinkAttribute,
     RemoveNeedlessAttributes,
+    MoveStylesToGroup,
     JoinStyleAttributes,
 
     PathsToRelative,
@@ -103,6 +104,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-default-attributes",
     "remove-xmlns-xlink-attribute",
     "remove-needless-attributes",
+    "move-styles-to-group",
     "join-style-attributes",
 
     "paths-to-relative",
@@ -198,6 +200,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Remove an unused xmlns:xlink attribute", "true"));
     a = a.arg(gen_flag!(Key::RemoveNeedlessAttributes,
             "Remove attributes that doesn't belong to this element", "true"));
+    a = a.arg(gen_flag!(Key::MoveStylesToGroup,
+            "Move presentational attributes to the parent group", "true"));
     a = a.arg(gen_flag!(Key::JoinStyleAttributes,
             "Join presentational attributes when it's shorter", "true"));
 
@@ -282,11 +286,10 @@ fn is_indent(val: String) -> Result<(), String> {
 }
 
 fn is_flag(val: String) -> Result<(), String> {
-    // TODO: y/n, yes/no
-    if val == "true" || val == "false" {
-        Ok(())
-    } else {
-        Err(String::from("Invalid flag value."))
+    match val.as_ref() {
+          "true"
+        | "false" => Ok(()),
+        _ => Err(String::from("Invalid flag value.")),
     }
 }
 

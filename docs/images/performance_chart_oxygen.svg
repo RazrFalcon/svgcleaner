@@ -23,33 +23,33 @@
     </text>
     <rect fill="#ccc" height="110" width="1" x="258" y="30"/>
     <text fill="#000" font-family="Arial" font-size="16" x="234" y="154">
-        150ms
+        200ms
     </text>
     <rect fill="#ccc" height="110" width="1" x="373" y="30"/>
     <text fill="#000" font-family="Arial" font-size="16" x="349" y="154">
-        300ms
+        400ms
     </text>
     <rect fill="#ccc" height="110" width="1" x="488" y="30"/>
     <text fill="#000" font-family="Arial" font-size="16" x="464" y="154">
-        450ms
+        600ms
     </text>
     <rect fill="#ccc" height="110" width="1" x="604" y="30"/>
     <text fill="#000" font-family="Arial" font-size="16" x="580" y="154">
-        600ms
+        800ms
     </text>
-    <rect fill="#3260cd" height="22" width="11" x="143" y="41"/>
-    <rect fill="#999" height="1" width="12" x="154" y="52"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="168" y="58">
-        14.835
+    <rect fill="#3260cd" height="22" width="4" x="143" y="41"/>
+    <rect fill="#999" height="1" width="12" x="147" y="52"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="161" y="58">
+        8.344
     </text>
-    <rect fill="#3260cd" height="22" width="20" x="143" y="74"/>
-    <rect fill="#999" height="1" width="12" x="163" y="85"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="177" y="91">
-        26.321
+    <rect fill="#3260cd" height="22" width="17" x="143" y="74"/>
+    <rect fill="#999" height="1" width="12" x="160" y="85"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="174" y="91">
+        30.317
     </text>
-    <rect fill="#3260cd" height="22" width="408" x="143" y="107"/>
-    <text fill="#fff" font-family="Arial" font-size="16" x="489" y="124">
-        531.889
+    <rect fill="#3260cd" height="22" width="350" x="143" y="107"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="431" y="124">
+        607.615
     </text>
     <rect fill="#333" height="110" width="1" x="143" y="30"/>
     <text font-family="Arial" font-size="16" font-style="italic" x="361" y="176">

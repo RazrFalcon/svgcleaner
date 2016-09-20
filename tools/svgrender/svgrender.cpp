@@ -91,15 +91,16 @@ void WebKitSVGRenderer::saveResult(bool ok)
     }
 
     // create the target surface
-    QSize t = targetSize.isValid() ? targetSize : QSize(ww, hh);
-    QImage img(t, QImage::Format_ARGB32_Premultiplied);
+    QImage img(targetSize, QImage::Format_ARGB32_Premultiplied);
     img.fill(Qt::transparent);
 
     // prepare the painter
     QPainter p(&img);
-    qreal xs = targetSize.isValid() ? targetSize.width() / ww : 1.0;
-    qreal ys = targetSize.isValid() ? targetSize.height() / hh : 1.0;
-    p.scale(xs, ys);
+    qreal xs = targetSize.width() / ww;
+    // center image
+    p.translate((targetSize.width() - ww * xs) / 2, (targetSize.height() - hh * xs) / 2);
+    // scale image to target size
+    p.scale(xs, xs);
 
     // the best quality
     p.setRenderHint(QPainter::Antialiasing);
@@ -120,10 +121,9 @@ void WebKitSVGRenderer::saveResult(bool ok)
 static void usage()
 {
     std::cout << "Rasterize an SVG icon to a PNG image" << std::endl << std::endl;
-    std::cout << "  svg2png  input.svg [output.png [width height]]" << std::endl << std::endl;
+    std::cout << "  svg2png input.svg output.png width" << std::endl << std::endl;
     std::cout << "Examples: " << std::endl;
-    std::cout << "  svg2png tiger.svg" << std::endl;
-    std::cout << "  svg2png icon.svg icon.png 256 256" << std::endl;
+    std::cout << "  svg2png icon.svg icon.png 256" << std::endl;
     std::cout << std::endl;
 }
 
@@ -140,9 +140,8 @@ int main(int argc, char * argv[])
     renderer.fileName = QString::fromLatin1(argv[2]);
 
     int w = QString::fromLatin1(argv[3]).toInt();
-    int h = QString::fromLatin1(argv[4]).toInt();
-    renderer.targetSize = QSize(w, h);
-    if (!renderer.targetSize.isValid() || w <= 0 || h <= 0) {
+    renderer.targetSize = QSize(w, w);
+    if (!renderer.targetSize.isValid() || w <= 0) {
         std::cerr << "Please specify a valid target size!" << std::endl;
         return 0;
     }

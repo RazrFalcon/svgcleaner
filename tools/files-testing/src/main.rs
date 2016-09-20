@@ -120,8 +120,6 @@ fn main() {
 
     let cache = TestCache::init(m.value_of("cache-db").unwrap());
 
-    // File::create("out.txt").unwrap();
-
     let start = time::precise_time_ns();
     run_tests(&data, input_dir, pos, &cache);
     let end = time::precise_time_ns();

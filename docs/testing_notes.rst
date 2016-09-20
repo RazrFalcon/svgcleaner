@@ -67,6 +67,7 @@ Notes
 
 - PC: i5-3570k 3.8GHz, Gentoo Linux Stable x86_64.
 - Input files are stored on HDD, cleaned files was saved to the ``tmpfs``.
+- All tests are single-threaded.
 - I know that a performance comparison is not fair since `svgo` have to restart nodejs
   each time. But I don't know how to prevent it or ignore nodejs starting time.
 - ``svgcleaner`` 0.6.9 was running using default options.

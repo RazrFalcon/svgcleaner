@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.6.91] - 2016-09-20
+### Added
+- `--ungroup-groups`.
+- `--merge-gradients`.
+- `--remove-invisible-elements`.
+- `--remove-version`.
+- `--remove-unused-coordinates`.
+- `--remove-needless-attributes`.
+- `--move-styles-to-group`.
+- `--join-style-attributes`.
+- `--paths-to-relative`.
+- `--remove-unused-segments`.
+
+### Changed
+- 20-40% faster.
+- ~15% better cleaning ratio.
+- Conditional processing attributes are unsupported now.
+- `xlink:href` with external data is unsupported now.
+- Update to the latest `libsvgdom` which fixed a lot of bugs.
+- New `--help` output.
+
+### Fixed
+- Fix duplicated gradients removing.
+
 ## [0.6.90] - 2016-09-09
 ### Added
 - Own SVG parsing implementation.
@@ -117,7 +141,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First public release with Perl backend and Qt GUI.
 
-[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.90...HEAD
+[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.91...HEAD
+[0.6.91]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.90...v0.6.91
 [0.6.90]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.2...v0.6.90
 [0.6.2]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6...v0.6.1

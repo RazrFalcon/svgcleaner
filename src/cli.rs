@@ -143,8 +143,6 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     let mut a = App::new("svgcleaner")
         .help(include_str!("../data/help.txt"))
         .version("0.6.91") // TODO: take from toml
-        .about("svgcleaner could help you to clean up yours SVG \
-                files from the unnecessary data.")
         .arg(Arg::with_name("in-file")
             .help("Input file")
             .required(true)
@@ -164,7 +162,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     a = a.arg(gen_flag!(Key::RemoveNonsvgElements,
             "Remove non-SVG elements", "true"));
     a = a.arg(gen_flag!(Key::RemoveUnusedDefs,
-            "Remove unused elements inside 'defs' element", "true"));
+            "Remove unused referenced elements", "true"));
     a = a.arg(gen_flag!(Key::ConvertShapes,
             "Convert basic shapes into paths", "true"));
     a = a.arg(gen_flag!(Key::RemoveTitle,
@@ -206,7 +204,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     a = a.arg(gen_flag!(Key::MoveStylesToGroup,
             "Move presentational attributes to the parent group", "true"));
     a = a.arg(gen_flag!(Key::JoinStyleAttributes,
-            "Join presentational attributes when it's shorter", "true"));
+            "Join presentational attributes", "true"));
 
     // paths
     a = a.arg(gen_flag!(Key::PathsToRelative,
@@ -290,8 +288,7 @@ fn is_indent(val: String) -> Result<(), String> {
 
 fn is_flag(val: String) -> Result<(), String> {
     match val.as_ref() {
-          "true"
-        | "false" => Ok(()),
+        "true" | "false" => Ok(()),
         _ => Err(String::from("Invalid flag value.")),
     }
 }

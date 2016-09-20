@@ -3,7 +3,7 @@ extern crate clap;
 extern crate time;
 extern crate libtest;
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::fs;
 
@@ -23,7 +23,8 @@ struct Data<'a> {
     work_dir: &'a str,
     render_path: Option<&'a str>,
     threshold: u8,
-    cache: TestCache,
+    input_dir: &'a str,
+    orig_pngs_dir: &'a str,
 }
 
 struct TotalStats {
@@ -108,14 +109,11 @@ fn main() {
             .long("threshold").help("Sets AE threshold in percent")
             .value_name("PERCENT")
             .default_value("0"))
-        .arg(Arg::with_name("cache-db")
-            .long("cache-db").help("Sets path to the test cache db.")
-            .value_name("PATH")
-            .required_unless("skip-errors-check"))
         .arg(Arg::with_name("skip-errors-check")
             .long("skip-errors-check").help("Skips raster images compare, which is much faster"))
         .get_matches();
 
+    let orig_pngs = Path::new(m.value_of("workdir").unwrap()).join("orig_pngs");
     let input_dir = m.value_of("input-data").unwrap();
 
     let render;
@@ -125,16 +123,16 @@ fn main() {
         render = None;
     }
 
-    // TODO: no need for cache in skip-errors-check mode
-
     let data = Data {
         work_dir: m.value_of("workdir").unwrap(),
         render_path: render,
         threshold: value_t!(m, "threshold", u8).unwrap(),
-        cache: TestCache::init(m.value_of("cache-db").unwrap()),
+        input_dir: input_dir,
+        orig_pngs_dir: orig_pngs.to_str().unwrap(),
     };
 
     create_dir(&data.work_dir);
+    create_dir(&data.orig_pngs_dir);
 
     let cleaner_path = m.value_of("cleaner").unwrap();
 
@@ -167,6 +165,11 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
 
     let mut idx = 1;
     for entry in dir_iter!(input_dir) {
+        if entry.file_type().is_dir() {
+            create_dir(gen_orig_png_dir(data, entry.path()));
+            continue;
+        }
+
         if !entry.file_type().is_file() {
             continue;
         }
@@ -175,7 +178,7 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
         let path_suffix = svg_path.strip_prefix(input_dir).unwrap();
         let path_suffix_str = path_suffix.to_str().unwrap();
         println!("Processing {} of {}: {}", idx, total, path_suffix_str);
-        let stats = file_stats(data, svg_path, path_suffix_str, &cleaner);
+        let stats = file_stats(data, svg_path, &cleaner);
 
         total_stats.total_input_size += stats.orig_file_size;
         total_stats.total_output_size += stats.new_file_size;
@@ -201,15 +204,15 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
     total_stats
 }
 
-fn file_stats(data: &Data, svg_path: &Path, path_suffix: &str, cleaner: &Cleaner) -> FileStats {
+fn gen_orig_png_dir(data: &Data, svg_path: &Path) -> PathBuf {
+    let sub_path = svg_path.strip_prefix(data.input_dir).unwrap();
+    Path::new(data.orig_pngs_dir).join(sub_path)
+}
+
+fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     let svg_path_str = svg_path.to_str().unwrap();
 
-    let mut render_imgs = data.render_path.is_some();
-
-    let use_cache = match *cleaner {
-        Cleaner::New(_) => true,
-        _ => false,
-    };
+    let render_imgs = data.render_path.is_some();
 
     let mut stats = FileStats::default();
 
@@ -235,21 +238,6 @@ fn file_stats(data: &Data, svg_path: &Path, path_suffix: &str, cleaner: &Cleaner
     stats.new_file_size = new_svg_path.metadata().unwrap().len();
     stats.elapsed_time = (end - start) as f64 / 1000000.0;
 
-    let cache_id = data.cache.cache_id(path_suffix);
-
-    if render_imgs && use_cache {
-        match cache_id {
-            Some(id) => {
-                let new_hash = file_md5sum(new_svg_path_str);
-                if data.cache.get_hash(id) == new_hash {
-                    // if md5 is same as in cache - no need to render and compare images
-                    render_imgs = false;
-                }
-            }
-            None => {}
-        }
-    }
-
     if !render_imgs {
         stats.is_successful = true;
         stats.is_fully_successful = true;
@@ -257,17 +245,13 @@ fn file_stats(data: &Data, svg_path: &Path, path_suffix: &str, cleaner: &Cleaner
         return stats;
     }
 
-    // render original file
-    let orig_png_path;
-    {
-        let file_name = svg_path.file_stem().unwrap().to_str().unwrap().to_owned();
-        let file_name = file_name + "_orig.png";
-        orig_png_path = Path::new(data.work_dir).join(file_name);
-    }
+    // render original svg
+    let orig_png_path = gen_orig_png_dir(data, Path::new(svg_path)).with_extension("png");
     let orig_png_path_str = orig_png_path.to_str().unwrap();
-    if !render_svg(&data.render_path.unwrap(), svg_path_str, orig_png_path_str) {
-        fs::remove_file(&new_svg_path).unwrap();
-        return stats;
+    if !orig_png_path.exists() {
+        if !render_svg(&data.render_path.unwrap(), svg_path_str, orig_png_path_str) {
+            return stats;
+        }
     }
 
     // render cleaned file
@@ -280,7 +264,6 @@ fn file_stats(data: &Data, svg_path: &Path, path_suffix: &str, cleaner: &Cleaner
     let new_png_path_str = new_png_path.to_str().unwrap();
     if !render_svg(&data.render_path.unwrap(), new_svg_path_str, new_png_path_str) {
         fs::remove_file(&new_svg_path).unwrap();
-        fs::remove_file(&orig_png_path).unwrap();
         return stats;
     }
 
@@ -307,18 +290,10 @@ fn file_stats(data: &Data, svg_path: &Path, path_suffix: &str, cleaner: &Cleaner
         None => is_successful = false,
     }
 
-    if is_successful && use_cache {
-        match cache_id {
-            Some(id) => data.cache.update_hash(id, &file_md5sum(&new_svg_path_str)),
-            None => data.cache.append_hash(path_suffix, &file_md5sum(&new_svg_path_str)),
-        }
-    }
-
     stats.is_successful = is_successful;
 
     fs::remove_file(&new_svg_path).unwrap();
     fs::remove_file(&new_png_path).unwrap();
-    fs::remove_file(&orig_png_path).unwrap();
     fs::remove_file(&diff_path).unwrap();
 
     stats
@@ -356,7 +331,7 @@ fn clean_with_new_cleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool
             return true;
         }
         Err(e) => {
-            println!("My err: {:?}", e);
+            println!("Error: {:?}", e);
             return false;
         }
     }
@@ -416,7 +391,7 @@ fn clean_with_old_cleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool
                 .arg("--convert-basic-shapes")
                 .arg("--apply-transforms-to-defs")
                 .arg("--compact-output")
-                .arg("--transform-precision=6")
+                .arg("--transform-precision=8")
                 .arg("--coordinates-precision=6")
                 .arg("--attributes-precision=6")
                 .arg("--sort-defs")
@@ -439,7 +414,7 @@ fn clean_with_old_cleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool
             return true;
         }
         Err(e) => {
-            println!("My err: {:?}", e);
+            println!("Error: {:?}", e);
             return false;
         }
     }
@@ -463,7 +438,7 @@ fn clean_with_svgo(exe_path: &str, in_path: &str, out_path: &str) -> bool {
             return true;
         }
         Err(e) => {
-            println!("My err: {:?}", e);
+            println!("Error: {:?}", e);
             return false;
         }
     }

@@ -84,8 +84,8 @@ CLI argument: ``--remove-nonsvg-elements``
 .. |after-remove-nonsvg-elements| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-nonsvg-elements.svg
 
 
-Remove unused defines
----------------------
+Remove unused referenced elements
+---------------------------------
 
 We can remove any `referenced <https://www.w3.org/TR/SVG/struct.html#Head>`_ elements from the
 SVG document if no other elements are linked to them.

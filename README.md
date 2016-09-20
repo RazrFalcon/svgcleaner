@@ -36,30 +36,30 @@ See ['Testing notes'](docs/testing_notes.rst) for details.
 
 *Less is better.*
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/correctness_chart_W3C_SVG_11_TestSuite.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/docs/images/correctness_chart_W3C_SVG_11_TestSuite.svg)
 
 \* Yes, svgcleaner 0.6.2 is absolute garbage on this data set.
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/correctness_chart_oxygen.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/docs/images/correctness_chart_oxygen.svg)
 
 #### Cleaning ratio
 
 *More is better.*
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/ratio_chart_W3C_SVG_11_TestSuite.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg)
 
 \* And again, svgcleaner 0.6.2 is kinda superb, but since it breaks most
 of the files - it's pointless.
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/ratio_chart_oxygen.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/docs/images/ratio_chart_oxygen.svg)
 
 #### Cleaning time
 
 *Less is better.*
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/performance_chart_W3C_SVG_11_TestSuite.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/docs/images/performance_chart_W3C_SVG_11_TestSuite.svg)
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/data/performance_chart_oxygen.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.90/docs/images/performance_chart_oxygen.svg)
 
 \* Even through that current results are impressive, svgcleaner is still very slow.
 

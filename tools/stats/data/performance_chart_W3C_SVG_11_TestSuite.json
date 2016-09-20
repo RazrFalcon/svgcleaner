@@ -7,15 +7,15 @@
     "items": [
         {
             "name": "svgcleaner 0.6.91",
-            "value": 1.440
+            "value": 1.468
         },
         {
             "name": "svgcleaner 0.6.2",
-            "value": 4.817
+            "value": 5.443
         },
         {
             "name": "svgo 0.7.0",
-            "value": 186.695
+            "value": 216.365
         }
     ],
     "hor_axis": {

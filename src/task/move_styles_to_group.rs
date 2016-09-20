@@ -47,6 +47,12 @@ fn _move_styles_to_group(parent: &Node, attrs_list: &mut Vec<AttrCount>) {
 fn process_g(g: &Node, attrs_list: &mut Vec<AttrCount>) {
     attrs_list.clear();
 
+    // We can't move styles from the element if it used,
+    // because `use` element processes only direct styles.
+    if g.children().any(|n| n.is_used()) {
+        return;
+    }
+
     for node in g.children() {
         let attrs = node.attributes();
         for attr in attrs.iter() {
@@ -144,6 +150,16 @@ b"<svg>
         <rect fill='#ff0000'/>
         <rect/>
     </g>
+</svg>
+");
+
+    test_eq!(keep_3,
+b"<svg>
+    <g>
+        <rect id='r1' fill='#ff0000'/>
+        <rect id='r2' fill='#ff0000'/>
+    </g>
+    <use xlink:href='#r1'/>
 </svg>
 ");
 

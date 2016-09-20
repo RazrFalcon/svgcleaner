@@ -135,6 +135,8 @@ V0.7
  - [ ] Join sequential paths.
  - [x] Join presentational attributes.
  - [ ] Process `enable-background`.
+ - [ ] Remove duplicated `stop` elements.
+ - [ ] Resolve `use`.
  - [ ] Test more files.
  - [ ] Test files using all possible cleaning options combinations.
  - [ ] Performance optimizations.
@@ -144,6 +146,8 @@ V0.8
  - [ ] Numbers comparing using custom precision.
  - [ ] Simplify paths. Something like Inkscapes's 'Simplify', but lossless.
        Have no idea how to make it. Hints [here](https://pomax.github.io/bezierinfo/#bsplines).
+ - [ ] Remove elements covered by other elements.
+ - [ ] Test not only against webkit.
  - [ ] Unix pipes.
 
 Note, that master branch is pretty stable and ready to use.

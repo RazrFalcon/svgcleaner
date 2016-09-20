@@ -1,0 +1,260 @@
+{
+    "custom_ae": [
+        {
+            "name": "struct-image-14-f.svg",
+            "valid_ae": 266
+        },
+        {
+            "name": "struct-cond-overview-02-f.svg",
+            "valid_ae": 865
+        },
+        {
+            "name": "pservers-grad-15-b.svg",
+            "valid_ae": 641
+        },
+        {
+            "name": "pservers-grad-01-b.svg",
+            "valid_ae": 641
+        },
+        {
+            "name": "color-prop-01-b.svg",
+            "valid_ae": 384
+        },
+        {
+            "name": "struct-cond-overview-03-f.svg",
+            "valid_ae": 558
+        },
+        {
+            "name": "struct-image-13-f.svg",
+            "valid_ae": 266
+        },
+        {
+            "name": "pservers-grad-23-f.svg",
+            "valid_ae": 426
+        },
+        {
+            "name": "interact-cursor-01-f.svg",
+            "valid_ae": 460
+        },
+        {
+            "name": "struct-image-15-f.svg",
+            "valid_ae": 460
+        },
+        {
+            "name": "pservers-grad-10-b.svg",
+            "valid_ae": 490
+        },
+        {
+            "name": "painting-marker-properties-01-f.svg",
+            "valid_ae": 278
+        },
+        {
+            "name": "pservers-grad-09-b.svg",
+            "valid_ae": 726
+        },
+        {
+            "name": "masking-path-08-b.svg",
+            "valid_ae": 322
+        },
+        {
+            "name": "masking-mask-02-f.svg",
+            "valid_ae": 266
+        },
+        {
+            "name": "linking-uri-02-b.svg",
+            "valid_ae": 215
+        },
+        {
+            "name": "pservers-grad-03-b.svg",
+            "valid_ae": 641
+        },
+        {
+            "name": "linking-a-10-f.svg",
+            "valid_ae": 1270
+        },
+        {
+            "name": "painting-control-01-f.svg",
+            "valid_ae": 807
+        },
+        {
+            "name": "coords-units-03-b.svg",
+            "valid_ae": 226
+        },
+        {
+            "name": "coords-transformattr-02-f.svg",
+            "valid_ae": 267
+        },
+        {
+            "name": "coords-transformattr-05-f.svg",
+            "valid_ae": 355
+        },
+        {
+            "name": "struct-group-01-t.svg",
+            "valid_ae": 207
+        },
+        {
+            "name": "styling-inherit-01-b.svg",
+            "valid_ae": 447
+        },
+        {
+            "name": "struct-defs-01-t.svg",
+            "valid_ae": 428
+        },
+        {
+            "name": "struct-image-10-t.svg",
+            "valid_ae": 510
+        },
+        {
+            "name": "pservers-grad-02-b.svg",
+            "valid_ae": 641
+        },
+        {
+            "name": "struct-image-09-t.svg",
+            "valid_ae": 343
+        },
+        {
+            "name": "filters-conv-05-f.svg",
+            "valid_ae": 747
+        },
+        {
+            "name": "pservers-grad-04-b.svg",
+            "valid_ae": 641
+        },
+        {
+            "name": "struct-image-08-t.svg",
+            "valid_ae": 510
+        },
+        {
+            "name": "pservers-grad-12-b.svg",
+            "valid_ae": 980
+        },
+        {
+            "name": "pservers-grad-14-b.svg",
+            "valid_ae": 1131
+        },
+        {
+            "name": "pservers-grad-05-b.svg",
+            "valid_ae": 258
+        },
+        {
+            "name": "linking-uri-01-b.svg",
+            "valid_ae": 215
+        },
+        {
+            "name": "shapes-rect-04-f.svg",
+            "valid_ae": 213
+        },
+        {
+            "name": "pservers-grad-16-b.svg",
+            "valid_ae": 641
+        },
+        {
+            "name": "struct-use-08-b.svg",
+            "valid_ae": 369
+        },
+        {
+            "name": "shapes-ellipse-03-f.svg",
+            "valid_ae": 254
+        },
+        {
+            "info": "Looks like a QtWebKit bug since Inkscape and Chromium renders equally.",
+            "name": "text-fonts-203-t.svg",
+            "valid_ae": 1596
+        },
+        {
+            "name": "struct-svg-03-f.svg",
+            "valid_ae": 380
+        },
+        {
+            "name": "masking-path-10-b.svg",
+            "valid_ae": 320
+        },
+        {
+            "name": "pservers-grad-06-b.svg",
+            "valid_ae": 1101
+        }
+    ],
+    "ignore": [
+        {
+            "info": "some kind of bug, but only reproduceable in QtWebKit",
+            "name": "fonts-desc-01-t.svg"
+        },
+        {
+            "info": "invalid attribute processing 'fill=\"red !important\"'",
+            "name": "styling-pres-01-t.svg"
+        },
+        {
+            "info": "unsupported 'system' colors",
+            "name": "color-prop-04-t.svg"
+        },
+        {
+            "info": "investigate",
+            "name": "pservers-grad-20-b.svg"
+        },
+        {
+            "info": "investigate",
+            "name": "types-dom-04-b.svg"
+        },
+        {
+            "info": "investigate",
+            "name": "text-deco-01-b.svg"
+        },
+        {
+            "info": "investigate",
+            "name": "pservers-grad-17-b.svg"
+        },
+        {
+            "info": "investigate",
+            "name": "filters-displace-01-f.svg"
+        },
+        {
+            "info": "investigate",
+            "name": "types-dom-svgtransformable-01-f.svg"
+        },
+        {
+            "info": "investigate",
+            "name": "types-dom-01-b.svg"
+        },
+        {
+            "info": "investigate",
+            "name": "text-ws-03-t.svg"
+        },
+        {
+            "info": "parsed with correct error, should be in should_fail list",
+            "name": "struct-use-12-f.svg"
+        },
+        {
+            "info": "numerical Unicode references unsupported",
+            "name": "coords-transformattr-01-f.svg"
+        },
+        {
+            "info": "external xlink unsupported, --remove-unreferenced-ids breaks it",
+            "name": "struct-use-05-b.svg"
+        },
+        {
+            "info": "some kind of QtWebKit bug, Chromium renders files equally",
+            "name": "masking-path-11-b.svg"
+        },
+        {
+            "info": "custom namespaces are not supported",
+            "name": "struct-frag-05-t.svg"
+        },
+        {
+            "info": "transform processing breaks text aliasing",
+            "name": "text-text-11-t.svg"
+        },
+        {
+            "info": "QtWebKit can't render it",
+            "name": "svgdom-over-01-f.svg"
+        },
+        {
+            "info": "cursor is not supported",
+            "name": "interact-cursor-01-f.svg"
+        },
+        {
+            "info": "some kind of bug, but only reproduceable in QtWebKit",
+            "name": "fonts-desc-02-t.svg"
+        }
+    ],
+    "min_valid_ae": 200
+}

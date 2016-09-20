@@ -81,9 +81,12 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
             _ => continue,
         }
 
-        while let Some(child) = linked_node.first_child() {
-            child.detach();
-            node.append(&child);
+        if !node.has_children() {
+            // Append 'stop' elements only when we don't have any before.
+            while let Some(child) = linked_node.first_child() {
+                child.detach();
+                node.append(&child);
+            }
         }
 
         node.remove_attribute(AId::XlinkHref);
@@ -245,6 +248,26 @@ b"<svg>
 </svg>",
 "<svg>
     <radialGradient/>
+</svg>
+");
+
+    // skip existing stop's
+    test!(merge_7,
+b"<svg>
+    <linearGradient id='lg1'>
+        <stop id='s1'/>
+        <stop id='s2'/>
+    </linearGradient>
+    <linearGradient id='lg2' xlink:href='#lg1'>
+        <stop id='s3'/>
+        <stop id='s4'/>
+    </linearGradient>
+</svg>",
+"<svg>
+    <linearGradient id='lg2'>
+        <stop id='s3'/>
+        <stop id='s4'/>
+    </linearGradient>
 </svg>
 ");
 

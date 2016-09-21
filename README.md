@@ -9,6 +9,7 @@
       * [Correctness](#correctness)
       * [Cleaning ratio](#cleaning-ratio)
       * [Cleaning time](#cleaning-time)
+  * [Limitations](#limitations)
   * [Building](#building)
   * [Usage](#usage)
     * [CLI](#cli)
@@ -62,6 +63,23 @@ of the files - it's pointless.
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.91/docs/images/performance_chart_oxygen.svg)
 
 \* Even through that current results are impressive, svgcleaner is still very slow.
+
+## Limitations
+
+*svgcleaner* shouldn't change your file unless you say it to, but there are still
+things that can't be preserved. So even if you disable all cleaning options there are still things
+that will be changed:
+
+- Original indent is not preserved.
+- All colors will be formatted as #RRGGBB.
+- DOCTYPE, CDATA will be processed and removed.
+- CSS from the `style` element will be extracted and processes. The `style` element will be removed.
+- `style` attribute will be split into attributes.
+- `class` attribute will be processed and removed.
+- Paths will be reformatted.
+- `currentColor` and `inherit` attributes values will be resolved.
+- Referenced elements will be moved to `defs` element, when possible.
+- IRI and FuncIRI attributes that reference non-existing objects will be removed.
 
 ## Building
 

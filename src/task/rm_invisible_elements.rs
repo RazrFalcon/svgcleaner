@@ -26,6 +26,7 @@ use svgdom::{Document, Node, AttributeValue, ValueId};
 
 // TODO: process mask element
 // TODO: process visibility
+// TODO: process feGaussianBlur with stdDeviation=0
 
 pub fn remove_invisible_elements(doc: &Document) {
     let mut is_any_removed = false;

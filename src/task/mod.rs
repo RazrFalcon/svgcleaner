@@ -31,7 +31,11 @@ pub use self::preclean_checks::preclean_checks;
 pub use self::resolve_attrs::resolve_attributes;
 pub use self::resolve_inherit::resolve_inherit;
 pub use self::rm_default_attrs::remove_default_attributes;
-pub use self::rm_dupl_defs::{remove_dupl_linear_gradients, remove_dupl_radial_gradients};
+pub use self::rm_dupl_defs::{
+    remove_dupl_linear_gradients,
+    remove_dupl_radial_gradients,
+    remove_dupl_fe_gaussian_blur
+};
 pub use self::rm_invisible_elements::remove_invisible_elements;
 pub use self::rm_needless_attrs::remove_needless_attributes;
 pub use self::rm_text_attrs::remove_text_attributes;

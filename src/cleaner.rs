@@ -79,6 +79,10 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
         remove_dupl_radial_gradients(doc);
     }
 
+    if get_flag!(args, Key::RemoveDuplFeGaussianBlur) {
+        remove_dupl_fe_gaussian_blur(doc);
+    }
+
     if get_flag!(args, Key::MergeGradients) {
         merge_gradients(doc);
     }

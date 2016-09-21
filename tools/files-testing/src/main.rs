@@ -15,6 +15,9 @@ use libtest::*;
 
 use clap::{Arg, App};
 
+// NOTE: This app uses a panic-based error processing.
+//       It's bad, but simpler for such small applications like this.
+
 macro_rules! dir_iter {
     ($input_dir:expr) => (
         WalkDir::new($input_dir).into_iter().filter_entry(|x| is_svg(x)).map(|x| x.unwrap())
@@ -48,14 +51,6 @@ fn main() {
             .long("input-data").help("Sets path to the SVG files dir")
             .value_name("DIR")
             .required(true))
-        .arg(Arg::with_name("svgcleaner")
-            .long("svgcleaner").help("Sets path to the current version of svgcleaner")
-            .value_name("PATH")
-            .required(true))
-        .arg(Arg::with_name("render")
-            .long("render").help("Sets path to the SVG render")
-            .value_name("PATH")
-            .required(true))
         .arg(Arg::with_name("cache-db")
             .long("cache-db").help("Sets path to the test cache db.")
             .value_name("PATH")
@@ -64,19 +59,18 @@ fn main() {
             .long("input-data-config").help("Sets path to the input data config.")
             .value_name("PATH"))
         .arg(Arg::with_name("with-err-view")
-            .long("with-err-view").help("Sets path to the 'err_view' application.")
-            .value_name("PATH")
+            .long("with-err-view").help("Runs 'err_view' on error.")
             .requires("input-data-config"))
-        .arg(Arg::with_name("continue")
-            .long("continue").help("Continue testing from the last position."))
         .get_matches();
 
-    // TODO: autodetect render
-    // TODO: add --verbose
-    // TODO: add --threshold which conflict with --input-data-config
-
+    let err_view_path = Path::new("../err-view/err_view");
+    if !err_view_path.exists() {
+        println!("Error: {:?} not found.", err_view_path);
+        return;
+    }
 
     let config;
+    let err_view;
     if m.is_present("input-data-config") {
         let json = load_config(m.value_of("input-data-config").unwrap());
         let min_ae = json.as_object().unwrap().get("min_valid_ae").unwrap().as_f64().unwrap() as u32;
@@ -86,22 +80,37 @@ fn main() {
             min_valid_ae: min_ae,
             ignore_list: get_ignore_list(&json),
         };
+
+        err_view = Some(err_view_path.to_str().unwrap());
     } else {
         config = Config {
             valid_ae_map: HashMap::new(),
             min_valid_ae: 0,
             ignore_list: Vec::new(),
         };
+        err_view = None;
     }
 
     let orig_pngs = Path::new(m.value_of("workdir").unwrap()).join("orig_pngs");
     let input_dir = m.value_of("input-data").unwrap();
 
+    let render = Path::new("../svgrender/svgrender");
+    if !render.exists() {
+        println!("Error: {:?} not found.", render);
+        return;
+    }
+
+    let svgcleaner_path = Path::new("../../target/release/svgcleaner");
+    if !svgcleaner_path.exists() {
+        println!("Error: {:?} not found.", svgcleaner_path);
+        return;
+    }
+
     let data = Data {
         work_dir: m.value_of("workdir").unwrap(),
-        svgcleaner: m.value_of("svgcleaner").unwrap(),
-        render: m.value_of("render").unwrap(),
-        err_view: m.value_of("with-err-view"),
+        svgcleaner: svgcleaner_path.to_str().unwrap(),
+        render: render.to_str().unwrap(),
+        err_view: err_view,
         input_dir: input_dir,
         orig_pngs_dir: orig_pngs.to_str().unwrap(),
         config: config,
@@ -111,17 +120,11 @@ fn main() {
     create_dir(&data.work_dir);
     create_dir(&data.orig_pngs_dir);
 
-    let pos;
-    if m.is_present("continue") {
-        pos = load_last_pos(&data.work_dir);
-    } else {
-        pos = 0;
-    }
-
+    let last_pos = load_last_pos(&data.work_dir);
     let cache = TestCache::init(m.value_of("cache-db").unwrap());
 
     let start = time::precise_time_ns();
-    run_tests(&data, input_dir, pos, &cache);
+    run_tests(&data, input_dir, last_pos, &cache);
     let end = time::precise_time_ns();
     println!("Elapsed: {}s", ((end - start) as f64 / 1000000.0) as u64 / 1000);
 }
@@ -183,11 +186,13 @@ fn get_ignore_list(json: &serde_json::Value) -> Vec<String> {
         None => return vec,
     };
 
-    // TODO: check for duplicates
-
     for item in items.as_array().unwrap() {
         let obj = item.as_object().unwrap();
         let name = obj.get("name").unwrap().as_str().unwrap();
+        if vec.iter().any(|n| n == name) {
+            panic!("Error: {} already exist.", name);
+        }
+
         vec.push(name.to_string());
     }
 

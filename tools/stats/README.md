@@ -15,8 +15,6 @@ stats \
       --type=svgcleaner \
       --cleaner=/path_to_cleaner_exe \
       # ../svgcleaner/tools/svgrender/
-      # you can set --skip-errors-check instead
-      --render=/path_to/svgrender \
       # 2% (0..100)
       --threshold=2
 ```
@@ -28,7 +26,6 @@ stats \
     --workdir=/tmp/svg/ \
     --input-data=/path_to_svg_dir \
     --cleaner=/path_to_svgcleaner \
-    --render=/path_to_svgrender \
     --type=svgcleaner \
     --threshold=2
 
@@ -37,7 +34,6 @@ stats \
     --workdir=/tmp/svg/ \
     --input-data=/path_to_svg_dir \
     --cleaner=/path_to_old_svgcleaner \
-    --render=/path_to_svgrender \
     --type=svgcleaner-old \
     --threshold=2
 
@@ -46,7 +42,6 @@ stats \
     --workdir=/tmp/svg/ \
     --input-data=/path_to_svg_dir \
     --cleaner=/path_to_svgo \
-    --render=/path_to_svgrender \
     --type=svgo \
     --threshold=2
 ```

@@ -268,8 +268,8 @@ CLI argument: ``--remove-metadata``
 Remove duplicated ``linearGradient`` elements
 ---------------------------------------------
 
-SVG can contain a lot of ``linearGradient`` elements, which may render exactly the same.
-So we can remove duplicates and update links in elements, that uses it.
+An SVG can contain a lot of ``linearGradient`` elements, which may render exactly the same.
+So we can remove duplicates and update links in elements, that uses them.
 
 CLI argument: ``--remove-dupl-lineargradient``
 
@@ -313,8 +313,8 @@ CLI argument: ``--remove-dupl-lineargradient``
 Remove duplicated ``radialGradient`` elements
 ---------------------------------------------
 
-SVG can contain a lot of ``radialGradient`` elements, which may render exactly the same.
-So we can remove duplicates and update links in elements, that uses it.
+An SVG can contain a lot of ``radialGradient`` elements, which may render exactly the same.
+So we can remove duplicates and update links in elements, that uses them.
 
 CLI argument: ``--remove-dupl-radialgradient``
 
@@ -351,6 +351,41 @@ CLI argument: ``--remove-dupl-radialgradient``
 
 .. |before-remove-dupl-radialgradient| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-dupl-radialgradient.svg
 .. |after-remove-dupl-radialgradient| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-dupl-radialgradient.svg
+
+
+Remove duplicated ``feGaussianBlur`` elements
+---------------------------------------------
+
+An SVG can contain a lot of ``feGaussianBlur`` elements, which may render exactly the same.
+So we can remove duplicates and update links in elements, that uses them.
+
+CLI argument: ``--remove-dupl-fegaussianblur``
+
++--------------------------------------------+--------------------------------------------+
+| Before (440b)                              | After (364b)                               |
++--------------------------------------------+--------------------------------------------+
+| .. code-block:: XML                        | .. code-block:: XML                        |
+|                                            |                                            |
+|   <svg>                                    |   <svg>                                    |
+|     <defs>                                 |     <defs>                                 |
+|       <filter id='f1'>                     |       <filter id='f1'>                     |
+|         <feGaussianBlur stdDeviation='2'/> |         <feGaussianBlur stdDeviation='2'/> |
+|       </filter>                            |       </filter>                            |
+|       <filter id='f2'>                     |     </defs>                                |
+|         <feGaussianBlur stdDeviation='2'/> |     <circle filter="url(#f1)" fill="green" |
+|       </filter>                            |             cx="50" cy="50" r="45"/>       |
+|     </defs>                                |     <circle filter="url(#f1)" fill="green" |
+|     <circle filter="url(#f1)" fill="green" |             cx="100" cy="50" r="45"/>      |
+|             cx="50" cy="50" r="45"/>       |   </svg>                                   |
+|     <circle filter="url(#f2)" fill="green" |                                            |
+|             cx="100" cy="50" r="45"/>      |                                            |
+|   </svg>                                   |                                            |
++--------------------------------------------+--------------------------------------------+
+| |before-remove-dupl-fegaussianblur|        | |after-remove-dupl-fegaussianblur|         |
++--------------------------------------------+--------------------------------------------+
+
+.. |before-remove-dupl-fegaussianblur| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-dupl-fegaussianblur.svg
+.. |after-remove-dupl-fegaussianblur| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-dupl-fegaussianblur.svg
 
 
 Ungroup groups

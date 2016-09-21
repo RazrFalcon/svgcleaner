@@ -22,9 +22,11 @@
 
 pub use self::linear_gradient::remove_dupl_linear_gradients;
 pub use self::radial_gradient::remove_dupl_radial_gradients;
+pub use self::fe_gaussian_blur::remove_dupl_fe_gaussian_blur;
 
 mod linear_gradient;
 mod radial_gradient;
+mod fe_gaussian_blur;
 
 use task::short::{EId, AId, Unit};
 use svgdom::types::{Transform, Color};
@@ -55,7 +57,7 @@ fn rm_loop(doc: &Document, eid: EId, attrs: &[AId]) {
             let node2 = nodes[i2].clone();
             i2 += 1;
 
-            if !is_attrs_equal(&node1, &node2, attrs) {
+            if !is_gradient_attrs_equal(&node1, &node2, attrs) {
                 continue;
             }
 
@@ -82,7 +84,7 @@ fn rm_loop(doc: &Document, eid: EId, attrs: &[AId]) {
     }
 }
 
-fn is_attrs_equal(node1: &Node, node2: &Node, attrs: &[AId]) -> bool {
+fn is_gradient_attrs_equal(node1: &Node, node2: &Node, attrs: &[AId]) -> bool {
     let attrs1 = node1.attributes();
     let attrs2 = node2.attributes();
 

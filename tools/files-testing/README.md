@@ -6,6 +6,7 @@ Clean all files from the selected folder and check that all of them are cleaned 
 
 - Linux
 - imagemagic (we need 'compare')
+- prebuild 'svgcleaner' itself, release build
 - prebuild 'tools/svgrender'
 - (optional) prebuild 'tools/err_view'
 
@@ -16,18 +17,13 @@ stats \
       # path to folder where all temp files will be generated
       --workdir=/var/svg/svg/ \
       --input-data=/path_to_dir_with_svg_files \
-      --svgcleaner=/path_to_cleaner_exe \
-      # svgcleaner/tools/svgrender/
-      --render=/path_to/svgrender \
       # (optional) path to config that contains list of ignored files
       # see ./data for examples
       --input-data-config=config.json \
       # each input-data must have own db
       --cache-db=/path_to_cache_file/stats.sqlite \
       # run err_view on error
-      --with-err-view=/path_to/err_view \
-      # continue testing from the last position
-      --continue
+      --with-err-view \
 ```
 
 ## Files for testing

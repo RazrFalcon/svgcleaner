@@ -9,6 +9,7 @@ remove-desc.rst
 remove-metadata.rst
 remove-dupl-lineargradient.rst
 remove-dupl-radialgradient.rst
+remove-dupl-fegaussianblur.rst
 ungroup-groups.rst
 merge-gradients.rst
 remove-invisible-elements.rst

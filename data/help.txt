@@ -19,6 +19,7 @@ Elements:
     --remove-metadata <FLAG>                 Remove 'metadata' element [default: true]
     --remove-dupl-lineargradient <FLAG>      Remove duplicated 'linearGradient' elements [default: true]
     --remove-dupl-radialgradient <FLAG>      Remove duplicated 'radialGradient' elements [default: true]
+    --remove-dupl-fegaussianblur <FLAG>      Remove duplicated 'feGaussianBlur' elements [default: true]
     --ungroup-groups <FLAG>                  Ungroup groups [default: true]
     --merge-gradients <FLAG>                 Merge gradients [default: true]
     --remove-invisible-elements <FLAG>       Remove invisible elements [default: true]

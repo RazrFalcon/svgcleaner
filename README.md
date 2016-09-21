@@ -23,7 +23,7 @@
 1. **Correctness.** svgcleaner should not break an SVG file.
 1. **Cleaning ratio.** More is better.
 1. **Performance.** If something can be faster - it should be faster.
-   An average SVG file should be processed by less than 16ms on a modern PC.
+   An average SVG file processing time should be closer to ~1ms on a modern PC.
 
 ### Charts
 
@@ -97,11 +97,13 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 V0.7
  - [x] Remove text-related attributes if there is no text.
  - [x] Ungroup groups.
- - [ ] Remove duplicated defs:
-   - [ ] `feGaussianBlur`
-   - [ ] other...
+ - [x] Remove duplicated defs:
+   - [x] `linearGradient`
+   - [x] `radialGradient`
+   - [x] `feGaussianBlur`
  - [ ] Remove invisible elements.
    - [x] Invisible elements inside the `clipPath`.
+   - [ ] Elements with invalid size.
    - [ ] other...
  - [ ] Remove needless attributes.
    - [x] Remove attributes which does not belong to this element.

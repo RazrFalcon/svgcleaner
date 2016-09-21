@@ -1,8 +1,8 @@
 Remove duplicated ``radialGradient`` elements
 ---------------------------------------------
 
-SVG can contain a lot of ``radialGradient`` elements, which may render exactly the same.
-So we can remove duplicates and update links in elements, that uses it.
+An SVG can contain a lot of ``radialGradient`` elements, which may render exactly the same.
+So we can remove duplicates and update links in elements, that uses them.
 
 .. GEN_TABLE
 .. BEFORE

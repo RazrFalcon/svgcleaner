@@ -38,6 +38,7 @@ pub enum Key {
     RemoveMetadata,
     RemoveDuplLinearGradients,
     RemoveDuplRadialGradients,
+    RemoveDuplFeGaussianBlur,
     UngroupGroups,
     MergeGradients,
     RemoveInvisibleElements,
@@ -91,6 +92,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-metadata",
     "remove-dupl-lineargradient",
     "remove-dupl-radialgradient",
+    "remove-dupl-fegaussianblur",
     "ungroup-groups",
     "merge-gradients",
     "remove-invisible-elements",
@@ -142,7 +144,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
 
     let mut a = App::new("svgcleaner")
         .help(include_str!("../data/help.txt"))
-        .version("0.6.91") // TODO: take from toml
+        .version("0.6.92")
         .arg(Arg::with_name("in-file")
             .help("Input file")
             .required(true)
@@ -175,6 +177,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Remove duplicated 'linearGradient' elements", "true"));
     a = a.arg(gen_flag!(Key::RemoveDuplRadialGradients,
             "Remove duplicated 'radialGradient' elements", "true"));
+    a = a.arg(gen_flag!(Key::RemoveDuplFeGaussianBlur,
+            "Remove duplicated 'feGaussianBlur' elements", "true"));
     a = a.arg(gen_flag!(Key::UngroupGroups,
             "Ungroup groups", "true"));
     a = a.arg(gen_flag!(Key::MergeGradients,

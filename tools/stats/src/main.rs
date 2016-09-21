@@ -92,10 +92,6 @@ fn main() {
             .long("input-data").help("Sets path to SVG files dir")
             .value_name("DIR")
             .required(true))
-        .arg(Arg::with_name("render")
-            .long("render").help("Sets path to SVG render")
-            .value_name("PATH")
-            .required_unless("skip-errors-check"))
         .arg(Arg::with_name("type")
             .long("type").help("Sets type of SVG cleaning program.")
             .value_name("NAME")
@@ -116,9 +112,14 @@ fn main() {
     let orig_pngs = Path::new(m.value_of("workdir").unwrap()).join("orig_pngs");
     let input_dir = m.value_of("input-data").unwrap();
 
+    let p = Path::new("../svgrender/svgrender");
     let render;
     if !m.is_present("skip-errors-check") {
-        render = Some(m.value_of("render").unwrap());
+        if !p.exists() {
+            println!("Error: {:?} not found.", p);
+            return;
+        }
+        render = Some(p.to_str().unwrap());
     } else {
         render = None;
     }

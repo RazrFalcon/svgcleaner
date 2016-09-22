@@ -76,7 +76,7 @@ that will be changed:
 - CSS from the `style` element will be extracted and processes. The `style` element will be removed.
 - `style` attribute will be split into attributes.
 - `class` attribute will be processed and removed.
-- Paths will be reformatted.
+- Paths and transformations will be reformatted.
 - `currentColor` and `inherit` attributes values will be resolved.
 - Referenced elements will be moved to `defs` element, when possible.
 - IRI and FuncIRI attributes that reference non-existing objects will be removed.

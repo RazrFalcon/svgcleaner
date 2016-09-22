@@ -77,7 +77,7 @@ fn _remove_text_attributes(root: &Node) -> bool {
     // shorthand for no_text_data
     let mut no_td = true;
     for node in root.children() {
-        if !node.is_element() {
+        if !node.is_svg_element() {
             if node.node_type() == NodeType::Text {
                 no_td = false;
             }

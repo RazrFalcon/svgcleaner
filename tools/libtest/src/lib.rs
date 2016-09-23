@@ -143,8 +143,12 @@ pub fn create_dir<P: AsRef<path::Path>>(path: P) {
 }
 
 pub fn render_svg(render: &str, svg_path: &str, png_path: &str) -> bool {
+    // Link with custom QtWebKit and not with one from Qt package.
+    // This flag is harmless if there is no QtWebKit.
     let res = Command::new(render)
+                .env("LD_LIBRARY_PATH", "/usr/local/lib64")
                 .arg(svg_path).arg(png_path).arg("512").arg("512").output();
+
     match res {
         Ok(o) => {
             let s = String::from_utf8_lossy(&o.stderr).into_owned();

@@ -21,8 +21,10 @@
 ****************************************************************************/
 
 use task::short::{EId, AId, Unit};
+use error::CleanerError;
 
 use svgdom::{Document, Node, Attribute, AttributeValue, ValueId};
+use svgdom::types::Color;
 
 pub fn linear_gradients(doc: &Document) {
     // https://www.w3.org/TR/SVG/pservers.html#LinearGradients
@@ -62,6 +64,38 @@ pub fn radial_gradients(doc: &Document) {
     }
 }
 
+pub fn stop(doc: &Document) -> Result<(), CleanerError> {
+    for node in doc.descendants().filter(|n| n.is_tag_id(EId::Stop)) {
+        if !node.has_attribute(AId::Offset) {
+            return Err(CleanerError::MissingAttribute("stop".to_string(), "offset".to_string()));
+        } else {
+            let a = node.attribute_value(AId::Offset).unwrap();
+            let l = a.as_length().unwrap();
+            if l.unit == Unit::Percent {
+                // convert percent into number
+                node.set_attribute(AId::Offset, l.num / 100.0);
+            } else {
+                // set original value too to change attribute type from Length to Number
+                node.set_attribute(AId::Offset, l.num);
+            }
+        }
+
+        if !node.has_attribute(AId::StopColor) {
+            let mut a = Attribute::new(AId::StopColor, Color::new(0, 0, 0));
+            a.visible = false;
+            node.set_attribute_object(a);
+        }
+
+        if !node.has_attribute(AId::StopOpacity) {
+            let mut a = Attribute::new(AId::StopOpacity, 1.0);
+            a.visible = false;
+            node.set_attribute_object(a);
+        }
+    }
+
+    Ok(())
+}
+
 fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
     let nodes = doc.descendants().filter(|n| n.is_tag_id(eid))
                     .collect::<Vec<Node>>();
@@ -88,13 +122,10 @@ fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
 
 fn check_attr(node: &Node, id: AId, def_value: Option<AttributeValue>) {
     if !node.has_attribute(id) {
-        match resolve_attribute(&node, id, def_value) {
-            Some(v) => {
-                let mut a = Attribute::new(id, v);
-                a.visible = false;
-                node.set_attribute_object(a);
-            }
-            None => {}
+        if let Some(v) = resolve_attribute(node, id, def_value) {
+            let mut a = Attribute::new(id, v);
+            a.visible = false;
+            node.set_attribute_object(a);
         }
     }
 }
@@ -128,6 +159,7 @@ fn resolve_attribute(node: &Node, id: AId, def_value: Option<AttributeValue>)
 macro_rules! base_test {
     ($name:ident, $functor:expr, $in_text:expr, $out_text:expr) => (
         #[test]
+        #[allow(unused_must_use)]
         fn $name() {
             let doc = Document::from_data($in_text).unwrap();
             $functor(&doc);
@@ -283,4 +315,30 @@ b"<svg>
         gradientUnits='userSpaceOnUse' r='5' spreadMethod='repeat' xlink:href='#lg1'/>
 </svg>
 ");
+}
+
+#[cfg(test)]
+mod stop_tests {
+    use super::*;
+    use svgdom::Document;
+
+    macro_rules! test {
+        ($name:ident, $in_text:expr, $out_text:expr) => (
+            base_test!($name, stop, $in_text, $out_text);
+        )
+    }
+
+    test!(resolve_1,
+b"<svg>
+    <linearGradient>
+        <stop offset='50%'/>
+    </linearGradient>
+</svg>",
+"<svg>
+    <linearGradient>
+        <stop offset='0.5' stop-color='#000000' stop-opacity='1'/>
+    </linearGradient>
+</svg>
+");
+
 }

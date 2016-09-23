@@ -42,8 +42,6 @@ macro_rules! try_msg {
     })
 }
 
-// TODO: add "Why clean" to readme
-
 fn main() {
     let app = prepare_app();
 

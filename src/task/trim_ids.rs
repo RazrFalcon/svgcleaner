@@ -72,7 +72,7 @@ impl Num {
                 self.shift(pos - 1, head);
             }
         } else {
-            self.d[pos] = self.d[pos] + 1;
+            self.d[pos] += 1;
         }
     }
 

@@ -38,6 +38,7 @@ pub fn group_defs(doc: &Document) {
         }
     };
 
+    // TODO: this
     // move all referenced elements to main 'defs'
     // {
     //     let mut nodes = Vec::new();
@@ -91,7 +92,7 @@ pub fn group_defs(doc: &Document) {
 
         for n in nodes {
             // unneeded defs already ungrouped and must be empty
-            debug_assert!(n.has_children() == false);
+            debug_assert!(!n.has_children());
             n.remove();
         }
     }

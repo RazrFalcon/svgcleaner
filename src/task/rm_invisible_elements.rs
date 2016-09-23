@@ -36,7 +36,7 @@ pub fn remove_invisible_elements(doc: &Document) {
     process_filter(doc, &mut is_any_removed);
 
     if is_any_removed {
-        super::remove_unused_defs(&doc);
+        super::remove_unused_defs(doc);
     }
 }
 
@@ -92,11 +92,8 @@ fn is_valid_clip_path_elem(node: &Node) -> bool {
             return false;
         }
 
-        match node.attribute_value(AId::XlinkHref).unwrap() {
-            AttributeValue::Link(link) => {
-                return is_valid_shape(&link);
-            }
-            _ => {}
+        if let AttributeValue::Link(link) = node.attribute_value(AId::XlinkHref).unwrap() {
+            return is_valid_shape(&link);
         }
     }
 
@@ -110,8 +107,8 @@ fn process_paths(doc: &Document, is_any_removed: &mut bool) {
     fn is_invisible(node: &Node) -> bool {
         if node.has_attribute(AId::D) {
             let attrs = node.attributes();
-            match attrs.get_value(AId::D).unwrap() {
-                &AttributeValue::Path(ref d) => {
+            match *attrs.get_value(AId::D).unwrap() {
+                AttributeValue::Path(ref d) => {
                     if d.d.is_empty() {
                         return true;
                     }
@@ -124,7 +121,7 @@ fn process_paths(doc: &Document, is_any_removed: &mut bool) {
             return true;
         }
 
-        return false;
+        false
     }
 
     for node in doc.descendants().filter(|n| n.is_tag_id(EId::Path)) {

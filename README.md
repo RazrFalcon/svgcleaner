@@ -23,8 +23,7 @@
 
 1. **Correctness.** svgcleaner should not break an SVG file.
 1. **Cleaning ratio.** More is better.
-1. **Performance.** If something can be faster - it should be faster.
-   An average SVG file processing time should be closer to ~1ms on a modern PC.
+1. **Performance.** An average SVG file processing time should be closer to ~1ms on a modern PC.
 
 ### Charts
 
@@ -74,12 +73,14 @@ that will be changed:
 - All colors will be formatted as #RRGGBB.
 - DOCTYPE, CDATA will be processed and removed.
 - CSS from the `style` element will be extracted and processes. The `style` element will be removed.
-- `style` attribute will be split into attributes.
-- `class` attribute will be processed and removed.
+- The `style` attribute will be split into attributes.
+- The `class` attribute will be processed and removed.
 - Paths and transformations will be reformatted.
 - `currentColor` and `inherit` attributes values will be resolved.
 - Referenced elements will be moved to `defs` element, when possible.
 - IRI and FuncIRI attributes that reference non-existing objects will be removed.
+- If the `offset` attribute value of the `stop` element represented as percent - it will be
+  converted into number.
 
 ## Building
 

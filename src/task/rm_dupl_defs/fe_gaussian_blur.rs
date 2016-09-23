@@ -27,7 +27,7 @@ use svgdom::{Document, Node};
 pub fn remove_dupl_fe_gaussian_blur(doc: &Document) {
     let mut nodes = Vec::new();
 
-    for node in doc.descendants().filter(|ref n| n.is_tag_id(EId::Filter)) {
+    for node in doc.descendants().filter(|n| n.is_tag_id(EId::Filter)) {
         // we support only filters with one child
         if node.children().count() != 1 {
             continue;
@@ -100,11 +100,8 @@ fn rm_loop(nodes: &mut Vec<Node>) {
             }
 
             for ln in node2.linked_nodes() {
-                match ln.find_reference_attribute(&node2) {
-                    Some(aid) => {
-                        ln.set_link_attribute(aid, node1.clone()).unwrap();
-                    }
-                    None => {}
+                if let Some(aid) = ln.find_reference_attribute(&node2) {
+                    ln.set_link_attribute(aid, node1.clone()).unwrap();
                 }
             }
             node2.remove();

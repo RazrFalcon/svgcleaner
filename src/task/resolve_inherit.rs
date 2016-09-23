@@ -35,25 +35,16 @@ pub fn resolve_inherit(doc: &Document) -> Result<(), CleanerError> {
         {
             let attrs = node.attributes();
             for attr in attrs.iter() {
-                match &attr.value {
-                    // &AttributeValue::String(ref v) => {
-                    //     // TODO: remove in release
-                    //     if v == "inherit" || v == "currentColor" {
-                    //         println!("Warning: unparsed value: {:?}.", attr.id);
-                    //     }
-                    // }
-                    &AttributeValue::PredefValue(ref v) => {
-                        match v {
-                            &ValueId::Inherit => {
-                                vec_inherit.push(attr.id);
-                            }
-                            &ValueId::CurrentColor => {
-                                vec_curr_color.push(attr.id);
-                            }
-                            _ => {},
+                if let AttributeValue::PredefValue(ref v) = attr.value {
+                    match *v {
+                        ValueId::Inherit => {
+                            vec_inherit.push(attr.id);
                         }
+                        ValueId::CurrentColor => {
+                            vec_curr_color.push(attr.id);
+                        }
+                        _ => {},
                     }
-                    _ => {},
                 }
             }
         }
@@ -84,7 +75,7 @@ fn resolve_impl(node: &Node, curr_attr: AId, parent_attr: AId)
         None => {
             match Attribute::default(curr_attr) {
                 Some(a) => node.set_attribute(curr_attr, a.value),
-                None => return Err(CleanerError::UnresolvedAttribute),
+                None => return Err(CleanerError::UnresolvedAttribute(curr_attr.name().to_string())),
             }
         }
     }

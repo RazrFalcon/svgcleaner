@@ -165,8 +165,8 @@ fn is_line_based(seg: Command) -> bool
     match seg {
           Command::LineTo
         | Command::HorizontalLineTo
-        | Command::VerticalLineTo => return true,
-        _ => return false,
+        | Command::VerticalLineTo => true,
+        _ => false,
     }
 }
 
@@ -220,8 +220,8 @@ fn convert_segments(path: &mut Path, is_changed: &mut bool) {
         let prev_x = resolve_x(path, i - 1);
         let prev_y = resolve_y(path, i - 1);
         let curr_seg = &mut path.d[i];
-        match curr_seg.data() {
-            &SegmentData::LineTo { x, y } => {
+        match *curr_seg.data() {
+            SegmentData::LineTo { x, y } => {
                 if prev_x == x && prev_y != y {
                     *curr_seg = Segment::new_vline_to(y);
                     *is_changed = true;
@@ -249,7 +249,7 @@ mod tests {
             #[test]
             fn $name() {
                 let mut path = Path::from_data($in_text).unwrap();
-                path.to_absolute();
+                path.conv_to_absolute();
                 remove_unused_segments(&mut path);
                 assert_eq_text!(path.to_string(), $out_text);
             }

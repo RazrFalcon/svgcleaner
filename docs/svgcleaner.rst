@@ -494,6 +494,40 @@ CLI argument: ``--remove-invisible-elements``
 .. |after-remove-invisible-elements| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-invisible-elements.svg
 
 
+Remove invalid ``stop`` elements
+--------------------------------
+
+We can remove duplicated ``stop`` elements inside gradients.
+
+CLI argument: ``--remove-invalid-stops``
+
++--------------------------------------------------+--------------------------------------------------+
+| Before (529b)                                    | After (388b)                                     |
++--------------------------------------------------+--------------------------------------------------+
+| .. code-block:: XML                              | .. code-block:: XML                              |
+|                                                  |                                                  |
+|   <svg>                                          |   <svg>                                          |
+|     <defs>                                       |     <defs>                                       |
+|       <linearGradient id="lg1">                  |       <linearGradient id="lg1">                  |
+|          <stop offset="-1" stop-color="yellow"/> |          <stop offset="0" stop-color="yellow"/>  |
+|          <stop offset="0" stop-color="yellow"/>  |          <stop offset="0.5" stop-color="green"/> |
+|          <stop offset="0.5" stop-color="green"/> |          <stop offset="1" stop-color="yellow"/>  |
+|          <stop offset="0.5" stop-color="green"/> |       </linearGradient>                          |
+|          <stop offset="1" stop-color="yellow"/>  |     </defs>                                      |
+|          <stop offset="10" stop-color="yellow"/> |     <circle fill="url(#lg1)"                     |
+|       </linearGradient>                          |             cx="50" cy="50" r="45"/>             |
+|     </defs>                                      |   </svg>                                         |
+|     <circle fill="url(#lg1)"                     |                                                  |
+|             cx="50" cy="50" r="45"/>             |                                                  |
+|   </svg>                                         |                                                  |
++--------------------------------------------------+--------------------------------------------------+
+| |before-remove-invalid-stops|                    | |after-remove-invalid-stops|                     |
++--------------------------------------------------+--------------------------------------------------+
+
+.. |before-remove-invalid-stops| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-invalid-stops.svg
+.. |after-remove-invalid-stops| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-invalid-stops.svg
+
+
 Attributes
 ==========
 

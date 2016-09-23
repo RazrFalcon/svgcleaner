@@ -48,11 +48,9 @@ pub fn remove_default_attributes(doc: &Document) {
                             }
                         }
                     }
-                } else {
+                } else if is_default(attr, tag_name) {
                     // check default values of an non-presentation attributes
-                    if is_default(attr, tag_name) {
-                        rm_list.push(attr.id);
-                    }
+                    rm_list.push(attr.id);
                 }
             }
         }
@@ -152,14 +150,7 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
                 }
             }
         }
-        AId::X1 | AId::Y1 => {
-            if tag_name == EId::Line {
-                if attr.value == AttributeValue::from((0.0, Unit::None)) {
-                    return true;
-                }
-            }
-        }
-        AId::X2 | AId::Y2 => {
+        AId::X1 | AId::Y1 | AId::X2 | AId::Y2 => {
             if tag_name == EId::Line {
                 if attr.value == AttributeValue::from((0.0, Unit::None)) {
                     return true;

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Changed
+- A `stop` element without the `offset` attribute is error.
+
 ## [0.6.91] - 2016-09-20
 ### Added
 - `--ungroup-groups`.

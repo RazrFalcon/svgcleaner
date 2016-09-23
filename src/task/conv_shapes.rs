@@ -45,7 +45,7 @@ pub fn convert_shapes_to_paths(doc: &Document) {
 }
 
 fn convert_line(node: Node) {
-    debug_assert!(node.is_tag_id(EId::Line) == true);
+    debug_assert!(node.is_tag_id(EId::Line));
 
     {
         let mut attrs = node.attributes_mut();
@@ -79,7 +79,7 @@ fn convert_line(node: Node) {
 }
 
 fn convert_rect(node: Node) {
-    debug_assert!(node.is_tag_id(EId::Rect) == true);
+    debug_assert!(node.is_tag_id(EId::Rect));
 
     let path;
     {
@@ -128,7 +128,7 @@ fn convert_rect(node: Node) {
 }
 
 fn convert_polyline(node: Node) {
-    debug_assert!(node.is_tag_id(EId::Polyline) == true);
+    debug_assert!(node.is_tag_id(EId::Polyline));
 
     let path = match points_to_path(&node) {
         Some(p) => p,
@@ -142,7 +142,7 @@ fn convert_polyline(node: Node) {
 }
 
 fn convert_polygon(node: Node) {
-    debug_assert!(node.is_tag_id(EId::Polygon) == true);
+    debug_assert!(node.is_tag_id(EId::Polygon));
 
     let mut path = match points_to_path(&node) {
         Some(p) => p,
@@ -176,12 +176,11 @@ fn points_to_path(node: &Node) -> Option<path::Path> {
     let mut path = path::Path::new();
     let mut i = 0;
     while i < points.len() {
-        let seg;
-        if i == 0 {
-            seg = path::Segment::new_move_to(points[i], points[i+1]);
+        let seg = if i == 0 {
+            path::Segment::new_move_to(points[i], points[i+1])
         } else {
-            seg = path::Segment::new_line_to(points[i], points[i+1]);
-        }
+            path::Segment::new_line_to(points[i], points[i+1])
+        };
         path.d.push(seg);
 
         i += 2;

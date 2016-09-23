@@ -28,8 +28,8 @@ mod linear_gradient;
 mod radial_gradient;
 mod fe_gaussian_blur;
 
-use task::short::{EId, AId, Unit};
-use svgdom::types::{Transform, Color};
+use task::short::{EId, AId};
+use svgdom::types::{Transform};
 use svgdom::{Document, Node, AttributeValue};
 
 macro_rules! check_attr {
@@ -44,7 +44,7 @@ macro_rules! check_attr {
 
 fn rm_loop(doc: &Document, eid: EId, attrs: &[AId]) {
     let mut nodes = doc.descendants()
-                        .filter(|ref n| n.is_tag_id(eid))
+                        .filter(|n| n.is_tag_id(eid))
                         .collect::<Vec<Node>>();
 
     let mut len = nodes.len();
@@ -66,11 +66,8 @@ fn rm_loop(doc: &Document, eid: EId, attrs: &[AId]) {
             }
 
             for ln in node2.linked_nodes() {
-                match ln.find_reference_attribute(&node2) {
-                    Some(aid) => {
-                        ln.set_link_attribute(aid, node1.clone()).unwrap();
-                    }
-                    None => {}
+                if let Some(aid) = ln.find_reference_attribute(&node2) {
+                    ln.set_link_attribute(aid, node1.clone()).unwrap();
                 }
             }
             node2.remove();
@@ -121,9 +118,11 @@ fn is_equal_stops(node1: &Node, node2: &Node) -> bool {
         let attrs1 = c1.attributes_mut();
         let attrs2 = c2.attributes_mut();
 
-        check_attr!(&attrs1, &attrs2, AId::Offset, (0.0, Unit::None));
-        check_attr!(&attrs1, &attrs2, AId::StopColor, Color::new(0,0,0));
-        check_attr!(&attrs1, &attrs2, AId::StopOpacity, 1.0);
+        if !(   attrs1.get_value(AId::Offset) == attrs2.get_value(AId::Offset)
+             && attrs1.get_value(AId::StopColor) == attrs2.get_value(AId::StopColor)
+             && attrs1.get_value(AId::StopOpacity) == attrs2.get_value(AId::StopOpacity)) {
+            return false;
+        }
     }
 
     true
@@ -133,12 +132,14 @@ fn is_equal_stops(node1: &Node, node2: &Node) -> bool {
 mod tests {
     use svgdom::{Document, Node};
     use task::short::EId;
+    use task::resolve_attributes;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $flag:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
+                resolve_attributes(&doc).unwrap();
                 let vec = doc.descendants().filter(|n| n.is_tag_id(EId::LinearGradient))
                              .collect::<Vec<Node>>();
 

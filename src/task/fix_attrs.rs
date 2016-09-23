@@ -32,6 +32,7 @@ pub fn fix_invalid_attributes(doc: &Document) {
         match node.tag_id().unwrap() {
             EId::Rect => fix_rect(&node),
             EId::Polyline | EId::Polygon => fix_poly(&node),
+            EId::LinearGradient | EId::RadialGradient => fix_stops(&node),
             _ => {}
         }
     }
@@ -40,11 +41,11 @@ pub fn fix_invalid_attributes(doc: &Document) {
 fn fix_rect(node: &Node) {
     // fix attributes according to: https://www.w3.org/TR/SVG/shapes.html#RectElement
 
-    fix_len(&node, AId::Width, Length::new(0.0, Unit::None));
-    fix_len(&node, AId::Height, Length::new(0.0, Unit::None));
+    fix_len(node, AId::Width, Length::new(0.0, Unit::None));
+    fix_len(node, AId::Height, Length::new(0.0, Unit::None));
 
-    rm_negative_len(&node, AId::Rx);
-    rm_negative_len(&node, AId::Ry);
+    rm_negative_len(node, AId::Rx);
+    rm_negative_len(node, AId::Ry);
 
     // TODO: check that 'rx <= widht/2' and 'ry <= height/2'
     // Remember: a radius attributes can have different units,
@@ -117,14 +118,45 @@ fn rm_negative_len(node: &Node, id: AId) {
     }
 }
 
+fn fix_stops(node: &Node) {
+    // https://www.w3.org/TR/SVG/pservers.html#StopElementOffsetAttribute
+
+    let mut prev_offset = 0.0;
+
+    for child in node.children() {
+        let mut offset = *child.attribute_value(AId::Offset).unwrap().as_number().unwrap();
+
+        if offset < 0.0 {
+            offset = 0.0;
+        } else if offset > 1.0 {
+            offset = 1.0;
+        }
+
+        if offset < prev_offset {
+            offset = prev_offset;
+        }
+
+        child.set_attribute(AId::Offset, offset);
+
+        prev_offset = offset;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use svgdom::{Document, WriteToString};
+    use task::resolve_attributes;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
-            base_test!($name, fix_invalid_attributes, $in_text, $out_text);
+            #[test]
+            fn $name() {
+                let doc = Document::from_data($in_text).unwrap();
+                resolve_attributes(&doc).unwrap();
+                fix_invalid_attributes(&doc);
+                assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
+            }
         )
     }
 
@@ -178,6 +210,27 @@ b"<svg>
     <polyline/>
     <polyline/>
     <polyline/>
+</svg>
+");
+
+    test!(fix_stop_1,
+b"<svg>
+    <linearGradient>
+        <stop offset='-1'/>
+        <stop offset='0.4'/>
+        <stop offset='0.3'/>
+        <stop offset='10'/>
+        <stop offset='0.5'/>
+    </linearGradient>
+</svg>",
+"<svg>
+    <linearGradient>
+        <stop offset='0'/>
+        <stop offset='0.4'/>
+        <stop offset='0.4'/>
+        <stop offset='1'/>
+        <stop offset='1'/>
+    </linearGradient>
 </svg>
 ");
 }

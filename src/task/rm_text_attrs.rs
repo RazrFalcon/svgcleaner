@@ -62,7 +62,7 @@ pub fn remove_text_attributes(doc: &Document) {
     if !has_text {
         for node in doc.descendants() {
             if node.is_tag_id(EId::FontFace) {
-                node.remove_attributes(&TEXT_ATTRIBUTES);
+                node.remove_attributes(TEXT_ATTRIBUTES);
             }
         }
     }
@@ -76,7 +76,7 @@ fn _remove_text_attributes(root: &Node) -> bool {
 
     // shorthand for no_text_data
     let mut no_td = true;
-    for node in root.children() {
+    for node in root.children_nodes() {
         if !node.is_svg_element() {
             if node.node_type() == NodeType::Text {
                 no_td = false;
@@ -90,27 +90,23 @@ fn _remove_text_attributes(root: &Node) -> bool {
             let can_rm = _remove_text_attributes(&node);
             if can_rm {
                 if !node.is_tag_id(EId::FontFace) {
-                    node.remove_attributes(&TEXT_ATTRIBUTES);
+                    node.remove_attributes(TEXT_ATTRIBUTES);
                 }
             } else {
                 no_td = false;
             }
         } else {
             // local version of the 'no_td'
-            let _no_td;
+
             // only this parameters affect parent elements
-            if     node.has_text_children()
-                || node.is_tag_id(EId::Tref)
-                || has_em_ex_attributes(&node) {
-                _no_td = false;
-            } else {
-                _no_td = true;
-            }
+            let _no_td = !(   node.has_text_children()
+                           || node.is_tag_id(EId::Tref)
+                           || has_em_ex_attributes(&node));
 
             if    _no_td
                && !node.is_tag_id(EId::FontFace)
                && !is_linked_text(&node) {
-                node.remove_attributes(&TEXT_ATTRIBUTES);
+                node.remove_attributes(TEXT_ATTRIBUTES);
             }
 
             if !_no_td {
@@ -130,14 +126,11 @@ fn has_em_ex_attributes(node: &Node) -> bool {
 
     let attrs = node.attributes();
     for attr in attrs.iter() {
-        match attr.value {
-            AttributeValue::Length(ref len) => {
-                match len.unit {
-                    Unit::Ex | Unit::Em => return true,
-                    _ => {}
-                }
+        if let AttributeValue::Length(ref len) = attr.value {
+            match len.unit {
+                Unit::Ex | Unit::Em => return true,
+                _ => {}
             }
-            _ => {}
         }
     }
 
@@ -149,16 +142,10 @@ fn is_linked_text(node: &Node) -> bool {
         // we use 'attributes()' method instead of 'attribute()',
         // because 'xlink:href' can contain base64 data, which will be expensive to copy
         let attrs = node.attributes();
-        match attrs.get_value(AId::XlinkHref) {
-            Some(value) => {
-                match value {
-                    &AttributeValue::Link(ref link) => {
-                        return link.has_text_children();
-                    }
-                    _ => {}
-                }
+        if let Some(value) = attrs.get_value(AId::XlinkHref) {
+            if let AttributeValue::Link(ref link) = *value {
+                return link.has_text_children();
             }
-            None => {}
         }
     }
     false

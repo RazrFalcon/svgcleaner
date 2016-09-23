@@ -25,7 +25,10 @@ pub use self::gradients::{linear_gradients, radial_gradients};
 mod gradients;
 
 use svgdom::{Document};
-pub fn resolve_attributes(doc: &Document) {
+use error::CleanerError;
+pub fn resolve_attributes(doc: &Document) -> Result<(), CleanerError> {
     gradients::linear_gradients(doc);
     gradients::radial_gradients(doc);
+    try!(gradients::stop(doc));
+    Ok(())
 }

@@ -44,9 +44,9 @@ pub fn load_file(path: &str) -> Result<Vec<u8>, io::Error> {
 }
 
 pub fn parse_data(data: &[u8], opt: &ParseOptions) -> Result<Document, Error> {
-    match Document::from_data_with_opt(data, &opt) {
+    match Document::from_data_with_opt(data, opt) {
         Ok(d) => Ok(d),
-        Err(e) => return Err(e),
+        Err(e) => Err(e),
     }
 }
 
@@ -59,7 +59,7 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
 
     // Prepare our document.
     // This methods is not optional.
-    resolve_attributes(doc);
+    try!(resolve_attributes(doc));
     try!(resolve_inherit(doc));
     fix_invalid_attributes(doc);
     group_defs(doc);
@@ -69,6 +69,10 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
     // since they uses them.
     if get_flag!(args, Key::RemoveUnusedDefs) {
         remove_unused_defs(doc);
+    }
+
+    if get_flag!(args, Key::RemoveInvalidStops) {
+        remove_invalid_stops(doc);
     }
 
     if get_flag!(args, Key::RemoveDuplLinearGradients) {
@@ -155,7 +159,7 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
 
 pub fn write_buffer(doc: &Document, capacity: usize, opt: &WriteOptions) -> Vec<u8> {
     let mut ouput_data = Vec::with_capacity(capacity);
-    doc.write_buf_opt(&opt, &mut ouput_data);
+    doc.write_buf_opt(opt, &mut ouput_data);
     ouput_data
 }
 

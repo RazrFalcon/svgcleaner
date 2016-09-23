@@ -42,6 +42,7 @@ pub enum Key {
     UngroupGroups,
     MergeGradients,
     RemoveInvisibleElements,
+    RemoveInvalidStops,
 
     RemoveVersion,
     RemoveNonsvgAttributes,
@@ -96,6 +97,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "ungroup-groups",
     "merge-gradients",
     "remove-invisible-elements",
+    "remove-invalid-stops",
 
     "remove-version",
     "remove-nonsvg-attributes",
@@ -185,6 +187,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Merge gradients", "true"));
     a = a.arg(gen_flag!(Key::RemoveInvisibleElements,
             "Remove invisible elements", "true"));
+    a = a.arg(gen_flag!(Key::RemoveInvalidStops,
+            "Remove invalid 'stop' elements", "true"));
 
     // attributes
     a = a.arg(gen_flag!(Key::RemoveVersion,
@@ -312,7 +316,7 @@ pub fn check_values(args: &ArgMatches) -> bool {
                 KEYS[flag], KEYS[dep]);
             return false;
         }
-        return true;
+        true
     }
 
     if !check_value(args, Key::JoinArcToFlags, Key::TrimPaths) {

@@ -24,19 +24,22 @@ use std::fmt;
 
 #[derive(PartialEq)]
 pub enum CleanerError {
-    UnresolvedAttribute, // TODO: which one
+    UnresolvedAttribute(String), // attribute name
+    MissingAttribute(String, String), // tag name, attribute name
     ScriptingIsNotSupported,
     AnimationIsNotSupported,
     ConditionalProcessingIsNotSupported,
-    ExternalHrefIsNotSupported(String),
+    ExternalHrefIsNotSupported(String), // ref data
     BiggerFile,
 }
 
 impl fmt::Debug for CleanerError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            CleanerError::UnresolvedAttribute =>
-                write!(f, "Unresolved attribute"),
+            CleanerError::UnresolvedAttribute(ref name) =>
+                write!(f, "Failed to resolved attribute '{}'", name),
+            CleanerError::MissingAttribute(ref tag_name, ref attr_name) =>
+                write!(f, "The attribute '{}' is missing in the '{}' element", attr_name, tag_name),
             CleanerError::ScriptingIsNotSupported =>
                 write!(f, "Scripting is not supported"),
             CleanerError::AnimationIsNotSupported =>

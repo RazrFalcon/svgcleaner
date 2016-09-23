@@ -107,11 +107,8 @@ fn check_for_external_xlink(doc: &Document) -> Result<(), CleanerError> {
         }
 
         let attrs = node.attributes();
-        match attrs.get_value(AId::XlinkHref).unwrap() {
-            &AttributeValue::String(ref s) => {
-                return Err(CleanerError::ExternalHrefIsNotSupported(s.clone()));
-            }
-            _ => {}
+        if let AttributeValue::String(ref s) = *attrs.get_value(AId::XlinkHref).unwrap() {
+            return Err(CleanerError::ExternalHrefIsNotSupported(s.clone()));
         }
     }
 

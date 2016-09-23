@@ -396,6 +396,7 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
                    || so.find("Error: The 'xlink:href' attribute").is_some()
                    || so.find("Error: Unsupported ENTITY").is_some()
                    || so.find("Error: The 'use' element with").is_some()
+                   || so.find("Error: The attribute 'offset'").is_some()
                    || so.find("Error: Cleaned file is bigger").is_some() {
                     return true;
                 }

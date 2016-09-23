@@ -97,33 +97,26 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
             // we only need to make them visible.
 
             // do not process all attributes - only important
-            let aid_list;
-            if node.is_tag_id(EId::LinearGradient) {
-                aid_list = &LG_ATTRIBUTES[..];
+            let aid_list = if node.is_tag_id(EId::LinearGradient) {
+                &LG_ATTRIBUTES[..]
             } else {
-                aid_list = &RG_ATTRIBUTES[..];
-            }
+                &RG_ATTRIBUTES[..]
+            };
 
             let link_attrs = linked_node.attributes();
             let mut node_attrs = node.attributes_mut();
 
             for aid in aid_list {
-                match link_attrs.get(*aid) {
-                    Some(attr) => {
-                        // if an attribute of the removed gradient is invisible,
-                        // then that means it was a default and we don't need it
-                        if !attr.visible {
-                            continue;
-                        }
-
-                        match node_attrs.get_mut(attr.id) {
-                            Some(n_attr) => {
-                                n_attr.visible = true;
-                            }
-                            None => {}
-                        }
+                if let Some(attr) = link_attrs.get(*aid) {
+                    // if an attribute of the removed gradient is invisible,
+                    // then that means it was a default and we don't need it
+                    if !attr.visible {
+                        continue;
                     }
-                    None => {}
+
+                    if let Some(n_attr) = node_attrs.get_mut(attr.id) {
+                        n_attr.visible = true;
+                    }
                 }
             }
         }
@@ -143,7 +136,7 @@ mod tests {
             #[test]
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
-                resolve_attributes(&doc);
+                resolve_attributes(&doc).unwrap();
                 merge_gradients(&doc);
                 let mut opt = write_opt_for_tests!();
                 opt.transforms.simplify_matrix = true;
@@ -174,15 +167,15 @@ b"<svg>
     test!(merge_2,
 b"<svg>
     <linearGradient id='lg1'>
-        <stop id='s1'/>
-        <stop id='s2'/>
+        <stop id='s1' offset='0'/>
+        <stop id='s2' offset='1'/>
     </linearGradient>
     <linearGradient xlink:href='#lg1'/>
 </svg>",
 "<svg>
     <linearGradient>
-        <stop id='s1'/>
-        <stop id='s2'/>
+        <stop id='s1' offset='0'/>
+        <stop id='s2' offset='1'/>
     </linearGradient>
 </svg>
 ");
@@ -191,15 +184,15 @@ b"<svg>
     test!(merge_3,
 b"<svg>
     <linearGradient id='lg1' x1='5' x2='5'>
-        <stop/>
-        <stop/>
+        <stop offset='0'/>
+        <stop offset='1'/>
     </linearGradient>
     <linearGradient x1='10' xlink:href='#lg1'/>
 </svg>",
 "<svg>
     <linearGradient x1='10' x2='5'>
-        <stop/>
-        <stop/>
+        <stop offset='0'/>
+        <stop offset='1'/>
     </linearGradient>
 </svg>
 ");
@@ -208,16 +201,16 @@ b"<svg>
     test!(merge_4,
 b"<svg>
     <linearGradient id='lg1' x1='5' x2='5'>
-        <stop/>
-        <stop/>
+        <stop offset='0'/>
+        <stop offset='1'/>
     </linearGradient>
     <linearGradient id='lg2' xlink:href='#lg1'/>
     <linearGradient x1='10' xlink:href='#lg2'/>
 </svg>",
 "<svg>
     <linearGradient x1='10' x2='5'>
-        <stop/>
-        <stop/>
+        <stop offset='0'/>
+        <stop offset='1'/>
     </linearGradient>
 </svg>
 ");
@@ -228,14 +221,14 @@ b"<svg>
     <linearGradient x1='10' xlink:href='#lg2'/>
     <linearGradient id='lg2' xlink:href='#lg1'/>
     <linearGradient id='lg1' x1='5' x2='5'>
-        <stop/>
-        <stop/>
+        <stop offset='0'/>
+        <stop offset='1'/>
     </linearGradient>
 </svg>",
 "<svg>
     <linearGradient x1='10' x2='5'>
-        <stop/>
-        <stop/>
+        <stop offset='0'/>
+        <stop offset='1'/>
     </linearGradient>
 </svg>
 ");
@@ -255,18 +248,18 @@ b"<svg>
     test!(merge_7,
 b"<svg>
     <linearGradient id='lg1'>
-        <stop id='s1'/>
-        <stop id='s2'/>
+        <stop id='s1' offset='0'/>
+        <stop id='s2' offset='1'/>
     </linearGradient>
     <linearGradient id='lg2' xlink:href='#lg1'>
-        <stop id='s3'/>
-        <stop id='s4'/>
+        <stop id='s3' offset='0'/>
+        <stop id='s4' offset='1'/>
     </linearGradient>
 </svg>",
 "<svg>
     <linearGradient id='lg2'>
-        <stop id='s3'/>
-        <stop id='s4'/>
+        <stop id='s3' offset='0'/>
+        <stop id='s4' offset='1'/>
     </linearGradient>
 </svg>
 ");

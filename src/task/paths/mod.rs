@@ -39,26 +39,22 @@ pub fn process_paths(doc: &Document, args: &ArgMatches) {
                                                AId::MarkerMid, AId::MarkerEnd]);
 
         let mut attrs = node.attributes_mut();
-        match attrs.get_mut(AId::D) {
-            Some(attr) => {
-                match attr.value {
-                    AttributeValue::Path(ref mut path) => process_path(path, has_marker, args),
-                    _ => {}
-                }
+        if let Some(attr) = attrs.get_mut(AId::D) {
+            if let AttributeValue::Path(ref mut path) = attr.value {
+                process_path(path, has_marker, args);
             }
-            None => {}
         }
     }
 }
 
 fn process_path(path: &mut Path, has_marker: bool, args: &ArgMatches) {
-    path.to_absolute();
+    path.conv_to_absolute();
 
     if get_flag!(args, Key::RemoveUnusedSegments) && !has_marker {
         rm_unused::remove_unused_segments(path);
     }
 
-    path.to_relative();
+    path.conv_to_relative();
 
     // NOTE: A relative path can be bigger, but usually only on few chars.
     //       But to check it - we need to convert an original and a new path to strings

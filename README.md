@@ -156,7 +156,7 @@ V0.7
  - [ ] Join sequential paths.
  - [x] Join presentational attributes.
  - [ ] Process `enable-background`.
- - [ ] Remove duplicated `stop` elements.
+ - [x] Remove duplicated `stop` elements.
  - [ ] Resolve `use`.
  - [ ] Test more files.
  - [ ] Test files using all possible cleaning options combinations.

@@ -34,6 +34,8 @@ pub fn remove_invisible_elements(doc: &Document) {
     process_paths(doc, &mut is_any_removed);
     process_clip_paths(doc, &mut is_any_removed);
     process_filter(doc, &mut is_any_removed);
+    process_use(doc, &mut is_any_removed);
+    process_gradients(doc);
 
     if is_any_removed {
         super::remove_unused_defs(doc);
@@ -170,20 +172,74 @@ fn process_display_attribute(doc: &Document, is_any_removed: &mut bool) {
 
 // remove 'filter' elements without children
 fn process_filter(doc: &Document, is_any_removed: &mut bool) {
-    let nodes: Vec<Node> = doc.descendants()
-                              .filter(|n| n.is_tag_id(EId::Filter) && !n.has_children()).collect();
-
-    if !nodes.is_empty() {
-        *is_any_removed = true;
-    }
+    let iter = doc.descendants()
+                  .filter(|n| n.is_tag_id(EId::Filter) && !n.has_children());
 
     // Note, that all elements that uses this filter also became invisible,
     // so we can remove them as well.
-    for n in nodes {
+    for n in iter {
+        *is_any_removed = true;
         for link in n.linked_nodes() {
             link.remove();
         }
         n.remove();
+    }
+}
+
+// 'use' element without 'xlink:href' attribute is pointless
+fn process_use(doc: &Document, is_any_removed: &mut bool) {
+    let iter = doc.descendants()
+                  .filter(|n| n.is_tag_id(EId::Use) && !n.has_attribute(AId::XlinkHref));
+
+    for n in iter {
+        *is_any_removed = true;
+        n.remove();
+    }
+}
+
+fn process_gradients(doc: &Document) {
+    {
+        // gradient without children and link to other gradient is pointless
+        let iter = doc.descendants()
+                      .filter(|n| n.is_tag_id(EId::LinearGradient) || n.is_tag_id(EId::RadialGradient))
+                      .filter(|n| !n.has_children() && !n.has_attribute(AId::XlinkHref));
+
+        for n in iter {
+            for link in n.linked_nodes() {
+                while let Some(aid) = link.find_reference_attribute(&n) {
+                    link.set_attribute(aid, ValueId::None);
+                }
+            }
+            n.remove();
+        }
+    }
+
+    {
+        // 'If one stop is defined, then paint with the solid color fill using the color
+        // defined for that gradient stop.'
+        let iter = doc.descendants()
+                      .filter(|n| n.is_tag_id(EId::LinearGradient) || n.is_tag_id(EId::RadialGradient))
+                      .filter(|n| n.children().count() == 1 && !n.has_attribute(AId::XlinkHref));
+
+        for n in iter {
+            let stop = n.children().nth(0).unwrap();
+            let color = *stop.attribute_value(AId::StopColor).unwrap().as_color().unwrap();
+            let opacity = *stop.attribute_value(AId::StopOpacity).unwrap().as_number().unwrap();
+
+            for link in n.linked_nodes() {
+                while let Some(aid) = link.find_reference_attribute(&n) {
+                    link.set_attribute(aid, color);
+                    if opacity != 1.0 {
+                        match aid {
+                            AId::Fill => link.set_attribute(AId::FillOpacity, opacity),
+                            AId::Stroke => link.set_attribute(AId::StrokeOpacity, opacity),
+                            _ => {}
+                        }
+                    }
+                }
+            }
+            n.remove();
+        }
     }
 }
 
@@ -335,6 +391,37 @@ b"<svg>
     <rect filter='url(#f1)'/>
 </svg>",
 "<svg/>
+");
+
+    test!(rm_use_1,
+b"<svg>
+    <use/>
+</svg>",
+"<svg/>
+");
+
+    test!(rm_gradient_1,
+b"<svg>
+    <linearGradient id='lg1'/>
+    <rect fill='url(#lg1)'/>
+    <rect stroke='url(#lg1)'/>
+</svg>",
+"<svg>
+    <rect fill='none'/>
+    <rect stroke='none'/>
+</svg>
+");
+
+    test!(rm_gradient_2,
+b"<svg>
+    <linearGradient id='lg1'>
+        <stop offset='0.5' stop-color='#ff0000' stop-opacity='0.5'/>
+    </linearGradient>
+    <rect fill='url(#lg1)' stroke='url(#lg1)'/>
+</svg>",
+"<svg>
+    <rect fill='#ff0000' fill-opacity='0.5' stroke='#ff0000' stroke-opacity='0.5'/>
+</svg>
 ");
 
 }

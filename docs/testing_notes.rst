@@ -51,14 +51,14 @@ Testing method
 Testing algorithm looks like this:
 
 1. Clean image with cleaning application.
-#. Render original image using ``tools/svgrender`` [1]_.
-#. Render cleaned image using ``tools/svgrender`` [1]_.
+#. Render original image scaled to 512x512 (keeping an original aspect) using ``tools/svgrender`` [1]_.
+#. Render cleaned image in the same way.
 #. Compare images using imagemagick's ``compare``:
 
    ``compare -metric AE -fuzz 1% orig.png cleaned.png diff.png``
 #. If AE value is bigger than 2% [2]_ of the image size - we have an error.
 
-.. [1] ``svgrender`` is based on QtWebKit, which is the best way to render SVG from CLI.
+.. [1] ``svgrender`` is based on QtWebKit fork, which is the best way to render SVG from CLI.
 
 .. [2] we use 2% threshold to filter anti-aliasing artifacts.
 

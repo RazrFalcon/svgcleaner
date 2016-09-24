@@ -65,9 +65,15 @@ pub fn radial_gradients(doc: &Document) {
 }
 
 pub fn stop(doc: &Document) -> Result<(), CleanerError> {
-    for node in doc.descendants().filter(|n| n.is_tag_id(EId::Stop)) {
+    for (idx, node) in doc.descendants().filter(|n| n.is_tag_id(EId::Stop)).enumerate() {
         if !node.has_attribute(AId::Offset) {
-            return Err(CleanerError::MissingAttribute("stop".to_string(), "offset".to_string()));
+            if idx == 0 {
+                println!("Warning: The 'stop' element must have an 'offset' attribute. \
+                          Fallback to 'offset=0'.");
+                node.set_attribute(AId::Offset, 0);
+            } else {
+                return Err(CleanerError::MissingAttribute("stop".to_string(), "offset".to_string()));
+            }
         } else {
             let a = node.attribute_value(AId::Offset).unwrap();
             let l = a.as_length().unwrap();

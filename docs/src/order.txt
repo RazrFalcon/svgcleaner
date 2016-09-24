@@ -33,8 +33,6 @@ trim-paths.rst
 remove-dupl-cmd-in-paths.rst
 join-arcto-flags.rst
 -- Output
-precision-coordinate.rst
-precision-transform.rst
 trim-colors.rst
 simplify-transforms.rst
 indent.rst

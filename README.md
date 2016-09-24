@@ -2,8 +2,9 @@
 
 *svgcleaner* could help you to clean up your SVG files from the unnecessary data.
 
-## Table of contents
+## Table of Contents
 
+  * [Purpose](#purpose)
   * [Goals](#goals)
     * [Charts](#charts)
       * [Correctness](#correctness)
@@ -16,8 +17,20 @@
     * [GUI](#gui)
   * [Downloads](#downloads)
   * [Contributing and Issues](#contributing-and-issues)
+  * [FAQ](#faq)
   * [Roadmap](#roadmap)
   * [License](#license)
+
+## Purpose
+
+The main purpose of the svgcleaner is to losslessly reduce size of an SVG image, created in a
+vector editing application, before publishing.
+
+Usually, more than half of an SVG image data is useless for rendering:
+- Temporary data used by the vector editing application.
+- Non-optimal SVG structure representation.
+- Unused and invisible graphical elements.
+- ...
 
 ## Goals
 
@@ -60,8 +73,6 @@ of the files - it's pointless.
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.91/docs/images/performance_chart_W3C_SVG_11_TestSuite.svg)
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.91/docs/images/performance_chart_oxygen.svg)
-
-\* Even through that current results are impressive, svgcleaner is still very slow.
 
 ## Limitations
 
@@ -111,6 +122,8 @@ You can get a prebuild packages [here](https://github.com/RazrFalcon/svgcleaner-
 ## Contributing and Issues
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## [FAQ](FAQ.md)
 
 ## Roadmap
 V0.7

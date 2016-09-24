@@ -981,20 +981,6 @@ CLI argument: ``--join-arcto-flags``
 Output
 ======
 
-Coordinates precision
----------------------
-
-Set precision for numeric attributes, such as `<length> <https://www.w3.org/TR/SVG/types.html#DataTypeLength>`_,
-`<number> <https://www.w3.org/TR/SVG/types.html#DataTypeNumber>`_, `<coordinate> <https://www.w3.org/TR/SVG/types.html#DataTypeCoordinate>`_ and basically for all of the numbers is SVG.
-
-Transforms precision
---------------------
-
-Set numeric precision for ``a``, ``b``, ``c``, ``d`` values of transform matrix.
-
-We need a separate option for them since their values often very small and we need
-a decent precision to keep them correct.
-
 Use #RGB notation
 -----------------
 

@@ -1,80 +1,29 @@
 {
     "custom_ae": [
         {
-            "name": "struct-image-14-f.svg",
-            "valid_ae": 266
+            "name": "struct-svg-03-f.svg",
+            "valid_ae": 380
         },
         {
-            "name": "struct-cond-overview-02-f.svg",
-            "valid_ae": 865
+            "info": "Looks like a QtWebKit bug since Inkscape and Chromium renders equally.",
+            "name": "fonts-desc-05-t.svg",
+            "valid_ae": 413
         },
         {
-            "name": "pservers-grad-15-b.svg",
-            "valid_ae": 641
+            "name": "masking-path-10-b.svg",
+            "valid_ae": 320
         },
         {
-            "name": "pservers-grad-01-b.svg",
-            "valid_ae": 641
-        },
-        {
-            "name": "color-prop-01-b.svg",
-            "valid_ae": 384
-        },
-        {
-            "name": "struct-cond-overview-03-f.svg",
-            "valid_ae": 558
-        },
-        {
-            "name": "struct-image-13-f.svg",
-            "valid_ae": 266
+            "name": "text-fonts-203-t.svg",
+            "valid_ae": 1596
         },
         {
             "name": "pservers-grad-23-f.svg",
             "valid_ae": 426
         },
         {
-            "name": "interact-cursor-01-f.svg",
-            "valid_ae": 460
-        },
-        {
-            "name": "struct-image-15-f.svg",
-            "valid_ae": 460
-        },
-        {
-            "name": "pservers-grad-10-b.svg",
-            "valid_ae": 490
-        },
-        {
-            "name": "painting-marker-properties-01-f.svg",
-            "valid_ae": 278
-        },
-        {
-            "name": "pservers-grad-09-b.svg",
-            "valid_ae": 726
-        },
-        {
-            "name": "masking-path-08-b.svg",
-            "valid_ae": 322
-        },
-        {
-            "name": "masking-mask-02-f.svg",
-            "valid_ae": 266
-        },
-        {
-            "name": "linking-uri-02-b.svg",
-            "valid_ae": 215
-        },
-        {
-            "name": "pservers-grad-03-b.svg",
-            "valid_ae": 641
-        },
-        {
-            "name": "linking-a-10-f.svg",
-            "valid_ae": 1270
-        },
-        {
-            "name": "painting-control-01-f.svg",
-            "valid_ae": 807
+            "name": "pservers-grad-06-b.svg",
+            "valid_ae": 1101
         },
         {
             "name": "coords-units-03-b.svg",
@@ -89,44 +38,8 @@
             "valid_ae": 355
         },
         {
-            "name": "struct-group-01-t.svg",
-            "valid_ae": 207
-        },
-        {
-            "name": "styling-inherit-01-b.svg",
-            "valid_ae": 447
-        },
-        {
-            "name": "struct-defs-01-t.svg",
-            "valid_ae": 428
-        },
-        {
-            "name": "struct-image-10-t.svg",
-            "valid_ae": 510
-        },
-        {
-            "name": "pservers-grad-02-b.svg",
+            "name": "pservers-grad-16-b.svg",
             "valid_ae": 641
-        },
-        {
-            "name": "struct-image-09-t.svg",
-            "valid_ae": 343
-        },
-        {
-            "name": "filters-conv-05-f.svg",
-            "valid_ae": 747
-        },
-        {
-            "name": "pservers-grad-04-b.svg",
-            "valid_ae": 641
-        },
-        {
-            "name": "struct-image-08-t.svg",
-            "valid_ae": 510
-        },
-        {
-            "name": "pservers-grad-12-b.svg",
-            "valid_ae": 980
         },
         {
             "name": "pservers-grad-14-b.svg",
@@ -137,41 +50,116 @@
             "valid_ae": 258
         },
         {
-            "name": "linking-uri-01-b.svg",
-            "valid_ae": 215
-        },
-        {
             "name": "shapes-rect-04-f.svg",
             "valid_ae": 213
         },
         {
-            "name": "pservers-grad-16-b.svg",
+            "name": "linking-uri-01-b.svg",
+            "valid_ae": 215
+        },
+        {
+            "name": "painting-marker-properties-01-f.svg",
+            "valid_ae": 278
+        },
+        {
+            "name": "pservers-grad-10-b.svg",
+            "valid_ae": 490
+        },
+        {
+            "name": "struct-image-15-f.svg",
+            "valid_ae": 460
+        },
+        {
+            "name": "pservers-grad-12-b.svg",
+            "valid_ae": 980
+        },
+        {
+            "name": "struct-image-08-t.svg",
+            "valid_ae": 510
+        },
+        {
+            "name": "pservers-grad-04-b.svg",
             "valid_ae": 641
         },
         {
-            "name": "struct-use-08-b.svg",
-            "valid_ae": 369
+            "name": "filters-conv-05-f.svg",
+            "valid_ae": 743
         },
         {
-            "name": "shapes-ellipse-03-f.svg",
-            "valid_ae": 254
+            "name": "struct-image-09-t.svg",
+            "valid_ae": 343
         },
         {
-            "info": "Looks like a QtWebKit bug since Inkscape and Chromium renders equally.",
-            "name": "text-fonts-203-t.svg",
-            "valid_ae": 1596
+            "name": "pservers-grad-02-b.svg",
+            "valid_ae": 641
         },
         {
-            "name": "struct-svg-03-f.svg",
-            "valid_ae": 380
+            "name": "struct-image-10-t.svg",
+            "valid_ae": 510
         },
         {
-            "name": "masking-path-10-b.svg",
-            "valid_ae": 320
+            "name": "struct-defs-01-t.svg",
+            "valid_ae": 428
         },
         {
-            "name": "pservers-grad-06-b.svg",
-            "valid_ae": 1101
+            "name": "styling-inherit-01-b.svg",
+            "valid_ae": 447
+        },
+        {
+            "name": "struct-group-01-t.svg",
+            "valid_ae": 207
+        },
+        {
+            "name": "pservers-grad-09-b.svg",
+            "valid_ae": 726
+        },
+        {
+            "name": "painting-control-01-f.svg",
+            "valid_ae": 807
+        },
+        {
+            "name": "pservers-grad-03-b.svg",
+            "valid_ae": 641
+        },
+        {
+            "name": "linking-uri-02-b.svg",
+            "valid_ae": 215
+        },
+        {
+            "name": "masking-path-08-b.svg",
+            "valid_ae": 319
+        },
+        {
+            "name": "masking-mask-02-f.svg",
+            "valid_ae": 266
+        },
+        {
+            "name": "linking-a-10-f.svg",
+            "valid_ae": 1270
+        },
+        {
+            "name": "struct-image-13-f.svg",
+            "valid_ae": 266
+        },
+        {
+            "name": "struct-cond-overview-03-f.svg",
+            "valid_ae": 558
+        },
+        {
+            "name": "color-prop-01-b.svg",
+            "valid_ae": 384
+        },
+        {
+            "name": "pservers-grad-01-b.svg",
+            "valid_ae": 641
+        },
+        {
+            "name": "pservers-grad-15-b.svg",
+            "valid_ae": 641
+        },
+        {
+            "name": "struct-image-14-f.svg",
+            "valid_ae": 266
         }
     ],
     "ignore": [

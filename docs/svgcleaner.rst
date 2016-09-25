@@ -840,6 +840,40 @@ Otherwise ``style`` is shorter.
 .. There is no example, because a style with 5 attributes will be a huge, nonbreakable line,
 .. which will break the layout.
 
+Apply transformations to gradients
+----------------------------------
+
+Transformations that contain only translate, rotate and proportional scale parts
+can be applied to some gradients.
+
+CLI argument: ``--apply-transform-to-gradients``
+
++--------------------------------------------------+----------------------------------------------+
+| Before (461b)                                    | After (415b)                                 |
++--------------------------------------------------+----------------------------------------------+
+| .. code-block:: XML                              | .. code-block:: XML                          |
+|                                                  |                                              |
+|   <svg>                                          |   <svg>                                      |
+|     <linearGradient id="lg1" x1="40" y1="30"     |     <linearGradient id="lg1" x1="50" y1="50" |
+|             x2="90" y2="30"                      |             x2="100" y2="50"                 |
+|             gradientTransform="translate(10 20)" |             gradientUnits="userSpaceOnUse">  |
+|             gradientUnits="userSpaceOnUse">      |       <stop offset="0"                       |
+|       <stop offset="0"                           |             stop-color="yellow"/>            |
+|             stop-color="yellow"/>                |       <stop offset="1"                       |
+|       <stop offset="1"                           |             stop-color="green"/>             |
+|             stop-color="green"/>                 |     </linearGradient>                        |
+|     </linearGradient>                            |     <circle fill="url(#lg1)"                 |
+|     <circle fill="url(#lg1)"                     |             cx="50" cy="50" r="45"/>         |
+|             cx="50" cy="50" r="45"/>             |   </svg>                                     |
+|   </svg>                                         |                                              |
++--------------------------------------------------+----------------------------------------------+
+| |before-apply-transform-to-gradients|            | |after-apply-transform-to-gradients|         |
++--------------------------------------------------+----------------------------------------------+
+
+.. |before-apply-transform-to-gradients| image:: https://razrfalcon.github.io/svgcleaner/images/before/apply-transform-to-gradients.svg
+.. |after-apply-transform-to-gradients| image:: https://razrfalcon.github.io/svgcleaner/images/after/apply-transform-to-gradients.svg
+
+
 Paths
 =====
 

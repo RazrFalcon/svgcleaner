@@ -146,15 +146,14 @@ V0.7
    - [ ] other...
  - [ ] Group elements by style attributes.
    - [x] Move to group if all attributes are equal
-   - [ ] Move to group if most attributes are equal
    - [ ] Create own groups.
  - [x] Remove `version` attribute.
  - [ ] Remove elements outside the viewbox.
  - [x] Merge gradients.
- - [ ] Apply transforms:
+ - [ ] Apply transforms to:
    - [ ] paths
    - [ ] shapes
-   - [ ] gradients
+   - [x] gradients
  - [ ] Replace equal elements by `use`:
    - [ ] `path`
    - [ ] Basic shapes
@@ -170,6 +169,7 @@ V0.7
  - [x] Join presentational attributes.
  - [ ] Process `enable-background`.
  - [x] Remove duplicated `stop` elements.
+ - [ ] Ungroup `defs` element.
  - [ ] Resolve `use`.
  - [ ] Test more files.
  - [ ] Test files using all possible cleaning options combinations.

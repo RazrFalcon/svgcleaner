@@ -71,6 +71,7 @@ mod rm_unused_defs;
 mod rm_version;
 mod trim_ids;
 mod ungroup_groups;
+pub mod apply_transforms;
 pub mod paths;
 
 /// Shorthand names for modules.

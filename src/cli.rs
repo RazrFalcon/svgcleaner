@@ -55,6 +55,7 @@ pub enum Key {
     RemoveNeedlessAttributes,
     MoveStylesToGroup,
     JoinStyleAttributes,
+    ApplyTransformToGradients,
 
     PathsToRelative,
     RemoveUnusedSegments,
@@ -110,6 +111,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-needless-attributes",
     "move-styles-to-group",
     "join-style-attributes",
+    "apply-transform-to-gradients",
 
     "paths-to-relative",
     "remove-unused-segments",
@@ -213,6 +215,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Move presentational attributes to the parent group", "true"));
     a = a.arg(gen_flag!(Key::JoinStyleAttributes,
             "Join presentational attributes", "true"));
+    a = a.arg(gen_flag!(Key::ApplyTransformToGradients,
+            "Apply transformations to gradients", "true"));
 
     // paths
     a = a.arg(gen_flag!(Key::PathsToRelative,

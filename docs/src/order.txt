@@ -26,6 +26,7 @@ remove-xmlns-xlink-attribute.rst
 remove-needless-attributes.rst
 move-styles-to-group.rst
 join-style-attributes.rst
+apply-transform-to-gradients.rst
 -- Paths
 paths-to-relative.rst
 remove-unused-segments.rst

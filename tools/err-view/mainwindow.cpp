@@ -63,7 +63,7 @@ void MainWindow::on_actionMarkAsValid_triggered()
     QVariantMap newItem;
     newItem.insert("name", m_svgName);
     newItem.insert("valid_ae", m_validAE.toUInt());
-    if (ui->lineComment->text().isEmpty()) {
+    if (!ui->lineComment->text().isEmpty()) {
         newItem.insert("info", ui->lineComment->text());
     }
 

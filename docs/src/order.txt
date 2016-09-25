@@ -11,6 +11,7 @@ remove-dupl-lineargradient.rst
 remove-dupl-radialgradient.rst
 remove-dupl-fegaussianblur.rst
 ungroup-groups.rst
+ungroup-defs.rst
 merge-gradients.rst
 remove-invisible-elements.rst
 remove-invalid-stops.rst

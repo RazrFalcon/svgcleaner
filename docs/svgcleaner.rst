@@ -426,6 +426,39 @@ CLI argument: ``--ungroup-groups``
 .. |after-ungroup-groups| image:: https://razrfalcon.github.io/svgcleaner/images/after/ungroup-groups.svg
 
 
+Ungroup ``defs`` elements
+-------------------------
+
+If the ``defs`` element contains only `referenced <https://www.w3.org/TR/SVG/struct.html#Head>`_
+elements - it can be ungrouped.
+
+CLI argument: ``--ungroup-defs``
+
++-------------------------------------+-------------------------------------+
+| Before (362b)                       | After (331b)                        |
++-------------------------------------+-------------------------------------+
+| .. code-block:: XML                 | .. code-block:: XML                 |
+|                                     |                                     |
+|   <svg>                             |   <svg>                             |
+|     <defs>                          |     <radialGradient id="rg1">       |
+|       <radialGradient id="rg1">     |       <stop offset="0"              |
+|         <stop offset="0"            |             stop-color="yellow"/>   |
+|               stop-color="yellow"/> |       <stop offset="1"              |
+|         <stop offset="1"            |             stop-color="green"/>    |
+|               stop-color="green"/>  |     </radialGradient>               |
+|       </radialGradient>             |     <circle fill="url(#rg1)" r="45" |
+|     </defs>                         |             cx="50" cy="50"/>       |
+|     <circle fill="url(#rg1)" r="45" |   </svg>                            |
+|             cx="50" cy="50"/>       |                                     |
+|   </svg>                            |                                     |
++-------------------------------------+-------------------------------------+
+| |before-ungroup-defs|               | |after-ungroup-defs|                |
++-------------------------------------+-------------------------------------+
+
+.. |before-ungroup-defs| image:: https://razrfalcon.github.io/svgcleaner/images/before/ungroup-defs.svg
+.. |after-ungroup-defs| image:: https://razrfalcon.github.io/svgcleaner/images/after/ungroup-defs.svg
+
+
 Merge gradients
 ---------------
 

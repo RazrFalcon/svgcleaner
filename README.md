@@ -169,7 +169,7 @@ V0.7
  - [x] Join presentational attributes.
  - [ ] Process `enable-background`.
  - [x] Remove duplicated `stop` elements.
- - [ ] Ungroup `defs` element.
+ - [x] Ungroup `defs` element.
  - [ ] Resolve `use`.
  - [ ] Test more files.
  - [ ] Test files using all possible cleaning options combinations.

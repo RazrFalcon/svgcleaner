@@ -46,6 +46,7 @@ pub use self::rm_unused_defs::remove_unused_defs;
 pub use self::rm_version::remove_version;
 pub use self::trim_ids::trim_ids;
 pub use self::ungroup_groups::ungroup_groups;
+pub use self::ungroup_defs::ungroup_defs;
 
 #[macro_use]
 mod macros;
@@ -71,6 +72,7 @@ mod rm_unused_defs;
 mod rm_version;
 mod trim_ids;
 mod ungroup_groups;
+mod ungroup_defs;
 pub mod apply_transforms;
 pub mod paths;
 

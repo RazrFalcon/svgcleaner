@@ -85,7 +85,7 @@ fn _remove_text_attributes(root: &Node) -> bool {
             continue;
         }
 
-        if node.has_children() {
+        if node.has_children_nodes() {
             // go deeper
             let can_rm = _remove_text_attributes(&node);
             if can_rm {

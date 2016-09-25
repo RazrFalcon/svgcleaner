@@ -40,6 +40,7 @@ pub enum Key {
     RemoveDuplRadialGradients,
     RemoveDuplFeGaussianBlur,
     UngroupGroups,
+    UngroupDefs,
     MergeGradients,
     RemoveInvisibleElements,
     RemoveInvalidStops,
@@ -96,6 +97,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-dupl-radialgradient",
     "remove-dupl-fegaussianblur",
     "ungroup-groups",
+    "ungroup-defs",
     "merge-gradients",
     "remove-invisible-elements",
     "remove-invalid-stops",
@@ -185,6 +187,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Remove duplicated 'feGaussianBlur' elements", "true"));
     a = a.arg(gen_flag!(Key::UngroupGroups,
             "Ungroup groups", "true"));
+    a = a.arg(gen_flag!(Key::UngroupDefs,
+            "Ungroup 'defs' elements", "true"));
     a = a.arg(gen_flag!(Key::MergeGradients,
             "Merge gradients", "true"));
     a = a.arg(gen_flag!(Key::RemoveInvisibleElements,

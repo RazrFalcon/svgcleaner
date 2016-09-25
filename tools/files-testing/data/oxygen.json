@@ -412,6 +412,18 @@
         {
             "name": "mimetypes/small/48x48/application-x-php.svg",
             "valid_ae": 1070
+        },
+        {
+            "name": "mimetypes/hidef/text-x-adasrc.svg",
+            "valid_ae": 2283
+        },
+        {
+            "name": "mimetypes/small/64x64/text-x-adasrc.svg",
+            "valid_ae": 2280
+        },
+        {
+            "name": "mimetypes/text-x-adasrc.svg",
+            "valid_ae": 2280
         }
     ],
     "ignore": [

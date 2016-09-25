@@ -139,6 +139,13 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
         move_styles_to_group(doc);
     }
 
+    if get_flag!(args, Key::RemoveUnusedCoordinates) {
+        remove_unused_coordinates(doc);
+    }
+
+    // final fixes
+    // list of things that can't break anything
+
     if get_flag!(args, Key::RemoveUnreferencedIds) {
         remove_unreferenced_ids(doc);
     }
@@ -147,15 +154,13 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
         trim_ids(doc);
     }
 
-    if get_flag!(args, Key::RemoveUnusedCoordinates) {
-        remove_unused_coordinates(doc);
-    }
-
     if get_flag!(args, Key::RemoveVersion) {
         remove_version(doc);
     }
 
-    // final fixes
+    if get_flag!(args, Key::UngroupDefs) {
+        ungroup_defs(doc);
+    }
 
     final_fixes(doc);
     fix_xmlns_attribute(doc, get_flag!(args, Key::RemoveXmlnsXlinkAttribute));

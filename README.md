@@ -178,7 +178,7 @@ V0.7
 V0.8
  - [ ] Convert units using specified DPI.
  - [ ] Numbers comparing using custom precision.
- - [ ] Simplify paths. Something like Inkscapes's 'Simplify', but lossless.
+ - [ ] Simplify paths. Something like Inkscape's 'Simplify', but lossless.
        Have no idea how to make it. Hints [here](https://pomax.github.io/bezierinfo/#bsplines).
  - [ ] Remove elements covered by other elements.
  - [ ] Test not only against webkit.

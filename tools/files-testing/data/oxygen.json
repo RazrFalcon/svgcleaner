@@ -109,10 +109,6 @@
             "valid_ae": 414
         },
         {
-            "name": "mimetypes/hidef/text-x-adasrc.svg",
-            "valid_ae": 1400
-        },
-        {
             "name": "mimetypes/small/22x22/text-x-po.svg",
             "valid_ae": 689
         },
@@ -121,20 +117,12 @@
             "valid_ae": 535
         },
         {
-            "name": "mimetypes/small/64x64/text-x-adasrc.svg",
-            "valid_ae": 1400
-        },
-        {
             "name": "mimetypes/small/32x32/text-x-po.svg",
             "valid_ae": 611
         },
         {
             "name": "mimetypes/small/48x48/text-x-po.svg",
             "valid_ae": 588
-        },
-        {
-            "name": "mimetypes/text-x-adasrc.svg",
-            "valid_ae": 1400
         },
         {
             "name": "status/user-away.svg",

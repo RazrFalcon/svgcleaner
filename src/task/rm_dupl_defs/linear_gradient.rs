@@ -22,7 +22,7 @@
 
 use task::short::{EId, AId};
 
-use svgdom::Document;
+use svgdom::{Document, Node};
 
 pub fn remove_dupl_linear_gradients(doc: &Document) {
     let attrs = [
@@ -34,7 +34,21 @@ pub fn remove_dupl_linear_gradients(doc: &Document) {
         AId::SpreadMethod,
     ];
 
-    super::rm_loop(doc, EId::LinearGradient, &attrs);
+    let mut nodes = doc.descendants()
+                       .filter(|n| n.is_tag_id(EId::LinearGradient))
+                       .collect::<Vec<Node>>();
+
+    super::rm_loop(&mut nodes, |ref node1, ref node2| {
+        if !super::is_gradient_attrs_equal(node1, node2, &attrs) {
+            return false;
+        }
+
+        if !super::is_equal_stops(node1, node2) {
+            return false;
+        }
+
+        true
+    });
 }
 
 #[cfg(test)]

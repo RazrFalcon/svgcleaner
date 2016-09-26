@@ -47,6 +47,7 @@ pub use self::rm_version::remove_version;
 pub use self::trim_ids::trim_ids;
 pub use self::ungroup_groups::ungroup_groups;
 pub use self::ungroup_defs::ungroup_defs;
+pub use self::regroup_gradient_stops::regroup_gradient_stops;
 
 #[macro_use]
 mod macros;
@@ -58,6 +59,7 @@ mod join_style_attrs;
 mod merge_gradients;
 mod move_styles_to_group;
 mod preclean_checks;
+mod regroup_gradient_stops;
 mod resolve_attrs;
 mod resolve_inherit;
 mod rm_default_attrs;
@@ -71,8 +73,8 @@ mod rm_unused_coords;
 mod rm_unused_defs;
 mod rm_version;
 mod trim_ids;
-mod ungroup_groups;
 mod ungroup_defs;
+mod ungroup_groups;
 pub mod apply_transforms;
 pub mod paths;
 

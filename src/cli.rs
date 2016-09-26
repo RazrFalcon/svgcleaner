@@ -42,6 +42,7 @@ pub enum Key {
     UngroupGroups,
     UngroupDefs,
     MergeGradients,
+    RegroupGradientStops,
     RemoveInvisibleElements,
     RemoveInvalidStops,
 
@@ -99,6 +100,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "ungroup-groups",
     "ungroup-defs",
     "merge-gradients",
+    "regroup-gradient-stops",
     "remove-invisible-elements",
     "remove-invalid-stops",
 
@@ -191,6 +193,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Ungroup 'defs' elements", "true"));
     a = a.arg(gen_flag!(Key::MergeGradients,
             "Merge gradients", "true"));
+    a = a.arg(gen_flag!(Key::RegroupGradientStops,
+            "Regroup gradient 'stop' elements", "true"));
     a = a.arg(gen_flag!(Key::RemoveInvisibleElements,
             "Remove invisible elements", "true"));
     a = a.arg(gen_flag!(Key::RemoveInvalidStops,

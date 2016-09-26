@@ -498,6 +498,47 @@ CLI argument: ``--merge-gradients``
 .. |after-merge-gradients| image:: https://razrfalcon.github.io/svgcleaner/images/after/merge-gradients.svg
 
 
+Regroup gradient ``stop`` elements
+----------------------------------
+
+If two or more gradients have equal ``stop`` elements - we can move this elements
+into a new ``linearGradient`` and link gradients to this new gradient.
+
+CLI argument: ``--regroup-gradient-stops``
+
++---------------------------------------+----------------------------------------------------+
+| Before (590b)                         | After (523b)                                       |
++---------------------------------------+----------------------------------------------------+
+| .. code-block:: XML                   | .. code-block:: XML                                |
+|                                       |                                                    |
+|   <svg>                               |   <svg>                                            |
+|     <defs>                            |     <defs>                                         |
+|       <linearGradient id="lg1">       |       <linearGradient id="lg3">                    |
+|         <stop offset="0"              |         <stop offset="0"                           |
+|               stop-color="yellow"/>   |               stop-color="yellow"/>                |
+|         <stop offset="1"              |         <stop offset="1"                           |
+|               stop-color="green"/>    |               stop-color="green"/>                 |
+|       </linearGradient>               |       </linearGradient>                            |
+|       <linearGradient id="lg2">       |       <linearGradient id="lg1" xlink:href="#lg3"/> |
+|         <stop offset="0"              |       <linearGradient id="lg2" xlink:href="#lg3"/> |
+|               stop-color="yellow"/>   |     </defs>                                        |
+|         <stop offset="1"              |     <circle fill="url(#lg1)"                       |
+|               stop-color="green"/>    |             cx="50" cy="50" r="45"/>               |
+|       </linearGradient>               |     <circle fill="url(#lg2)"                       |
+|     </defs>                           |             cx="100" cy="50" r="45"/>              |
+|     <circle fill="url(#lg1)"          |   </svg>                                           |
+|             cx="50" cy="50" r="45"/>  |                                                    |
+|     <circle fill="url(#lg2)"          |                                                    |
+|             cx="100" cy="50" r="45"/> |                                                    |
+|   </svg>                              |                                                    |
++---------------------------------------+----------------------------------------------------+
+| |before-regroup-gradient-stops|       | |after-regroup-gradient-stops|                     |
++---------------------------------------+----------------------------------------------------+
+
+.. |before-regroup-gradient-stops| image:: https://razrfalcon.github.io/svgcleaner/images/before/regroup-gradient-stops.svg
+.. |after-regroup-gradient-stops| image:: https://razrfalcon.github.io/svgcleaner/images/after/regroup-gradient-stops.svg
+
+
 Remove invisible elements
 -------------------------
 

@@ -28,9 +28,9 @@ mod linear_gradient;
 mod radial_gradient;
 mod fe_gaussian_blur;
 
-use task::short::{EId, AId};
+use task::short::{AId};
 use svgdom::types::{Transform};
-use svgdom::{Document, Node, AttributeValue};
+use svgdom::{Node, AttributeValue};
 
 macro_rules! check_attr {
     ($attrs1:expr, $attrs2:expr, $id:expr, $def:expr) => ({
@@ -42,11 +42,9 @@ macro_rules! check_attr {
     })
 }
 
-fn rm_loop(doc: &Document, eid: EId, attrs: &[AId]) {
-    let mut nodes = doc.descendants()
-                        .filter(|n| n.is_tag_id(eid))
-                        .collect::<Vec<Node>>();
-
+fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
+    where F : Fn(&Node, &Node) -> bool
+{
     let mut len = nodes.len();
     let mut i1 = 0;
     while i1 < len {
@@ -57,11 +55,7 @@ fn rm_loop(doc: &Document, eid: EId, attrs: &[AId]) {
             let node2 = nodes[i2].clone();
             i2 += 1;
 
-            if !is_gradient_attrs_equal(&node1, &node2, attrs) {
-                continue;
-            }
-
-            if !is_equal_stops(&node1, &node2) {
+            if !cmp(&node1, &node2) {
                 continue;
             }
 
@@ -102,7 +96,7 @@ fn is_gradient_attrs_equal(node1: &Node, node2: &Node, attrs: &[AId]) -> bool {
     true
 }
 
-fn is_equal_stops(node1: &Node, node2: &Node) -> bool {
+pub fn is_equal_stops(node1: &Node, node2: &Node) -> bool {
     if node1.children().count() != node2.children().count() {
         return false;
     }

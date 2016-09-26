@@ -22,7 +22,7 @@
 
 pub use self::gradients::{linear_gradients, radial_gradients};
 
-mod gradients;
+pub mod gradients;
 
 use svgdom::{Document};
 use error::CleanerError;

@@ -25,6 +25,21 @@ use task::short::{EId, AId};
 use svgdom::{Document, Node};
 
 pub fn remove_dupl_fe_gaussian_blur(doc: &Document) {
+    let filter_attrs = [
+        AId::X,
+        AId::Y,
+        AId::Width,
+        AId::Height,
+        AId::FilterUnits,
+        AId::PrimitiveUnits,
+        AId::FilterRes,
+        AId::ColorInterpolationFilters,
+    ];
+
+    let fe_blur_attrs = [
+        AId::StdDeviation,
+    ];
+
     let mut nodes = Vec::new();
 
     for node in doc.descendants().filter(|n| n.is_tag_id(EId::Filter)) {
@@ -58,61 +73,20 @@ pub fn remove_dupl_fe_gaussian_blur(doc: &Document) {
         nodes.push(node.clone());
     }
 
-    rm_loop(&mut nodes);
-}
-
-fn rm_loop(nodes: &mut Vec<Node>) {
-    let filter_attrs = [
-        AId::X,
-        AId::Y,
-        AId::Width,
-        AId::Height,
-        AId::FilterUnits,
-        AId::PrimitiveUnits,
-        AId::FilterRes,
-        AId::ColorInterpolationFilters,
-    ];
-
-    let fe_blur_attrs = [
-        AId::StdDeviation,
-    ];
-
-    // TODO: simplify and join with super::rm_loop
-    let mut len = nodes.len();
-    let mut i1 = 0;
-    while i1 < len {
-        let node1 = nodes[i1].clone();
-
-        let mut i2 = i1 + 1;
-        while i2 < len {
-            let node2 = nodes[i2].clone();
-            i2 += 1;
-
-            if !is_attrs_equal(&node1, &node2, &filter_attrs) {
-                continue;
-            }
-
-            let child1 = node1.first_child().unwrap();
-            let child2 = node2.first_child().unwrap();
-
-            if !is_attrs_equal(&child1, &child2, &fe_blur_attrs) {
-                continue;
-            }
-
-            for ln in node2.linked_nodes() {
-                if let Some(aid) = ln.find_reference_attribute(&node2) {
-                    ln.set_link_attribute(aid, node1.clone()).unwrap();
-                }
-            }
-            node2.remove();
-
-            nodes.remove(i2 - 1);
-            i2 -= 1;
-            len -= 1;
+    super::rm_loop(&mut nodes, |ref node1, ref node2| {
+        if !is_attrs_equal(&node1, &node2, &filter_attrs) {
+            return false;
         }
 
-        i1 += 1;
-    }
+        let child1 = node1.first_child().unwrap();
+        let child2 = node2.first_child().unwrap();
+
+        if !is_attrs_equal(&child1, &child2, &fe_blur_attrs) {
+            return false;
+        }
+
+        true
+    });
 }
 
 fn is_attrs_equal(node1: &Node, node2: &Node, attrs: &[AId]) -> bool {

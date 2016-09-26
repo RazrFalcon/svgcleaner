@@ -21,7 +21,9 @@ Elements:
     --remove-dupl-radialgradient <FLAG>      Remove duplicated 'radialGradient' elements [default: true]
     --remove-dupl-fegaussianblur <FLAG>      Remove duplicated 'feGaussianBlur' elements [default: true]
     --ungroup-groups <FLAG>                  Ungroup groups [default: true]
+    --ungroup-defs <FLAG>                    Ungroup 'defs' elements [default: true]
     --merge-gradients <FLAG>                 Merge gradients [default: true]
+    --regroup-gradient-stops <FLAG>          Regroup gradient 'stop' elements [default: true]
     --remove-invisible-elements <FLAG>       Remove invisible elements [default: true]
     --remove-invalid-stops <FLAG>            Remove invalid 'stop' elements [default: true]
 

@@ -117,6 +117,10 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
         remove_invisible_elements(doc);
     }
 
+    if get_flag!(args, Key::RegroupGradientStops) {
+        regroup_gradient_stops(doc);
+    }
+
     if get_flag!(args, Key::UngroupGroups) {
         ungroup_groups(doc);
     }

@@ -277,10 +277,6 @@
             "valid_ae": 448
         },
         {
-            "name": "devices/small/16x16/computer-laptop.svg",
-            "valid_ae": 638
-        },
-        {
             "name": "devices/small/22x22/tablet.svg",
             "valid_ae": 1163
         },
@@ -295,10 +291,6 @@
         {
             "name": "devices/small/32x32/tablet.svg",
             "valid_ae": 560
-        },
-        {
-            "name": "devices/small/32x32/computer-laptop.svg",
-            "valid_ae": 638
         },
         {
             "name": "devices/small/48x48/tablet.svg",
@@ -412,6 +404,18 @@
         {
             "name": "mimetypes/text-x-adasrc.svg",
             "valid_ae": 2280
+        },
+        {
+            "name": "devices/small/64x64/computer-laptop.svg",
+            "valid_ae": 887
+        },
+        {
+            "name": "devices/small/32x32/computer-laptop.svg",
+            "valid_ae": 1051
+        },
+        {
+            "name": "devices/computer-laptop.svg",
+            "valid_ae": 873
         }
     ],
     "ignore": [

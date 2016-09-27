@@ -140,11 +140,10 @@ V0.7
      - [x] Basic shapes
    - [x] Remove presentational attributes from elements inside `clipPath`.
    - [ ] Remove `stroke-linecap` if the path is closed.
-   - [ ] Remove `fill`-based attributes where there is no `fill`.
-   - [ ] Remove `stroke`-based attributes where there is no `stroke`.
+   - [x] Remove `fill`-based attributes where there is no `fill`.
+   - [x] Remove `stroke`-based attributes where there is no `stroke`.
  - [ ] Group elements by style attributes.
    - [x] Move to group if all attributes are equal
-   - [ ] Create own groups.
  - [x] Remove `version` attribute.
  - [x] Merge gradients.
  - [ ] Apply transforms to:
@@ -165,7 +164,6 @@ V0.7
  - [x] Process `enable-background`.
  - [x] Remove duplicated `stop` elements.
  - [x] Ungroup `defs` element.
- - [ ] Resolve `use`.
  - [ ] Test more files.
  - [ ] Test files using all possible cleaning options combinations.
  - [ ] Performance optimizations.
@@ -181,6 +179,8 @@ V0.8
  - [ ] Detect equal subpaths and replace them with `use`.
  - [ ] Implement gradients processing as a single unit.
  - [ ] Remove elements outside the viewbox. Very expensive and mostly useless.
+ - [ ] Regroup elements by styles.
+ - [ ] Resolve `use`.
  - [ ] Test not only against webkit.
  - [ ] Unix pipes.
 

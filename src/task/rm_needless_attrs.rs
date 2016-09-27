@@ -39,6 +39,12 @@ pub fn remove_needless_attributes(doc: &Document) {
         // we can remove any 'color' attributes since they
         // already resolved in 'resolve_inherit', which makes them pointless
         node.remove_attribute(AId::Color);
+
+        // `enable-background` is only applicable to container elements.
+        // https://www.w3.org/TR/SVG/filters.html#EnableBackgroundProperty
+        if !node.is_container() && node.has_attribute(AId::EnableBackground) {
+            node.remove_attribute(AId::EnableBackground);
+        }
     }
 }
 
@@ -180,6 +186,20 @@ b"<svg>
     <rect fill='#ff0000'/>
 </svg>
 ");
+
+    test!(rm_eb_1,
+b"<svg enable-background='new'>
+    <g enable-background='new'>
+        <rect enable-background='new'/>
+    </g>
+</svg>",
+"<svg enable-background='new'>
+    <g enable-background='new'>
+        <rect/>
+    </g>
+</svg>
+");
+
 
 }
 

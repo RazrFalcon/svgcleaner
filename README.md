@@ -133,31 +133,26 @@ V0.7
    - [x] `linearGradient`
    - [x] `radialGradient`
    - [x] `feGaussianBlur`
- - [ ] Remove invisible elements.
+ - [x] Remove invisible elements.
    - [x] Invisible elements inside the `clipPath`.
-   - [ ] Elements with invalid size.
-   - [ ] other...
  - [ ] Remove needless attributes.
    - [x] Remove attributes which does not belong to this element.
      - [x] Basic shapes
-     - [ ] other...
    - [x] Remove presentational attributes from elements inside `clipPath`.
    - [ ] Remove `stroke-linecap` if the path is closed.
-   - [ ] other...
+   - [ ] Remove `fill`-based attributes where there is no `fill`.
+   - [ ] Remove `stroke`-based attributes where there is no `stroke`.
  - [ ] Group elements by style attributes.
    - [x] Move to group if all attributes are equal
    - [ ] Create own groups.
  - [x] Remove `version` attribute.
- - [ ] Remove elements outside the viewbox.
  - [x] Merge gradients.
  - [ ] Apply transforms to:
-   - [ ] paths
    - [ ] shapes
    - [x] gradients
  - [ ] Replace equal elements by `use`:
    - [ ] `path`
    - [ ] Basic shapes
-   - [ ] other...
  - [ ] Group text styles.
  - [ ] Process paths:
     - [x] segments to relative
@@ -167,7 +162,7 @@ V0.7
     - [ ] join line-based segments
  - [ ] Join sequential paths.
  - [x] Join presentational attributes.
- - [ ] Process `enable-background`.
+ - [x] Process `enable-background`.
  - [x] Remove duplicated `stop` elements.
  - [x] Ungroup `defs` element.
  - [ ] Resolve `use`.
@@ -181,6 +176,11 @@ V0.8
  - [ ] Simplify paths. Something like Inkscape's 'Simplify', but lossless.
        Have no idea how to make it. Hints [here](https://pomax.github.io/bezierinfo/#bsplines).
  - [ ] Remove elements covered by other elements.
+ - [ ] Apply transforms to paths. Disabled by default, because it usually increase the file size.
+ - [ ] Replace groups with `use`.
+ - [ ] Detect equal subpaths and replace them with `use`.
+ - [ ] Implement gradients processing as a single unit.
+ - [ ] Remove elements outside the viewbox. Very expensive and mostly useless.
  - [ ] Test not only against webkit.
  - [ ] Unix pipes.
 

@@ -98,7 +98,7 @@ fn main() {
     }
 
     // write it
-    let capacity = (raw.len() as f64 * 0.6) as usize;
+    let capacity = (raw.len() as f64 * 0.8) as usize;
     let buf = write_buffer(&doc, capacity, &write_opt);
 
     // check that cleaned file is smaller

@@ -15,6 +15,11 @@ Create an issue on GitHub with your image attached to it.
 - If images are rendered the same - then there are some problems with your rendering
 application/editor. Such cases are not treated as errors, but you still can open an issue.
 
+## Performace
+
+Note that actual cleaning takes less than 30% of the execution time.
+Other 70% is spent on parsing and saving. So you should start from there.
+
 ## Other
 
 - English grammar fixes are extremely welcome.

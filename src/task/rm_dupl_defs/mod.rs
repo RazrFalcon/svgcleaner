@@ -97,11 +97,13 @@ fn is_gradient_attrs_equal(node1: &Node, node2: &Node, attrs: &[AId]) -> bool {
 }
 
 pub fn is_equal_stops(node1: &Node, node2: &Node) -> bool {
-    if node1.children().count() != node2.children().count() {
+    let children_count1 = node1.children().count();
+
+    if children_count1 != node2.children().count() {
         return false;
     }
 
-    if node1.children().count() == 0 {
+    if children_count1 == 0 {
         return true;
     }
 

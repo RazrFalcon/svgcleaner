@@ -142,7 +142,7 @@ V0.7
    - [ ] Remove `stroke-linecap` if the path is closed.
    - [x] Remove `fill`-based attributes where there is no `fill`.
    - [x] Remove `stroke`-based attributes where there is no `stroke`.
- - [ ] Group elements by style attributes.
+ - [x] Group elements by style attributes.
    - [x] Move to group if all attributes are equal
  - [x] Remove `version` attribute.
  - [x] Merge gradients.

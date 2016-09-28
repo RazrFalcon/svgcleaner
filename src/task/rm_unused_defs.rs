@@ -66,6 +66,11 @@ fn remove_unused_defs_impl(doc: &Document) -> bool {
                          || !mv_to_defs_nodes.is_empty()
                          || !rm_nodes.is_empty();
 
+
+    if !is_any_changed {
+        return false;
+    }
+
     for node in mv_nodes {
         let defs = node.parent().unwrap().parent().unwrap();
         defs.append(&node);

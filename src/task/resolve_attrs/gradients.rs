@@ -104,7 +104,7 @@ pub fn stop(doc: &Document) -> Result<(), CleanerError> {
 
 fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
     let nodes = doc.descendants().filter(|n| n.is_tag_id(eid))
-                    .collect::<Vec<Node>>();
+                   .collect::<Vec<Node>>();
 
     let mut order = Vec::with_capacity(nodes.len());
     while order.len() != nodes.len() {

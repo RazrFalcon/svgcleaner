@@ -273,32 +273,40 @@ mod tests {
 
     test!(rm_clip_path_children_1,
 b"<svg>
-    <clipPath>
-        <g/>
-        <rect/>
-    </clipPath>
+    <defs>
+        <clipPath>
+            <g/>
+            <rect/>
+        </clipPath>
+    </defs>
 </svg>",
 "<svg>
-    <clipPath>
-        <rect/>
-    </clipPath>
+    <defs>
+        <clipPath>
+            <rect/>
+        </clipPath>
+    </defs>
 </svg>
 ");
 
     test!(rm_clip_path_children_2,
 b"<svg>
-    <clipPath>
-        <use/>
-        <use xlink:href='#g1'/>
-        <use xlink:href='#rect1'/>
-    </clipPath>
+    <defs>
+        <clipPath>
+            <use/>
+            <use xlink:href='#g1'/>
+            <use xlink:href='#rect1'/>
+        </clipPath>
+    </defs>
     <rect id='rect1'/>
     <g id='g1'/>
 </svg>",
 "<svg>
-    <clipPath>
-        <use xlink:href='#rect1'/>
-    </clipPath>
+    <defs>
+        <clipPath>
+            <use xlink:href='#rect1'/>
+        </clipPath>
+    </defs>
     <rect id='rect1'/>
     <g id='g1'/>
 </svg>

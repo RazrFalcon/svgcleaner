@@ -58,9 +58,6 @@ fn main() {
         .arg(Arg::with_name("input-data-config")
             .long("input-data-config").help("Sets path to the input data config.")
             .value_name("PATH"))
-        .arg(Arg::with_name("with-err-view")
-            .long("with-err-view").help("Runs 'err_view' on error.")
-            .requires("input-data-config"))
         .get_matches();
 
     let err_view_path = Path::new("../err-view/err_view");

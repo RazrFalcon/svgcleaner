@@ -25,46 +25,31 @@ use super::short::{EId};
 use svgdom::{Document, Node};
 
 pub fn remove_unused_defs(doc: &Document) {
+    let defs = doc.root().child_by_tag_id(EId::Defs).unwrap();
+
     // repeat until no unused nodes left
-    while remove_unused_defs_impl(doc) { }
+    while remove_unused_defs_impl(&defs) { }
 }
 
 // Returns true if tree structure has been changed.
-fn remove_unused_defs_impl(doc: &Document) -> bool {
+fn remove_unused_defs_impl(defs: &Node) -> bool {
     // TODO: next release: font-face can probably be removed if no text elements are in the document
     // TODO: next release: font element should be referenced by font-family attribute,
     //                     if not - remove it
     // TODO: understand how styles are propagates inside defs
 
     let mut mv_nodes = Vec::new();
-    let mut mv_to_defs_nodes = Vec::new();
     let mut rm_nodes = Vec::new();
 
-    let mut iter = doc.descendants();
-    while let Some(node) = iter.next() {
-        if node.is_tag_id(EId::Defs) {
-            for defs_child in node.children() {
-                if !defs_child.is_used() && !is_font_node(&defs_child) {
-                    ungroup_children(&defs_child, &mut mv_nodes, &mut rm_nodes);
-                }
-            }
-
-            if node.has_children() {
-                iter.skip_children();
-            }
-        } else if node.is_referenced() && !node.is_used() && !is_font_node(&node) {
+    for node in defs.children() {
+        if !node.is_used() && !is_font_node(&node) {
             // nodes outside defs we have to move to main 'defs' node, not to parent,
             // because otherwise they became renderable
-            ungroup_children(&node, &mut mv_to_defs_nodes, &mut rm_nodes);
-            if node.has_children() {
-                iter.skip_children();
-            }
+            ungroup_children(&node, &mut mv_nodes, &mut rm_nodes);
         }
     }
 
-    let is_any_changed =    !mv_nodes.is_empty()
-                         || !mv_to_defs_nodes.is_empty()
-                         || !rm_nodes.is_empty();
+    let is_any_changed = !mv_nodes.is_empty() || !rm_nodes.is_empty();
 
 
     if !is_any_changed {
@@ -72,13 +57,7 @@ fn remove_unused_defs_impl(doc: &Document) -> bool {
     }
 
     for node in mv_nodes {
-        let defs = node.parent().unwrap().parent().unwrap();
         defs.append(&node);
-    }
-
-    let main_defs = doc.first_child().unwrap().child_by_tag_id(EId::Defs).unwrap();
-    for node in mv_to_defs_nodes {
-        main_defs.append(&node);
     }
 
     for node in rm_nodes {
@@ -115,6 +94,12 @@ mod tests {
         )
     }
 
+    macro_rules! test_eq {
+        ($name:ident, $in_text:expr) => (
+            test!($name, $in_text, String::from_utf8_lossy($in_text));
+        )
+    }
+
     test!(simple_1,
 b"<svg>
     <defs>
@@ -147,37 +132,6 @@ b"<svg>
 </svg>
 ");
 
-    test!(outside_defs_1,
-b"<svg>
-    <defs/>
-    <rect id='rect1'/>
-    <use xlink:href='#rect1'/>
-    <linearGradient id='linearGradient1'/>
-</svg>",
-"<svg>
-    <defs/>
-    <rect id='rect1'/>
-    <use xlink:href='#rect1'/>
-</svg>
-");
-
-    // we always have defs, because of group_defs()
-    test!(outside_defs_2,
-b"<svg>
-    <defs/>
-    <clipPath id='clipPath1'>
-        <path id='path1'/>
-    </clipPath>
-    <use xlink:href='#path1'/>
-</svg>",
-"<svg>
-    <defs>
-        <path id='path1'/>
-    </defs>
-    <use xlink:href='#path1'/>
-</svg>
-");
-
     test!(correct_ungroup_1,
 b"<svg>
     <defs>
@@ -195,17 +149,8 @@ b"<svg>
 </svg>
 ");
 
-    // ignore ungroup
-    test!(correct_ungroup_2,
+    test_eq!(correct_ungroup_2,
 b"<svg>
-    <defs>
-        <clipPath id='clipPath1'>
-            <path id='path1'/>
-        </clipPath>
-    </defs>
-    <use clip-path='url(#clipPath1)' xlink:href='#path1'/>
-</svg>",
-"<svg>
     <defs>
         <clipPath id='clipPath1'>
             <path id='path1'/>
@@ -215,21 +160,8 @@ b"<svg>
 </svg>
 ");
 
-    // ignore ungroup
-    test!(correct_ungroup_3,
+    test_eq!(correct_ungroup_3,
 b"<svg>
-    <defs>
-        <clipPath id='clipPath1'>
-            <rect/>
-            <g>
-                <rect/>
-            </g>
-            <path/>
-        </clipPath>
-    </defs>
-    <use clip-path='url(#clipPath1)'/>
-</svg>",
-"<svg>
     <defs>
         <clipPath id='clipPath1'>
             <rect/>
@@ -319,17 +251,8 @@ b"<svg>
 </svg>
 ");
 
-    test!(keep_font_2,
+    test_eq!(keep_font_2,
 b"<svg>
-    <defs>
-        <font-face font-family='SVGFreeSansASCII' unicode-range='U+0-7F'>
-            <font-face-src>
-                <font-face-uri xlink:href='../resources/SVGFreeSans.svg#ascii'/>
-            </font-face-src>
-        </font-face>
-    </defs>
-</svg>",
-"<svg>
     <defs>
         <font-face font-family='SVGFreeSansASCII' unicode-range='U+0-7F'>
             <font-face-src>

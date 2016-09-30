@@ -22,7 +22,7 @@
 
 use super::short::{EId};
 
-use svgdom::{Document, TagName};
+use svgdom::{Document, Node, AttributeValue};
 
 pub fn group_defs(doc: &Document) {
     // doc must contain 'svg' node, so we can safely unwrap
@@ -38,37 +38,30 @@ pub fn group_defs(doc: &Document) {
         }
     };
 
-    // TODO: this
-    // move all referenced elements to main 'defs'
-    // {
-    //     let mut nodes = Vec::new();
-    //     for node in doc.descendants() {
-    //         if node.is_referenced() {
-    //             if node.parent().unwrap() != defs {
-    //                 nodes.push(node.clone());
-    //             }
-    //         }
-    //     }
+    // move all referenced elements to the main 'defs'
+    {
+        let mut nodes = Vec::new();
+        for node in doc.descendants() {
+            if node.is_referenced() {
+                if node.parent().unwrap() != defs {
+                    nodes.push(node.clone());
+                }
+            }
+        }
 
-    //     for n in nodes {
-    //         if n.is_tag_name(&TagName::Id(EId::Marker)) {
-    //             prepare_node_attrs(&n);
-    //         }
 
-    //         if n.is_tag_name(&TagName::Id(EId::ClipPath)) {
-    //             prepare_clip_path(&n);
-    //         }
-
-    //         n.detach();
-    //         defs.append(&n);
-    //     }
-    // }
+        for n in nodes {
+            resolve_attrs(&n);
+            n.detach();
+            defs.append(&n);
+        }
+    }
 
     // ungroup all existing 'defs', except main
     {
         let mut nodes = Vec::new();
         for node in doc.descendants() {
-            if node.is_tag_name(&TagName::Id(EId::Defs)) && node != defs {
+            if node.is_tag_id(EId::Defs) && node != defs {
                 for child in node.children() {
                     nodes.push(child.clone());
                 }
@@ -85,7 +78,7 @@ pub fn group_defs(doc: &Document) {
     {
         let mut nodes = Vec::new();
         for node in doc.descendants() {
-            if node.is_tag_name(&TagName::Id(EId::Defs)) && node != defs {
+            if node.is_tag_id(EId::Defs) && node != defs {
                 nodes.push(node.clone());
             }
         }
@@ -98,27 +91,40 @@ pub fn group_defs(doc: &Document) {
     }
 }
 
-// fn prepare_node_attrs(node: &Node) {
-//     for a in P_ATTRIBUTES {
-//         resolve_attr(node, a.clone());
-//     }
-// }
+// Graphical elements inside referenced elements inherits parent attributes,
+// so if we want to move this elements to the 'defs' - we should resolve attributes too.
+fn resolve_attrs(node: &Node) {
+    match node.tag_id().unwrap() {
+          EId::ClipPath
+        | EId::Marker
+        | EId::Mask
+        | EId::Pattern
+        | EId::Symbol => {
+            let mut parent = node.clone();
+            while let Some(p) = parent.parent() {
+                let attrs = p.attributes();
+                for attr in attrs.iter().filter(|a| a.is_inheritable()) {
+                    for child in node.children() {
+                        if child.has_attribute(attr.id) {
+                            continue;
+                        }
 
-// fn prepare_clip_path(node: &Node) {
-//     resolve_attr(node, AttributeId::ClipPath);
-//     resolve_attr(node, AttributeId::ClipRule);
-// }
+                        match attr.value {
+                              AttributeValue::Link(ref link)
+                            | AttributeValue::FuncLink(ref link) => {
+                                child.set_link_attribute(attr.id, link.clone()).unwrap();
+                            }
+                            _ => child.set_attribute_object(attr.clone()),
+                        }
+                    }
+                }
 
-// fn resolve_attr(node: &Node, id: AttributeId) {
-//     if !node.has_attribute(id.clone()) {
-//         match node.parent_attribute(id.clone()) {
-//             Some(av) => {
-//                 node.set_attribute(id.clone(), av);
-//             }
-//             None => {},
-//         }
-//     }
-// }
+                parent = p.clone();
+            }
+        }
+        _ => {}
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -140,46 +146,36 @@ b"<!--comment--><svg/>",
 </svg>
 ");
 
-//     #[test]
-//     fn move_defs_1() {
-//         // move all supported elements
-
-//         let doc = Document::from_data(
-// b"<svg>
-//     <altGlyphDef/>
-//     <clipPath/>
-//     <cursor/>
-//     <filter/>
-//     <linearGradient/>
-//     <marker/>
-//     <mask/>
-//     <pattern/>
-//     <radialGradient/>
-//     <symbol/>
-//     <rect/>
-// </svg>
-// ").unwrap();
-
-//         group_defs(&doc);
-
-//         assert_eq!(doc_to_str_tests!(doc),
-// "<svg>
-//     <defs>
-//         <altGlyphDef/>
-//         <clipPath/>
-//         <cursor/>
-//         <filter/>
-//         <linearGradient/>
-//         <marker/>
-//         <mask/>
-//         <pattern/>
-//         <radialGradient/>
-//         <symbol/>
-//     </defs>
-//     <rect/>
-// </svg>
-// ");
-//     }
+    test!(move_defs_1,
+b"<svg>
+    <altGlyphDef/>
+    <clipPath/>
+    <cursor/>
+    <filter/>
+    <linearGradient/>
+    <marker/>
+    <mask/>
+    <pattern/>
+    <radialGradient/>
+    <symbol/>
+    <rect/>
+</svg>",
+"<svg>
+    <defs>
+        <altGlyphDef/>
+        <clipPath/>
+        <cursor/>
+        <filter/>
+        <linearGradient/>
+        <marker/>
+        <mask/>
+        <pattern/>
+        <radialGradient/>
+        <symbol/>
+    </defs>
+    <rect/>
+</svg>
+");
 
     // complex, recursive
     test!(move_defs_2,
@@ -256,47 +252,62 @@ b"<svg>
 </svg>
 ");
 
-//     #[test]
-//     fn move_mask_1() {
-//         let doc = Document::from_data(
-// b"<svg>
-//     <g fill='#ff0000'>
-//         <marker/>
-//     </g>
-// </svg>
-// ").unwrap();
+    test!(move_mask_1,
+b"<svg>
+    <g fill='#ff0000'>
+        <marker>
+            <path/>
+        </marker>
+    </g>
+</svg>",
+"<svg>
+    <defs>
+        <marker>
+            <path fill='#ff0000'/>
+        </marker>
+    </defs>
+    <g fill='#ff0000'/>
+</svg>
+");
 
-//         group_defs(&doc);
+    test!(move_attrs_1,
+b"<svg>
+    <g fill='#ff0000'>
+        <marker>
+            <path/>
+            <path fill='#00ff00'/>
+        </marker>
+    </g>
+</svg>",
+"<svg>
+    <defs>
+        <marker>
+            <path fill='#ff0000'/>
+            <path fill='#00ff00'/>
+        </marker>
+    </defs>
+    <g fill='#ff0000'/>
+</svg>
+");
 
-//         assert_eq!(doc_to_str_tests!(doc),
-// "<svg>
-//     <defs>
-//         <marker fill='#ff0000'/>
-//     </defs>
-//     <g fill='#ff0000'/>
-// </svg>
-// ");
-//     }
+    test!(move_attrs_2,
+b"<svg>
+    <linearGradient id='lg1'/>
+    <g fill='url(#lg1)'>
+        <marker>
+            <path/>
+        </marker>
+    </g>
+</svg>",
+"<svg>
+    <defs>
+        <linearGradient id='lg1'/>
+        <marker>
+            <path fill='url(#lg1)'/>
+        </marker>
+    </defs>
+    <g fill='url(#lg1)'/>
+</svg>
+");
 
-//     #[test]
-//     fn move_clip_path_1() {
-//         let doc = Document::from_data(
-// b"<svg>
-//     <g clip-path='none' clip-rule='nonzero'>
-//         <clipPath/>
-//     </g>
-// </svg>
-// ").unwrap();
-
-//         group_defs(&doc);
-
-//         assert_eq!(doc_to_str_tests!(doc),
-// "<svg>
-//     <defs>
-//         <clipPath clip-path='none' clip-rule='nonzero'/>
-//     </defs>
-//     <g clip-path='none' clip-rule='nonzero'/>
-// </svg>
-// ");
-//     }
 }

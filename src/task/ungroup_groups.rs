@@ -313,7 +313,9 @@ b"<svg>
 
     test_eq!(skip_ungroup_2,
 b"<svg>
-    <filter id='f1'/>
+    <defs>
+        <filter id='f1'/>
+    </defs>
     <g filter='url(#f1)'/>
 </svg>
 ");
@@ -329,7 +331,9 @@ b"<svg>
 
     test_eq!(skip_ungroup_4,
 b"<svg>
-    <clipPath id='clip1'/>
+    <defs>
+        <clipPath id='clip1'/>
+    </defs>
     <g clip-path='url(#clip1)'>
         <rect/>
     </g>
@@ -338,11 +342,13 @@ b"<svg>
 
     test_eq!(skip_ungroup_5,
 b"<svg>
-    <clipPath id='cp1'>
-        <g transform='translate(5)'>
-            <rect/>
-        </g>
-    </clipPath>
+    <defs>
+        <clipPath id='cp1'>
+            <g transform='translate(5)'>
+                <rect/>
+            </g>
+        </clipPath>
+    </defs>
     <rect clip-path='url(#cp1)'/>
 </svg>
 ");
@@ -372,13 +378,17 @@ b"<svg>
 
     test!(ungroup_with_attrs_2,
 b"<svg>
-    <linearGradient id='lg1'/>
+    <defs>
+        <linearGradient id='lg1'/>
+    </defs>
     <g fill='url(#lg1)'>
         <rect/>
     </g>
 </svg>",
 "<svg>
-    <linearGradient id='lg1'/>
+    <defs>
+        <linearGradient id='lg1'/>
+    </defs>
     <rect fill='url(#lg1)'/>
 </svg>
 ");

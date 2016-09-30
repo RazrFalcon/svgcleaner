@@ -8,7 +8,7 @@ Clean all files from the selected folder and check that all of them are cleaned 
 - imagemagic (we need 'compare')
 - prebuild 'svgcleaner' itself, release build
 - prebuild 'tools/svgrender'
-- (optional) prebuild 'tools/err_view'
+- prebuild 'tools/err_view'
 
 ## Usage
 
@@ -21,9 +21,7 @@ stats \
       # see ./data for examples
       --input-data-config=config.json \
       # each input-data must have own db
-      --cache-db=/path_to_cache_file/stats.sqlite \
-      # run err_view on error
-      --with-err-view \
+      --cache-db=/path_to_cache_file/stats.sqlite
 ```
 
 ## Files for testing

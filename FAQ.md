@@ -7,6 +7,8 @@ use an SVG rendering application that doesn't support an SVG spec correctly. The
 a "broken" image. But it will be broken because the rendering application doesn't support
 optimization is done by svgcleaner and not because svgcleaner broke your image.
 
+Anyway, if you are using a modern browser - everything should be fine.
+
 See [Testing notes](docs/testing_notes.rst) for details.
 
 ## Can you add an option to remove binary images from the SVG?

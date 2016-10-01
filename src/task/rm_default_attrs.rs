@@ -22,7 +22,7 @@
 
 use super::short::{EId, AId, Unit};
 
-use svgdom::{Document, Attribute, AttributeValue};
+use svgdom::{Document, Attribute, AttributeValue, ValueId};
 use svgdom::types::{Length};
 
 pub fn remove_default_attributes(doc: &Document) {
@@ -174,6 +174,21 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
             if tag_name == EId::FontFace && v == "0" {
                 return true;
             } else if v == "1" {
+                return true;
+            }
+        }
+          AId::ClipPathUnits
+        | AId::MaskContentUnits
+        | AId::PatternContentUnits
+        | AId::PrimitiveUnits => {
+            if *attr.value.as_predef_value().unwrap() == ValueId::UserSpaceOnUse {
+                return true;
+            }
+        }
+          AId::MaskUnits
+        | AId::PatternUnits
+        | AId::FilterUnits => {
+            if *attr.value.as_predef_value().unwrap() == ValueId::ObjectBoundingBox {
                 return true;
             }
         }

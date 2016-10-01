@@ -24,6 +24,8 @@ use super::short::{EId, AId};
 
 use svgdom::{Document, Node, Attribute, AttributeValue, ValueId};
 
+// TODO: split to suboptions
+
 pub fn remove_needless_attributes(doc: &Document) {
     for node in doc.descendants() {
         match node.tag_id().unwrap() {

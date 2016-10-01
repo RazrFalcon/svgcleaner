@@ -164,6 +164,7 @@ V0.7
  - [x] Process `enable-background`.
  - [x] Remove duplicated `stop` elements.
  - [x] Ungroup `defs` element.
+ - [ ] Regroup elements by styles.
  - [ ] Test more files.
  - [ ] Test files using all possible cleaning options combinations.
  - [ ] Performance optimizations.
@@ -179,7 +180,6 @@ V0.8
  - [ ] Detect equal subpaths and replace them with `use`.
  - [ ] Implement gradients processing as a single unit.
  - [ ] Remove elements outside the viewbox. Very expensive and mostly useless.
- - [ ] Regroup elements by styles.
  - [ ] Resolve `use`.
  - [ ] Test not only against webkit.
  - [ ] Unix pipes.

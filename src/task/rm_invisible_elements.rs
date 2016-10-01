@@ -27,6 +27,7 @@ use svgdom::{Document, Node, AttributeValue, ValueId};
 // TODO: process mask element
 // TODO: process visibility
 // TODO: process feGaussianBlur with stdDeviation=0
+// TODO: split to suboptions
 
 pub fn remove_invisible_elements(doc: &Document) {
     let mut is_any_removed = false;
@@ -36,6 +37,7 @@ pub fn remove_invisible_elements(doc: &Document) {
     process_filter(doc, &mut is_any_removed);
     process_use(doc, &mut is_any_removed);
     process_gradients(doc);
+    process_rect(doc, &mut is_any_removed);
 
     if is_any_removed {
         super::remove_unused_defs(doc);
@@ -136,7 +138,7 @@ fn process_paths(doc: &Document, is_any_removed: &mut bool) {
         *is_any_removed = true;
     }
 
-    while let Some(n) = paths.pop() {
+    for n in paths {
         n.remove();
     }
 }
@@ -165,19 +167,20 @@ fn process_display_attribute(doc: &Document, is_any_removed: &mut bool) {
         *is_any_removed = true;
     }
 
-    while let Some(n) = nodes.pop() {
+    for n in nodes {
         n.remove();
     }
 }
 
 // remove 'filter' elements without children
 fn process_filter(doc: &Document, is_any_removed: &mut bool) {
-    let iter = doc.descendants()
-                  .filter(|n| n.is_tag_id(EId::Filter) && !n.has_children());
+    let nodes: Vec<Node> = doc.descendants()
+                              .filter(|n| n.is_tag_id(EId::Filter) && !n.has_children())
+                              .collect();
 
     // Note, that all elements that uses this filter also became invisible,
     // so we can remove them as well.
-    for n in iter {
+    for n in nodes {
         *is_any_removed = true;
         for link in n.linked_nodes() {
             link.remove();
@@ -188,16 +191,19 @@ fn process_filter(doc: &Document, is_any_removed: &mut bool) {
 
 // 'use' element without 'xlink:href' attribute is pointless
 fn process_use(doc: &Document, is_any_removed: &mut bool) {
-    let iter = doc.descendants()
-                  .filter(|n| n.is_tag_id(EId::Use) && !n.has_attribute(AId::XlinkHref));
+    let nodes: Vec<Node> = doc.descendants()
+                              .filter(|n| n.is_tag_id(EId::Use) && !n.has_attribute(AId::XlinkHref))
+                              .collect();
 
-    for n in iter {
+    for n in nodes {
         *is_any_removed = true;
         n.remove();
     }
 }
 
 fn process_gradients(doc: &Document) {
+    let mut nodes = Vec::with_capacity(16);
+
     {
         // gradient without children and link to other gradient is pointless
         let iter = doc.descendants()
@@ -210,7 +216,7 @@ fn process_gradients(doc: &Document) {
                     link.set_attribute(aid, ValueId::None);
                 }
             }
-            n.remove();
+            nodes.push(n.clone());
         }
     }
 
@@ -238,8 +244,30 @@ fn process_gradients(doc: &Document) {
                     }
                 }
             }
-            n.remove();
+            nodes.push(n.clone());
         }
+    }
+
+    for n in nodes {
+        n.remove();
+    }
+}
+
+// remove rect's with zero size
+fn process_rect(doc: &Document, is_any_removed: &mut bool) {
+    let mut nodes = Vec::with_capacity(16);
+
+    for n in doc.descendants().filter(|n| n.is_tag_id(EId::Rect)) {
+        let attrs = n.attributes();
+        if    attrs.get_value(AId::Width).unwrap().as_length().unwrap().num == 0.0
+           || attrs.get_value(AId::Height).unwrap().as_length().unwrap().num == 0.0 {
+            nodes.push(n.clone());
+        }
+    }
+
+    for n in nodes {
+        *is_any_removed = true;
+        n.remove();
     }
 }
 
@@ -276,14 +304,14 @@ b"<svg>
     <defs>
         <clipPath>
             <g/>
-            <rect/>
+            <rect height='5' width='5'/>
         </clipPath>
     </defs>
 </svg>",
 "<svg>
     <defs>
         <clipPath>
-            <rect/>
+            <rect height='5' width='5'/>
         </clipPath>
     </defs>
 </svg>
@@ -298,7 +326,7 @@ b"<svg>
             <use xlink:href='#rect1'/>
         </clipPath>
     </defs>
-    <rect id='rect1'/>
+    <rect id='rect1' height='5' width='5'/>
     <g id='g1'/>
 </svg>",
 "<svg>
@@ -307,7 +335,7 @@ b"<svg>
             <use xlink:href='#rect1'/>
         </clipPath>
     </defs>
-    <rect id='rect1'/>
+    <rect id='rect1' height='5' width='5'/>
     <g id='g1'/>
 </svg>
 ");
@@ -315,8 +343,8 @@ b"<svg>
     test!(rm_clip_path_1,
 b"<svg>
     <clipPath id='cp1'/>
-    <rect clip-path='url(#cp1)'/>
-    <rect clip-path='url(#cp1)'/>
+    <rect clip-path='url(#cp1)' height='5' width='5'/>
+    <rect clip-path='url(#cp1)' height='5' width='5'/>
 </svg>",
 "<svg/>
 ");
@@ -325,7 +353,7 @@ b"<svg>
 b"<svg>
     <linearGradient id='lg1'/>
     <clipPath id='cp1'/>
-    <rect clip-path='url(#cp1)' fill='url(#lg1)'/>
+    <rect clip-path='url(#cp1)' fill='url(#lg1)' height='5' width='5'/>
 </svg>",
 "<svg/>
 ");
@@ -333,7 +361,7 @@ b"<svg>
     test!(rm_clip_path_3,
 b"<svg>
     <clipPath>
-        <rect display='none'/>
+        <rect display='none' height='5' width='5'/>
     </clipPath>
 </svg>",
 "<svg/>
@@ -371,7 +399,7 @@ b"<svg>
     test!(rm_display_none_2,
 b"<svg>
     <g display='none'>
-        <rect/>
+        <rect height='5' width='5'/>
     </g>
 </svg>",
 "<svg/>
@@ -380,7 +408,7 @@ b"<svg>
     test_eq!(skip_display_none_1,
 b"<svg>
     <g display='none'>
-        <rect id='r1'/>
+        <rect id='r1' height='5' width='5'/>
     </g>
     <use xlink:href='#r1'/>
 </svg>
@@ -396,7 +424,7 @@ b"<svg>
     test!(rm_filter_2,
 b"<svg>
     <filter id='f1'/>
-    <rect filter='url(#f1)'/>
+    <rect filter='url(#f1)' height='5' width='5'/>
 </svg>",
 "<svg/>
 ");
@@ -411,12 +439,12 @@ b"<svg>
     test!(rm_gradient_1,
 b"<svg>
     <linearGradient id='lg1'/>
-    <rect fill='url(#lg1)'/>
-    <rect stroke='url(#lg1)'/>
+    <rect fill='url(#lg1)' height='5' width='5'/>
+    <rect stroke='url(#lg1)' height='5' width='5'/>
 </svg>",
 "<svg>
-    <rect fill='none'/>
-    <rect stroke='none'/>
+    <rect fill='none' height='5' width='5'/>
+    <rect height='5' stroke='none' width='5'/>
 </svg>
 ");
 
@@ -425,11 +453,20 @@ b"<svg>
     <linearGradient id='lg1'>
         <stop offset='0.5' stop-color='#ff0000' stop-opacity='0.5'/>
     </linearGradient>
-    <rect fill='url(#lg1)' stroke='url(#lg1)'/>
+    <rect fill='url(#lg1)' stroke='url(#lg1)' height='5' width='5'/>
 </svg>",
 "<svg>
-    <rect fill='#ff0000' fill-opacity='0.5' stroke='#ff0000' stroke-opacity='0.5'/>
+    <rect fill='#ff0000' fill-opacity='0.5' height='5' stroke='#ff0000' stroke-opacity='0.5' width='5'/>
 </svg>
+");
+
+    test!(rm_rect_1,
+b"<svg>
+    <rect width='0' height='0'/>
+    <rect width='0' height='0'/>
+    <rect width='0' height='0'/>
+</svg>",
+"<svg/>
 ");
 
 }

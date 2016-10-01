@@ -871,6 +871,49 @@ CLI argument: ``--remove-needless-attributes``
 .. |after-remove-needless-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-needless-attributes.svg
 
 
+Remove inheritable gradient attributes
+--------------------------------------
+
+Gradients can inherit attributes via 'xlink:href' attribute, so we can
+remove attributes that already defined in the parent gradient.
+
+Currently, only an 'gradientUnits' attribute is processed.
+
+CLI argument: ``--remove-gradient-attributes``
+
++--------------------------------------------+--------------------------------------------+
+| Before (654b)                              | After (534b)                               |
++--------------------------------------------+--------------------------------------------+
+| .. code-block:: XML                        | .. code-block:: XML                        |
+|                                            |                                            |
+|   <svg>                                    |   <svg>                                    |
+|       <linearGradient id="lg1"             |       <linearGradient id="lg1"             |
+|         gradientUnits='objectBoundingBox'> |         gradientUnits='objectBoundingBox'> |
+|         <stop offset="0"                   |         <stop offset="0"                   |
+|           stop-color="yellow"/>            |           stop-color="yellow"/>            |
+|         <stop offset="1"                   |         <stop offset="1"                   |
+|           stop-color="green"/>             |           stop-color="green"/>             |
+|       </linearGradient>                    |       </linearGradient>                    |
+|       <linearGradient id="lg2"             |       <linearGradient id="lg2"             |
+|         gradientUnits='objectBoundingBox'  |         xlink:href="#lg1"/>                |
+|         xlink:href="#lg1"/>                |       <linearGradient id="lg3"             |
+|       <linearGradient id="lg3"             |         xlink:href="#lg2"/>                |
+|         gradientUnits='objectBoundingBox'  |       <radialGradient id="rg1"             |
+|         xlink:href="#lg2"/>                |         xlink:href="#lg3"/>                |
+|       <radialGradient id="rg1"             |     <circle fill="url(#rg1)"               |
+|         gradientUnits='objectBoundingBox'  |       cx="50" cy="50" r="45"/>             |
+|         xlink:href="#lg3"/>                |   </svg>                                   |
+|     <circle fill="url(#rg1)"               |                                            |
+|       cx="50" cy="50" r="45"/>             |                                            |
+|   </svg>                                   |                                            |
++--------------------------------------------+--------------------------------------------+
+| |before-remove-gradient-attributes|        | |after-remove-gradient-attributes|         |
++--------------------------------------------+--------------------------------------------+
+
+.. |before-remove-gradient-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-gradient-attributes.svg
+.. |after-remove-gradient-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-gradient-attributes.svg
+
+
 Move presentational attributes to the parent group
 --------------------------------------------------
 

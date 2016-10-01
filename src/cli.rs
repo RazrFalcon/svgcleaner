@@ -55,6 +55,7 @@ pub enum Key {
     RemoveDefaultAttributes,
     RemoveXmlnsXlinkAttribute,
     RemoveNeedlessAttributes,
+    RemoveGradientAttributes,
     MoveStylesToGroup,
     JoinStyleAttributes,
     ApplyTransformToGradients,
@@ -113,6 +114,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-default-attributes",
     "remove-xmlns-xlink-attribute",
     "remove-needless-attributes",
+    "remove-gradient-attributes",
     "move-styles-to-group",
     "join-style-attributes",
     "apply-transform-to-gradients",
@@ -219,6 +221,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Remove an unused xmlns:xlink attribute", "true"));
     a = a.arg(gen_flag!(Key::RemoveNeedlessAttributes,
             "Remove attributes that doesn't belong to this element", "true"));
+    a = a.arg(gen_flag!(Key::RemoveGradientAttributes,
+            "Remove inheritable gradient attributes", "true"));
     a = a.arg(gen_flag!(Key::MoveStylesToGroup,
             "Move presentational attributes to the parent group", "true"));
     a = a.arg(gen_flag!(Key::JoinStyleAttributes,

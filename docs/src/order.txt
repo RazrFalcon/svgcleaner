@@ -26,6 +26,7 @@ remove-unused-coordinates.rst
 remove-default-attributes.rst
 remove-xmlns-xlink-attribute.rst
 remove-needless-attributes.rst
+remove-gradient-attributes.rst
 move-styles-to-group.rst
 join-style-attributes.rst
 apply-transform-to-gradients.rst

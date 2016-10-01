@@ -60,9 +60,17 @@ pub fn remove_unused_coordinates(doc: &Document) {
                     // we don't check parent attributes, since we already resolved them
                     // in resolve_attrs::radial_gradients
 
+                    // process only 'radialGradient' which is not linked
+                    // to the other 'radialGradient'
                     if attrs.contains(AId::XlinkHref) {
-                        continue;
+                        if let Some(v) = attrs.get_value(AId::XlinkHref) {
+                            if v.as_link().unwrap().is_tag_id(EId::RadialGradient) {
+                                continue;
+                            }
+                        }
                     }
+
+                    // TODO: process whole gradient tree
 
                     macro_rules! rm_f {
                         ($f:expr, $c:expr) => (

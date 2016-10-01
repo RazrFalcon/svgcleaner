@@ -48,6 +48,7 @@ pub use self::trim_ids::trim_ids;
 pub use self::ungroup_groups::ungroup_groups;
 pub use self::ungroup_defs::ungroup_defs;
 pub use self::regroup_gradient_stops::regroup_gradient_stops;
+pub use self::rm_gradient_attrs::remove_gradient_attributes;
 
 #[macro_use]
 mod macros;
@@ -74,6 +75,7 @@ mod rm_unused_defs;
 mod rm_version;
 mod trim_ids;
 mod ungroup_defs;
+mod rm_gradient_attrs;
 mod ungroup_groups;
 pub mod apply_transforms;
 pub mod paths;
@@ -83,4 +85,8 @@ mod short {
     pub use svgdom::types::LengthUnit as Unit;
     pub use svgdom::ElementId as EId;
     pub use svgdom::AttributeId as AId;
+}
+
+fn is_gradient(node: &super::svgdom::Node) -> bool {
+    node.is_tag_id(short::EId::LinearGradient) || node.is_tag_id(short::EId::RadialGradient)
 }

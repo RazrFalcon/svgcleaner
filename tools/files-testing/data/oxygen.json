@@ -416,6 +416,10 @@
         {
             "name": "devices/computer-laptop.svg",
             "valid_ae": 873
+        },
+        {
+            "name": "devices/small/16x16/computer-laptop.svg",
+            "valid_ae": 638
         }
     ],
     "ignore": [

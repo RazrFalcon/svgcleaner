@@ -139,6 +139,10 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
         remove_needless_attributes(doc);
     }
 
+    if get_flag!(args, Key::RemoveGradientAttributes) {
+        remove_gradient_attributes(doc);
+    }
+
     if get_flag!(args, Key::MoveStylesToGroup) {
         move_styles_to_group(doc);
     }

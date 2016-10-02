@@ -10,20 +10,20 @@ Currently, only an 'gradientUnits' attribute is processed.
 .. BEFORE
 .. <svg>
 ..     <linearGradient id="lg1"
-..       gradientUnits='objectBoundingBox'>
+..       gradientUnits='userSpaceOnUse'>
 ..       <stop offset="0"
 ..         stop-color="yellow"/>
 ..       <stop offset="1"
 ..         stop-color="green"/>
 ..     </linearGradient>
 ..     <linearGradient id="lg2"
-..       gradientUnits='objectBoundingBox'
+..       gradientUnits='userSpaceOnUse'
 ..       xlink:href="#lg1"/>
 ..     <linearGradient id="lg3"
-..       gradientUnits='objectBoundingBox'
+..       gradientUnits='userSpaceOnUse'
 ..       xlink:href="#lg2"/>
 ..     <radialGradient id="rg1"
-..       gradientUnits='objectBoundingBox'
+..       gradientUnits='userSpaceOnUse'
 ..       xlink:href="#lg3"/>
 ..   <circle fill="url(#rg1)"
 ..     cx="50" cy="50" r="45"/>
@@ -31,7 +31,7 @@ Currently, only an 'gradientUnits' attribute is processed.
 .. AFTER
 .. <svg>
 ..     <linearGradient id="lg1"
-..       gradientUnits='objectBoundingBox'>
+..       gradientUnits='userSpaceOnUse'>
 ..       <stop offset="0"
 ..         stop-color="yellow"/>
 ..       <stop offset="1"

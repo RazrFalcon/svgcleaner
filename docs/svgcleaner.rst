@@ -13,6 +13,9 @@ We can remove all XML comments from SVG document since they are not rendered eit
 **Note:** ``svgdom`` library, which is used to process SVG file in ``svgcleaner``,
 doesn't support comments inside attributes, so they will be removed anyway.
 
+**Unsupported by:** librsvg <= 2.40.13 (it doesn't support comments inside attributes, so when we
+remove them image will be rendered differently)
+
 CLI argument: ``--remove-comments``
 
 +---------------------------------------------------+-----------------------------------------------+
@@ -544,6 +547,8 @@ Remove invisible elements
 
 The collection of algorithms that detects invisible elements and removes them.
 
+**Unsupported by:** QtSvg <= 5.7
+
 CLI argument: ``--remove-invisible-elements``
 
 +------------------------------------------------+--------------------------------------+
@@ -879,6 +884,8 @@ remove attributes that already defined in the parent gradient.
 
 Currently, only an 'gradientUnits' attribute is processed.
 
+**Unsupported by:** QtSvg <= 5.7, Inkscape <= 0.91 r13725
+
 CLI argument: ``--remove-gradient-attributes``
 
 +-----------------------------------------+-----------------------------------------+
@@ -1106,7 +1113,7 @@ Join ArcTo flags
 Elliptical arc curve segment has flags parameters, which can have values of ``0`` or ``1``.
 Since we have fixed-width values, we can skip spaces between them.
 
-**Note:** Sadly, but most of the viewers doesn't support such notation, even throw it's valid by SVG spec.
+**Unsupported by:** Inkscape <= 0.91 r13725, QtSvg <= 5.7, librsvg <= 2.40.13
 
 CLI argument: ``--join-arcto-flags``
 

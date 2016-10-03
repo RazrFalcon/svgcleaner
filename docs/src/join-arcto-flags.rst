@@ -4,7 +4,7 @@ Join ArcTo flags
 Elliptical arc curve segment has flags parameters, which can have values of ``0`` or ``1``.
 Since we have fixed-width values, we can skip spaces between them.
 
-**Note:** Sadly, but most of the viewers doesn't support such notation, even throw it's valid by SVG spec.
+**Unsupported by:** Inkscape <= 0.91 r13725, QtSvg <= 5.7, librsvg <= 2.40.13
 
 .. GEN_TABLE
 .. BEFORE

@@ -222,7 +222,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     a = a.arg(gen_flag!(Key::RemoveNeedlessAttributes,
             "Remove attributes that doesn't belong to this element", "true"));
     a = a.arg(gen_flag!(Key::RemoveGradientAttributes,
-            "Remove inheritable gradient attributes", "true"));
+            "Remove inheritable gradient attributes", "false"));
     a = a.arg(gen_flag!(Key::MoveStylesToGroup,
             "Move presentational attributes to the parent group", "true"));
     a = a.arg(gen_flag!(Key::JoinStyleAttributes,

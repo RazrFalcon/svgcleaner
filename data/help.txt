@@ -28,17 +28,19 @@ Elements:
     --remove-invalid-stops <FLAG>            Remove invalid 'stop' elements [default: true]
 
 Attributes:
-    --join-style-attributes <FLAG>           Join presentational attributes when it's shorter [default: true]
-    --move-styles-to-group <FLAG>            Move presentational attributes to the parent group [default: true]
-    --remove-default-attributes <FLAG>       Remove attributes with default values [default: true]
-    --remove-needless-attributes <FLAG>      Remove attributes that doesn't belong to this element [default: true]
-    --remove-nonsvg-attributes <FLAG>        Remove non-SVG attributes [default: true]
-    --remove-text-attributes <FLAG>          Remove text-related attributes if there is no text [default: true]
-    --remove-unreferenced-ids <FLAG>         Remove unreferenced 'id' attributes [default: true]
-    --remove-unused-coordinates <FLAG>       Remove unused coordinate attributes [default: true]
     --remove-version <FLAG>                  Remove 'version' and 'baseProfile' attributes [default: true]
-    --remove-xmlns-xlink-attribute <FLAG>    Remove an unused xmlns:xlink attribute [default: true]
+    --remove-nonsvg-attributes <FLAG>        Remove non-SVG attributes [default: true]
+    --remove-unreferenced-ids <FLAG>         Remove unreferenced 'id' attributes [default: true]
     --trim-ids <FLAG>                        Trim 'id' attributes [default: true]
+    --remove-text-attributes <FLAG>          Remove text-related attributes if there is no text [default: true]
+    --remove-unused-coordinates <FLAG>       Remove unused coordinate attributes [default: true]
+    --remove-default-attributes <FLAG>       Remove attributes with default values [default: true]
+    --remove-xmlns-xlink-attribute <FLAG>    Remove an unused xmlns:xlink attribute [default: true]
+    --remove-needless-attributes <FLAG>      Remove attributes that doesn't belong to this element [default: true]
+    --remove-gradient-attributes <FLAG>      Remove inheritable gradient attributes [default: false]
+    --move-styles-to-group <FLAG>            Move presentational attributes to the parent group [default: true]
+    --join-style-attributes <FLAG>           Join presentational attributes when it's shorter [default: true]
+    --apply-transform-to-gradients <FLAG>    Apply transformations to gradients [default: true]
 
 Paths:
     --paths-to-relative <FLAG>               Convert path's segments into relative one [default: true]

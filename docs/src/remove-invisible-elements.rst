@@ -3,6 +3,8 @@ Remove invisible elements
 
 The collection of algorithms that detects invisible elements and removes them.
 
+**Unsupported by:** QtSvg <= 5.7
+
 .. GEN_TABLE
 .. BEFORE
 .. <svg>

@@ -56,22 +56,7 @@ fn process_g(g: &Node, attrs_list: &mut Vec<AttrCount>) {
     for node in g.children() {
         let attrs = node.attributes();
         for attr in attrs.iter() {
-            if attr.is_presentation() && !attr.is_func_link() && attr.visible {
-                // some attributes can't be moved
-                match attr.id {
-                      AId::ClipPath
-                    | AId::Cursor
-                    | AId::Filter
-                    | AId::Marker
-                    | AId::MarkerEnd
-                    | AId::MarkerMid
-                    | AId::MarkerStart
-                    | AId::Mask
-                    | AId::Opacity
-                    | AId::PointerEvents => continue,
-                    _ => {}
-                }
-
+            if attr.is_inheritable() && !attr.is_func_link() && attr.visible {
                 let idx = attrs_list.iter().position(|a| a.attr == *attr);
                 match idx {
                     Some(i) => {

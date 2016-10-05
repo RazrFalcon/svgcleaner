@@ -20,9 +20,8 @@
 **
 ****************************************************************************/
 
-#[macro_use]
-extern crate clap;
-extern crate svgcleaner;
+#[macro_use] extern crate clap;
+#[macro_use] extern crate svgcleaner;
 
 use std::fs;
 
@@ -88,18 +87,39 @@ fn main() {
         }
     };
 
-    // clean it
-    match clean_doc(&doc, &args, &write_opt) {
-        Ok(_) => {}
-        Err(e) => {
-            println!("Error: {:?}.", e);
-            on_err();
-        }
-    }
-
-    // write it
+    // allocate a buffer for the output data
     let capacity = (raw.len() as f64 * 0.8) as usize;
-    let buf = write_buffer(&doc, capacity, &write_opt);
+    let mut buf = Vec::with_capacity(capacity);
+    let mut prev_size = 0;
+
+    loop {
+        // clear buffer
+        buf.clear();
+
+        // clean it
+        match clean_doc(&doc, &args, &write_opt) {
+            Ok(_) => {}
+            Err(e) => {
+                println!("Error: {:?}.", e);
+                on_err();
+            }
+        }
+
+        // write it
+        write_buffer(&doc, &write_opt, &mut buf);
+
+        if !get_flag!(args, Key::Multipass) {
+            // do not repeat without '--multipass'
+            break;
+        }
+
+        // if a size is unchaged - stop multipass
+        if prev_size == buf.len() {
+            break;
+        }
+
+        prev_size = buf.len();
+    }
 
     // check that cleaned file is smaller
     if buf.len() > raw.len() {

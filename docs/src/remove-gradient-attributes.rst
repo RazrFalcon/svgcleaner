@@ -1,10 +1,10 @@
 Remove inheritable gradient attributes
 --------------------------------------
 
-Gradients can inherit attributes via 'xlink:href' attribute, so we can
+Gradients can inherit attributes via ``xlink:href`` attribute, so we can
 remove attributes that already defined in the parent gradient.
 
-Currently, only an 'gradientUnits' attribute is processed.
+Currently, only an ``gradientUnits`` attribute is processed.
 
 **Unsupported by:** QtSvg <= 5.7, Inkscape <= 0.91 r13725
 

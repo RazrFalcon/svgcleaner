@@ -437,6 +437,8 @@ Ungroup ``defs`` elements
 If the ``defs`` element contains only `referenced <https://www.w3.org/TR/SVG/struct.html#Head>`_
 elements - it can be ungrouped.
 
+**Unsupported by:** QtSvg <= 5.7 (``pattern`` with ``image`` child renders incorrectly)
+
 CLI argument: ``--ungroup-defs``
 
 +-------------------------------------+-------------------------------------+
@@ -881,10 +883,10 @@ CLI argument: ``--remove-needless-attributes``
 Remove inheritable gradient attributes
 --------------------------------------
 
-Gradients can inherit attributes via 'xlink:href' attribute, so we can
+Gradients can inherit attributes via ``xlink:href`` attribute, so we can
 remove attributes that already defined in the parent gradient.
 
-Currently, only an 'gradientUnits' attribute is processed.
+Currently, only an ``gradientUnits`` attribute is processed.
 
 **Unsupported by:** QtSvg <= 5.7, Inkscape <= 0.91 r13725
 

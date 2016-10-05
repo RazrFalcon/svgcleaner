@@ -420,6 +420,14 @@
         {
             "name": "devices/small/16x16/computer-laptop.svg",
             "valid_ae": 638
+        },
+        {
+            "name": "actions/small/16x16/view-pim-mail.svg",
+            "valid_ae": 941
+        },
+        {
+            "name": "actions/small/22x22/view-pim-mail.svg",
+            "valid_ae": 887
         }
     ],
     "ignore": [

@@ -43,8 +43,8 @@ pub enum Key {
     UngroupDefs,
     MergeGradients,
     RegroupGradientStops,
-    RemoveInvisibleElements,
     RemoveInvalidStops,
+    RemoveInvisibleElements,
 
     RemoveVersion,
     RemoveNonsvgAttributes,
@@ -70,6 +70,7 @@ pub enum Key {
     SimplifyTransforms,
     Indent,
 
+    Multipass,
     CopyOnError,
     Quiet,
 }
@@ -100,8 +101,8 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "ungroup-defs",
     "merge-gradients",
     "regroup-gradient-stops",
-    "remove-invisible-elements",
     "remove-invalid-stops",
+    "remove-invisible-elements",
 
     "remove-version",
     "remove-nonsvg-attributes",
@@ -127,6 +128,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "simplify-transforms",
     "indent",
 
+    "multipass",
     "copy-on-error",
     "quiet",
 ]);
@@ -193,10 +195,10 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Merge gradients", "true"));
     a = a.arg(gen_flag!(Key::RegroupGradientStops,
             "Regroup gradient 'stop' elements", "true"));
-    a = a.arg(gen_flag!(Key::RemoveInvisibleElements,
-            "Remove invisible elements", "true"));
     a = a.arg(gen_flag!(Key::RemoveInvalidStops,
             "Remove invalid 'stop' elements", "true"));
+    a = a.arg(gen_flag!(Key::RemoveInvisibleElements,
+            "Remove invisible elements", "true"));
 
     // attributes
     a = a.arg(gen_flag!(Key::RemoveVersion,
@@ -251,8 +253,10 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             .default_value("-1"));
 
     // other
+    a = a.arg(gen_flag!(Key::Multipass,
+            "Clean a file multiple times", "false"));
     a = a.arg(gen_flag!(Key::CopyOnError,
-            "Copy original file to destination on error", "false"));
+            "Copy an original file to the destination on error", "false"));
     a = a.arg(gen_flag!(Key::Quiet,
             "Show only warnings and errors", "false"));
 
@@ -287,6 +291,7 @@ fn is_flag(val: String) -> Result<(), String> {
     }
 }
 
+#[macro_export]
 macro_rules! get_flag {
     ($args:ident, $key:expr) => (
         value_t!($args, KEYS[$key], bool).unwrap()

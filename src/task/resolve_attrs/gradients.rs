@@ -21,6 +21,7 @@
 ****************************************************************************/
 
 use task::short::{EId, AId, Unit};
+use task::is_gradient;
 use error::CleanerError;
 
 use svgdom::{Document, Node, Attribute, AttributeValue, ValueId};
@@ -65,37 +66,42 @@ pub fn radial_gradients(doc: &Document) {
 }
 
 pub fn stop(doc: &Document) -> Result<(), CleanerError> {
-    for (idx, node) in doc.descendants().filter(|n| n.is_tag_id(EId::Stop)).enumerate() {
-        if !node.has_attribute(AId::Offset) {
-            if idx == 0 {
-                println!("Warning: The 'stop' element must have an 'offset' attribute. \
-                          Fallback to 'offset=0'.");
-                node.set_attribute(AId::Offset, 0);
+    for node in doc.descendants().filter(|n| is_gradient(n)) {
+        for (idx, node) in node.children().enumerate() {
+            if !node.has_attribute(AId::Offset) {
+                if idx == 0 {
+                    // Allow first stop to not have an offset.
+                    println!("Warning: The 'stop' element must have an 'offset' attribute. \
+                              Fallback to 'offset=0'.");
+                    node.set_attribute(AId::Offset, 0);
+                } else {
+                    return Err(CleanerError::MissingAttribute("stop".to_string(),
+                                                              "offset".to_string()));
+                }
             } else {
-                return Err(CleanerError::MissingAttribute("stop".to_string(), "offset".to_string()));
+                let a = node.attribute_value(AId::Offset).unwrap();
+                if let Some(l) = a.as_length() {
+                    if l.unit == Unit::Percent {
+                        // convert percent into number
+                        node.set_attribute(AId::Offset, l.num / 100.0);
+                    } else {
+                        // set original value too to change attribute type from Length to Number
+                        node.set_attribute(AId::Offset, l.num);
+                    }
+                }
             }
-        } else {
-            let a = node.attribute_value(AId::Offset).unwrap();
-            let l = a.as_length().unwrap();
-            if l.unit == Unit::Percent {
-                // convert percent into number
-                node.set_attribute(AId::Offset, l.num / 100.0);
-            } else {
-                // set original value too to change attribute type from Length to Number
-                node.set_attribute(AId::Offset, l.num);
+
+            if !node.has_attribute(AId::StopColor) {
+                let mut a = Attribute::new(AId::StopColor, Color::new(0, 0, 0));
+                a.visible = false;
+                node.set_attribute_object(a);
             }
-        }
 
-        if !node.has_attribute(AId::StopColor) {
-            let mut a = Attribute::new(AId::StopColor, Color::new(0, 0, 0));
-            a.visible = false;
-            node.set_attribute_object(a);
-        }
-
-        if !node.has_attribute(AId::StopOpacity) {
-            let mut a = Attribute::new(AId::StopOpacity, 1.0);
-            a.visible = false;
-            node.set_attribute_object(a);
+            if !node.has_attribute(AId::StopOpacity) {
+                let mut a = Attribute::new(AId::StopOpacity, 1.0);
+                a.visible = false;
+                node.set_attribute_object(a);
+            }
         }
     }
 
@@ -165,30 +171,20 @@ fn resolve_attribute(node: &Node, id: AId, def_value: Option<AttributeValue>)
 macro_rules! base_test {
     ($name:ident, $functor:expr, $in_text:expr, $out_text:expr) => (
         #[test]
-        #[allow(unused_must_use)]
         fn $name() {
             let doc = Document::from_data($in_text).unwrap();
             $functor(&doc);
-            assert_eq_text!(doc_to_str_with_hidden!(doc), $out_text);
+            let mut opt = write_opt_for_tests!();
+            opt.write_hidden_attributes = true;
+            assert_eq_text!(doc.to_string_with_opt(&opt), $out_text);
         }
     )
 }
 
 #[cfg(test)]
-macro_rules! doc_to_str_with_hidden {
-    ($doc:expr) => ({
-        use svgdom::{WriteToString, WriteOptions};
-        let mut opt = WriteOptions::default();
-        opt.use_single_quote = true;
-        opt.write_hidden_attributes = true;
-        $doc.to_string_with_opt(&opt)
-    })
-}
-
-#[cfg(test)]
 mod lg_tests {
     use super::*;
-    use svgdom::Document;
+    use svgdom::{Document, WriteToString};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -211,7 +207,7 @@ b"<svg>
 #[cfg(test)]
 mod rg_tests {
     use super::*;
-    use svgdom::{Document};
+    use svgdom::{Document, WriteToString};
 
     macro_rules! test_rg {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -326,11 +322,18 @@ b"<svg>
 #[cfg(test)]
 mod stop_tests {
     use super::*;
-    use svgdom::Document;
+    use svgdom::{Document, WriteToString};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
-            base_test!($name, stop, $in_text, $out_text);
+            #[test]
+            fn $name() {
+                let doc = Document::from_data($in_text).unwrap();
+                stop(&doc).unwrap();
+                let mut opt = write_opt_for_tests!();
+                opt.write_hidden_attributes = true;
+                assert_eq_text!(doc.to_string_with_opt(&opt), $out_text);
+            }
         )
     }
 

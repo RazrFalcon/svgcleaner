@@ -181,10 +181,8 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
     Ok(())
 }
 
-pub fn write_buffer(doc: &Document, capacity: usize, opt: &WriteOptions) -> Vec<u8> {
-    let mut ouput_data = Vec::with_capacity(capacity);
-    doc.write_buf_opt(opt, &mut ouput_data);
-    ouput_data
+pub fn write_buffer(doc: &Document, opt: &WriteOptions, buf: &mut Vec<u8>) {
+    doc.write_buf_opt(opt, buf);
 }
 
 pub fn save_file(data: &[u8], path: &str) -> Result<(), io::Error> {

@@ -393,8 +393,8 @@ fn clean_with_old_cleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool
                 .arg("--apply-transforms-to-defs")
                 .arg("--compact-output")
                 .arg("--transform-precision=8")
-                .arg("--coordinates-precision=6")
-                .arg("--attributes-precision=6")
+                .arg("--coordinates-precision=8")
+                .arg("--attributes-precision=8")
                 .arg("--sort-defs")
                 .output();
 
@@ -424,7 +424,7 @@ fn clean_with_old_cleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool
 fn clean_with_svgo(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     let res = Command::new(exe_path)
                 .arg("--quiet")
-                .arg("--precision=6")
+                .arg("--precision=8")
                 .arg(in_path)
                 .arg(out_path)
                 .output();

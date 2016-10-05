@@ -180,6 +180,7 @@ V0.8
  - [ ] Detect equal subpaths and replace them with `use`.
  - [ ] Implement gradients processing as a single unit.
  - [ ] Remove elements outside the viewbox. Very expensive and mostly useless.
+ - [ ] Contextual numbers rounding. Details [here](FAQ.md#can-you-add-an-option-to-specify-a-numeric-precision).
  - [ ] Resolve `use`.
  - [ ] Test not only against webkit.
  - [ ] Unix pipes.

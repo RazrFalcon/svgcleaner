@@ -10,8 +10,10 @@ Remove XML comments
 
 We can remove all XML comments from SVG document since they are not rendered either way.
 
-**Note:** ``svgdom`` library, which is used to process SVG file in ``svgcleaner``,
-doesn't support comments inside attributes, so they will be removed anyway.
+**Note:** the `svgdom <https://github.com/RazrFalcon/libsvgdom>`_ library,
+which is used to process SVG file in the ``svgcleaner``,
+doesn't support comments inside attributes except ``style`` attribute,
+so they will be removed anyway.
 
 **Unsupported by:** librsvg <= 2.40.13 (it doesn't support comments inside attributes, so when we
 remove them image will be rendered differently)

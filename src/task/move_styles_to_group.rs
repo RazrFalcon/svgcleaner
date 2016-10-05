@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 
-use super::short::{EId, AId};
+use super::short::{EId};
 
 use svgdom::{Document, Node, Attribute};
 

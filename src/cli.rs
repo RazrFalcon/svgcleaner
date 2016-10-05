@@ -66,8 +66,6 @@ pub enum Key {
     RemoveDuplCmdInPaths,
     JoinArcToFlags,
 
-    // PrecisionCoordinate,
-    // PrecisionTransform,
     TrimColors,
     SimplifyTransforms,
     Indent,
@@ -125,8 +123,6 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-dupl-cmd-in-paths",
     "join-arcto-flags",
 
-    // "precision-coordinate",
-    // "precision-transform",
     "trim-colors",
     "simplify-transforms",
     "indent",
@@ -243,10 +239,6 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Join ArcTo flags", "false"));
 
     // output
-    // a = a.arg(gen_precision_arg(KEYS[Key::PrecisionCoordinate],
-    //         "Set numeric precision for coordinates (1..8)", "6"));
-    // a = a.arg(gen_precision_arg(KEYS[Key::PrecisionTransform],
-    //         "Set numeric precision for transformations (1..8)", "8"));
     a = a.arg(gen_flag!(Key::TrimColors,
             "Use #RGB notation", "true"));
     a = a.arg(gen_flag!(Key::SimplifyTransforms,
@@ -267,15 +259,6 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     a
 }
 
-// fn gen_precision_arg<'a>(key: &'a str, help: &'a str, def_value: &'a str) -> Arg<'a, 'a> {
-//     Arg::with_name(key)
-//         .long(key)
-//         .help(help)
-//         .value_name("PRECISION")
-//         .validator(is_precision)
-//         .default_value(def_value)
-// }
-
 fn is_svg(val: String) -> Result<(), String> {
     if val.ends_with(".svg") || val.ends_with(".SVG") {
         Ok(())
@@ -283,19 +266,6 @@ fn is_svg(val: String) -> Result<(), String> {
         Err(String::from("The file format must be SVG."))
     }
 }
-
-// fn is_precision(val: String) -> Result<(), String> {
-//     let n = match val.parse::<u8>() {
-//         Ok(v) => v,
-//         Err(e) => return Err(format!("{}", e)),
-//     };
-
-//     if n >= 1 && n <= 8 {
-//         Ok(())
-//     } else {
-//         Err(String::from("Invalid precision value."))
-//     }
-// }
 
 fn is_indent(val: String) -> Result<(), String> {
     let n = match val.parse::<i8>() {
@@ -379,11 +349,7 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
 
     opt.transforms.simplify_matrix = get_flag!(args, Key::SimplifyTransforms);
 
-    opt.numbers.precision_coordinates = 6;
-    opt.numbers.precision_transforms  = 8;
-    // opt.numbers.precision_coordinates = value_t!(args, KEYS[Key::PrecisionCoordinate], u8).unwrap();
-    // opt.numbers.precision_transforms  = value_t!(args, KEYS[Key::PrecisionTransform], u8).unwrap();
-    opt.numbers.remove_leading_zero   = true;
+    opt.remove_leading_zero = true;
 
     opt.trim_hex_colors = get_flag!(args, Key::TrimColors);
     opt.indent = value_t!(args, KEYS[Key::Indent], i8).unwrap();

@@ -56,12 +56,14 @@ fn rm_equal(doc: &Document) {
                 // usage depend on the 'count' value and not on the real usage
                 sub_order.push(node.clone());
 
-                let link = node.attribute_value(AId::XlinkHref).unwrap().as_link().unwrap().clone();
-
-                // if current units is equal to parent units we can remove them
-                if node.attribute_value(AId::GradientUnits)
-                        == link.attribute_value(AId::GradientUnits) {
-                    make_attr_invisible(node, AId::GradientUnits);
+                if let Some(av) = node.attribute_value(AId::XlinkHref) {
+                    if let AttributeValue::Link(link) = av {
+                        // if current units is equal to parent units we can remove them
+                        if node.attribute_value(AId::GradientUnits)
+                                == link.attribute_value(AId::GradientUnits) {
+                            make_attr_invisible(node, AId::GradientUnits);
+                        }
+                    }
                 }
             }
         }
@@ -71,11 +73,13 @@ fn rm_equal(doc: &Document) {
 
         // decrease usage count of processed gradients
         for n in &sub_order {
-            let link = n.attribute_value(AId::XlinkHref).unwrap().as_link().unwrap().clone();
-
-            for &mut (ref node, ref mut count) in &mut order {
-                if *node == link {
-                    *count -= 1;
+            if let Some(av) = n.attribute_value(AId::XlinkHref) {
+                if let AttributeValue::Link(link) = av {
+                    for &mut (ref node, ref mut count) in &mut order {
+                        if *node == link {
+                            *count -= 1;
+                        }
+                    }
                 }
             }
         }
@@ -96,8 +100,8 @@ fn group_to_parent(doc: &Document) {
     for node in &nodes {
         let total_count = node.linked_nodes().count();
         let count = node.linked_nodes()
-                        .filter(|n| n.attribute_value(AId::GradientUnits).unwrap()
-                                      == AttributeValue::PredefValue(ValueId::ObjectBoundingBox))
+                        .filter(|n| n.has_attribute_with_value(AId::GradientUnits,
+                                                               ValueId::ObjectBoundingBox))
                         .count();
 
         if count == total_count {

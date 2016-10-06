@@ -92,12 +92,10 @@ fn is_valid_clip_path_elem(node: &Node) -> bool {
     }
 
     if node.is_tag_id(EId::Use) {
-        if !node.has_attribute(AId::XlinkHref) {
-            return false;
-        }
-
-        if let AttributeValue::Link(link) = node.attribute_value(AId::XlinkHref).unwrap() {
-            return is_valid_shape(&link);
+        if let Some(av) = node.attribute_value(AId::XlinkHref) {
+            if let AttributeValue::Link(link) = av {
+                return is_valid_shape(&link);
+            }
         }
     }
 
@@ -229,6 +227,7 @@ fn process_gradients(doc: &Document) {
 
         for n in iter {
             let stop = n.children().nth(0).unwrap();
+            // unwrap is safe, because we already resolved all 'stop' attributes
             let color = *stop.attribute_value(AId::StopColor).unwrap().as_color().unwrap();
             let opacity = *stop.attribute_value(AId::StopOpacity).unwrap().as_number().unwrap();
 

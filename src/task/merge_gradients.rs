@@ -65,20 +65,20 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
     let iter = doc.descendants().filter(|n|    n.is_tag_id(EId::LinearGradient)
                                             || n.is_tag_id(EId::RadialGradient));
     for node in iter {
-        if !node.has_attribute(AId::XlinkHref) {
-            continue;
-        }
-
         let linked_node;
-        match node.attribute_value(AId::XlinkHref).unwrap() {
-            AttributeValue::Link(link) => {
-                if link.uses_count() != 1 || link.has_attribute(AId::XlinkHref) {
-                    continue;
-                } else {
+        if let Some(av) = node.attribute_value(AId::XlinkHref) {
+            if let AttributeValue::Link(link) = av {
+                if link.uses_count() == 1 && !link.has_attribute(AId::XlinkHref) {
                     linked_node = link;
+                } else {
+                    continue;
                 }
+            } else {
+                continue;
             }
-            _ => continue,
+        } else {
+            // TODO: continue "tree" is ugly
+            continue;
         }
 
         if !node.has_children() {

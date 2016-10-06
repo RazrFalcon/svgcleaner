@@ -27,6 +27,7 @@ use svgdom::{Document, Node, AttributeValue};
 pub fn ungroup_groups(doc: &Document) {
     let mut groups = Vec::with_capacity(16);
 
+    // doc must contain 'svg' node, so we can safely unwrap
     let svg = doc.svg_element().unwrap();
     loop {
         _ungroup_groups(&svg, &mut groups);
@@ -148,6 +149,7 @@ fn ungroup_group(g: &Node) {
             if !child.has_attribute(attr.id) {
                 match attr.value {
                     AttributeValue::Link(ref iri) | AttributeValue::FuncLink(ref iri) => {
+                        // if it's fail - it's already a huge problem, so unwrap is harmless
                         child.set_link_attribute(attr.id, iri.clone()).unwrap();
                     }
                     _ => child.set_attribute(attr.id, attr.value.clone()),

@@ -25,6 +25,7 @@ use super::short::{EId};
 use svgdom::{Document, Node};
 
 pub fn remove_unused_defs(doc: &Document) {
+    // unwrap is safe, because 'defs' already had been created in 'group_defs'
     let defs = doc.root().child_by_tag_id(EId::Defs).unwrap();
 
     // repeat until no unused nodes left

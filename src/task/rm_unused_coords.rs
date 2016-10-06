@@ -48,8 +48,8 @@ pub fn remove_unused_coordinates(doc: &Document) {
                 EId::Rect => {
                     // if 'rx' equals to 'ry', than we can remove 'ry'
                     // https://www.w3.org/TR/SVG/shapes.html#RectElementRYAttribute
-                    if attrs.contains(AId::Rx) && attrs.contains(AId::Ry) {
-                        if attrs.get_value(AId::Rx).unwrap() == attrs.get_value(AId::Ry).unwrap() {
+                    if attrs.contains(AId::Rx) {
+                        if attrs.get_value(AId::Rx) == attrs.get_value(AId::Ry) {
                             rm_list.push(AId::Ry);
                         }
                     }
@@ -144,6 +144,12 @@ b"<svg>
 "<svg>
     <rect rx='5'/>
     <rect rx='5' ry='5em'/>
+</svg>
+");
+
+    test_eq!(rect_rx_ry,
+b"<svg>
+    <rect/>
 </svg>
 ");
 

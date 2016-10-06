@@ -29,7 +29,9 @@ pub fn final_fixes(doc: &Document) {
     // Remove empty 'defs' element.
     // We don't remove all empty 'defs' elements, since it was already done by group_defs().
     // We only remove first 'defs', which is probably was created by us.
-    let svg = doc.root().child_by_tag_id(EId::Svg).unwrap();
+
+    // doc must contain 'svg' node, so we can safely unwrap
+    let svg = doc.svg_element().unwrap();
     for child in svg.children() {
         if child.is_tag_id(EId::Defs) && !child.has_children() {
             child.remove();
@@ -39,7 +41,8 @@ pub fn final_fixes(doc: &Document) {
 }
 
 pub fn fix_xmlns_attribute(doc: &Document, rm_unused: bool) {
-    let svg = doc.root().child_by_tag_id(EId::Svg).unwrap();
+    // doc must contain 'svg' node, so we can safely unwrap
+    let svg = doc.svg_element().unwrap();
 
     let mut has_links = false;
     for node in doc.descendants() {

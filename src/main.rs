@@ -67,7 +67,7 @@ fn main() {
 
     let on_err = || {
         // copy original file to destination
-        if value_t!(args, KEYS[Key::CopyOnError], bool).unwrap() {
+        if get_flag!(args, Key::CopyOnError) {
             // copy a file only when paths are different
             if in_file != out_file {
                 try_msg!(fs::copy(in_file, out_file));
@@ -130,10 +130,12 @@ fn main() {
     // save it
     try_msg!(save_file(&buf[..], out_file));
 
-    if value_t!(args, KEYS[Key::Quiet], bool).unwrap() {
+    if get_flag!(args, Key::Quiet) {
         return;
     }
 
+    // unwrap is safe, because 'save_file' will fail on write error,
+    // so file is totally exist
     let out_size = fs::File::open(out_file).unwrap().metadata().unwrap().len() as f64;
     let ratio = 100.0 - out_size / (raw.len() as f64) * 100.0;
     println!("Your image is {:.2}% smaller now.", ratio);

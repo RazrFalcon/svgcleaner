@@ -41,11 +41,11 @@ fn check_for_unsupported_elements(doc: &Document) -> Result<(), CleanerError> {
             EId::Script => {
                 return Err(CleanerError::ScriptingIsNotSupported);
             }
-            EId::Animate |
-            EId::Set |
-            EId::AnimateMotion |
-            EId::AnimateColor |
-            EId::AnimateTransform => {
+              EId::Animate
+            | EId::Set
+            | EId::AnimateMotion
+            | EId::AnimateColor
+            | EId::AnimateTransform => {
                 return Err(CleanerError::AnimationIsNotSupported);
             }
             _ => {}
@@ -74,19 +74,20 @@ fn check_for_conditional_attributes(doc: &Document) -> Result<(), CleanerError> 
     macro_rules! check_attr {
         ($aid:expr, $node:expr) => (
             let attrs = $node.attributes();
-            let s = attrs.get_value($aid).unwrap().as_string().unwrap();
-            if !s.is_empty() {
-                return Err(CleanerError::ConditionalProcessingIsNotSupported);
+            if let Some(av) = attrs.get_value($aid) {
+                // libsvgdom doesn't parse this attributes, so they must have String type
+                let s = av.as_string().unwrap();
+                if !s.is_empty() {
+                    // NOTE: we are only care about non-empty attributes
+                    return Err(CleanerError::ConditionalProcessingIsNotSupported);
+                }
             }
         )
     }
 
     for node in doc.descendants() {
-        if node.has_attribute(AId::RequiredFeatures) {
-            check_attr!(AId::RequiredFeatures, node);
-        } else if node.has_attribute(AId::SystemLanguage) {
-            check_attr!(AId::SystemLanguage, node);
-        }
+        check_attr!(AId::RequiredFeatures, node);
+        check_attr!(AId::SystemLanguage, node);
     }
 
     Ok(())
@@ -121,32 +122,41 @@ mod tests {
     use svgdom::Document;
     use error::CleanerError;
 
-    #[test]
-    fn test_scripting_1() {
-        let doc = Document::from_data(
-b"<svg>
-    <script/>
-</svg>
-").unwrap();
-
-        assert_eq!(preclean_checks(&doc).err().unwrap(), CleanerError::ScriptingIsNotSupported);
+    macro_rules! test {
+        ($name:ident, $in_text:expr, $err:expr) => (
+            #[test]
+            fn $name() {
+                let doc = Document::from_data($in_text).unwrap();
+                assert_eq!(preclean_checks(&doc).err().unwrap(), $err);
+            }
+        )
     }
 
-    #[test]
-    fn test_scripting_2() {
-        let doc = Document::from_data(
-b"<svg onload=''/>").unwrap();
-        assert_eq!(preclean_checks(&doc).err().unwrap(), CleanerError::ScriptingIsNotSupported);
+    macro_rules! test_ok {
+        ($name:ident, $in_text:expr) => (
+            #[test]
+            fn $name() {
+                let doc = Document::from_data($in_text).unwrap();
+                assert_eq!(preclean_checks(&doc).is_ok(), true);
+            }
+        )
     }
 
-    #[test]
-    fn test_animation_2() {
-        let doc = Document::from_data(
-b"<svg>
-    <set/>
-</svg>
-").unwrap();
+    test!(test_scripting_1, b"<svg><script/></svg>",
+          CleanerError::ScriptingIsNotSupported);
 
-        assert_eq!(preclean_checks(&doc).err().unwrap(), CleanerError::AnimationIsNotSupported);
-    }
+    test!(test_scripting_2, b"<svg onload=''/>",
+          CleanerError::ScriptingIsNotSupported);
+
+    test!(test_animation_1, b"<svg><set/></svg>",
+          CleanerError::AnimationIsNotSupported);
+
+    test!(test_conditions_1, b"<svg><switch requiredFeatures='text'/></svg>",
+          CleanerError::ConditionalProcessingIsNotSupported);
+
+    test!(test_conditions_2, b"<svg><switch systemLanguage='en'/></svg>",
+          CleanerError::ConditionalProcessingIsNotSupported);
+
+    test_ok!(test_conditions_3, b"<svg><switch requiredFeatures=''/></svg>");
+    test_ok!(test_conditions_4, b"<svg><switch systemLanguage=''/></svg>");
 }

@@ -23,12 +23,13 @@
 use super::short::{EId, AId, Unit};
 
 use svgdom::{Document, Node, AttributeValue};
-use svgdom::types::{Length};
+use svgdom::types::Length;
 
 /// We don't remove invalid elements, just make them invisible.
 /// Then they can be removed via `remove_invisible_elements`.
 pub fn fix_invalid_attributes(doc: &Document) {
     for node in doc.descendants() {
+        // descendants() iterates only over svg elements, which all have a tag name
         match node.tag_id().unwrap() {
             EId::Rect => fix_rect(&node),
             EId::Polyline | EId::Polygon => fix_poly(&node),
@@ -41,7 +42,7 @@ pub fn fix_invalid_attributes(doc: &Document) {
 fn fix_rect(node: &Node) {
     // fix attributes according to: https://www.w3.org/TR/SVG/shapes.html#RectElement
 
-    fix_len(node, AId::Width, Length::new(0.0, Unit::None));
+    fix_len(node, AId::Width,  Length::new(0.0, Unit::None));
     fix_len(node, AId::Height, Length::new(0.0, Unit::None));
 
     rm_negative_len(node, AId::Rx);
@@ -54,35 +55,22 @@ fn fix_rect(node: &Node) {
 }
 
 fn fix_poly(node: &Node) {
-    if !node.has_attribute(AId::Points) {
-        return;
-    }
-
-    // let attrs = node.attributes();
-    // let mut attrs_data = attrs.borrow_mut();
     let mut attrs_data = node.attributes_mut();
-
     let mut is_empty = false;
 
-    {
-        let mut points_value = attrs_data.get_mut(AId::Points).unwrap();
-
-        let p;
-        match points_value.value {
-            AttributeValue::NumberList(ref mut l) => p = l,
-            _ => return,
-        }
-
-        if p.is_empty() {
-            // remove if no points
-            is_empty = true;
-        } else if p.len() % 2 != 0 {
-            // remove last point if points count is odd
-            p.pop();
-
-            // remove if no points
+    if let Some(points_value) = attrs_data.get_value_mut(AId::Points) {
+        if let AttributeValue::NumberList(ref mut p) = *points_value {
             if p.is_empty() {
+                // remove if no points
                 is_empty = true;
+            } else if p.len() % 2 != 0 {
+                // remove last point if points count is odd
+                p.pop();
+
+                // remove if no points
+                if p.is_empty() {
+                    is_empty = true;
+                }
             }
         }
     }
@@ -101,16 +89,18 @@ fn fix_len(node: &Node, id: AId, new_len: Length) {
 }
 
 fn fix_negative_len(node: &Node, id: AId, new_len: Length) {
-    let av = node.attribute_value(id).unwrap();
-    let l = av.as_length().unwrap();
-    if l.num.is_sign_negative() {
-        node.set_attribute(id, new_len);
+    if let Some(av) = node.attribute_value(id) {
+        // unwrap is safe, because coordinates must have a Length type
+        let l = av.as_length().unwrap();
+        if l.num.is_sign_negative() {
+            node.set_attribute(id, new_len);
+        }
     }
 }
 
 fn rm_negative_len(node: &Node, id: AId) {
-    if node.has_attribute(id) {
-        let av = node.attribute_value(id).unwrap();
+    if let Some(av) = node.attribute_value(id) {
+        // unwrap is safe, because coordinates must have a Length type
         let l = av.as_length().unwrap();
         if l.num.is_sign_negative() {
             node.remove_attribute(id);
@@ -124,6 +114,7 @@ fn fix_stops(node: &Node) {
     let mut prev_offset = 0.0;
 
     for child in node.children() {
+        // unwrap is safe, because 'offset' already resolved in 'resolve_attrs'
         let mut offset = *child.attribute_value(AId::Offset).unwrap().as_number().unwrap();
 
         if offset < 0.0 {

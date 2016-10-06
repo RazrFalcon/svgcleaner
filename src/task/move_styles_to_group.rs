@@ -32,6 +32,7 @@ struct AttrCount {
 pub fn move_styles_to_group(doc: &Document) {
     let mut attrs_list: Vec<AttrCount> = Vec::new();
 
+    // doc must contain 'svg' node, so we can safely unwrap
     _move_styles_to_group(&doc.svg_element().unwrap(), &mut attrs_list);
 }
 

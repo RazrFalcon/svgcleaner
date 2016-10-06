@@ -54,6 +54,7 @@ pub fn join_style_attributes(doc: &Document, opt: &WriteOptions) {
             }
             style.pop();
 
+            // unwrap can't fail
             let style_str = String::from_utf8(style).unwrap();
             attrs.insert(Attribute::new(AId::Style, AttributeValue::String(style_str)));
 

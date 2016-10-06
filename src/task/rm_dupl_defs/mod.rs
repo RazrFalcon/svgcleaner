@@ -61,6 +61,7 @@ fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
 
             for ln in node2.linked_nodes() {
                 if let Some(aid) = ln.find_reference_attribute(&node2) {
+                    // if it's fail - it's already a huge problem, so unwrap is harmless
                     ln.set_link_attribute(aid, node1.clone()).unwrap();
                 }
             }

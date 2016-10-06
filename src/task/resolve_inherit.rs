@@ -54,9 +54,8 @@ pub fn resolve_inherit(doc: &Document) -> Result<(), CleanerError> {
         }
 
         for id in vec_curr_color {
-            if node.has_attribute(AId::Color) {
-                let v = node.attribute_value(AId::Color).unwrap();
-                node.set_attribute(id, v.clone());
+            if let Some(av) = node.attribute_value(AId::Color) {
+                node.set_attribute(id, av);
             } else {
                 try!(resolve_impl(&node, id, AId::Color));
             }

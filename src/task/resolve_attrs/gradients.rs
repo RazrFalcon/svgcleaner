@@ -66,8 +66,8 @@ pub fn radial_gradients(doc: &Document) {
 }
 
 pub fn stop(doc: &Document) -> Result<(), CleanerError> {
-    for node in doc.descendants().filter(|n| is_gradient(n)) {
-        for (idx, node) in node.children().enumerate() {
+    for gradient in doc.descendants().filter(|n| is_gradient(n)) {
+        for (idx, node) in gradient.children().enumerate() {
             if !node.has_attribute(AId::Offset) {
                 if idx == 0 {
                     // Allow first stop to not have an offset.

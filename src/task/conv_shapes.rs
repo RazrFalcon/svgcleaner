@@ -23,7 +23,7 @@
 use super::short::{EId, AId, Unit};
 
 use svgdom::{Document, Node, Attribute, AttributeValue};
-use svgdom::types::{Length, NumberList};
+use svgdom::types::{Length};
 use svgdom::types::path;
 
 // TODO: convert thin rect to line-to path
@@ -34,17 +34,18 @@ use svgdom::types::path;
 /// We should run it before path processing.
 pub fn convert_shapes_to_paths(doc: &Document) {
     for node in doc.descendants() {
+        // descendants() iterates only over svg elements, which all have a tag name
         match node.tag_id().unwrap() {
-            EId::Line => convert_line(node.clone()),
-            EId::Rect => convert_rect(node.clone()),
-            EId::Polyline => convert_polyline(node.clone()),
-            EId::Polygon => convert_polygon(node.clone()),
+            EId::Line => convert_line(&node),
+            EId::Rect => convert_rect(&node),
+            EId::Polyline => convert_polyline(&node),
+            EId::Polygon => convert_polygon(&node),
             _ => {}
         }
     }
 }
 
-fn convert_line(node: Node) {
+fn convert_line(node: &Node) {
     debug_assert!(node.is_tag_id(EId::Line));
 
     {
@@ -54,10 +55,11 @@ fn convert_line(node: Node) {
 
         let mut path = path::Builder::new();
         {
-            let x1 = attrs.get_or(AId::X1, &def_value).as_length().unwrap();
-            let y1 = attrs.get_or(AId::Y1, &def_value).as_length().unwrap();
-            let x2 = attrs.get_or(AId::X2, &def_value).as_length().unwrap();
-            let y2 = attrs.get_or(AId::Y2, &def_value).as_length().unwrap();
+            // unwrap is safe, because coordinates must have a Length type
+            let x1 = attrs.get_value_or(AId::X1, &def_value).as_length().unwrap();
+            let y1 = attrs.get_value_or(AId::Y1, &def_value).as_length().unwrap();
+            let x2 = attrs.get_value_or(AId::X2, &def_value).as_length().unwrap();
+            let y2 = attrs.get_value_or(AId::Y2, &def_value).as_length().unwrap();
 
             // We can't convert line with non-pixel coordinates.
             // Unit will newer be Px, since we disable it globally via ParseOptions.
@@ -78,7 +80,7 @@ fn convert_line(node: Node) {
     node.remove_attributes(&[AId::X1, AId::Y1, AId::X2, AId::Y2]);
 }
 
-fn convert_rect(node: Node) {
+fn convert_rect(node: &Node) {
     debug_assert!(node.is_tag_id(EId::Rect));
 
     let path;
@@ -86,8 +88,9 @@ fn convert_rect(node: Node) {
         let attrs = node.attributes();
         let def_value = AttributeValue::from(Length::new(0.0, Unit::None));
 
-        let rx = attrs.get_or(AId::Rx, &def_value).as_length().unwrap();
-        let ry = attrs.get_or(AId::Ry, &def_value).as_length().unwrap();
+        // unwrap is safe, because coordinates must have a Length type
+        let rx = attrs.get_value_or(AId::Rx, &def_value).as_length().unwrap();
+        let ry = attrs.get_value_or(AId::Ry, &def_value).as_length().unwrap();
 
         // we converts only simple rects, not rounded,
         // because their path will be longer
@@ -95,16 +98,18 @@ fn convert_rect(node: Node) {
             return;
         }
 
-        let w = attrs.get_or(AId::Width, &def_value).as_length().unwrap();
-        let h = attrs.get_or(AId::Height, &def_value).as_length().unwrap();
+        // unwrap is safe, because coordinates must have a Length type
+        let w = attrs.get_value_or(AId::Width, &def_value).as_length().unwrap();
+        let h = attrs.get_value_or(AId::Height, &def_value).as_length().unwrap();
 
         // If values equals to zero than the rect is invisible. Skip it.
         if w.num == 0.0 || h.num == 0.0 {
             return;
         }
 
-        let x = attrs.get_or(AId::X, &def_value).as_length().unwrap();
-        let y = attrs.get_or(AId::Y, &def_value).as_length().unwrap();
+        // unwrap is safe, because coordinates must have a Length type
+        let x = attrs.get_value_or(AId::X, &def_value).as_length().unwrap();
+        let y = attrs.get_value_or(AId::Y, &def_value).as_length().unwrap();
 
         if !(x.unit == Unit::None && y.unit == Unit::None &&
              w.unit == Unit::None && h.unit == Unit::None) {
@@ -127,7 +132,7 @@ fn convert_rect(node: Node) {
     node.remove_attributes(&[AId::X, AId::Y, AId::Rx, AId::Ry, AId::Width, AId::Height]);
 }
 
-fn convert_polyline(node: Node) {
+fn convert_polyline(node: &Node) {
     debug_assert!(node.is_tag_id(EId::Polyline));
 
     let path = match points_to_path(&node) {
@@ -141,7 +146,7 @@ fn convert_polyline(node: Node) {
     node.remove_attribute(AId::Points);
 }
 
-fn convert_polygon(node: Node) {
+fn convert_polygon(node: &Node) {
     debug_assert!(node.is_tag_id(EId::Polygon));
 
     let mut path = match points_to_path(&node) {
@@ -158,22 +163,21 @@ fn convert_polygon(node: Node) {
 }
 
 fn points_to_path(node: &Node) -> Option<path::Path> {
-    // TODO: point count must be even
+    let mut path = path::Path::new();
 
-    let def_value = AttributeValue::from(NumberList::new());
+    let attrs = node.attributes();
 
-    // let attrs_obj = node.attributes();
-    // let attrs = attrs_obj.borrow();
-    let attrs = node.attributes_mut();
-
-    let points_value = attrs.get_or(AId::Points, &def_value);
-    let points = points_value.as_number_list().unwrap();
-
-    if points.is_empty() {
+    let points;
+    if let Some(v) = attrs.get_value(AId::Points) {
+        // unwrap is safe, because coordinates must have a NumberList type
+        points = v.as_number_list().unwrap();
+    } else {
         return None;
     }
 
-    let mut path = path::Path::new();
+    // points with an odd count of coordinates must be fixed in fix_attrs::fix_poly
+    debug_assert!(points.len() % 2 == 0);
+
     let mut i = 0;
     while i < points.len() {
         let seg = if i == 0 {

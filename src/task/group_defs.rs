@@ -26,7 +26,7 @@ use svgdom::{Document, Node, AttributeValue};
 
 pub fn group_defs(doc: &Document) {
     // doc must contain 'svg' node, so we can safely unwrap
-    let svg = doc.root().child_by_tag_id(EId::Svg).unwrap();
+    let svg = doc.svg_element().unwrap();
 
     let defs = match doc.root().child_by_tag_id(EId::Defs) {
         Some(n) => n,
@@ -43,8 +43,10 @@ pub fn group_defs(doc: &Document) {
         let mut nodes = Vec::new();
         for node in doc.descendants() {
             if node.is_referenced() {
-                if node.parent().unwrap() != defs {
-                    nodes.push(node.clone());
+                if let Some(parent) = node.parent() {
+                    if parent != defs {
+                        nodes.push(node.clone());
+                    }
                 }
             }
         }
@@ -112,6 +114,7 @@ fn resolve_attrs(node: &Node) {
                         match attr.value {
                               AttributeValue::Link(ref link)
                             | AttributeValue::FuncLink(ref link) => {
+                                // if it's fail - it's already a huge problem, so unwrap is harmless
                                 child.set_link_attribute(attr.id, link.clone()).unwrap();
                             }
                             _ => child.set_attribute_object(attr.clone()),

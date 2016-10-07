@@ -18,7 +18,6 @@
   * [Downloads](#downloads)
   * [Contributing and Issues](#contributing-and-issues)
   * [FAQ](#faq)
-  * [Roadmap](#roadmap)
   * [License](#license)
 
 ## Purpose
@@ -124,68 +123,6 @@ You can get a prebuild packages [here](https://github.com/RazrFalcon/svgcleaner-
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## [FAQ](FAQ.md)
-
-## Roadmap
-V0.7
- - [x] Remove text-related attributes if there is no text.
- - [x] Ungroup groups.
- - [x] Remove duplicated defs:
-   - [x] `linearGradient`
-   - [x] `radialGradient`
-   - [x] `feGaussianBlur`
- - [x] Remove invisible elements.
-   - [x] Invisible elements inside the `clipPath`.
- - [ ] Remove needless attributes.
-   - [x] Remove attributes which does not belong to this element.
-     - [x] Basic shapes
-   - [x] Remove presentational attributes from elements inside `clipPath`.
-   - [ ] Remove `stroke-linecap` if the path is closed.
-   - [x] Remove `fill`-based attributes where there is no `fill`.
-   - [x] Remove `stroke`-based attributes where there is no `stroke`.
- - [x] Group elements by style attributes.
-   - [x] Move to group if all attributes are equal
- - [x] Remove `version` attribute.
- - [x] Merge gradients.
- - [ ] Apply transforms to:
-   - [ ] shapes
-   - [x] gradients
- - [ ] Replace equal elements by `use`:
-   - [ ] `path`
-   - [ ] Basic shapes
- - [ ] Group text styles.
- - [ ] Process paths:
-    - [x] segments to relative
-    - [x] remove ClosePath segments
-    - [x] remove unneeded MoveTo segments
-    - [ ] convert segments into shorter one
-    - [ ] join line-based segments
- - [ ] Join sequential paths.
- - [x] Join presentational attributes.
- - [x] Process `enable-background`.
- - [x] Remove duplicated `stop` elements.
- - [x] Ungroup `defs` element.
- - [ ] Regroup elements by styles.
- - [ ] Test more files.
- - [ ] Test files using all possible cleaning options combinations.
- - [ ] Performance optimizations.
-
-V0.8
- - [ ] Convert units using specified DPI.
- - [ ] Numbers comparing using custom precision.
- - [ ] Simplify paths. Something like Inkscape's 'Simplify', but lossless.
-       Have no idea how to make it. Hints [here](https://pomax.github.io/bezierinfo/#bsplines).
- - [ ] Remove elements covered by other elements.
- - [ ] Apply transforms to paths. Disabled by default, because it usually increase the file size.
- - [ ] Replace groups with `use`.
- - [ ] Detect equal subpaths and replace them with `use`.
- - [ ] Implement gradients processing as a single unit.
- - [ ] Remove elements outside the viewbox. Very expensive and mostly useless.
- - [ ] Contextual numbers rounding. Details [here](FAQ.md#can-you-add-an-option-to-specify-a-numeric-precision).
- - [ ] Resolve `use`.
- - [ ] Test not only against webkit.
- - [ ] Unix pipes.
-
-Note, that master branch is pretty stable and ready to use.
 
 ## License
 

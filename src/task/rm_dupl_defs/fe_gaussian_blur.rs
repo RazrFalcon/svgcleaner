@@ -73,8 +73,8 @@ pub fn remove_dupl_fe_gaussian_blur(doc: &Document) {
         nodes.push(node.clone());
     }
 
-    super::rm_loop(&mut nodes, |ref node1, ref node2| {
-        if !is_attrs_equal(&node1, &node2, &filter_attrs) {
+    super::rm_loop(&mut nodes, |node1, node2| {
+        if !is_attrs_equal(node1, node2, &filter_attrs) {
             return false;
         }
 

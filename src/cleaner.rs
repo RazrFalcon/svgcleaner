@@ -78,7 +78,7 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
     if get_flag!(args, Key::ApplyTransformToGradients) {
         // Apply transform to gradients before processing to simplify duplicates
         // detecting and merging.
-        apply_transforms::apply_transform_to_gradients(&doc);
+        apply_transforms::apply_transform_to_gradients(doc);
     }
 
     if get_flag!(args, Key::RemoveDuplLinearGradients) {
@@ -99,7 +99,7 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
 
     if get_flag!(args, Key::ApplyTransformToGradients) {
         // Do it again, because something may changed after gradient processing.
-        apply_transforms::apply_transform_to_gradients(&doc);
+        apply_transforms::apply_transform_to_gradients(doc);
     }
 
     if get_flag!(args, Key::ConvertShapes) {

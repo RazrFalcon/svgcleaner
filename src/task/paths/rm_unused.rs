@@ -20,7 +20,10 @@
 **
 ****************************************************************************/
 
+// TODO: split to submodules and suboptions
+
 use svgdom::types::path::{Path, Segment, SegmentData, Command};
+use svgdom::types::FuzzyEq;
 
 pub fn remove_unused_segments(path: &mut Path) {
     // repeat until we have any changes
@@ -122,7 +125,7 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
             if is_line_based(prev_cmd) {
                 let x = resolve_x(path, prev_i);
                 let y = resolve_y(path, prev_i);
-                if mx == x && my == y {
+                if mx.fuzzy_eq(&x) && my.fuzzy_eq(&y) {
                     // remove this line-based segment
                     path.d.remove(prev_i);
                     i -= 1;
@@ -141,7 +144,7 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
             if is_line_based(prev_cmd) {
                 let x = resolve_x(path, prev_i);
                 let y = resolve_y(path, prev_i);
-                if mx == x && my == y {
+                if mx.fuzzy_eq(&x) && my.fuzzy_eq(&y) {
                     // replace line-based segment with ClosePath.
                     path.d[prev_i] = Segment::new_close_path();
                     *is_changed = true;
@@ -222,10 +225,10 @@ fn convert_segments(path: &mut Path, is_changed: &mut bool) {
         let curr_seg = &mut path.d[i];
         match *curr_seg.data() {
             SegmentData::LineTo { x, y } => {
-                if prev_x == x && prev_y != y {
+                if prev_x.fuzzy_eq(&x) && prev_y.fuzzy_ne(&y) {
                     *curr_seg = Segment::new_vline_to(y);
                     *is_changed = true;
-                } else if prev_x != x && prev_y == y {
+                } else if prev_x.fuzzy_ne(&x) && prev_y.fuzzy_eq(&y) {
                     *curr_seg = Segment::new_hline_to(x);
                     *is_changed = true;
                 }

@@ -23,6 +23,7 @@
 use super::short::{EId, AId};
 
 use svgdom::{Document, Node, AttributeValue, ValueId};
+use svgdom::types::FuzzyEq;
 
 // TODO: process mask element
 // TODO: process visibility
@@ -234,7 +235,7 @@ fn process_gradients(doc: &Document) {
             for link in n.linked_nodes() {
                 while let Some(aid) = link.find_reference_attribute(&n) {
                     link.set_attribute(aid, color);
-                    if opacity != 1.0 {
+                    if opacity.fuzzy_ne(&1.0) {
                         match aid {
                             AId::Fill => link.set_attribute(AId::FillOpacity, opacity),
                             AId::Stroke => link.set_attribute(AId::StrokeOpacity, opacity),

@@ -156,7 +156,7 @@ fn group_to_parent(doc: &Document) {
 
         if let Some(v) = node.attribute_value(AId::GradientUnits) {
             if v == AttributeValue::PredefValue(ValueId::ObjectBoundingBox) {
-                make_attr_invisible(&node, AId::GradientUnits);
+                make_attr_invisible(node, AId::GradientUnits);
             }
         }
     }

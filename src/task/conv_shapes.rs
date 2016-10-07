@@ -135,7 +135,7 @@ fn convert_rect(node: &Node) {
 fn convert_polyline(node: &Node) {
     debug_assert!(node.is_tag_id(EId::Polyline));
 
-    let path = match points_to_path(&node) {
+    let path = match points_to_path(node) {
         Some(p) => p,
         None => return,
     };
@@ -149,7 +149,7 @@ fn convert_polyline(node: &Node) {
 fn convert_polygon(node: &Node) {
     debug_assert!(node.is_tag_id(EId::Polygon));
 
-    let mut path = match points_to_path(&node) {
+    let mut path = match points_to_path(node) {
         Some(p) => p,
         None => return,
     };

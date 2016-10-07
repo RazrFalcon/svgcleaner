@@ -202,7 +202,7 @@
         },
         {
             "name": "actions/small/22x22/view-calendar-time-spent.svg",
-            "valid_ae": 496
+            "valid_ae": 518
         },
         {
             "name": "actions/small/22x22/edit-redo.svg",
@@ -210,7 +210,7 @@
         },
         {
             "name": "actions/small/22x22/view-ldap-resource.svg",
-            "valid_ae": 457
+            "valid_ae": 470
         },
         {
             "name": "actions/small/22x22/window-duplicate.svg",
@@ -428,6 +428,22 @@
         {
             "name": "actions/small/22x22/view-pim-mail.svg",
             "valid_ae": 887
+        },
+        {
+            "name": "places/mail-folder-sent.svg",
+            "valid_ae": 509
+        },
+        {
+            "name": "places/small/32x32/mail-message.svg",
+            "valid_ae": 412
+        },
+        {
+            "name": "actions/small/22x22/view-calendar-journal.svg",
+            "valid_ae": 949
+        },
+        {
+            "name": "actions/small/32x32/mail-mark-unread.svg",
+            "valid_ae": 412
         }
     ],
     "ignore": [

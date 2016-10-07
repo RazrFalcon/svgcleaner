@@ -39,7 +39,7 @@ pub fn remove_dupl_radial_gradients(doc: &Document) {
                        .filter(|n| n.is_tag_id(EId::RadialGradient))
                        .collect::<Vec<Node>>();
 
-    super::rm_loop(&mut nodes, |ref node1, ref node2| {
+    super::rm_loop(&mut nodes, |node1, node2| {
         if !super::is_gradient_attrs_equal(node1, node2, &attrs) {
             return false;
         }

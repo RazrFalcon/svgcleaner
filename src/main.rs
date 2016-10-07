@@ -43,7 +43,6 @@ macro_rules! try_msg {
 
 fn main() {
     let app = prepare_app();
-
     let args = match app.get_matches_safe() {
         Ok(a) => a,
         Err(mut e) => {

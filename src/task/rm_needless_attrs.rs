@@ -203,21 +203,18 @@ fn process_stroke(node: &Node) {
                 }
             }
         } else {
-            match node.attribute_value(AId::Stroke) {
-                Some(v) => {
-                    if v == AttributeValue::PredefValue(ValueId::None) {
-                        // remove all stroke-based attributes, except 'stroke' itself,
-                        // if the stroke is 'none'
-                        node.remove_attributes(STROKE_ATTRIBUTES);
+            if let Some(v) = node.attribute_value(AId::Stroke) {
+                if v == AttributeValue::PredefValue(ValueId::None) {
+                    // remove all stroke-based attributes, except 'stroke' itself,
+                    // if the stroke is 'none'
+                    node.remove_attributes(STROKE_ATTRIBUTES);
 
-                        // if the parent element doesn't define 'stroke' - we can remove it
-                        // from the current element
-                        if node.parent_attribute(AId::Stroke).is_none() {
-                            node.remove_attribute(AId::Stroke);
-                        }
+                    // if the parent element doesn't define 'stroke' - we can remove it
+                    // from the current element
+                    if node.parent_attribute(AId::Stroke).is_none() {
+                        node.remove_attribute(AId::Stroke);
                     }
                 }
-                None => {},
             }
         }
     }

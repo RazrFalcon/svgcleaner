@@ -362,6 +362,8 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
                 .arg("--indent=2")
                 .arg("--copy-on-error=true")
                 .arg("--quiet=true")
+                .arg("--remove-gradient-attributes=true")
+                .arg("--join-arcto-flags=true")
                 .arg("--remove-unreferenced-ids=false")
                 .arg("--trim-ids=false")
                 .output();

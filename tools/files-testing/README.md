@@ -34,6 +34,7 @@ stats \
  - https://github.com/GreenRaccoon23/archdroid-icon-theme
  - https://github.com/elementary/icons
  - https://wiki.ubuntu.com/Artwork/Incoming/Karmic/Humanity_Icons?action=AttachFile&do=view&target=humanity_2.1.tar.gz
+ - https://github.com/NitruxSA/ardis-icon-theme
 
 ## Convert svgz to svg
 

@@ -20,11 +20,11 @@
 **
 ****************************************************************************/
 
+use std::ops::Index;
+
 use clap::{Arg, App, ArgMatches};
 
 use svgdom::{ParseOptions, WriteOptions, ElementId};
-
-use std::ops::Index;
 
 #[derive(Clone,Copy)]
 pub enum Key {

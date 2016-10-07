@@ -6,10 +6,11 @@
 
   * [Purpose](#purpose)
   * [Goals](#goals)
-    * [Charts](#charts)
-      * [Correctness](#correctness)
-      * [Cleaning ratio](#cleaning-ratio)
-      * [Cleaning time](#cleaning-time)
+  * [Alternatives](#alternatives)
+  * [Charts](#charts)
+    * [Correctness](#correctness)
+    * [Cleaning ratio](#cleaning-ratio)
+    * [Cleaning time](#cleaning-time)
   * [Limitations](#limitations)
   * [Building](#building)
   * [Usage](#usage)
@@ -37,14 +38,25 @@ Usually, more than half of an SVG image data is useless for rendering:
 1. **Cleaning ratio.** More is better.
 1. **Performance.** An average SVG file processing time should be closer to ~1ms on a modern PC.
 
-### Charts
+## Alternatives
 
-There are only one alternative to svgcleaner - [svgo](https://github.com/svg/svgo),
-so we will compare with it.
+There are only one real alternative to the *svgcleaner* - [svgo](https://github.com/svg/svgo).
+
+Despite obvious advantages of the *svgcleaner*, like correctness, cleaning ratio and performance,
+which is shown bellow, there are some more nuances:
+
+1. *svgcleaner* cleans only one SVG file. It doesn't process SVGZ files.
+   It doesn't process directories. It doesn't do anything else. Just one task*.
+1. *svgcleaner* is strictly lossless. There are no destructing cleaning options and never will be.
+1. *svgcleaner* is portable. You can build it into single executable without any external dependency.
+
+\* You can get all of this features using [GUI](https://github.com/RazrFalcon/svgcleaner-gui).
+
+## Charts
 
 See ['Testing notes'](docs/testing_notes.rst) for details.
 
-#### Correctness
+### Correctness
 
 *Less is better.*
 
@@ -54,7 +66,7 @@ See ['Testing notes'](docs/testing_notes.rst) for details.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.91/docs/images/correctness_chart_oxygen.svg)
 
-#### Cleaning ratio
+### Cleaning ratio
 
 *More is better.*
 
@@ -65,7 +77,7 @@ of the files - it's pointless.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.91/docs/images/ratio_chart_oxygen.svg)
 
-#### Cleaning time
+### Cleaning time
 
 *Less is better.*
 

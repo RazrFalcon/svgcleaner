@@ -25,6 +25,7 @@ struct Data<'a> {
     threshold: u8,
     input_dir: &'a str,
     orig_pngs_dir: &'a str,
+    broken_imgs_dir: &'a str,
 }
 
 struct TotalStats {
@@ -110,6 +111,7 @@ fn main() {
         .get_matches();
 
     let orig_pngs = Path::new(m.value_of("workdir").unwrap()).join("orig_pngs");
+    let broken_imgs = Path::new(m.value_of("workdir").unwrap()).join("broken_imgs");
     let input_dir = m.value_of("input-data").unwrap();
 
     let p = Path::new("../svgrender/svgrender");
@@ -130,10 +132,12 @@ fn main() {
         threshold: value_t!(m, "threshold", u8).unwrap(),
         input_dir: input_dir,
         orig_pngs_dir: orig_pngs.to_str().unwrap(),
+        broken_imgs_dir: broken_imgs.to_str().unwrap(),
     };
 
     create_dir(&data.work_dir);
     create_dir(&data.orig_pngs_dir);
+    create_dir(&data.broken_imgs_dir);
 
     let cleaner_path = m.value_of("cleaner").unwrap();
 
@@ -283,12 +287,17 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
                 let (w, h) = get_img_size(new_png_path_str);
                 let n = (v as f64 / (w * h) as f64) * 100.0;
                 is_successful = (n as u32) < (data.threshold as u32);
-                // if !is_successful {
-                //     println!("AE: {:.6}%", n);
-                // }
             }
         }
         None => is_successful = false,
+    }
+
+    if !is_successful {
+        let file_name = svg_path.file_stem().unwrap().to_str().unwrap().to_owned();
+        let file_name = file_name + ".png";
+        let join_img_path = Path::new(data.broken_imgs_dir).join(file_name);
+        let join_img_path_str = join_img_path.to_str().unwrap();
+        join_images(orig_png_path_str, new_png_path_str, diff_path_str, join_img_path_str);
     }
 
     stats.is_successful = is_successful;
@@ -484,4 +493,15 @@ fn detect_svgo_ver(exe_path: &str) -> Option<String> {
             return None;
         }
     }
+}
+
+fn join_images(orig_png: &str, cleaned_png: &str, diff_png: &str, out_png: &str) {
+    // convert orig.png cleaned.png diff.png +append out.png
+    Command::new("convert")
+        .arg(orig_png)
+        .arg(cleaned_png)
+        .arg(diff_png)
+        .arg("+append")
+        .arg(out_png)
+        .status().unwrap();
 }

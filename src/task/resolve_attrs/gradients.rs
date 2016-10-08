@@ -113,6 +113,7 @@ fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
                    .collect::<Vec<Node>>();
 
     let mut order = Vec::with_capacity(nodes.len());
+
     while order.len() != nodes.len() {
         for node in &nodes {
             if order.iter().any(|on| on == node) {

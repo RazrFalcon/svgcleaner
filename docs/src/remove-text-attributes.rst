@@ -1,5 +1,5 @@
-Remove unused text-related attributes
--------------------------------------
+Remove text-related attributes if there is no text
+--------------------------------------------------
 
 We can remove text-related attributes, when there is no text.
 

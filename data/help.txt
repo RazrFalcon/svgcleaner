@@ -12,7 +12,7 @@ Elements:
     --remove-comments <FLAG>                 Remove XML comments [default: true]
     --remove-declarations <FLAG>             Remove XML declarations [default: true]
     --remove-nonsvg-elements <FLAG>          Remove non-SVG elements [default: true]
-    --remove-unused-defs <FLAG>              Remove unused elements inside 'defs' element [default: true]
+    --remove-unused-defs <FLAG>              Remove unused referenced elements [default: true]
     --convert-shapes <FLAG>                  Convert basic shapes into paths [default: true]
     --remove-title <FLAG>                    Remove 'title' element [default: true]
     --remove-desc <FLAG>                     Remove 'desc' element [default: true]
@@ -21,7 +21,7 @@ Elements:
     --remove-dupl-radialgradient <FLAG>      Remove duplicated 'radialGradient' elements [default: true]
     --remove-dupl-fegaussianblur <FLAG>      Remove duplicated 'feGaussianBlur' elements [default: true]
     --ungroup-groups <FLAG>                  Ungroup groups [default: true]
-    --ungroup-defs <FLAG>                    Ungroup 'defs' elements [default: true]
+    --ungroup-defs <FLAG>                    Ungroup 'defs' element [default: true]
     --merge-gradients <FLAG>                 Merge gradients [default: true]
     --regroup-gradient-stops <FLAG>          Regroup gradient 'stop' elements [default: true]
     --remove-invalid-stops <FLAG>            Remove invalid 'stop' elements [default: true]
@@ -39,15 +39,15 @@ Attributes:
     --remove-needless-attributes <FLAG>      Remove attributes that doesn't belong to this element [default: true]
     --remove-gradient-attributes <FLAG>      Remove inheritable gradient attributes [default: false]
     --move-styles-to-group <FLAG>            Move presentational attributes to the parent group [default: true]
-    --join-style-attributes <FLAG>           Join presentational attributes when it's shorter [default: true]
+    --join-style-attributes <FLAG>           Join presentational attributes [default: true]
     --apply-transform-to-gradients <FLAG>    Apply transformations to gradients [default: true]
 
 Paths:
     --paths-to-relative <FLAG>               Convert path's segments into relative one [default: true]
     --remove-unused-segments <FLAG>          Remove unused path segments [default: true]
     --trim-paths <FLAG>                      Use compact notation for paths [default: true]
-    --remove-dupl-cmd-in-paths <FLAG>        Remove subsequent segments command from paths [default: true]
     --join-arcto-flags <FLAG>                Join ArcTo flags [default: false]
+    --remove-dupl-cmd-in-paths <FLAG>        Remove subsequent segments command from paths [default: true]
 
 Output:
     --trim-colors <FLAG>                     Use #RGB notation [default: true]

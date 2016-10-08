@@ -1,5 +1,5 @@
-Ungroup ``defs`` elements
--------------------------
+Ungroup ``defs`` element
+------------------------
 
 If the ``defs`` element contains only `referenced <https://www.w3.org/TR/SVG/struct.html#Head>`_
 elements - it can be ungrouped.

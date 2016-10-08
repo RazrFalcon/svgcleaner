@@ -211,7 +211,7 @@ fn process_gradients(doc: &Document) {
 
         for n in iter {
             for link in n.linked_nodes() {
-                while let Some(aid) = link.find_reference_attribute(&n) {
+                while let Some(aid) = find_link_attribute(&link, &n) {
                     link.set_attribute(aid, ValueId::None);
                 }
             }
@@ -233,7 +233,7 @@ fn process_gradients(doc: &Document) {
             let opacity = *stop.attribute_value(AId::StopOpacity).unwrap().as_number().unwrap();
 
             for link in n.linked_nodes() {
-                while let Some(aid) = link.find_reference_attribute(&n) {
+                while let Some(aid) = find_link_attribute(&link, &n) {
                     link.set_attribute(aid, color);
                     if opacity.fuzzy_ne(&1.0) {
                         match aid {
@@ -251,6 +251,23 @@ fn process_gradients(doc: &Document) {
     for n in nodes {
         n.remove();
     }
+}
+
+fn find_link_attribute(node: &Node, link: &Node) -> Option<AId> {
+    let attrs = node.attributes();
+
+    for attr in attrs.iter() {
+        match attr.value {
+            AttributeValue::Link(ref n) | AttributeValue::FuncLink(ref n) => {
+                if *n == *link {
+                    return Some(attr.id);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    None
 }
 
 // remove rect's with zero size

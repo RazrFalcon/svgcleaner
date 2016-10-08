@@ -73,7 +73,7 @@ See ['Testing notes'](docs/testing_notes.rst) for details.
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.91/docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg)
 
 \* And again, svgcleaner 0.6.2 is kinda superb, but since it breaks most
-of the files - it's pointless.
+of the files - it's pointless. Same goes for *svgo*.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.91/docs/images/ratio_chart_oxygen.svg)
 
@@ -84,6 +84,8 @@ of the files - it's pointless.
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.91/docs/images/performance_chart_W3C_SVG_11_TestSuite.svg)
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.6.91/docs/images/performance_chart_oxygen.svg)
+
+You can find more tests, with detailed explanations of errors, [here](docs/extended_testing.rst).
 
 ## Limitations
 

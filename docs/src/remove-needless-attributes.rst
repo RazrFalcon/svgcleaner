@@ -1,5 +1,5 @@
-Remove needless attributes
----------------------------
+Remove attributes that doesn't belong to this element
+-----------------------------------------------------
 
 Remove attributes that doesn't belong to current element and have no effect on rendering.
 

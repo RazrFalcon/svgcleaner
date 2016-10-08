@@ -14,14 +14,13 @@ stats \
       # one of: svgcleaner, svgcleaner-old, svgo
       --type=svgcleaner \
       --cleaner=/path_to_cleaner_exe \
-      # ../svgcleaner/tools/svgrender/
       # 2% (0..100)
       --threshold=2
 ```
 
 How to get results like in charts:
 ```bash
-# svgcleaner 0.6.9
+# svgcleaner 0.7.0
 stats \
     --workdir=/tmp/svg/ \
     --input-data=/path_to_svg_dir \

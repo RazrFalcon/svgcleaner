@@ -45,6 +45,8 @@ macro_rules! check_attr {
 fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
     where F : Fn(&Node, &Node) -> bool
 {
+    let mut link_attrs: Vec<(AId, Node)> = Vec::new();
+
     let mut len = nodes.len();
     let mut i1 = 0;
     while i1 < len {
@@ -59,10 +61,30 @@ fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
                 continue;
             }
 
+            // relink nodes
             for ln in node2.linked_nodes() {
-                if let Some(aid) = ln.find_reference_attribute(&node2) {
-                    // if it's fail - it's already a huge problem, so unwrap is harmless
-                    ln.set_link_attribute(aid, node1.clone()).unwrap();
+                {
+                    let attrs = ln.attributes();
+
+                    for attr in attrs.iter() {
+                        match attr.value {
+                            AttributeValue::Link(ref n) | AttributeValue::FuncLink(ref n) => {
+                                if *n == node2 {
+                                    link_attrs.push((attr.id, node1.clone()));
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+
+                if !link_attrs.is_empty() {
+                    for &(ref aid, ref n) in &link_attrs {
+                        if *ln.id() != *n.id() {
+                            ln.set_link_attribute(*aid, n.clone()).unwrap();
+                        }
+                    }
+                    link_attrs.clear();
                 }
             }
             node2.remove();

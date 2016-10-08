@@ -10,13 +10,7 @@ Remove XML comments
 
 We can remove all XML comments from SVG document since they are not rendered either way.
 
-**Note:** the `svgdom <https://github.com/RazrFalcon/libsvgdom>`_ library,
-which is used to process SVG file in the ``svgcleaner``,
-doesn't support comments inside attributes except ``style`` attribute,
-so they will be removed anyway.
-
-**Unsupported by:** librsvg <= 2.40.13 (it doesn't support comments inside attributes, so when we
-remove them image will be rendered differently)
+**Note:** all comments from the ``style`` attribute will be removed anyway.
 
 CLI argument: ``--remove-comments``
 
@@ -433,8 +427,8 @@ CLI argument: ``--ungroup-groups``
 .. |after-ungroup-groups| image:: https://razrfalcon.github.io/svgcleaner/images/after/ungroup-groups.svg
 
 
-Ungroup ``defs`` elements
--------------------------
+Ungroup ``defs`` element
+------------------------
 
 If the ``defs`` element contains only `referenced <https://www.w3.org/TR/SVG/struct.html#Head>`_
 elements - it can be ungrouped.
@@ -548,37 +542,6 @@ CLI argument: ``--regroup-gradient-stops``
 .. |after-regroup-gradient-stops| image:: https://razrfalcon.github.io/svgcleaner/images/after/regroup-gradient-stops.svg
 
 
-Remove invisible elements
--------------------------
-
-The collection of algorithms that detects invisible elements and removes them.
-
-**Unsupported by:** QtSvg <= 5.7
-
-CLI argument: ``--remove-invisible-elements``
-
-+------------------------------------------------+--------------------------------------+
-| Before (336b)                                  | After (174b)                         |
-+------------------------------------------------+--------------------------------------+
-| .. code-block:: XML                            | .. code-block:: XML                  |
-|                                                |                                      |
-|   <svg>                                        |   <svg>                              |
-|     <linearGradient id="lg1"/>                 |     <circle fill="green"             |
-|     <clipPath id="cp1"/>                       |             cx="50" cy="50" r="45"/> |
-|     <circle fill="green"                       |   </svg>                             |
-|             cx="50" cy="50" r="45"/>           |                                      |
-|     <circle fill="green" clip-path="url(#cp1)" |                                      |
-|             stroke="url(#lg1)"                 |                                      |
-|             cx="100" cy="50" r="45"/>          |                                      |
-|   </svg>                                       |                                      |
-+------------------------------------------------+--------------------------------------+
-| |before-remove-invisible-elements|             | |after-remove-invisible-elements|    |
-+------------------------------------------------+--------------------------------------+
-
-.. |before-remove-invisible-elements| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-invisible-elements.svg
-.. |after-remove-invisible-elements| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-invisible-elements.svg
-
-
 Remove invalid ``stop`` elements
 --------------------------------
 
@@ -613,11 +576,42 @@ CLI argument: ``--remove-invalid-stops``
 .. |after-remove-invalid-stops| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-invalid-stops.svg
 
 
+Remove invisible elements
+-------------------------
+
+The collection of algorithms that detects invisible elements and removes them.
+
+**Unsupported by:** QtSvg <= 5.7
+
+CLI argument: ``--remove-invisible-elements``
+
++------------------------------------------------+--------------------------------------+
+| Before (336b)                                  | After (174b)                         |
++------------------------------------------------+--------------------------------------+
+| .. code-block:: XML                            | .. code-block:: XML                  |
+|                                                |                                      |
+|   <svg>                                        |   <svg>                              |
+|     <linearGradient id="lg1"/>                 |     <circle fill="green"             |
+|     <clipPath id="cp1"/>                       |             cx="50" cy="50" r="45"/> |
+|     <circle fill="green"                       |   </svg>                             |
+|             cx="50" cy="50" r="45"/>           |                                      |
+|     <circle fill="green" clip-path="url(#cp1)" |                                      |
+|             stroke="url(#lg1)"                 |                                      |
+|             cx="100" cy="50" r="45"/>          |                                      |
+|   </svg>                                       |                                      |
++------------------------------------------------+--------------------------------------+
+| |before-remove-invisible-elements|             | |after-remove-invisible-elements|    |
++------------------------------------------------+--------------------------------------+
+
+.. |before-remove-invisible-elements| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-invisible-elements.svg
+.. |after-remove-invisible-elements| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-invisible-elements.svg
+
+
 Attributes
 ==========
 
-Remove version
---------------
+Remove ``version`` and ``baseProfile`` attributes
+------------------------------------------------
 
 Remove ``version`` and ``baseProfile`` attributes from the ``svg`` element.
 
@@ -739,8 +733,8 @@ CLI argument: ``--trim-ids``
 .. |after-trim-ids| image:: https://razrfalcon.github.io/svgcleaner/images/after/trim-ids.svg
 
 
-Remove unused text-related attributes
--------------------------------------
+Remove text-related attributes if there is no text
+--------------------------------------------------
 
 We can remove text-related attributes, when there is no text.
 
@@ -851,8 +845,8 @@ CLI argument: ``--remove-xmlns-xlink-attribute``
 .. |after-remove-xmlns-xlink-attribute| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-xmlns-xlink-attribute.svg
 
 
-Remove needless attributes
----------------------------
+Remove attributes that doesn't belong to this element
+-----------------------------------------------------
 
 Remove attributes that doesn't belong to current element and have no effect on rendering.
 
@@ -962,8 +956,8 @@ CLI argument: ``--move-styles-to-group``
 .. |after-move-styles-to-group| image:: https://razrfalcon.github.io/svgcleaner/images/after/move-styles-to-group.svg
 
 
-Join presentational attributes when it's shorter
-------------------------------------------------
+Join presentational attributes
+------------------------------
 
 SVG presentation attributes can be set via separated attributes and via ``style`` attribute.
 If we have less than 5 presentation attributes - it's better to store them separately.
@@ -1089,32 +1083,6 @@ CLI argument: ``--trim-paths``
 .. |after-trim-paths| image:: https://razrfalcon.github.io/svgcleaner/images/after/trim-paths.svg
 
 
-Remove subsequent segments command from paths
----------------------------------------------
-
-If path segment has the same type as previous - we can skip command specifier.
-
-CLI argument: ``--remove-dupl-cmd-in-paths``
-
-+--------------------------------------+------------------------------------+
-| Before (241b)                        | After (235b)                       |
-+--------------------------------------+------------------------------------+
-| .. code-block:: XML                  | .. code-block:: XML                |
-|                                      |                                    |
-|   <svg>                              |   <svg>                            |
-|     <path d="M 10 10 L 90 10 L 90 90 |     <path d="M 10 10 L 90 10 90 90 |
-|              L 10 90 L 10 10 z"      |              10 90 10 10 z"        |
-|           fill="none" stroke="red"   |           fill="none" stroke="red" |
-|           stroke-width="2"/>         |           stroke-width="2"/>       |
-|   </svg>                             |   </svg>                           |
-+--------------------------------------+------------------------------------+
-| |before-remove-dupl-cmd-in-paths|    | |after-remove-dupl-cmd-in-paths|   |
-+--------------------------------------+------------------------------------+
-
-.. |before-remove-dupl-cmd-in-paths| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-dupl-cmd-in-paths.svg
-.. |after-remove-dupl-cmd-in-paths| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-dupl-cmd-in-paths.svg
-
-
 Join ArcTo flags
 ----------------
 
@@ -1142,6 +1110,32 @@ CLI argument: ``--join-arcto-flags``
 
 .. |before-join-arcto-flags| image:: https://razrfalcon.github.io/svgcleaner/images/before/join-arcto-flags.svg
 .. |after-join-arcto-flags| image:: https://razrfalcon.github.io/svgcleaner/images/after/join-arcto-flags.svg
+
+
+Remove subsequent segments command from paths
+---------------------------------------------
+
+If path segment has the same type as previous - we can skip command specifier.
+
+CLI argument: ``--remove-dupl-cmd-in-paths``
+
++--------------------------------------+------------------------------------+
+| Before (241b)                        | After (235b)                       |
++--------------------------------------+------------------------------------+
+| .. code-block:: XML                  | .. code-block:: XML                |
+|                                      |                                    |
+|   <svg>                              |   <svg>                            |
+|     <path d="M 10 10 L 90 10 L 90 90 |     <path d="M 10 10 L 90 10 90 90 |
+|              L 10 90 L 10 10 z"      |              10 90 10 10 z"        |
+|           fill="none" stroke="red"   |           fill="none" stroke="red" |
+|           stroke-width="2"/>         |           stroke-width="2"/>       |
+|   </svg>                             |   </svg>                           |
++--------------------------------------+------------------------------------+
+| |before-remove-dupl-cmd-in-paths|    | |after-remove-dupl-cmd-in-paths|   |
++--------------------------------------+------------------------------------+
+
+.. |before-remove-dupl-cmd-in-paths| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-dupl-cmd-in-paths.svg
+.. |after-remove-dupl-cmd-in-paths| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-dupl-cmd-in-paths.svg
 
 
 Output
@@ -1198,8 +1192,8 @@ CLI argument: ``--simplify-transforms``
 .. |after-simplify-transforms| image:: https://razrfalcon.github.io/svgcleaner/images/after/simplify-transforms.svg
 
 
-XML Indent
-----------
+Sets XML nodes indent
+---------------------
 
 Set indent for XML nodes. Values between 0 and 4 indicate the number of indent spaces.
 The value of ``-1`` indicates no indent.

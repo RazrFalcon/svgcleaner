@@ -1,5 +1,5 @@
-Remove version
---------------
+Remove ``version`` and ``baseProfile`` attributes
+------------------------------------------------
 
 Remove ``version`` and ``baseProfile`` attributes from the ``svg`` element.
 

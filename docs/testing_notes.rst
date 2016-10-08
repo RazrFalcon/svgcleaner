@@ -38,6 +38,12 @@ There are lots of examples (which is not categorized yet):
 
 And again - such artifacts is not an error.
 
+A fixed file
+------------
+
+Some images, after cleaning, may render differently, but in a better way. It's because
+modifications made them simpler to render. Such "differences" is not treated as errors.
+
 A bigger file
 -------------
 

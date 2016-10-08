@@ -26,7 +26,6 @@ use task::resolve_attrs;
 use svgdom::{Document, Node};
 
 pub fn regroup_gradient_stops(doc: &Document) {
-
     let mut nodes: Vec<Node> = doc.descendants()
         .filter(|n| n.is_tag_id(EId::LinearGradient) || n.is_tag_id(EId::RadialGradient))
         .filter(|n| n.has_children())
@@ -35,13 +34,12 @@ pub fn regroup_gradient_stops(doc: &Document) {
 
     let mut is_changed = false;
     let mut join_nodes = Vec::new();
-    let mut len = nodes.len();
     let mut i1 = 0;
-    while i1 < len {
+    while i1 < nodes.len() {
         let node1 = nodes[i1].clone();
 
         let mut i2 = i1 + 1;
-        while i2 < len {
+        while i2 < nodes.len() {
             let node2 = nodes[i2].clone();
             i2 += 1;
 
@@ -50,7 +48,6 @@ pub fn regroup_gradient_stops(doc: &Document) {
 
                 nodes.remove(i2 - 1);
                 i2 -= 1;
-                len -= 1;
             }
         }
 

@@ -63,8 +63,8 @@ pub enum Key {
     PathsToRelative,
     RemoveUnusedSegments,
     TrimPaths,
-    RemoveDuplCmdInPaths,
     JoinArcToFlags,
+    RemoveDuplCmdInPaths,
 
     TrimColors,
     SimplifyTransforms,
@@ -121,8 +121,8 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "paths-to-relative",
     "remove-unused-segments",
     "trim-paths",
-    "remove-dupl-cmd-in-paths",
     "join-arcto-flags",
+    "remove-dupl-cmd-in-paths",
 
     "trim-colors",
     "simplify-transforms",
@@ -190,7 +190,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     a = a.arg(gen_flag!(Key::UngroupGroups,
             "Ungroup groups", "true"));
     a = a.arg(gen_flag!(Key::UngroupDefs,
-            "Ungroup 'defs' elements", "true"));
+            "Ungroup 'defs' element", "true"));
     a = a.arg(gen_flag!(Key::MergeGradients,
             "Merge gradients", "true"));
     a = a.arg(gen_flag!(Key::RegroupGradientStops,
@@ -235,10 +235,10 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Remove unused path segments", "true"));
     a = a.arg(gen_flag!(Key::TrimPaths,
             "Use compact notation for paths", "true"));
-    a = a.arg(gen_flag!(Key::RemoveDuplCmdInPaths,
-            "Remove subsequent segments command from paths", "true"));
     a = a.arg(gen_flag!(Key::JoinArcToFlags,
             "Join ArcTo flags", "false"));
+    a = a.arg(gen_flag!(Key::RemoveDuplCmdInPaths,
+            "Remove subsequent segments command from paths", "true"));
 
     // output
     a = a.arg(gen_flag!(Key::TrimColors,
@@ -352,7 +352,7 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     opt.paths.remove_duplicated_commands = get_flag!(args, Key::RemoveDuplCmdInPaths);
     opt.paths.join_arc_to_flags = get_flag!(args, Key::JoinArcToFlags);
 
-    opt.transforms.simplify_matrix = get_flag!(args, Key::SimplifyTransforms);
+    opt.simplify_transform_matrices = get_flag!(args, Key::SimplifyTransforms);
 
     opt.remove_leading_zero = true;
 

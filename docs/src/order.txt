@@ -14,8 +14,8 @@ ungroup-groups.rst
 ungroup-defs.rst
 merge-gradients.rst
 regroup-gradient-stops.rst
-remove-invisible-elements.rst
 remove-invalid-stops.rst
+remove-invisible-elements.rst
 -- Attributes
 remove-version.rst
 remove-nonsvg-attributes.rst
@@ -34,8 +34,8 @@ apply-transform-to-gradients.rst
 paths-to-relative.rst
 remove-unused-segments.rst
 trim-paths.rst
-remove-dupl-cmd-in-paths.rst
 join-arcto-flags.rst
+remove-dupl-cmd-in-paths.rst
 -- Output
 trim-colors.rst
 simplify-transforms.rst

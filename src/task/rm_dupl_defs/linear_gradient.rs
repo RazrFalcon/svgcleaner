@@ -178,4 +178,14 @@ b"<svg>
     <rect fill='url(#lg2)'/>
 </svg>
 ");
+
+    test!(rm_6,
+b"<svg>
+    <linearGradient id='lg1' xlink:href='#lg2'/>
+    <linearGradient id='lg2'/>
+</svg>",
+"<svg>
+    <linearGradient id='lg1'/>
+</svg>
+");
 }

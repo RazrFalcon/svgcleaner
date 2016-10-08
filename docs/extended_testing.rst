@@ -8,15 +8,15 @@ Here we testing ``svgcleaner`` using ``tools/stats``.
 W3C SVG 1.1 TestSuite
 ---------------------
 
-```
-Files count: 525
-Files cleaned with serious errors: 1
-Files cleaned with any errors: 88
-Unchanged files: 228
-Size after/before: 2244463/3310597
-Cleaning ratio: 32.20%
-Cleaning time: 734.8ms total, 1.3996ms avg
-```
+::
+
+  Files count: 525
+  Files cleaned with serious errors: 1
+  Files cleaned with any errors: 88
+  Unchanged files: 228
+  Size after/before: 2244463/3310597
+  Cleaning ratio: 32.20%
+  Cleaning time: 734.8ms total, 1.3996ms avg
 
 Broken images:
 
@@ -25,15 +25,15 @@ Broken images:
 Oxygen icons theme 4.12
 -----------------------
 
-```
-Files count: 4941
-Files cleaned with serious errors: 28
-Files cleaned with any errors: 909
-Unchanged files: 2
-Size after/before: 506672479/1277145470
-Cleaning ratio: 60.33%
-Cleaning time: 36661.3ms total, 7.4198ms avg
-```
+::
+
+  Files count: 4941
+  Files cleaned with serious errors: 28
+  Files cleaned with any errors: 909
+  Unchanged files: 2
+  Size after/before: 506672479/1277145470
+  Cleaning ratio: 60.33%
+  Cleaning time: 36661.3ms total, 7.4198ms avg
 
 Broken images:
 
@@ -50,15 +50,15 @@ Breeze icons theme
 
 Version: https://github.com/KDE/breeze-icons/tree/4dbb0b3e7079028bde5a58a2d82678a1697776f0
 
-```
-Files count: 8282
-Files cleaned with serious errors: 4
-Files cleaned with any errors: 150
-Unchanged files: 30
-Size after/before: 11637706/22776691
-Cleaning ratio: 48.91%
-Cleaning time: 11507.5ms total, 1.3895ms avg
-```
+::
+
+  Files count: 8282
+  Files cleaned with serious errors: 4
+  Files cleaned with any errors: 150
+  Unchanged files: 30
+  Size after/before: 11637706/22776691
+  Cleaning ratio: 48.91%
+  Cleaning time: 11507.5ms total, 1.3895ms avg
 
 Broken images:
 
@@ -67,28 +67,28 @@ Broken images:
 Ardis icons theme
 -----------------
 
-```
-Files count: 1663
-Files cleaned with serious errors: 0
-Files cleaned with any errors: 21
-Unchanged files: 0
-Size after/before: 5485887/12396061
-Cleaning ratio: 55.74%
-Cleaning time: 2611.0ms total, 1.5700ms avg
-```
+::
+
+  Files count: 1663
+  Files cleaned with serious errors: 0
+  Files cleaned with any errors: 21
+  Unchanged files: 0
+  Size after/before: 5485887/12396061
+  Cleaning ratio: 55.74%
+  Cleaning time: 2611.0ms total, 1.5700ms avg
 
 Humanity icons theme 2.1
 ------------------------
 
-```
-Files count: 577
-Files cleaned with serious errors: 5
-Files cleaned with any errors: 357
-Unchanged files: 0
-Size after/before: 3231811/8979700
-Cleaning ratio: 64.01%
-Cleaning time: 1102.9ms total, 1.9114ms avg
-```
+::
+
+  Files count: 577
+  Files cleaned with serious errors: 5
+  Files cleaned with any errors: 357
+  Unchanged files: 0
+  Size after/before: 3231811/8979700
+  Cleaning ratio: 64.01%
+  Cleaning time: 1102.9ms total, 1.9114ms avg
 
 Broken images:
 
@@ -97,17 +97,17 @@ Broken images:
 Open Icon Library
 -----------------
 
-**NOTE:** we must remove ``symbols`` folder, because it contains mostly broken files.
+**Note:** we must remove ``symbols`` folder, because it contains mostly broken files.
 
-```
-Files count: 2574
-Files cleaned with serious errors: 11
-Files cleaned with any errors: 1032
-Unchanged files: 32
-Size after/before: 72819002/217532687
-Cleaning ratio: 66.53%
-Cleaning time: 9951.1ms total, 3.8660ms avg
-```
+::
+
+  Files count: 2574
+  Files cleaned with serious errors: 11
+  Files cleaned with any errors: 1032
+  Unchanged files: 32
+  Size after/before: 72819002/217532687
+  Cleaning ratio: 66.53%
+  Cleaning time: 9951.1ms total, 3.8660ms avg
 
 Broken images:
 
@@ -121,5 +121,5 @@ Notes
 
 - *Files cleaned with any errors* - is showing that file has at least one changed pixel.
 - *Unchanged files* - amount of files that was skipped during testing.
-   They was probably invalid, unsupported or bigger than original.
+  They was probably invalid, unsupported or bigger than original.
 - Links for all icon sets can be found in ``tools/files_testing/README.md``.

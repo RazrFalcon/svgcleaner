@@ -30,8 +30,8 @@ Oxygen icons theme 4.12
 ::
 
   Files count: 4941
-  Files cleaned with serious errors: 28
-  Files cleaned with any errors: 909
+  Files cleaned with serious errors: 26
+  Files cleaned with any errors: 907
   Unchanged files: 2
   Size after/before: 506672479/1277145470
   Cleaning ratio: 60.33%

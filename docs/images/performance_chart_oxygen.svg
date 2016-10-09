@@ -1,58 +1,54 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Generated with https://github.com/RazrFalcon/barh -->
-<svg height="181" shape-rendering="crispEdges" width="629" xmlns="http://www.w3.org/2000/svg">
-    <text font-family="Arial" font-size="16" font-weight="bold" x="143" y="16">
+<svg height="181" shape-rendering="crispEdges" width="622" xmlns="http://www.w3.org/2000/svg">
+    <text font-family="Arial" font-size="16" font-weight="bold" x="136" y="16">
         Average cleaning time in Oxygen icon theme
     </text>
     <text font-family="Arial" font-size="16" x="4" y="58">
-        svgcleaner 0.6.91
+        svgcleaner 0.7.0
     </text>
-    <text font-family="Arial" font-size="16" x="11" y="91">
+    <text font-family="Arial" font-size="16" x="4" y="91">
         svgcleaner 0.6.2
     </text>
-    <text font-family="Arial" font-size="16" x="55" y="124">
-        svgo 0.7.0
+    <text font-family="Arial" font-size="16" x="50" y="124">
+        svgo 0.7.1
     </text>
-    <rect fill="#ccc" height="110" width="1" x="143" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="128" y="154">
+    <rect fill="#ccc" height="110" width="1" x="136" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="121" y="154">
         0ms
     </text>
-    <rect fill="#ccc" height="110" width="1" x="143" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="128" y="154">
-        0ms
-    </text>
-    <rect fill="#ccc" height="110" width="1" x="258" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="234" y="154">
+    <rect fill="#ccc" height="110" width="1" x="251" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="227" y="154">
         200ms
     </text>
-    <rect fill="#ccc" height="110" width="1" x="373" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="349" y="154">
+    <rect fill="#ccc" height="110" width="1" x="366" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="342" y="154">
         400ms
     </text>
-    <rect fill="#ccc" height="110" width="1" x="488" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="464" y="154">
+    <rect fill="#ccc" height="110" width="1" x="481" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="457" y="154">
         600ms
     </text>
-    <rect fill="#ccc" height="110" width="1" x="604" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="580" y="154">
+    <rect fill="#ccc" height="110" width="1" x="597" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="573" y="154">
         800ms
     </text>
-    <rect fill="#3260cd" height="22" width="4" x="143" y="41"/>
-    <rect fill="#999" height="1" width="12" x="147" y="52"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="161" y="58">
-        8.344
+    <rect fill="#3260cd" height="22" width="4" x="136" y="41"/>
+    <rect fill="#999" height="1" width="12" x="140" y="52"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="154" y="58">
+        7.567
     </text>
-    <rect fill="#3260cd" height="22" width="17" x="143" y="74"/>
-    <rect fill="#999" height="1" width="12" x="160" y="85"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="174" y="91">
+    <rect fill="#3260cd" height="22" width="17" x="136" y="74"/>
+    <rect fill="#999" height="1" width="12" x="153" y="85"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="167" y="91">
         30.317
     </text>
-    <rect fill="#3260cd" height="22" width="350" x="143" y="107"/>
-    <text fill="#fff" font-family="Arial" font-size="16" x="431" y="124">
-        607.615
+    <rect fill="#3260cd" height="22" width="396" x="136" y="107"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="470" y="124">
+        687.752
     </text>
-    <rect fill="#333" height="110" width="1" x="143" y="30"/>
-    <text font-family="Arial" font-size="16" font-style="italic" x="361" y="176">
+    <rect fill="#333" height="110" width="1" x="136" y="30"/>
+    <text font-family="Arial" font-size="16" font-style="italic" x="354" y="176">
         Time
     </text>
 </svg>

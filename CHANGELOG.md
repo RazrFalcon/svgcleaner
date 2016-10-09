@@ -4,9 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
-### Changed
-- A `stop` element without the `offset` attribute is error.
+## [0.7.0] - 2016-10-09
+### Added
+- `--remove-dupl-fegaussianblur`.
+- `--remove-invalid-stops`.
+- `--apply-transform-to-gradients`.
+- `--ungroup-defs`.
+- `--regroup-gradient-stops`.
+- `--remove-gradient-attributes`.
+- `--multipass`.
+
+### Changes
+- A lot of small cleaning optimizations.
+
+### Removed
+- `--precision-coordinate`.
+- `--precision-transform`.
 
 ## [0.6.91] - 2016-09-20
 ### Added
@@ -145,7 +158,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First public release with Perl backend and Qt GUI.
 
-[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.91...HEAD
+[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.91...v0.7.0
 [0.6.91]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.90...v0.6.91
 [0.6.90]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.2...v0.6.90
 [0.6.2]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.1...v0.6.2

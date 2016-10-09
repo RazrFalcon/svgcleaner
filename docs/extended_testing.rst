@@ -3,7 +3,7 @@ Extended testing
 
 Here we testing ``svgcleaner`` using ``tools/stats``.
 
-Currently, we are testing against 20326 files.
+Currently, we are testing against 20779 files.
 
 .. contents::
 
@@ -143,6 +143,19 @@ Adwaita icons theme
   Size after/before: 392623/2320391
   Cleaning ratio: 83.08%
   Cleaning time: 659.6ms total, 1.4561ms avg
+
+Faience icon theme 0.5.1
+------------------------
+
+::
+
+  Files count: 629
+  Files cleaned with serious errors: 0
+  Files cleaned with any errors: 16
+  Unchanged files: 0
+  Size after/before: 11683377/23440641
+  Cleaning ratio: 50.16%
+  Cleaning time: 1764.7ms total, 2.8055ms avg
 
 Notes
 -----

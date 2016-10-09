@@ -152,7 +152,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
 
     let mut a = App::new("svgcleaner")
         .help(include_str!("../data/help.txt"))
-        .version("0.6.92")
+        .version("0.7.0")
         .arg(Arg::with_name("in-file")
             .help("Input file")
             .required(true)

@@ -80,8 +80,7 @@ Notes
 - *svgcleaner* 0.6.2 was running using default options with numeric ``--*-precision=6``
   and ``--create-viewbox`` disabled.
 - ``svgo`` was running using default options with ``--precision=6``.
-- Used nodejs: ``net-libs/nodejs-4.4.6(icu npm ssl -debug -snapshot -test
+- Used nodejs: ``net-libs/nodejs-6.7.0(icu npm snapshot ssl -debug -doc -test
   CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")``.
-  I tried the latest version, 6.4.0, but it even slower.
 - You can find links to the data sets `here <../tools/files-testing/README.md>`_.
 - You can repeat tests by yourself using `stats <../tools/stats>`_ app.

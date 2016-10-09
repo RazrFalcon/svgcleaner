@@ -41,16 +41,10 @@ pub fn group_defs(doc: &Document) {
     // move all referenced elements to the main 'defs'
     {
         let mut nodes = Vec::new();
-        let mut rm_nodes = Vec::new();
 
         for node in doc.descendants() {
             if node.is_referenced() {
-                if let Some(_) = node.parent_element(EId::Mask) {
-                    // All referenced elements inside mask should be removed,
-                    // because it's not valid by the SVG spec. But if we ungroup such
-                    // elements - they become valid, which is incorrect.
-                    rm_nodes.push(node.clone());
-                } else if let Some(parent) = node.parent() {
+                if let Some(parent) = node.parent() {
                     if parent != defs {
                         nodes.push(node.clone());
                     }
@@ -62,10 +56,6 @@ pub fn group_defs(doc: &Document) {
             resolve_attrs(&n);
             n.detach();
             defs.append(&n);
-        }
-
-        for n in rm_nodes {
-            n.remove();
         }
     }
 
@@ -320,22 +310,6 @@ b"<svg>
         </marker>
     </defs>
     <g fill='url(#lg1)'/>
-</svg>
-");
-
-    test!(rm_inside_mask_1,
-b"<svg>
-    <mask>
-        <linearGradient/>
-        <rect/>
-    </mask>
-</svg>",
-"<svg>
-    <defs>
-        <mask>
-            <rect/>
-        </mask>
-    </defs>
 </svg>
 ");
 

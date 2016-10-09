@@ -131,6 +131,19 @@ Elementary icons theme
   Cleaning ratio: 59.95%
   Cleaning time: 3444.1ms total, 1.9524ms avg
 
+Adwaita icons theme
+-------------------
+
+::
+
+  Files count: 453
+  Files cleaned with serious errors: 0
+  Files cleaned with any errors: 22
+  Unchanged files: 0
+  Size after/before: 392623/2320391
+  Cleaning ratio: 83.08%
+  Cleaning time: 659.6ms total, 1.4561ms avg
+
 Notes
 -----
 

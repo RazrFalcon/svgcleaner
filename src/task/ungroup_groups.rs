@@ -191,7 +191,7 @@ mod tests {
                 final_fixes(&doc);
 
                 let mut opt = write_opt_for_tests!();
-                opt.transforms.simplify_matrix = true;
+                opt.simplify_transform_matrices = true;
                 assert_eq_text!(doc.to_string_with_opt(&opt), $out_text);
             }
         )

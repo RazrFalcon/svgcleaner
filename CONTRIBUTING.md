@@ -7,7 +7,7 @@ No need to implement them, though. Just create an issue on GitHub that explains 
 
 ## Broken image
 
-If you found that `svgcleaner` broke your image, firstly open them (original and cleaned) in
+If you found that *svgcleaner* broke your image, firstly open them (original and cleaned) in
 Google Chrome, since it has a very good support of the SVG, unlike many other applications.
 
 - If images are still renders differently - then they probably broken.

@@ -3,6 +3,8 @@ Extended testing
 
 Here we testing ``svgcleaner`` using ``tools/stats``.
 
+Currently, we are testing against 20326 files.
+
 .. contents::
 
 W3C SVG 1.1 TestSuite
@@ -115,6 +117,19 @@ Broken images:
   Inkscape, to find a problem, - Inkscape crashes.
 - ``network-wireless-4.svg`` - blur artifacts because of numeric rounding.
 - Other images are broken because of QtWebKit bugs.
+
+Elementary icons theme
+----------------------
+
+::
+
+  Files count: 1764
+  Files cleaned with serious errors: 0
+  Files cleaned with any errors: 252
+  Unchanged files: 0
+  Size after/before: 7442829/18585716
+  Cleaning ratio: 59.95%
+  Cleaning time: 3444.1ms total, 1.9524ms avg
 
 Notes
 -----

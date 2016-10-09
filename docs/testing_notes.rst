@@ -3,7 +3,7 @@
 Rendering errors
 ================
 
-The main goal of the ``svgcleaner`` - is correctness. Cleaned files must be rendered exactly
+The main goal of the *svgcleaner* - is correctness. Cleaned files must be rendered exactly
 the same as original. If objects in your image changed their colors, shapes or positions - it's
 definitely an error. But things are not that easy in the SVG world.
 
@@ -18,7 +18,7 @@ So even slightest changes in numbers rounding can lead to errors like this:
 
 \* original, cleaned, diff
 
-``svgcleaner`` does not treat such artifacts as errors.
+*svgcleaner* does not treat such artifacts as errors.
 
 Correctness according to the SVG spec
 -------------------------------------
@@ -32,7 +32,7 @@ There are lots of examples (which is not categorized yet):
 - These two paths are the same: ``M 10 -20 A 5.5 0.3 -4 1 1 0 -0.1``, ``M10-20A5.5.3-4 110-.1``.
   Sadly, most of the application doesn't support such notation, even throw it's valid by SVG spec.
 - ``clipPath`` element can contain only specific elements, but some applications renders all of them.
-  So when ``svgcleaner`` removes invalid elements - the result image will be rendered differently,
+  So when *svgcleaner* removes invalid elements - the result image will be rendered differently,
   even throw it's valid by SVG spec.
 - And so on...
 
@@ -47,7 +47,7 @@ modifications made them simpler to render. Such "differences" is not treated as 
 A bigger file
 -------------
 
-If ``svgcleaner`` produce bigger file than original - it will print an error.
+If *svgcleaner* produce bigger file than original - it will print an error.
 During testing, when such error occurs, we just copy an original file to the destination,
 which makes test to pass.
 
@@ -76,8 +76,8 @@ Notes
 - All tests are single-threaded.
 - I know that a performance comparison is not fair since `svgo` have to restart nodejs
   each time. But I don't know how to prevent it or ignore nodejs starting time.
-- ``svgcleaner`` 0.6.9 was running using default options.
-- ``svgcleaner`` 0.6.2 was running using default options with numeric ``--*-precision=6``
+- *svgcleaner* 0.7.0 was running using default options.
+- *svgcleaner* 0.6.2 was running using default options with numeric ``--*-precision=6``
   and ``--create-viewbox`` disabled.
 - ``svgo`` was running using default options with ``--precision=6``.
 - Used nodejs: ``net-libs/nodejs-4.4.6(icu npm ssl -debug -snapshot -test

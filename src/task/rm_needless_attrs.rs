@@ -168,6 +168,11 @@ static STROKE_ATTRIBUTES: &'static [AId] = &[
 
 fn process_stroke(node: &Node) {
     fn is_invisible(node: &Node) -> bool {
+        // skip nodes with marker, because it doesn't count opacity and stroke-width
+        if node.has_attributes(&[AId::Marker, AId::MarkerStart, AId::MarkerMid, AId::MarkerEnd]) {
+            return false;
+        }
+
         // the stroke will not be drawn if stoke-width is 0
         if let Some(v) = node.attribute_value(AId::StrokeWidth) {
             if let AttributeValue::Length(l) = v {

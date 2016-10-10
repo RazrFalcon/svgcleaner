@@ -44,10 +44,7 @@ pub fn load_file(path: &str) -> Result<Vec<u8>, io::Error> {
 }
 
 pub fn parse_data(data: &[u8], opt: &ParseOptions) -> Result<Document, Error> {
-    match Document::from_data_with_opt(data, opt) {
-        Ok(d) => Ok(d),
-        Err(e) => Err(e),
-    }
+    Document::from_data_with_opt(data, opt)
 }
 
 pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Result<(), CleanerError> {

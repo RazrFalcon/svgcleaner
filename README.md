@@ -94,7 +94,7 @@ things that can't be preserved. So even if you disable all cleaning options ther
 that will be changed:
 
 - Original indent is not preserved.
-- All colors will be formatted as #RRGGBB.
+- All colors will be formatted as #RRGGBB and #RGB.
 - DOCTYPE, CDATA will be processed and removed.
 - CSS from the `style` element will be extracted and processes. The `style` element will be removed.
 - The `style` attribute will be split into attributes.

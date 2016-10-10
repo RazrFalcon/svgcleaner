@@ -77,9 +77,9 @@ Notes
 - I know that a performance comparison is not fair since `svgo` have to restart nodejs
   each time. But I don't know how to prevent it or ignore nodejs starting time.
 - *svgcleaner* 0.7.0 was running using default options.
-- *svgcleaner* 0.6.2 was running using default options with numeric ``--*-precision=6``
+- *svgcleaner* 0.6.2 was running using default options with numeric ``--*-precision=8``
   and ``--create-viewbox`` disabled.
-- ``svgo`` was running using default options with ``--precision=6``.
+- ``svgo`` was running using default options with ``--precision=8``.
 - Used nodejs: ``net-libs/nodejs-6.7.0(icu npm snapshot ssl -debug -doc -test
   CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")``.
 - You can find links to the data sets `here <../tools/files-testing/README.md>`_.

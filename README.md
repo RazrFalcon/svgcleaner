@@ -101,7 +101,7 @@ that will be changed:
 - The `class` attribute will be processed and removed.
 - Paths and transformations will be reformatted.
 - `currentColor` and `inherit` attributes values will be resolved.
-- Referenced elements will be moved to the `defs` element, when possible.
+- Referenced elements will be moved to the `defs` element.
 - IRI and FuncIRI attributes that reference non-existing objects will be removed.
 - If the `offset` attribute value of the `stop` element represented as percent - it will be
   converted into number.

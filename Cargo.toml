@@ -5,6 +5,8 @@ authors = ["Evgeniy Reizner <razrfalcon@gmail.com>"]
 keywords = ["svg", "cleaner", "optimizer"]
 license = "GPL-2.0"
 description = "svgcleaner could help you to clean up yours SVG files from the unnecessary data."
+documentation = "https://github.com/RazrFalcon/svgcleaner/blob/master/docs/svgcleaner.rst"
+repository = "https://github.com/RazrFalcon/svgcleaner"
 readme = "README.md"
 
 [dependencies]

@@ -114,6 +114,12 @@ You need the latest stable [Rust](https://www.rust-lang.org/) compiler.
 cargo build --release
 ```
 
+If you're a Rust programmer, you can install *svgcleaner* using:
+
+```bash
+cargo install svgcleaner
+```
+
 ## Usage
 
 ### CLI

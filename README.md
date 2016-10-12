@@ -96,7 +96,8 @@ that will be changed:
 - Original indent is not preserved.
 - All colors will be formatted as #RRGGBB and #RGB.
 - DOCTYPE, CDATA will be processed and removed.
-- CSS from the `style` element will be extracted and processes. The `style` element will be removed.
+- CSS2 support is minimal. Only simple *class* and *group* selectors are supported.
+- CSS2 from the `style` element will be extracted and processes. The `style` element will be removed.
 - The `style` attribute will be split into attributes.
 - The `class` attribute will be processed and removed.
 - Paths and transformations will be reformatted.

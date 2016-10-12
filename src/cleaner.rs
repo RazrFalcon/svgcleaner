@@ -104,7 +104,7 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Resul
     }
 
     // NOTE: run before `remove_invisible_elements`, because this method can remove all
-    // segments from the path which makes it invisible.
+    //       segments from the path which makes it invisible.
     if get_flag!(args, Key::PathsToRelative) {
         // we only process path's segments if 'PathsToRelative' is enabled
         paths::process_paths(doc, args);

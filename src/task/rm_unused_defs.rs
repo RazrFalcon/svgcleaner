@@ -34,9 +34,6 @@ pub fn remove_unused_defs(doc: &Document) {
 
 // Returns true if tree structure has been changed.
 fn remove_unused_defs_impl(defs: &Node) -> bool {
-    // TODO: next release: font-face can probably be removed if no text elements are in the document
-    // TODO: next release: font element should be referenced by font-family attribute,
-    //                     if not - remove it
     // TODO: understand how styles are propagates inside defs
 
     let mut mv_nodes = Vec::new();

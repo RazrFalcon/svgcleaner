@@ -444,6 +444,14 @@
         {
             "name": "actions/small/32x32/mail-mark-unread.svg",
             "valid_ae": 412
+        },
+        {
+            "name": "categories/preferences-desktop-peripherals.svg",
+            "valid_ae": 2462
+        },
+        {
+            "name": "devices/input-tablet.svg",
+            "valid_ae": 2695
         }
     ],
     "ignore": [

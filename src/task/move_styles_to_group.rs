@@ -77,10 +77,10 @@ fn process_g(g: &Node, attrs_list: &mut Vec<AttrCount>) {
 
     for counter in attrs_list.iter() {
         if counter.count == children_count {
-            g.set_attribute(counter.attr.id, counter.attr.value.clone());
+            g.set_attribute(counter.attr.id().unwrap(), counter.attr.value.clone());
 
             for node in g.children() {
-                node.remove_attribute(counter.attr.id);
+                node.remove_attribute(counter.attr.id().unwrap());
             }
         }
     }

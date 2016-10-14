@@ -27,7 +27,7 @@ use svgdom::{Document, Node};
 
 pub fn regroup_gradient_stops(doc: &Document) {
     let mut nodes: Vec<Node> = doc.descendants()
-        .filter(|n| n.is_tag_id(EId::LinearGradient) || n.is_tag_id(EId::RadialGradient))
+        .filter(|n| super::is_gradient(n))
         .filter(|n| n.has_children())
         .filter(|n| !n.has_attribute(AId::XlinkHref))
         .collect();

@@ -111,48 +111,48 @@ fn _ungroup_groups(root: &Node, groups: &mut Vec<Node>) {
 }
 
 fn ungroup_group(g: &Node) {
-    for attr in g.attributes().iter() {
+    for (aid, attr) in g.attributes().iter_svg() {
         for child in g.children() {
-            if attr.id == AId::Opacity {
-                if child.has_attribute(attr.id) {
+            if aid == AId::Opacity {
+                if child.has_attribute(aid) {
                     // we can't just replace 'opacity' attribute,
                     // we should multiply it
                     let op1: f64 = *attr.value.as_number().unwrap();
-                    let op2: f64 = *child.attribute_value(attr.id).unwrap()
+                    let op2: f64 = *child.attribute_value(aid).unwrap()
                                          .as_number().unwrap();
-                    child.set_attribute(attr.id, op1 * op2);
+                    child.set_attribute(aid, op1 * op2);
                     continue;
                 }
             }
 
-            if attr.id == AId::Transform {
-                if child.has_attribute(attr.id) {
+            if aid == AId::Transform {
+                if child.has_attribute(aid) {
                     // we should multiply transform matrices
                     let mut t1 = *attr.value.as_transform().unwrap();
 
-                    let a2 = child.attribute_value(attr.id).unwrap();
+                    let a2 = child.attribute_value(aid).unwrap();
                     let t2 = a2.as_transform().unwrap();
 
                     t1.append(t2);
-                    child.set_attribute(attr.id, t1);
+                    child.set_attribute(aid, t1);
                     continue;
                 }
             }
 
-            if attr.id == AId::Display {
+            if aid == AId::Display {
                 // display attribute has a priority during rendering, so we must
                 // copy it even if a child has it already
-                child.set_attribute(attr.id, attr.value.clone());
+                child.set_attribute(aid, attr.value.clone());
                 continue;
             }
 
-            if !child.has_attribute(attr.id) {
+            if !child.has_attribute(aid) {
                 match attr.value {
                     AttributeValue::Link(ref iri) | AttributeValue::FuncLink(ref iri) => {
                         // if it's fail - it's already a huge problem, so unwrap is harmless
-                        child.set_link_attribute(attr.id, iri.clone()).unwrap();
+                        child.set_link_attribute(aid, iri.clone()).unwrap();
                     }
-                    _ => child.set_attribute(attr.id, attr.value.clone()),
+                    _ => child.set_attribute(aid, attr.value.clone()),
                 }
             }
         }

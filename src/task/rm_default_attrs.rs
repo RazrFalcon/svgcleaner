@@ -34,23 +34,23 @@ pub fn remove_default_attributes(doc: &Document) {
         {
             let attrs = node.attributes();
 
-            for attr in attrs.iter() {
+            for (aid, attr) in attrs.iter_svg() {
                 if attr.is_presentation() {
                     if attr.check_is_default() {
-                        match node.parent_attribute(attr.id) {
+                        match node.parent_attribute(aid) {
                             Some(pattr) => {
                                 if !pattr.visible {
-                                    rm_list.push(attr.id);
+                                    rm_list.push(aid);
                                 }
                             }
                             None => {
-                                rm_list.push(attr.id)
+                                rm_list.push(aid)
                             }
                         }
                     }
                 } else if is_default(attr, tag_name) {
                     // check default values of an non-presentation attributes
-                    rm_list.push(attr.id);
+                    rm_list.push(aid);
                 }
             }
         }
@@ -79,7 +79,7 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
 
     // TODO: theoretically, we can have any Unit. Investigate it.
 
-    match attr.id {
+    match attr.id().unwrap() {
         AId::X | AId::Y => {
             if tag_name == EId::GlyphRef {
                 return false;

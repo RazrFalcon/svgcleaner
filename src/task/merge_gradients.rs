@@ -62,8 +62,7 @@ pub fn merge_gradients(doc: &Document) {
 }
 
 fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
-    let iter = doc.descendants().filter(|n|    n.is_tag_id(EId::LinearGradient)
-                                            || n.is_tag_id(EId::RadialGradient));
+    let iter = doc.descendants().filter(|n| super::is_gradient(n));
     for node in iter {
         let linked_node;
         if let Some(av) = node.attribute_value(AId::XlinkHref) {
@@ -114,7 +113,7 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
                         continue;
                     }
 
-                    if let Some(n_attr) = node_attrs.get_mut(attr.id) {
+                    if let Some(n_attr) = node_attrs.get_mut(attr.id().unwrap()) {
                         n_attr.visible = true;
                     }
                 }

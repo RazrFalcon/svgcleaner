@@ -58,7 +58,7 @@ fn main() {
     let parse_opt = gen_parse_options(&args);
     let write_opt = gen_write_options(&args);
 
-    let in_file = args.value_of("in-file").unwrap();
+    let in_file  = args.value_of("in-file").unwrap();
     let out_file = args.value_of("out-file").unwrap();
 
     // load file

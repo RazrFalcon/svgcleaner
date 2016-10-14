@@ -63,7 +63,7 @@ fn process_clip_path(node: &Node) {
         // since they does not impact rendering.
         // https://www.w3.org/TR/SVG/masking.html#EstablishingANewClippingPath
         child.attributes_mut().retain(|a| {
-            !(a.is_fill() || a.is_stroke() || a.id == AId::Opacity)
+            !(a.is_fill() || a.is_stroke() || a.has_id(AId::Opacity))
         });
     }
 }
@@ -72,12 +72,12 @@ fn process_rect(node: &Node) {
     // remove all non-rect attributes
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
-        || a.id == AId::X
-        || a.id == AId::Y
-        || a.id == AId::Width
-        || a.id == AId::Height
-        || a.id == AId::Rx
-        || a.id == AId::Ry
+        || a.has_id(AId::X)
+        || a.has_id(AId::Y)
+        || a.has_id(AId::Width)
+        || a.has_id(AId::Height)
+        || a.has_id(AId::Rx)
+        || a.has_id(AId::Ry)
     });
 }
 
@@ -85,9 +85,9 @@ fn process_circle(node: &Node) {
     // remove all non-circle attributes
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
-        || a.id == AId::Cx
-        || a.id == AId::Cy
-        || a.id == AId::R
+        || a.has_id(AId::Cx)
+        || a.has_id(AId::Cy)
+        || a.has_id(AId::R)
     });
 }
 
@@ -95,10 +95,10 @@ fn process_ellipse(node: &Node) {
     // remove all non-ellipse attributes
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
-        || a.id == AId::Cx
-        || a.id == AId::Cy
-        || a.id == AId::Rx
-        || a.id == AId::Ry
+        || a.has_id(AId::Cx)
+        || a.has_id(AId::Cy)
+        || a.has_id(AId::Rx)
+        || a.has_id(AId::Ry)
     });
 }
 
@@ -106,10 +106,10 @@ fn process_line(node: &Node) {
     // remove all non-line attributes
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
-        || a.id == AId::X1
-        || a.id == AId::Y1
-        || a.id == AId::X2
-        || a.id == AId::Y2
+        || a.has_id(AId::X1)
+        || a.has_id(AId::Y1)
+        || a.has_id(AId::X2)
+        || a.has_id(AId::Y2)
     });
 }
 
@@ -117,7 +117,7 @@ fn process_poly(node: &Node) {
     // remove all non-polyline/polygon attributes
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
-        || a.id == AId::Points
+        || a.has_id(AId::Points)
     });
 }
 
@@ -129,10 +129,10 @@ fn is_basic_shapes_attr(a: &Attribute) -> bool {
     || a.is_core()
     || a.is_graphical_event()
     || a.is_presentation()
-    || a.id == AId::Class
-    || a.id == AId::Style
-    || a.id == AId::ExternalResourcesRequired
-    || a.id == AId::Transform
+    || a.has_id(AId::Class)
+    || a.has_id(AId::Style)
+    || a.has_id(AId::ExternalResourcesRequired)
+    || a.has_id(AId::Transform)
 }
 
 fn process_fill(node: &Node) {

@@ -34,14 +34,14 @@ pub fn resolve_inherit(doc: &Document) -> Result<(), CleanerError> {
 
         {
             let attrs = node.attributes();
-            for attr in attrs.iter() {
+            for (aid, attr) in attrs.iter_svg() {
                 if let AttributeValue::PredefValue(ref v) = attr.value {
                     match *v {
                         ValueId::Inherit => {
-                            vec_inherit.push(attr.id);
+                            vec_inherit.push(aid);
                         }
                         ValueId::CurrentColor => {
-                            vec_curr_color.push(attr.id);
+                            vec_curr_color.push(aid);
                         }
                         _ => {},
                     }

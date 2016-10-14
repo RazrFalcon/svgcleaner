@@ -243,7 +243,7 @@ fn process_gradients(doc: &Document) {
     {
         // gradient without children and link to other gradient is pointless
         let iter = doc.descendants()
-                      .filter(|n| n.is_tag_id(EId::LinearGradient) || n.is_tag_id(EId::RadialGradient))
+                      .filter(|n| super::is_gradient(n))
                       .filter(|n| !n.has_children() && !n.has_attribute(AId::XlinkHref));
 
         for n in iter {
@@ -260,7 +260,7 @@ fn process_gradients(doc: &Document) {
         // 'If one stop is defined, then paint with the solid color fill using the color
         // defined for that gradient stop.'
         let iter = doc.descendants()
-                      .filter(|n| n.is_tag_id(EId::LinearGradient) || n.is_tag_id(EId::RadialGradient))
+                      .filter(|n| super::is_gradient(n))
                       .filter(|n| n.children().count() == 1 && !n.has_attribute(AId::XlinkHref));
 
         for n in iter {
@@ -293,11 +293,11 @@ fn process_gradients(doc: &Document) {
 fn find_link_attribute(node: &Node, link: &Node) -> Option<AId> {
     let attrs = node.attributes();
 
-    for attr in attrs.iter() {
+    for (aid, attr) in attrs.iter_svg() {
         match attr.value {
             AttributeValue::Link(ref n) | AttributeValue::FuncLink(ref n) => {
                 if *n == *link {
-                    return Some(attr.id);
+                    return Some(aid);
                 }
             }
             _ => {}

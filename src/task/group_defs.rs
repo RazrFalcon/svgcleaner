@@ -105,9 +105,9 @@ fn resolve_attrs(node: &Node) {
             let mut parent = node.clone();
             while let Some(p) = parent.parent() {
                 let attrs = p.attributes();
-                for attr in attrs.iter().filter(|a| a.is_inheritable()) {
+                for (aid, attr) in attrs.iter_svg().filter(|&(_, a)| a.is_inheritable()) {
                     for child in node.children() {
-                        if child.has_attribute(attr.id) {
+                        if child.has_attribute(aid) {
                             continue;
                         }
 
@@ -115,7 +115,7 @@ fn resolve_attrs(node: &Node) {
                               AttributeValue::Link(ref link)
                             | AttributeValue::FuncLink(ref link) => {
                                 // if it's fail - it's already a huge problem, so unwrap is harmless
-                                child.set_link_attribute(attr.id, link.clone()).unwrap();
+                                child.set_link_attribute(aid, link.clone()).unwrap();
                             }
                             _ => child.set_attribute_object(attr.clone()),
                         }

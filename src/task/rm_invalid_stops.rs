@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 
-use task::short::{EId, AId};
+use task::short::{AId};
 
 use svgdom::{Document};
 
@@ -28,7 +28,7 @@ pub fn remove_invalid_stops(doc: &Document) {
     let mut nodes = Vec::new();
 
     let iter = doc.descendants()
-                  .filter(|n| n.is_tag_id(EId::LinearGradient) || n.is_tag_id(EId::RadialGradient))
+                  .filter(|n| super::is_gradient(n))
                   .filter(|n| n.has_children());
     for node in iter {
         let mut prev_child = node.children().nth(0).unwrap();

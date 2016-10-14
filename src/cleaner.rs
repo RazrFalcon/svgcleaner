@@ -34,7 +34,6 @@ use error::CleanerError;
 
 pub fn load_file(path: &str) -> Result<Vec<u8>, io::Error> {
     let mut file = try!(fs::File::open(path));
-
     let length = try!(file.metadata()).len() as usize;
 
     let mut v = Vec::with_capacity(length + 1);
@@ -47,7 +46,8 @@ pub fn parse_data(data: &[u8], opt: &ParseOptions) -> Result<Document, Error> {
     Document::from_data_with_opt(data, opt)
 }
 
-pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions) -> Result<(), CleanerError> {
+pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions)
+                 -> Result<(), CleanerError> {
     try!(preclean_checks(doc));
 
     // NOTE: Order is important.

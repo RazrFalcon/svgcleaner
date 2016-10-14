@@ -27,14 +27,12 @@ use svgdom::types::{Length};
 
 pub fn apply_transform_to_gradients(doc: &Document) {
     let iter = doc.descendants()
-                  .filter(|n| n.is_tag_id(EId::LinearGradient) || n.is_tag_id(EId::RadialGradient))
+                  .filter(|n| ::task::is_gradient(n))
                   .filter(|n| n.has_attribute(AId::GradientTransform));
 
     for node in iter {
         {
-            let flag = node.linked_nodes()
-                           .any(|n|    n.is_tag_id(EId::LinearGradient)
-                                    || n.is_tag_id(EId::RadialGradient));
+            let flag = node.linked_nodes().any(|n| ::task::is_gradient(&n));
 
             if flag {
                 // We can apply transform only to gradients that doesn't used by

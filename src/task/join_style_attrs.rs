@@ -40,17 +40,17 @@ pub fn join_style_attributes(doc: &Document, opt: &WriteOptions) {
             let mut attrs = node.attributes_mut();
             let mut ids = Vec::new();
             let mut style = Vec::new();
-            for attr in attrs.iter().filter(|a| a.is_presentation()) {
+            for (aid, attr) in attrs.iter_svg().filter(|&(_, a)| a.is_presentation()) {
                 if !attr.visible {
                     continue;
                 }
 
-                style.extend_from_slice(attr.id.name().as_bytes());
+                style.extend_from_slice(aid.name().as_bytes());
                 style.push(b':');
                 attr.value.write_buf_opt(opt, &mut style);
                 style.push(b';');
 
-                ids.push(attr.id);
+                ids.push(aid);
             }
             style.pop();
 

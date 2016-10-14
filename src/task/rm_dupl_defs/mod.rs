@@ -70,7 +70,7 @@ fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
                         match attr.value {
                             AttributeValue::Link(ref n) | AttributeValue::FuncLink(ref n) => {
                                 if *n == node2 {
-                                    link_attrs.push((attr.id, node1.clone()));
+                                    link_attrs.push((attr.id().unwrap(), node1.clone()));
                                 }
                             }
                             _ => {}

@@ -2,6 +2,8 @@
 
 *svgcleaner* could help you to clean up your SVG files from the unnecessary data.
 
+[![Build Status](https://travis-ci.org/RazrFalcon/svgcleaner.svg?branch=master)](https://travis-ci.org/RazrFalcon/svgcleaner)
+
 ## Table of Contents
 
   * [Purpose](#purpose)

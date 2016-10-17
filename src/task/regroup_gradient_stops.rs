@@ -26,7 +26,7 @@ use task::resolve_attrs;
 use svgdom::{Document, Node};
 
 pub fn regroup_gradient_stops(doc: &Document) {
-    let mut nodes: Vec<Node> = doc.descendants()
+    let mut nodes: Vec<Node> = doc.descendants().svg()
         .filter(|n| super::is_gradient(n))
         .filter(|n| n.has_children())
         .filter(|n| !n.has_attribute(AId::XlinkHref))
@@ -98,7 +98,7 @@ fn gen_id(doc: &Document, prefix: &str) -> String {
         s.push_str(prefix);
         s.push_str(&n.to_string());
 
-        if !doc.descendants().any(|n| *n.id() == s) {
+        if !doc.descendants().svg().any(|n| *n.id() == s) {
             break;
         }
 

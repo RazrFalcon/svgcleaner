@@ -66,7 +66,7 @@ pub fn radial_gradients(doc: &Document) {
 }
 
 pub fn stop(doc: &Document) -> Result<(), CleanerError> {
-    for gradient in doc.descendants().filter(|n| is_gradient(n)) {
+    for gradient in doc.descendants().svg().filter(|n| is_gradient(n)) {
         for (idx, node) in gradient.children().enumerate() {
             if !node.has_attribute(AId::Offset) {
                 if idx == 0 {
@@ -109,7 +109,7 @@ pub fn stop(doc: &Document) -> Result<(), CleanerError> {
 }
 
 fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
-    let nodes = doc.descendants().filter(|n| n.is_tag_id(eid))
+    let nodes = doc.descendants().svg().filter(|n| n.is_tag_id(eid))
                    .collect::<Vec<Node>>();
 
     let mut order = Vec::with_capacity(nodes.len());

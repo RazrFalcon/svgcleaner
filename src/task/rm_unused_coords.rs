@@ -27,7 +27,7 @@ use svgdom::{Document};
 pub fn remove_unused_coordinates(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);
 
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         {
             let attrs = node.attributes();
 

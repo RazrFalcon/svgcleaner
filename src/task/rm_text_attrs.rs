@@ -60,7 +60,7 @@ pub fn remove_text_attributes(doc: &Document) {
     // only when there is no text in a whole doc.
     // Can't do it inside '_remove_text_attributes'.
     if !has_text {
-        for node in doc.descendants() {
+        for node in doc.descendants().svg() {
             if node.is_tag_id(EId::FontFace) {
                 node.remove_attributes(TEXT_ATTRIBUTES);
             }
@@ -76,7 +76,7 @@ fn _remove_text_attributes(root: &Node) -> bool {
 
     // shorthand for no_text_data
     let mut no_td = true;
-    for node in root.children_nodes() {
+    for node in root.children() {
         if !node.is_svg_element() {
             if node.node_type() == NodeType::Text {
                 no_td = false;
@@ -85,7 +85,7 @@ fn _remove_text_attributes(root: &Node) -> bool {
             continue;
         }
 
-        if node.has_children_nodes() {
+        if node.has_children() {
             // go deeper
             let can_rm = _remove_text_attributes(&node);
             if can_rm {

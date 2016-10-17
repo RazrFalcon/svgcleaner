@@ -33,7 +33,7 @@ use svgdom::types::path;
 ///
 /// We should run it before path processing.
 pub fn convert_shapes_to_paths(doc: &Document) {
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         // descendants() iterates only over svg elements, which all have a tag name
         match node.tag_id().unwrap() {
             EId::Line => convert_line(&node),

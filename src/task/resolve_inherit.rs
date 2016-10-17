@@ -27,7 +27,7 @@ use svgdom::{Document, Node, Attribute, AttributeValue, ValueId};
 use error::CleanerError;
 
 pub fn resolve_inherit(doc: &Document) -> Result<(), CleanerError> {
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
 
         let mut vec_inherit = Vec::new();
         let mut vec_curr_color = Vec::new();

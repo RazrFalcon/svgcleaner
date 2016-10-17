@@ -27,7 +27,7 @@ use svgdom::{Document};
 pub fn remove_invalid_stops(doc: &Document) {
     let mut nodes = Vec::new();
 
-    let iter = doc.descendants()
+    let iter = doc.descendants().svg()
                   .filter(|n| super::is_gradient(n))
                   .filter(|n| n.has_children());
     for node in iter {

@@ -62,7 +62,7 @@ See ['Testing notes'](docs/testing_notes.rst) for details.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.7.0/docs/images/correctness_chart_W3C_SVG_11_TestSuite.svg)
 
-\* Yes, *svgcleaner* 0.6.2 is absolute garbage on this data set.
+\* Yes, *svgcleaner* 0.6.2 is an absolute garbage on this data set.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.7.0/docs/images/correctness_chart_oxygen.svg)
 

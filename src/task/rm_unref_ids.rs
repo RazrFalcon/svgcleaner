@@ -23,7 +23,7 @@
 use svgdom::Document;
 
 pub fn remove_unreferenced_ids(doc: &Document) {
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         if node.has_id() && !node.is_used() {
             node.set_id(String::new());
         }

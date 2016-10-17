@@ -39,7 +39,7 @@ fn process_units(doc: &Document) {
 // we can remove such attribute
 fn rm_equal(doc: &Document) {
     let mut order = Vec::new();
-    for node in doc.descendants().filter(|n|    super::is_gradient(n)
+    for node in doc.descendants().svg().filter(|n|    super::is_gradient(n)
                                              && n.has_attribute(AId::XlinkHref)) {
         let c = node.linked_nodes().filter(|n| super::is_gradient(n)).count();
         // the gradient element and count of gradient elements than uses it
@@ -91,7 +91,7 @@ fn rm_equal(doc: &Document) {
 // if several gradients linked to the same gradient
 // we can move their 'gradientUnits' to the parent
 fn group_to_parent(doc: &Document) {
-    let nodes: Vec<Node> = doc.descendants()
+    let nodes: Vec<Node> = doc.descendants().svg()
                               .filter(|n| super::is_gradient(n))
                               .filter(|n| !n.has_attribute(AId::XlinkHref))
                               .filter(|n| n.linked_nodes().all(|l| super::is_gradient(&l)))

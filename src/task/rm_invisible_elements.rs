@@ -53,7 +53,7 @@ fn process_clip_paths(doc: &Document, is_any_removed: &mut bool) {
     let mut clip_paths = Vec::with_capacity(16);
 
     // remove all invalid children
-    for node in doc.descendants().filter(|n| n.is_tag_id(EId::ClipPath)) {
+    for node in doc.descendants().svg().filter(|n| n.is_tag_id(EId::ClipPath)) {
         for child in node.children() {
             if !is_valid_clip_path_elem(&child) {
                 nodes.push(child.clone());
@@ -128,7 +128,7 @@ fn process_paths(doc: &Document, is_any_removed: &mut bool) {
         false
     }
 
-    for node in doc.descendants().filter(|n| n.is_tag_id(EId::Path)) {
+    for node in doc.descendants().svg().filter(|n| n.is_tag_id(EId::Path)) {
         if is_invisible(&node) {
             paths.push(node.clone());
         }
@@ -147,21 +147,7 @@ fn process_paths(doc: &Document, is_any_removed: &mut bool) {
 fn process_display_attribute(doc: &Document, is_any_removed: &mut bool) {
     let mut nodes = Vec::with_capacity(16);
 
-    let mut iter = doc.descendants();
-    while let Some(node) = iter.next() {
-        // if elements has attribute 'display:none' and this element is not used - we can remove it
-        if node.has_attribute_with_value(AId::Display, ValueId::None) && !node.is_used() {
-            // all children must be unused to
-            if !node.descendants().any(|n| n.is_used()) {
-                // TODO: ungroup used elements and remove unused
-                nodes.push(node.clone());
-
-                if node.has_children() {
-                    iter.skip_children();
-                }
-            }
-        }
-    }
+    _process_display_attribute(&doc.root(), &mut nodes, is_any_removed);
 
     if !nodes.is_empty() {
         *is_any_removed = true;
@@ -172,9 +158,24 @@ fn process_display_attribute(doc: &Document, is_any_removed: &mut bool) {
     }
 }
 
+fn _process_display_attribute(parent: &Node, nodes: &mut Vec<Node>, is_any_removed: &mut bool) {
+    for node in parent.children().svg() {
+        // if elements has attribute 'display:none' and this element is not used - we can remove it
+        if node.has_attribute_with_value(AId::Display, ValueId::None) && !node.is_used() {
+            // all children must be unused to
+            if !node.descendants().svg().any(|n| n.is_used()) {
+                // TODO: ungroup used elements and remove unused
+                nodes.push(node.clone());
+            }
+        } else if node.has_children() {
+            _process_display_attribute(&node, nodes, is_any_removed);
+        }
+    }
+}
+
 // remove 'filter' elements without children
 fn process_empty_filter(doc: &Document, is_any_removed: &mut bool) {
-    let nodes: Vec<Node> = doc.descendants()
+    let nodes: Vec<Node> = doc.descendants().svg()
                               .filter(|n| n.is_tag_id(EId::Filter) && !n.has_children())
                               .collect();
 
@@ -193,7 +194,7 @@ fn process_empty_filter(doc: &Document, is_any_removed: &mut bool) {
 fn process_fe_color_matrix(doc: &Document) {
     let mut nodes = Vec::with_capacity(16);
 
-    for node in doc.descendants().filter(|n| n.is_tag_id(EId::Filter)) {
+    for node in doc.descendants().svg().filter(|n| n.is_tag_id(EId::Filter)) {
         if node.children().count() != 1 {
             continue;
         }
@@ -227,7 +228,7 @@ fn process_fe_color_matrix(doc: &Document) {
 
 // 'use' element without 'xlink:href' attribute is pointless
 fn process_use(doc: &Document, is_any_removed: &mut bool) {
-    let nodes: Vec<Node> = doc.descendants()
+    let nodes: Vec<Node> = doc.descendants().svg()
                               .filter(|n| n.is_tag_id(EId::Use) && !n.has_attribute(AId::XlinkHref))
                               .collect();
 
@@ -242,7 +243,7 @@ fn process_gradients(doc: &Document) {
 
     {
         // gradient without children and link to other gradient is pointless
-        let iter = doc.descendants()
+        let iter = doc.descendants().svg()
                       .filter(|n| super::is_gradient(n))
                       .filter(|n| !n.has_children() && !n.has_attribute(AId::XlinkHref));
 
@@ -259,7 +260,7 @@ fn process_gradients(doc: &Document) {
     {
         // 'If one stop is defined, then paint with the solid color fill using the color
         // defined for that gradient stop.'
-        let iter = doc.descendants()
+        let iter = doc.descendants().svg()
                       .filter(|n| super::is_gradient(n))
                       .filter(|n| n.children().count() == 1 && !n.has_attribute(AId::XlinkHref));
 
@@ -311,7 +312,7 @@ fn find_link_attribute(node: &Node, link: &Node) -> Option<AId> {
 fn process_rect(doc: &Document, is_any_removed: &mut bool) {
     let mut nodes = Vec::with_capacity(16);
 
-    for n in doc.descendants().filter(|n| n.is_tag_id(EId::Rect)) {
+    for n in doc.descendants().svg().filter(|n| n.is_tag_id(EId::Rect)) {
         let attrs = n.attributes();
         if    attrs.get_value(AId::Width).unwrap().as_length().unwrap().num == 0.0
            || attrs.get_value(AId::Height).unwrap().as_length().unwrap().num == 0.0 {

@@ -27,7 +27,7 @@ use svgdom::{Document, Node, Attribute, AttributeValue, ValueId};
 // TODO: split to suboptions
 
 pub fn remove_needless_attributes(doc: &Document) {
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         match node.tag_id().unwrap() {
             EId::ClipPath => process_clip_path(&node),
             EId::Rect => process_rect(&node),

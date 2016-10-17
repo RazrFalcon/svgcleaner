@@ -42,7 +42,7 @@ pub fn remove_dupl_fe_gaussian_blur(doc: &Document) {
 
     let mut nodes = Vec::new();
 
-    for node in doc.descendants().filter(|n| n.is_tag_id(EId::Filter)) {
+    for node in doc.descendants().svg().filter(|n| n.is_tag_id(EId::Filter)) {
         // we support only filters with one child
         if node.children().count() != 1 {
             continue;

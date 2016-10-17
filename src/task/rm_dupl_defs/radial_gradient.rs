@@ -35,7 +35,7 @@ pub fn remove_dupl_radial_gradients(doc: &Document) {
         AId::SpreadMethod,
     ];
 
-    let mut nodes = doc.descendants()
+    let mut nodes = doc.descendants().svg()
                        .filter(|n| n.is_tag_id(EId::RadialGradient))
                        .collect::<Vec<Node>>();
 

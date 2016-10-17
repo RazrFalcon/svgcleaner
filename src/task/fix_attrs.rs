@@ -28,7 +28,7 @@ use svgdom::types::Length;
 /// We don't remove invalid elements, just make them invisible.
 /// Then they can be removed via `remove_invisible_elements`.
 pub fn fix_invalid_attributes(doc: &Document) {
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         // descendants() iterates only over svg elements, which all have a tag name
         match node.tag_id().unwrap() {
             EId::Rect => fix_rect(&node),

@@ -26,7 +26,7 @@ use svgdom::{Document, Node};
 use svgdom::types::{Length};
 
 pub fn apply_transform_to_gradients(doc: &Document) {
-    let iter = doc.descendants()
+    let iter = doc.descendants().svg()
                   .filter(|n| ::task::is_gradient(n))
                   .filter(|n| n.has_attribute(AId::GradientTransform));
 

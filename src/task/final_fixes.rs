@@ -45,7 +45,7 @@ pub fn fix_xmlns_attribute(doc: &Document, rm_unused: bool) {
     let svg = doc.svg_element().unwrap();
 
     let mut has_links = false;
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         if node.is_used() {
             has_links = true;
             break;

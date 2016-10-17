@@ -27,7 +27,7 @@ use svgdom::{Document, Attribute, AttributeValue, WriteOptions, WriteBuffer};
 pub fn join_style_attributes(doc: &Document, opt: &WriteOptions) {
     // NOTE: must be run at last, since it breaks linking.
 
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         let count;
         {
             let attrs = node.attributes();

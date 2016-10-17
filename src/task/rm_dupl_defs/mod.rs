@@ -159,7 +159,7 @@ mod tests {
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
                 resolve_attributes(&doc).unwrap();
-                let vec = doc.descendants().filter(|n| n.is_tag_id(EId::LinearGradient))
+                let vec = doc.descendants().svg().filter(|n| n.is_tag_id(EId::LinearGradient))
                              .collect::<Vec<Node>>();
 
                 assert_eq!(super::is_equal_stops(&vec[0], &vec[1]), $flag);

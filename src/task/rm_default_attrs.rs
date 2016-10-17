@@ -28,7 +28,7 @@ use svgdom::types::{Length};
 pub fn remove_default_attributes(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);
 
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         let tag_name = node.tag_id().unwrap();
 
         {

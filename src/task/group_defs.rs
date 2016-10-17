@@ -42,7 +42,7 @@ pub fn group_defs(doc: &Document) {
     {
         let mut nodes = Vec::new();
 
-        for node in doc.descendants() {
+        for node in doc.descendants().svg() {
             if node.is_referenced() {
                 if let Some(parent) = node.parent() {
                     if parent != defs {
@@ -62,7 +62,7 @@ pub fn group_defs(doc: &Document) {
     // ungroup all existing 'defs', except main
     {
         let mut nodes = Vec::new();
-        for node in doc.descendants() {
+        for node in doc.descendants().svg() {
             if node.is_tag_id(EId::Defs) && node != defs {
                 for child in node.children() {
                     nodes.push(child.clone());
@@ -79,7 +79,7 @@ pub fn group_defs(doc: &Document) {
     // remove empty 'defs', except main
     {
         let mut nodes = Vec::new();
-        for node in doc.descendants() {
+        for node in doc.descendants().svg() {
             if node.is_tag_id(EId::Defs) && node != defs {
                 nodes.push(node.clone());
             }

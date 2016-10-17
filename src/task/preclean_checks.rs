@@ -36,7 +36,7 @@ pub fn preclean_checks(doc: &Document) -> Result<(), CleanerError> {
 }
 
 fn check_for_unsupported_elements(doc: &Document) -> Result<(), CleanerError> {
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         match node.tag_id().unwrap() {
             EId::Script => {
                 return Err(CleanerError::ScriptingIsNotSupported);
@@ -56,7 +56,7 @@ fn check_for_unsupported_elements(doc: &Document) -> Result<(), CleanerError> {
 }
 
 fn check_for_script_attributes(doc: &Document) -> Result<(), CleanerError> {
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         let attrs = node.attributes();
         for attr in attrs.iter() {
             if attr.is_graphical_event() || attr.is_document_event() || attr.is_animation_event() {
@@ -85,7 +85,7 @@ fn check_for_conditional_attributes(doc: &Document) -> Result<(), CleanerError> 
         )
     }
 
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         check_attr!(AId::RequiredFeatures, node);
         check_attr!(AId::SystemLanguage, node);
     }
@@ -94,7 +94,7 @@ fn check_for_conditional_attributes(doc: &Document) -> Result<(), CleanerError> 
 }
 
 fn check_for_external_xlink(doc: &Document) -> Result<(), CleanerError> {
-    for node in doc.descendants() {
+    for node in doc.descendants().svg() {
         if !node.has_attribute(AId::XlinkHref) {
             continue;
         }

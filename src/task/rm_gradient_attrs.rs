@@ -111,7 +111,7 @@ fn group_to_parent(doc: &Document) {
             node.set_attribute(AId::GradientUnits, ValueId::ObjectBoundingBox);
 
             for n in node.linked_nodes() {
-                make_attr_invisible(&n, AId::GradientUnits);
+                make_attr_invisible(&n.clone(), AId::GradientUnits);
             }
         } else if count == 0 {
             // if all linked gradients has the 'userSpaceOnUse' value - move
@@ -120,7 +120,7 @@ fn group_to_parent(doc: &Document) {
             node.set_attribute(AId::GradientUnits, ValueId::UserSpaceOnUse);
 
             for n in node.linked_nodes() {
-                make_attr_invisible(&n, AId::GradientUnits);
+                make_attr_invisible(&n.clone(), AId::GradientUnits);
             }
         } else if count >= (total_count as f32 / 2.0).round() as usize {
             // if most linked gradients has the 'objectBoundingBox' value - move
@@ -131,9 +131,9 @@ fn group_to_parent(doc: &Document) {
             for n in node.linked_nodes() {
                 if let Some(v) = n.attribute_value(AId::GradientUnits) {
                     if v == AttributeValue::PredefValue(ValueId::ObjectBoundingBox) {
-                        make_attr_invisible(&n, AId::GradientUnits);
+                        make_attr_invisible(&n.clone(), AId::GradientUnits);
                     } else {
-                        n.set_attribute(AId::GradientUnits, ValueId::UserSpaceOnUse);
+                        n.clone().set_attribute(AId::GradientUnits, ValueId::UserSpaceOnUse);
                     }
                 }
             }
@@ -146,9 +146,9 @@ fn group_to_parent(doc: &Document) {
             for n in node.linked_nodes() {
                 if let Some(v) = n.attribute_value(AId::GradientUnits) {
                     if v == AttributeValue::PredefValue(ValueId::UserSpaceOnUse) {
-                        make_attr_invisible(&n, AId::GradientUnits);
+                        make_attr_invisible(&n.clone(), AId::GradientUnits);
                     } else {
-                        n.set_attribute(AId::GradientUnits, ValueId::ObjectBoundingBox);
+                        n.clone().set_attribute(AId::GradientUnits, ValueId::ObjectBoundingBox);
                     }
                 }
             }

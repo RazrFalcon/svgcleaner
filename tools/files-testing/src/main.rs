@@ -18,6 +18,8 @@ use clap::{Arg, App};
 // NOTE: This app uses a panic-based error processing.
 //       It's bad, but simpler for such small applications like this.
 
+// TODO: collect rerendered images
+
 macro_rules! dir_iter {
     ($input_dir:expr) => (
         WalkDir::new($input_dir).into_iter().filter_entry(|x| is_svg(x)).map(|x| x.unwrap())

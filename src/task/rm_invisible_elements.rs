@@ -77,7 +77,7 @@ fn process_clip_paths(doc: &Document, is_any_removed: &mut bool) {
     // Note, that all elements that uses this clip path also became invisible,
     // so we can remove them as well.
     while let Some(n) = clip_paths.pop() {
-        for link in n.linked_nodes() {
+        for link in n.linked_nodes().collect::<Vec<Node>>() {
             link.remove();
         }
         n.remove();
@@ -183,7 +183,7 @@ fn process_empty_filter(doc: &Document, is_any_removed: &mut bool) {
     // so we can remove them as well.
     for n in nodes {
         *is_any_removed = true;
-        for link in n.linked_nodes() {
+        for link in n.linked_nodes().collect::<Vec<Node>>() {
             link.remove();
         }
         n.remove();
@@ -248,7 +248,7 @@ fn process_gradients(doc: &Document) {
                       .filter(|n| !n.has_children() && !n.has_attribute(AId::XlinkHref));
 
         for n in iter {
-            for link in n.linked_nodes() {
+            for link in n.linked_nodes().collect::<Vec<Node>>() {
                 while let Some(aid) = find_link_attribute(&link, &n) {
                     link.set_attribute(aid, ValueId::None);
                 }
@@ -270,7 +270,7 @@ fn process_gradients(doc: &Document) {
             let color = *stop.attribute_value(AId::StopColor).unwrap().as_color().unwrap();
             let opacity = *stop.attribute_value(AId::StopOpacity).unwrap().as_number().unwrap();
 
-            for link in n.linked_nodes() {
+            for link in n.linked_nodes().collect::<Vec<Node>>() {
                 while let Some(aid) = find_link_attribute(&link, &n) {
                     link.set_attribute(aid, color);
                     if opacity.fuzzy_ne(&1.0) {

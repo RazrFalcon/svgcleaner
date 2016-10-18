@@ -45,7 +45,7 @@ macro_rules! check_attr {
 fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
     where F : Fn(&Node, &Node) -> bool
 {
-    let mut link_attrs: Vec<(AId, Node)> = Vec::new();
+    let mut link_attrs: Vec<(Node, AId, Node)> = Vec::new();
 
     let mut len = nodes.len();
     let mut i1 = 0;
@@ -61,7 +61,7 @@ fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
                 continue;
             }
 
-            // relink nodes
+            // collect linked nodes
             for ln in node2.linked_nodes() {
                 {
                     let attrs = ln.attributes();
@@ -70,23 +70,25 @@ fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
                         match attr.value {
                             AttributeValue::Link(ref n) | AttributeValue::FuncLink(ref n) => {
                                 if *n == node2 {
-                                    link_attrs.push((attr.id().unwrap(), node1.clone()));
+                                    link_attrs.push((ln.clone(), attr.id().unwrap(), node1.clone()));
                                 }
                             }
                             _ => {}
                         }
                     }
                 }
-
-                if !link_attrs.is_empty() {
-                    for &(ref aid, ref n) in &link_attrs {
-                        if *ln.id() != *n.id() {
-                            ln.set_link_attribute(*aid, n.clone()).unwrap();
-                        }
-                    }
-                    link_attrs.clear();
-                }
             }
+
+            // relink nodes
+            if !link_attrs.is_empty() {
+                for &(ref ln, ref aid, ref n) in &link_attrs {
+                    if *ln.id() != *n.id() {
+                        ln.set_link_attribute(*aid, n.clone()).unwrap();
+                    }
+                }
+                link_attrs.clear();
+            }
+
             node2.remove();
 
             nodes.remove(i2 - 1);

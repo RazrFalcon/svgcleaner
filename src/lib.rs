@@ -27,4 +27,3 @@ extern crate svgdom;
 pub mod cleaner;
 pub mod error;
 mod task;
-

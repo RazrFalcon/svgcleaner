@@ -36,6 +36,7 @@ pub use self::rm_dupl_defs::{
     remove_dupl_radial_gradients,
     remove_dupl_fe_gaussian_blur,
 };
+pub use self::rm_elems::remove_element;
 pub use self::rm_invalid_stops::remove_invalid_stops;
 pub use self::rm_invisible_elements::remove_invisible_elements;
 pub use self::rm_needless_attrs::remove_needless_attributes;
@@ -65,6 +66,8 @@ mod resolve_attrs;
 mod resolve_inherit;
 mod rm_default_attrs;
 mod rm_dupl_defs;
+mod rm_elems;
+mod rm_gradient_attrs;
 mod rm_invalid_stops;
 mod rm_invisible_elements;
 mod rm_needless_attrs;
@@ -75,7 +78,6 @@ mod rm_unused_defs;
 mod rm_version;
 mod trim_ids;
 mod ungroup_defs;
-mod rm_gradient_attrs;
 mod ungroup_groups;
 pub mod apply_transforms;
 pub mod paths;

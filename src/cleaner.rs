@@ -26,7 +26,7 @@ use std::io;
 
 use clap::ArgMatches;
 
-use svgdom::{Document, ParseOptions, WriteOptions, WriteBuffer, Error};
+use svgdom::{Document, ParseOptions, WriteOptions, WriteBuffer, Error, ElementId};
 
 use cli::{KEYS, Key};
 use task::*;
@@ -64,6 +64,19 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions)
     // Manipulate with tree structure.
     // Do not remove any attributes before this methods
     // since they uses them.
+
+    if get_flag!(args, Key::RemoveTitle) {
+        remove_element(doc, ElementId::Title);
+    }
+
+    if get_flag!(args, Key::RemoveDesc) {
+        remove_element(doc, ElementId::Desc);
+    }
+
+    if get_flag!(args, Key::RemoveMetadata) {
+        remove_element(doc, ElementId::Metadata);
+    }
+
     if get_flag!(args, Key::RemoveUnusedDefs) {
         remove_unused_defs(doc);
     }

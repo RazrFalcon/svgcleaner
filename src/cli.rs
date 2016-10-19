@@ -24,7 +24,7 @@ use std::ops::Index;
 
 use clap::{Arg, App, ArgMatches};
 
-use svgdom::{ParseOptions, WriteOptions, ElementId};
+use svgdom::{ParseOptions, WriteOptions};
 
 #[derive(Clone,Copy)]
 pub enum Key {
@@ -329,18 +329,6 @@ pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
     opt.parse_unknown_elements      = !get_flag!(args, Key::RemoveNonsvgElements);
     opt.parse_unknown_attributes    = !get_flag!(args, Key::RemoveNonsvgAttributes);
     opt.parse_px_unit = false;
-
-    if get_flag!(args, Key::RemoveTitle) {
-        opt.skip_svg_elements.push(ElementId::Title);
-    }
-
-    if get_flag!(args, Key::RemoveDesc) {
-        opt.skip_svg_elements.push(ElementId::Desc);
-    }
-
-    if get_flag!(args, Key::RemoveMetadata) {
-        opt.skip_svg_elements.push(ElementId::Metadata);
-    }
 
     opt
 }

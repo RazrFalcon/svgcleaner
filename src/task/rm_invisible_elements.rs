@@ -106,8 +106,6 @@ fn is_valid_clip_path_elem(node: &Node) -> bool {
 
 // Paths with empty 'd' attribute are invisible and we can remove them.
 fn process_paths(doc: &Document, is_any_removed: &mut bool) {
-    let mut paths = Vec::with_capacity(16);
-
     fn is_invisible(node: &Node) -> bool {
         if node.has_attribute(AId::D) {
             let attrs = node.attributes();
@@ -128,19 +126,8 @@ fn process_paths(doc: &Document, is_any_removed: &mut bool) {
         false
     }
 
-    for node in doc.descendants().svg().filter(|n| n.is_tag_id(EId::Path)) {
-        if is_invisible(&node) {
-            paths.push(node.clone());
-        }
-    }
-
-    if !paths.is_empty() {
-        *is_any_removed = true;
-    }
-
-    for n in paths {
-        n.remove();
-    }
+    let c = doc.drain(|n| n.is_tag_id(EId::Path) && is_invisible(n));
+    if c != 0 { *is_any_removed = true; }
 }
 
 // Remove elements with 'display:none'.
@@ -192,17 +179,19 @@ fn process_empty_filter(doc: &Document, is_any_removed: &mut bool) {
 
 // remove feColorMatrix with default values
 fn process_fe_color_matrix(doc: &Document) {
-    let mut nodes = Vec::with_capacity(16);
+    fn is_default_matrix(node: &Node) -> bool {
+        if !node.is_tag_id(EId::Filter) {
+            return false;
+        }
 
-    for node in doc.descendants().svg().filter(|n| n.is_tag_id(EId::Filter)) {
         if node.children().count() != 1 {
-            continue;
+            return false;
         }
 
         let child = node.children().nth(0).unwrap();
 
         if !child.is_tag_id(EId::FeColorMatrix) {
-            continue;
+            return false;
         }
 
         let attrs = child.attributes();
@@ -214,28 +203,22 @@ fn process_fe_color_matrix(doc: &Document) {
                 if let Some(&AttributeValue::String(ref values)) = attrs.get_value(AId::Values) {
                     if values == "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" {
                         // we remove the whole 'filter' elements
-                        nodes.push(node);
+                        return true;
                     }
                 }
             }
         }
+
+        false
     }
 
-    for n in nodes {
-        n.remove();
-    }
+    doc.drain(is_default_matrix);
 }
 
 // 'use' element without 'xlink:href' attribute is pointless
 fn process_use(doc: &Document, is_any_removed: &mut bool) {
-    let nodes: Vec<Node> = doc.descendants().svg()
-                              .filter(|n| n.is_tag_id(EId::Use) && !n.has_attribute(AId::XlinkHref))
-                              .collect();
-
-    for n in nodes {
-        *is_any_removed = true;
-        n.remove();
-    }
+    let c = doc.drain(|n| n.is_tag_id(EId::Use) && !n.has_attribute(AId::XlinkHref));
+    if c != 0 { *is_any_removed = true; }
 }
 
 fn process_gradients(doc: &Document) {
@@ -310,20 +293,19 @@ fn find_link_attribute(node: &Node, link: &Node) -> Option<AId> {
 
 // remove rect's with zero size
 fn process_rect(doc: &Document, is_any_removed: &mut bool) {
-    let mut nodes = Vec::with_capacity(16);
-
-    for n in doc.descendants().svg().filter(|n| n.is_tag_id(EId::Rect)) {
-        let attrs = n.attributes();
-        if    attrs.get_value(AId::Width).unwrap().as_length().unwrap().num == 0.0
-           || attrs.get_value(AId::Height).unwrap().as_length().unwrap().num == 0.0 {
-            nodes.push(n.clone());
+    fn is_invisible(node: &Node) -> bool {
+        if !node.is_tag_id(EId::Rect) {
+            return false;
         }
+
+        let attrs = node.attributes();
+
+           attrs.get_value(AId::Width).unwrap().as_length().unwrap().num == 0.0
+        || attrs.get_value(AId::Height).unwrap().as_length().unwrap().num == 0.0
     }
 
-    for n in nodes {
-        *is_any_removed = true;
-        n.remove();
-    }
+    let c = doc.drain(is_invisible);
+    if c != 0 { *is_any_removed = true; }
 }
 
 #[cfg(test)]
@@ -518,8 +500,8 @@ b"<svg>
     test!(rm_rect_1,
 b"<svg>
     <rect width='0' height='0'/>
-    <rect width='0' height='0'/>
-    <rect width='0' height='0'/>
+    <rect width='10' height='0'/>
+    <rect width='0' height='10'/>
 </svg>",
 "<svg/>
 ");

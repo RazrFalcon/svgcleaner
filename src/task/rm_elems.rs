@@ -25,9 +25,7 @@ use super::short::EId;
 use svgdom::Document;
 
 pub fn remove_element(doc: &Document, id: EId) {
-    for node in doc.descendants().svg().filter(|n| n.is_tag_id(id)).collect::<Vec<_>>() {
-        node.remove();
-    }
+    doc.drain(|n| n.is_tag_id(id));
 }
 
 #[cfg(test)]

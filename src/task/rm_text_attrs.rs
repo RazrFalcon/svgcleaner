@@ -54,14 +54,15 @@ pub fn remove_text_attributes(doc: &Document) {
     _remove_text_attributes(&doc.root());
 
     // check doc for text nodes
-    let has_text = doc.svg_element().unwrap().has_text_children();
+    let has_text = doc.svg_element().unwrap()
+                      .descendants().any(|n| n.node_type() == NodeType::Text);
 
     // We can remove text attributes from the 'font-face' element
     // only when there is no text in a whole doc.
     // Can't do it inside '_remove_text_attributes'.
     if !has_text {
         for node in doc.descendants().svg() {
-            if node.is_tag_id(EId::FontFace) {
+            if node.is_tag_name(EId::FontFace) {
                 node.remove_attributes(TEXT_ATTRIBUTES);
             }
         }
@@ -89,7 +90,7 @@ fn _remove_text_attributes(root: &Node) -> bool {
             // go deeper
             let can_rm = _remove_text_attributes(&node);
             if can_rm {
-                if !node.is_tag_id(EId::FontFace) {
+                if !node.is_tag_name(EId::FontFace) {
                     node.remove_attributes(TEXT_ATTRIBUTES);
                 }
             } else {
@@ -99,12 +100,12 @@ fn _remove_text_attributes(root: &Node) -> bool {
             // local version of the 'no_td'
 
             // only this parameters affect parent elements
-            let _no_td = !(   node.has_text_children()
-                           || node.is_tag_id(EId::Tref)
+            let _no_td = !(   node.descendants().any(|n| n.node_type() == NodeType::Text)
+                           || node.is_tag_name(EId::Tref)
                            || has_em_ex_attributes(&node));
 
             if    _no_td
-               && !node.is_tag_id(EId::FontFace)
+               && !node.is_tag_name(EId::FontFace)
                && !is_linked_text(&node) {
                 node.remove_attributes(TEXT_ATTRIBUTES);
             }
@@ -138,13 +139,13 @@ fn has_em_ex_attributes(node: &Node) -> bool {
 }
 
 fn is_linked_text(node: &Node) -> bool {
-    if node.is_tag_id(EId::Use) {
+    if node.is_tag_name(EId::Use) {
         // we use 'attributes()' method instead of 'attribute()',
         // because 'xlink:href' can contain base64 data, which will be expensive to copy
         let attrs = node.attributes();
         if let Some(value) = attrs.get_value(AId::XlinkHref) {
             if let AttributeValue::Link(ref link) = *value {
-                return link.has_text_children();
+                return link.descendants().any(|n| n.node_type() == NodeType::Text);
             }
         }
     }

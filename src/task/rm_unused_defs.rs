@@ -26,7 +26,7 @@ use svgdom::{Document, Node};
 
 pub fn remove_unused_defs(doc: &Document) {
     // unwrap is safe, because 'defs' already had been created in 'group_defs'
-    let defs = doc.root().child_by_tag_id(EId::Defs).unwrap();
+    let defs = doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0).unwrap();
 
     // repeat until no unused nodes left
     while remove_unused_defs_impl(&defs) { }
@@ -66,7 +66,7 @@ fn remove_unused_defs_impl(defs: &Node) -> bool {
 }
 
 fn is_font_node(node: &Node) -> bool {
-    node.is_tag_id(EId::FontFace) || node.is_tag_id(EId::Font)
+    node.is_tag_name(EId::FontFace) || node.is_tag_name(EId::Font)
 }
 
 fn ungroup_children(node: &Node, mv_nodes: &mut Vec<Node>, rm_nodes: &mut Vec<Node>) {

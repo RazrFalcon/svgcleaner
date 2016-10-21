@@ -70,7 +70,7 @@ pub fn apply_transform_to_gradients(doc: &Document) {
             continue;
         }
 
-        if node.is_tag_id(EId::LinearGradient) {
+        if node.is_tag_name(EId::LinearGradient) {
             let x1 = get_coord(&node, AId::X1);
             let y1 = get_coord(&node, AId::Y1);
 

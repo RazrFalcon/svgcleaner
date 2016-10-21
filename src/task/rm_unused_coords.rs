@@ -64,7 +64,7 @@ pub fn remove_unused_coordinates(doc: &Document) {
                     // to the other 'radialGradient'
                     if attrs.contains(AId::XlinkHref) {
                         if let Some(v) = attrs.get_value(AId::XlinkHref) {
-                            if v.as_link().unwrap().is_tag_id(EId::RadialGradient) {
+                            if v.as_link().unwrap().is_tag_name(EId::RadialGradient) {
                                 continue;
                             }
                         }
@@ -79,7 +79,7 @@ pub fn remove_unused_coordinates(doc: &Document) {
                                     // we can remove 'fx'/'fy' only if this element is not used
                                     // by any radialGradient
                                     let c = node.linked_nodes()
-                                                .filter(|n| n.is_tag_id(EId::RadialGradient))
+                                                .filter(|n| n.is_tag_name(EId::RadialGradient))
                                                 .count();
 
                                     if c == 0 {

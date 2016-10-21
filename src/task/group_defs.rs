@@ -28,7 +28,7 @@ pub fn group_defs(doc: &Document) {
     // doc must contain 'svg' node, so we can safely unwrap
     let svg = doc.svg_element().unwrap();
 
-    let defs = match doc.root().child_by_tag_id(EId::Defs) {
+    let defs = match doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0) {
         Some(n) => n,
         None => {
             // create 'defs' node if it didn't exist already
@@ -63,7 +63,7 @@ pub fn group_defs(doc: &Document) {
     {
         let mut nodes = Vec::new();
         for node in doc.descendants().svg() {
-            if node.is_tag_id(EId::Defs) && node != defs {
+            if node.is_tag_name(EId::Defs) && node != defs {
                 for child in node.children() {
                     nodes.push(child.clone());
                 }
@@ -80,7 +80,7 @@ pub fn group_defs(doc: &Document) {
     {
         let mut nodes = Vec::new();
         for node in doc.descendants().svg() {
-            if node.is_tag_id(EId::Defs) && node != defs {
+            if node.is_tag_name(EId::Defs) && node != defs {
                 nodes.push(node.clone());
             }
         }

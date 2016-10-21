@@ -35,7 +35,7 @@ pub fn remove_dupl_linear_gradients(doc: &Document) {
     ];
 
     let mut nodes = doc.descendants().svg()
-                       .filter(|n| n.is_tag_id(EId::LinearGradient))
+                       .filter(|n| n.is_tag_name(EId::LinearGradient))
                        .collect::<Vec<Node>>();
 
     super::rm_loop(&mut nodes, |node1, node2| {

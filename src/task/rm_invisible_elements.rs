@@ -53,7 +53,7 @@ fn process_clip_paths(doc: &Document, is_any_removed: &mut bool) {
     let mut clip_paths = Vec::with_capacity(16);
 
     // remove all invalid children
-    for node in doc.descendants().svg().filter(|n| n.is_tag_id(EId::ClipPath)) {
+    for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::ClipPath)) {
         for child in node.children() {
             if !is_valid_clip_path_elem(&child) {
                 nodes.push(child.clone());
@@ -89,11 +89,11 @@ fn is_valid_clip_path_elem(node: &Node) -> bool {
 
     fn is_valid_shape(node: &Node) -> bool {
            node.is_basic_shape()
-        || node.is_tag_id(EId::Path)
-        || node.is_tag_id(EId::Text)
+        || node.is_tag_name(EId::Path)
+        || node.is_tag_name(EId::Text)
     }
 
-    if node.is_tag_id(EId::Use) {
+    if node.is_tag_name(EId::Use) {
         if let Some(av) = node.attribute_value(AId::XlinkHref) {
             if let AttributeValue::Link(link) = av {
                 return is_valid_shape(&link);
@@ -126,7 +126,7 @@ fn process_paths(doc: &Document, is_any_removed: &mut bool) {
         false
     }
 
-    let c = doc.drain(|n| n.is_tag_id(EId::Path) && is_invisible(n));
+    let c = doc.drain(|n| n.is_tag_name(EId::Path) && is_invisible(n));
     if c != 0 { *is_any_removed = true; }
 }
 
@@ -163,7 +163,7 @@ fn _process_display_attribute(parent: &Node, nodes: &mut Vec<Node>, is_any_remov
 // remove 'filter' elements without children
 fn process_empty_filter(doc: &Document, is_any_removed: &mut bool) {
     let nodes: Vec<Node> = doc.descendants().svg()
-                              .filter(|n| n.is_tag_id(EId::Filter) && !n.has_children())
+                              .filter(|n| n.is_tag_name(EId::Filter) && !n.has_children())
                               .collect();
 
     // Note, that all elements that uses this filter also became invisible,
@@ -180,7 +180,7 @@ fn process_empty_filter(doc: &Document, is_any_removed: &mut bool) {
 // remove feColorMatrix with default values
 fn process_fe_color_matrix(doc: &Document) {
     fn is_default_matrix(node: &Node) -> bool {
-        if !node.is_tag_id(EId::Filter) {
+        if !node.is_tag_name(EId::Filter) {
             return false;
         }
 
@@ -190,7 +190,7 @@ fn process_fe_color_matrix(doc: &Document) {
 
         let child = node.children().nth(0).unwrap();
 
-        if !child.is_tag_id(EId::FeColorMatrix) {
+        if !child.is_tag_name(EId::FeColorMatrix) {
             return false;
         }
 
@@ -217,7 +217,7 @@ fn process_fe_color_matrix(doc: &Document) {
 
 // 'use' element without 'xlink:href' attribute is pointless
 fn process_use(doc: &Document, is_any_removed: &mut bool) {
-    let c = doc.drain(|n| n.is_tag_id(EId::Use) && !n.has_attribute(AId::XlinkHref));
+    let c = doc.drain(|n| n.is_tag_name(EId::Use) && !n.has_attribute(AId::XlinkHref));
     if c != 0 { *is_any_removed = true; }
 }
 
@@ -294,7 +294,7 @@ fn find_link_attribute(node: &Node, link: &Node) -> Option<AId> {
 // remove rect's with zero size
 fn process_rect(doc: &Document, is_any_removed: &mut bool) {
     fn is_invisible(node: &Node) -> bool {
-        if !node.is_tag_id(EId::Rect) {
+        if !node.is_tag_name(EId::Rect) {
             return false;
         }
 

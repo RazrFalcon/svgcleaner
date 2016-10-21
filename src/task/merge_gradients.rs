@@ -96,7 +96,7 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
             // we only need to make them visible.
 
             // do not process all attributes - only important
-            let aid_list = if node.is_tag_id(EId::LinearGradient) {
+            let aid_list = if node.is_tag_name(EId::LinearGradient) {
                 &LG_ATTRIBUTES[..]
             } else {
                 &RG_ATTRIBUTES[..]

@@ -53,7 +53,7 @@ fn _ungroup_groups(root: &Node, groups: &mut Vec<Node>) {
     // TODO: we should not ungroup groups with non-inheritable attributes.
 
     for node in root.children() {
-        if node.is_tag_id(EId::G) {
+        if node.is_tag_name(EId::G) {
             if !node.has_children() && !node.has_attribute(AId::Filter) {
                 // Empty group without filter attribute.
                 // Checkout 'filters-tile-01-b.svg' in 'W3C_SVG_11_TestSuite' for details.
@@ -76,7 +76,7 @@ fn _ungroup_groups(root: &Node, groups: &mut Vec<Node>) {
             // so if we ungroup this group we will actually enable clipping.
             // Which will lead to broken image.
             // TODO: remove such groups completely
-            if node.parent().unwrap().is_tag_id(EId::ClipPath) {
+            if node.parent().unwrap().is_tag_name(EId::ClipPath) {
                 continue;
             }
 
@@ -93,7 +93,7 @@ fn _ungroup_groups(root: &Node, groups: &mut Vec<Node>) {
             // process group with many children
 
             // do not ungroup group which have 'switch' element as direct parent
-            if node.parent().unwrap().is_tag_id(EId::Switch) {
+            if node.parent().unwrap().is_tag_name(EId::Switch) {
                 continue;
             }
 

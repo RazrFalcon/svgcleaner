@@ -25,7 +25,7 @@ use super::short::EId;
 use svgdom::Document;
 
 pub fn remove_element(doc: &Document, id: EId) {
-    doc.drain(|n| n.is_tag_id(id));
+    doc.drain(|n| n.is_tag_name(id));
 }
 
 #[cfg(test)]

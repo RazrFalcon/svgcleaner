@@ -109,7 +109,7 @@ pub fn stop(doc: &Document) -> Result<(), CleanerError> {
 }
 
 fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
-    let nodes = doc.descendants().svg().filter(|n| n.is_tag_id(eid))
+    let nodes = doc.descendants().svg().filter(|n| n.is_tag_name(eid))
                    .collect::<Vec<Node>>();
 
     let mut order = Vec::with_capacity(nodes.len());
@@ -121,7 +121,7 @@ fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
             }
 
             let c = node.linked_nodes().filter(|n| {
-                n.is_tag_id(eid) && !order.iter().any(|on| on == n)
+                n.is_tag_name(eid) && !order.iter().any(|on| on == n)
             }).count();
 
             if c == 0 {

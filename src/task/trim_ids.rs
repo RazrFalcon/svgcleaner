@@ -108,7 +108,7 @@ impl Num {
 
 pub fn trim_ids(doc: &Document) {
     let mut num = Num::new();
-    for node in doc.root().descendants().svg() {
+    for node in doc.descendants().svg() {
         if node.has_id() {
             node.set_id(num.to_string());
             num.plus_one();

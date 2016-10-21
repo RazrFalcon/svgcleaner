@@ -31,7 +31,7 @@ use cli::{KEYS, Key};
 mod rm_unused;
 
 pub fn process_paths(doc: &Document, args: &ArgMatches) {
-    for node in doc.descendants().svg().filter(|n| n.is_tag_id(EId::Path)) {
+    for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::Path)) {
         // We can't process paths with marker, because if we remove all segments
         // it will break rendering.
         // TODO: do not remove first segment if node has marker

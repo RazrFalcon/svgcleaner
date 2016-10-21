@@ -38,7 +38,7 @@ pub fn move_styles_to_group(doc: &Document) {
 
 fn _move_styles_to_group(parent: &Node, attrs_list: &mut Vec<AttrCount>) {
     for node in parent.children() {
-        if node.is_tag_id(EId::G) {
+        if node.is_tag_name(EId::G) {
             _move_styles_to_group(&node, attrs_list);
             process_g(&node, attrs_list);
         }

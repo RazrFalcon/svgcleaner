@@ -90,5 +90,5 @@ mod short {
 }
 
 fn is_gradient(node: &super::svgdom::Node) -> bool {
-    node.is_tag_id(short::EId::LinearGradient) || node.is_tag_id(short::EId::RadialGradient)
+    node.is_tag_name(short::EId::LinearGradient) || node.is_tag_name(short::EId::RadialGradient)
 }

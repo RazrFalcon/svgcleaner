@@ -33,7 +33,7 @@ pub fn final_fixes(doc: &Document) {
     // doc must contain 'svg' node, so we can safely unwrap
     let svg = doc.svg_element().unwrap();
     for child in svg.children() {
-        if child.is_tag_id(EId::Defs) && !child.has_children() {
+        if child.is_tag_name(EId::Defs) && !child.has_children() {
             child.remove();
             break;
         }

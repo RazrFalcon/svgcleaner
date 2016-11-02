@@ -31,6 +31,7 @@ pub enum CleanerError {
     ConditionalProcessingIsNotSupported,
     ExternalHrefIsNotSupported(String), // ref data
     BiggerFile,
+    InputFileDoesNotExist,
 }
 
 impl fmt::Debug for CleanerError {
@@ -51,6 +52,8 @@ impl fmt::Debug for CleanerError {
             CleanerError::ExternalHrefIsNotSupported(ref s) =>
                 write!(f, "The 'xlink:href' attribute is referencing an external object '{}', \
                            which is not supported", s),
+            CleanerError::InputFileDoesNotExist =>
+                write!(f, "Input file does not exist"),
         }
     }
 }

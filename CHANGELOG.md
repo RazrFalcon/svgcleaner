@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Added
+- Check that input file exist.
+- *Remove invisible elements* now removes default `feColorMatrix` element.
+
+### Other
+- Updated to the latest version of the libsvgdom.
+
 ## [0.7.0] - 2016-10-09
 ### Added
 - `--remove-dupl-fegaussianblur`.
@@ -13,9 +21,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--regroup-gradient-stops`.
 - `--remove-gradient-attributes`.
 - `--multipass`.
-
-### Changes
-- A lot of small cleaning optimizations.
 
 ### Removed
 - `--precision-coordinate`.
@@ -44,6 +49,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Fix duplicated gradients removing.
+
+### Other
+- A lot of small cleaning optimizations.
 
 ## [0.6.90] - 2016-09-09
 ### Added

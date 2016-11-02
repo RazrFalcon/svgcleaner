@@ -25,6 +25,7 @@
 #[macro_use] extern crate svgcleaner;
 
 use std::fs;
+use std::path::Path;
 
 use svgcleaner::cli::*;
 use svgcleaner::cleaner::*;
@@ -59,9 +60,13 @@ fn main() {
     let parse_opt = gen_parse_options(&args);
     let write_opt = gen_write_options(&args);
 
-    // TODO: check that file exists
     let in_file  = args.value_of("in-file").unwrap();
     let out_file = args.value_of("out-file").unwrap();
+
+    if !Path::new(in_file).exists() {
+        println!("Error: {:?}.", CleanerError::InputFileDoesNotExist);
+        std::process::exit(0);
+    }
 
     // load file
     let raw = try_msg!(load_file(in_file));

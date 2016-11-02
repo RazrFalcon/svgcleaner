@@ -20,6 +20,7 @@
 **
 ****************************************************************************/
 
+// TODO: reexport clap from lib
 #[macro_use] extern crate clap;
 #[macro_use] extern crate svgcleaner;
 
@@ -58,6 +59,7 @@ fn main() {
     let parse_opt = gen_parse_options(&args);
     let write_opt = gen_write_options(&args);
 
+    // TODO: check that file exists
     let in_file  = args.value_of("in-file").unwrap();
     let out_file = args.value_of("out-file").unwrap();
 

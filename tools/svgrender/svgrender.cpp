@@ -129,7 +129,7 @@ static void usage()
 
 int main(int argc, char * argv[])
 {
-    if (argc != 5) {
+    if (argc != 4) {
         usage();
         return 0;
     }

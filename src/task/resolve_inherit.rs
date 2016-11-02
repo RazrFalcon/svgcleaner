@@ -67,14 +67,14 @@ pub fn resolve_inherit(doc: &Document) -> Result<(), CleanerError> {
 
 fn resolve_impl(node: &Node, curr_attr: AId, parent_attr: AId)
                -> Result<(), CleanerError> {
-    match node.parent_attribute(parent_attr) {
-        Some(av) => {
-            node.set_attribute(curr_attr, av.value);
-        }
-        None => {
-            match Attribute::default(curr_attr) {
-                Some(a) => node.set_attribute(curr_attr, a.value),
-                None => return Err(CleanerError::UnresolvedAttribute(curr_attr.name().to_string())),
+    if let Some(n) = node.parents().find(|n| n.has_attribute(parent_attr)) {
+        let av = n.attribute_value(parent_attr).unwrap();
+        node.set_attribute(curr_attr, av);
+    } else {
+        match Attribute::default(curr_attr) {
+            Some(a) => node.set_attribute(curr_attr, a.value),
+            None => {
+                return Err(CleanerError::UnresolvedAttribute(curr_attr.name().to_string()));
             }
         }
     }

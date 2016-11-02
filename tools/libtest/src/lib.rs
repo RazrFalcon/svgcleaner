@@ -147,7 +147,7 @@ pub fn render_svg(render: &str, svg_path: &str, png_path: &str) -> bool {
     // This flag is harmless if there is no QtWebKit.
     let res = Command::new(render)
                 .env("LD_LIBRARY_PATH", "/usr/local/lib64")
-                .arg(svg_path).arg(png_path).arg("512").arg("512").output();
+                .arg(svg_path).arg(png_path).arg("512").output();
 
     match res {
         Ok(o) => {

@@ -202,8 +202,9 @@ fn process_stroke(node: &Node) {
 
             // if the parent element defines stroke - we must mark current element
             // with 'none' stroke
-            if let Some(attr) = node.parent_attribute(AId::Stroke) {
-                if attr.value != AttributeValue::PredefValue(ValueId::None) {
+            if let Some(n) = node.parents().find(|n| n.has_attribute(AId::Stroke)) {
+                let value = n.attribute_value(AId::Stroke).unwrap();
+                if value != AttributeValue::PredefValue(ValueId::None) {
                     node.set_attribute(AId::Stroke, ValueId::None);
                 }
             }
@@ -216,7 +217,7 @@ fn process_stroke(node: &Node) {
 
                     // if the parent element doesn't define 'stroke' - we can remove it
                     // from the current element
-                    if node.parent_attribute(AId::Stroke).is_none() {
+                    if node.parents().find(|n| n.has_attribute(AId::Stroke)).is_none() {
                         node.remove_attribute(AId::Stroke);
                     }
                 }

@@ -39,10 +39,8 @@ pub fn process_paths(doc: &Document, args: &ArgMatches) {
                                                AId::MarkerMid, AId::MarkerEnd]);
 
         let mut attrs = node.attributes_mut();
-        if let Some(attr) = attrs.get_mut(AId::D) {
-            if let AttributeValue::Path(ref mut path) = attr.value {
-                process_path(path, has_marker, args);
-            }
+        if let Some(&mut AttributeValue::Path(ref mut path)) = attrs.get_value_mut(AId::D) {
+            process_path(path, has_marker, args);
         }
     }
 }

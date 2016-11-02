@@ -37,15 +37,13 @@ pub fn remove_default_attributes(doc: &Document) {
             for (aid, attr) in attrs.iter_svg() {
                 if attr.is_presentation() {
                     if attr.check_is_default() {
-                        match node.parent_attribute(aid) {
-                            Some(pattr) => {
-                                if !pattr.visible {
-                                    rm_list.push(aid);
-                                }
+                        if let Some(n) = node.parents().find(|n| n.has_attribute(aid)) {
+                            let a = n.attribute(aid).unwrap();
+                            if !a.visible {
+                                rm_list.push(aid);
                             }
-                            None => {
-                                rm_list.push(aid)
-                            }
+                        } else {
+                            rm_list.push(aid);
                         }
                     }
                 } else if is_default(attr, tag_name) {

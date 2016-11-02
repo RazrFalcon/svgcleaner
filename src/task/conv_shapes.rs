@@ -48,6 +48,7 @@ pub fn convert_shapes_to_paths(doc: &Document) {
 fn convert_line(node: &Node) {
     debug_assert!(node.is_tag_name(EId::Line));
 
+    // TODO: rewrite as rect
     {
         let mut attrs = node.attributes_mut();
 

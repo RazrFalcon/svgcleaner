@@ -41,6 +41,7 @@ Attributes:
     --move-styles-to-group <FLAG>            Move presentational attributes to the parent group [default: true]
     --join-style-attributes <FLAG>           Join presentational attributes [default: true]
     --apply-transform-to-gradients <FLAG>    Apply transformations to gradients [default: true]
+    --remove-unresolved-classes <FLAG>       Remove unresolved classes from 'class' attributes [default: true]
 
 Paths:
     --paths-to-relative <FLAG>               Convert path's segments into relative one [default: true]

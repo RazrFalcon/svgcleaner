@@ -59,6 +59,7 @@ pub enum Key {
     MoveStylesToGroup,
     JoinStyleAttributes,
     ApplyTransformToGradients,
+    RemoveUnresolvedClasses,
 
     PathsToRelative,
     RemoveUnusedSegments,
@@ -117,6 +118,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "move-styles-to-group",
     "join-style-attributes",
     "apply-transform-to-gradients",
+    "remove-unresolved-classes",
 
     "paths-to-relative",
     "remove-unused-segments",
@@ -227,6 +229,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             "Join presentational attributes", "true"));
     a = a.arg(gen_flag!(Key::ApplyTransformToGradients,
             "Apply transformations to gradients", "true"));
+    a = a.arg(gen_flag!(Key::RemoveUnresolvedClasses,
+            "Remove unresolved classes from 'class' attributes", "true"));
 
     // paths
     a = a.arg(gen_flag!(Key::PathsToRelative,
@@ -328,6 +332,7 @@ pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
     opt.parse_declarations          = !get_flag!(args, Key::RemoveDeclarations);
     opt.parse_unknown_elements      = !get_flag!(args, Key::RemoveNonsvgElements);
     opt.parse_unknown_attributes    = !get_flag!(args, Key::RemoveNonsvgAttributes);
+    opt.skip_unresolved_classes     =  get_flag!(args, Key::RemoveUnresolvedClasses);
     opt.parse_px_unit = false;
 
     opt

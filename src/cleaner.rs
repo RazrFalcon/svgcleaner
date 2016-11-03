@@ -183,7 +183,7 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions)
     final_fixes(doc);
     fix_xmlns_attribute(doc, get_flag!(args, Key::RemoveXmlnsXlinkAttribute));
 
-    // NOTE: must be run at last, since it breaks linking.
+    // NOTE: must be run at last, since it breaks the linking.
     if get_flag!(args, Key::JoinStyleAttributes) {
         join_style_attributes(doc, opt);
     }

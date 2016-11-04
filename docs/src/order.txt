@@ -30,6 +30,7 @@ remove-gradient-attributes.rst
 move-styles-to-group.rst
 join-style-attributes.rst
 apply-transform-to-gradients.rst
+remove-unresolved-classes.rst
 -- Paths
 paths-to-relative.rst
 remove-unused-segments.rst

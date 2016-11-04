@@ -4,8 +4,8 @@
     <text font-family="Arial" font-size="16" font-weight="bold" x="125" y="16">
         Broken files in W3C SVG 1.1 TestSuite
     </text>
-    <text font-family="Arial" font-size="16" x="4" y="56">
-        svgcleaner 0.7.0
+    <text font-family="Arial" font-size="16" x="6" y="56">
+        svgcleaner 0.7.1
     </text>
     <text font-family="Arial" font-size="16" x="4" y="91">
         svgcleaner 0.6.2

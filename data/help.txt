@@ -35,7 +35,7 @@ Attributes:
     --remove-text-attributes <FLAG>          Remove text-related attributes if there is no text [default: true]
     --remove-unused-coordinates <FLAG>       Remove unused coordinate attributes [default: true]
     --remove-default-attributes <FLAG>       Remove attributes with default values [default: true]
-    --remove-xmlns-xlink-attribute <FLAG>    Remove an unused xmlns:xlink attribute [default: true]
+    --remove-xmlns-xlink-attribute <FLAG>    Remove an unused 'xmlns:xlink' attribute [default: true]
     --remove-needless-attributes <FLAG>      Remove attributes that doesn't belong to this element [default: true]
     --remove-gradient-attributes <FLAG>      Remove inheritable gradient attributes [default: false]
     --move-styles-to-group <FLAG>            Move presentational attributes to the parent group [default: true]

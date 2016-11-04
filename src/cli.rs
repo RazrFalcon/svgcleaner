@@ -136,10 +136,9 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
 ]);
 
 macro_rules! gen_flag {
-    ($key:expr, $long:expr, $flag:expr) => (
+    ($key:expr, $flag:expr) => (
         Arg::with_name(KEYS[$key])
             .long(KEYS[$key])
-            .help($long)
             .value_name("FLAG")
             .default_value($flag)
             .validator(is_flag)
@@ -156,113 +155,69 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .help(include_str!("../data/help.txt"))
         .version("0.7.1")
         .arg(Arg::with_name("in-file")
-            .help("Input file")
             .required(true)
             .index(1)
             .validator(is_svg))
         .arg(Arg::with_name("out-file")
-            .help("Output file")
             .required(true)
             .index(2)
             .validator(is_svg));
 
     // elements
-    a = a.arg(gen_flag!(Key::RemoveComments,
-            "Remove XML comments", "true"));
-    a = a.arg(gen_flag!(Key::RemoveDeclarations,
-            "Remove XML declarations", "true"));
-    a = a.arg(gen_flag!(Key::RemoveNonsvgElements,
-            "Remove non-SVG elements", "true"));
-    a = a.arg(gen_flag!(Key::RemoveUnusedDefs,
-            "Remove unused referenced elements", "true"));
-    a = a.arg(gen_flag!(Key::ConvertShapes,
-            "Convert basic shapes into paths", "true"));
-    a = a.arg(gen_flag!(Key::RemoveTitle,
-            "Remove 'title' element", "true"));
-    a = a.arg(gen_flag!(Key::RemoveDesc,
-            "Remove 'desc' element", "true"));
-    a = a.arg(gen_flag!(Key::RemoveMetadata,
-            "Remove 'metadata' element", "true"));
-    a = a.arg(gen_flag!(Key::RemoveDuplLinearGradients,
-            "Remove duplicated 'linearGradient' elements", "true"));
-    a = a.arg(gen_flag!(Key::RemoveDuplRadialGradients,
-            "Remove duplicated 'radialGradient' elements", "true"));
-    a = a.arg(gen_flag!(Key::RemoveDuplFeGaussianBlur,
-            "Remove duplicated 'feGaussianBlur' elements", "true"));
-    a = a.arg(gen_flag!(Key::UngroupGroups,
-            "Ungroup groups", "true"));
-    a = a.arg(gen_flag!(Key::UngroupDefs,
-            "Ungroup 'defs' element", "true"));
-    a = a.arg(gen_flag!(Key::MergeGradients,
-            "Merge gradients", "true"));
-    a = a.arg(gen_flag!(Key::RegroupGradientStops,
-            "Regroup gradient 'stop' elements", "true"));
-    a = a.arg(gen_flag!(Key::RemoveInvalidStops,
-            "Remove invalid 'stop' elements", "true"));
-    a = a.arg(gen_flag!(Key::RemoveInvisibleElements,
-            "Remove invisible elements", "true"));
+    a = a.arg(gen_flag!(Key::RemoveComments, "true"));
+    a = a.arg(gen_flag!(Key::RemoveDeclarations, "true"));
+    a = a.arg(gen_flag!(Key::RemoveNonsvgElements, "true"));
+    a = a.arg(gen_flag!(Key::RemoveUnusedDefs, "true"));
+    a = a.arg(gen_flag!(Key::ConvertShapes, "true"));
+    a = a.arg(gen_flag!(Key::RemoveTitle, "true"));
+    a = a.arg(gen_flag!(Key::RemoveDesc, "true"));
+    a = a.arg(gen_flag!(Key::RemoveMetadata, "true"));
+    a = a.arg(gen_flag!(Key::RemoveDuplLinearGradients, "true"));
+    a = a.arg(gen_flag!(Key::RemoveDuplRadialGradients, "true"));
+    a = a.arg(gen_flag!(Key::RemoveDuplFeGaussianBlur, "true"));
+    a = a.arg(gen_flag!(Key::UngroupGroups, "true"));
+    a = a.arg(gen_flag!(Key::UngroupDefs, "true"));
+    a = a.arg(gen_flag!(Key::MergeGradients, "true"));
+    a = a.arg(gen_flag!(Key::RegroupGradientStops, "true"));
+    a = a.arg(gen_flag!(Key::RemoveInvalidStops, "true"));
+    a = a.arg(gen_flag!(Key::RemoveInvisibleElements, "true"));
 
     // attributes
-    a = a.arg(gen_flag!(Key::RemoveVersion,
-            "Remove 'version' and 'baseProfile' attributes", "true"));
-    a = a.arg(gen_flag!(Key::RemoveNonsvgAttributes,
-            "Remove non-SVG attributes", "true"));
-    a = a.arg(gen_flag!(Key::RemoveUnreferencedIds,
-            "Remove unreferenced 'id' attributes", "true"));
-    a = a.arg(gen_flag!(Key::TrimIds,
-            "Trim 'id' attributes", "true"));
-    a = a.arg(gen_flag!(Key::RemoveTextAttributes,
-            "Remove text-related attributes if there is no text", "true"));
-    a = a.arg(gen_flag!(Key::RemoveUnusedCoordinates,
-            "Remove unused coordinate attributes", "true"));
-    a = a.arg(gen_flag!(Key::RemoveDefaultAttributes,
-            "Remove attributes with default values", "true"));
-    a = a.arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute,
-            "Remove an unused xmlns:xlink attribute", "true"));
-    a = a.arg(gen_flag!(Key::RemoveNeedlessAttributes,
-            "Remove attributes that doesn't belong to this element", "true"));
-    a = a.arg(gen_flag!(Key::RemoveGradientAttributes,
-            "Remove inheritable gradient attributes", "false"));
-    a = a.arg(gen_flag!(Key::MoveStylesToGroup,
-            "Move presentational attributes to the parent group", "true"));
-    a = a.arg(gen_flag!(Key::JoinStyleAttributes,
-            "Join presentational attributes", "true"));
-    a = a.arg(gen_flag!(Key::ApplyTransformToGradients,
-            "Apply transformations to gradients", "true"));
-    a = a.arg(gen_flag!(Key::RemoveUnresolvedClasses,
-            "Remove unresolved classes from 'class' attributes", "true"));
+    a = a.arg(gen_flag!(Key::RemoveVersion, "true"));
+    a = a.arg(gen_flag!(Key::RemoveNonsvgAttributes, "true"));
+    a = a.arg(gen_flag!(Key::RemoveUnreferencedIds, "true"));
+    a = a.arg(gen_flag!(Key::TrimIds, "true"));
+    a = a.arg(gen_flag!(Key::RemoveTextAttributes, "true"));
+    a = a.arg(gen_flag!(Key::RemoveUnusedCoordinates, "true"));
+    a = a.arg(gen_flag!(Key::RemoveDefaultAttributes, "true"));
+    a = a.arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute, "true"));
+    a = a.arg(gen_flag!(Key::RemoveNeedlessAttributes, "true"));
+    a = a.arg(gen_flag!(Key::RemoveGradientAttributes, "false"));
+    a = a.arg(gen_flag!(Key::MoveStylesToGroup, "true"));
+    a = a.arg(gen_flag!(Key::JoinStyleAttributes, "true"));
+    a = a.arg(gen_flag!(Key::ApplyTransformToGradients, "true"));
+    a = a.arg(gen_flag!(Key::RemoveUnresolvedClasses, "true"));
 
     // paths
-    a = a.arg(gen_flag!(Key::PathsToRelative,
-            "Convert path's segments into relative one", "true"));
-    a = a.arg(gen_flag!(Key::RemoveUnusedSegments,
-            "Remove unused path segments", "true"));
-    a = a.arg(gen_flag!(Key::TrimPaths,
-            "Use compact notation for paths", "true"));
-    a = a.arg(gen_flag!(Key::JoinArcToFlags,
-            "Join ArcTo flags", "false"));
-    a = a.arg(gen_flag!(Key::RemoveDuplCmdInPaths,
-            "Remove subsequent segments command from paths", "true"));
+    a = a.arg(gen_flag!(Key::PathsToRelative, "true"));
+    a = a.arg(gen_flag!(Key::RemoveUnusedSegments, "true"));
+    a = a.arg(gen_flag!(Key::TrimPaths, "true"));
+    a = a.arg(gen_flag!(Key::JoinArcToFlags, "false"));
+    a = a.arg(gen_flag!(Key::RemoveDuplCmdInPaths, "true"));
 
     // output
-    a = a.arg(gen_flag!(Key::TrimColors,
-            "Use #RGB notation", "true"));
-    a = a.arg(gen_flag!(Key::SimplifyTransforms,
-            "Simplify transform matrices", "true"));
+    a = a.arg(gen_flag!(Key::TrimColors, "true"));
+    a = a.arg(gen_flag!(Key::SimplifyTransforms, "true"));
     a = a.arg(Arg::with_name(KEYS[Key::Indent])
             .long(KEYS[Key::Indent])
-            .help("Sets XML nodes indent (-1..4)")
             .value_name("INDENT")
             .validator(is_indent)
             .default_value("-1"));
 
     // other
-    a = a.arg(gen_flag!(Key::Multipass,
-            "Clean a file multiple times", "false"));
-    a = a.arg(gen_flag!(Key::CopyOnError,
-            "Copy an original file to the destination on error", "false"));
-    a = a.arg(gen_flag!(Key::Quiet,
-            "Show only warnings and errors", "false"));
+    a = a.arg(gen_flag!(Key::Multipass, "false"));
+    a = a.arg(gen_flag!(Key::CopyOnError, "false"));
+    a = a.arg(gen_flag!(Key::Quiet, "false"));
 
     a
 }

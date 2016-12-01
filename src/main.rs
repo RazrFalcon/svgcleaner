@@ -29,7 +29,7 @@ use std::path::Path;
 
 use svgcleaner::cli::*;
 use svgcleaner::cleaner::*;
-use svgcleaner::error::CleanerError;
+use svgcleaner::error::Error;
 
 macro_rules! try_msg {
     ($e:expr) => ({
@@ -64,7 +64,7 @@ fn main() {
     let out_file = args.value_of("out-file").unwrap();
 
     if !Path::new(in_file).exists() {
-        println!("Error: {:?}.", CleanerError::InputFileDoesNotExist);
+        println!("Error: {:?}.", Error::InputFileDoesNotExist);
         std::process::exit(0);
     }
 
@@ -129,7 +129,7 @@ fn main() {
 
     // check that cleaned file is smaller
     if buf.len() > raw.len() {
-        println!("Error: {:?}.", CleanerError::BiggerFile);
+        println!("Error: {:?}.", Error::BiggerFile);
         on_err();
     }
 

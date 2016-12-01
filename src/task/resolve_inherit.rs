@@ -24,9 +24,9 @@ use super::short::{AId};
 
 use svgdom::{Document, Node, Attribute, AttributeValue, ValueId};
 
-use error::CleanerError;
+use error::Error;
 
-pub fn resolve_inherit(doc: &Document) -> Result<(), CleanerError> {
+pub fn resolve_inherit(doc: &Document) -> Result<(), Error> {
     for node in doc.descendants().svg() {
 
         let mut vec_inherit = Vec::new();
@@ -65,8 +65,7 @@ pub fn resolve_inherit(doc: &Document) -> Result<(), CleanerError> {
     Ok(())
 }
 
-fn resolve_impl(node: &Node, curr_attr: AId, parent_attr: AId)
-               -> Result<(), CleanerError> {
+fn resolve_impl(node: &Node, curr_attr: AId, parent_attr: AId) -> Result<(), Error> {
     if let Some(n) = node.parents().find(|n| n.has_attribute(parent_attr)) {
         let av = n.attribute_value(parent_attr).unwrap();
         node.set_attribute(curr_attr, av);
@@ -74,7 +73,7 @@ fn resolve_impl(node: &Node, curr_attr: AId, parent_attr: AId)
         match Attribute::default(curr_attr) {
             Some(a) => node.set_attribute(curr_attr, a.value),
             None => {
-                return Err(CleanerError::UnresolvedAttribute(curr_attr.name().to_string()));
+                return Err(Error::UnresolvedAttribute(curr_attr.name().to_string()));
             }
         }
     }

@@ -23,9 +23,9 @@ default-features = false
 
 # makes it 5-10% faster, but very slow to compile
 # use only for main releases
-[profile.release]
-opt-level = 3
-lto = true
+# [profile.release]
+# opt-level = 3
+# lto = true
 
 [lib]
 doctest = false

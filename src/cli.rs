@@ -151,7 +151,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     // NOTE: We use custom help output, because `clap` doesn't support
     //       args grouping.
 
-    let mut a = App::new("svgcleaner")
+    App::new("svgcleaner")
         .help(include_str!("../data/help.txt"))
         .version("0.7.1")
         .arg(Arg::with_name("in-file")
@@ -161,65 +161,63 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(Arg::with_name("out-file")
             .required(true)
             .index(2)
-            .validator(is_svg));
+            .validator(is_svg))
 
-    // elements
-    a = a.arg(gen_flag!(Key::RemoveComments, "true"));
-    a = a.arg(gen_flag!(Key::RemoveDeclarations, "true"));
-    a = a.arg(gen_flag!(Key::RemoveNonsvgElements, "true"));
-    a = a.arg(gen_flag!(Key::RemoveUnusedDefs, "true"));
-    a = a.arg(gen_flag!(Key::ConvertShapes, "true"));
-    a = a.arg(gen_flag!(Key::RemoveTitle, "true"));
-    a = a.arg(gen_flag!(Key::RemoveDesc, "true"));
-    a = a.arg(gen_flag!(Key::RemoveMetadata, "true"));
-    a = a.arg(gen_flag!(Key::RemoveDuplLinearGradients, "true"));
-    a = a.arg(gen_flag!(Key::RemoveDuplRadialGradients, "true"));
-    a = a.arg(gen_flag!(Key::RemoveDuplFeGaussianBlur, "true"));
-    a = a.arg(gen_flag!(Key::UngroupGroups, "true"));
-    a = a.arg(gen_flag!(Key::UngroupDefs, "true"));
-    a = a.arg(gen_flag!(Key::MergeGradients, "true"));
-    a = a.arg(gen_flag!(Key::RegroupGradientStops, "true"));
-    a = a.arg(gen_flag!(Key::RemoveInvalidStops, "true"));
-    a = a.arg(gen_flag!(Key::RemoveInvisibleElements, "true"));
+        // elements
+        .arg(gen_flag!(Key::RemoveComments, "true"))
+        .arg(gen_flag!(Key::RemoveDeclarations, "true"))
+        .arg(gen_flag!(Key::RemoveNonsvgElements, "true"))
+        .arg(gen_flag!(Key::RemoveUnusedDefs, "true"))
+        .arg(gen_flag!(Key::ConvertShapes, "true"))
+        .arg(gen_flag!(Key::RemoveTitle, "true"))
+        .arg(gen_flag!(Key::RemoveDesc, "true"))
+        .arg(gen_flag!(Key::RemoveMetadata, "true"))
+        .arg(gen_flag!(Key::RemoveDuplLinearGradients, "true"))
+        .arg(gen_flag!(Key::RemoveDuplRadialGradients, "true"))
+        .arg(gen_flag!(Key::RemoveDuplFeGaussianBlur, "true"))
+        .arg(gen_flag!(Key::UngroupGroups, "true"))
+        .arg(gen_flag!(Key::UngroupDefs, "true"))
+        .arg(gen_flag!(Key::MergeGradients, "true"))
+        .arg(gen_flag!(Key::RegroupGradientStops, "true"))
+        .arg(gen_flag!(Key::RemoveInvalidStops, "true"))
+        .arg(gen_flag!(Key::RemoveInvisibleElements, "true"))
 
-    // attributes
-    a = a.arg(gen_flag!(Key::RemoveVersion, "true"));
-    a = a.arg(gen_flag!(Key::RemoveNonsvgAttributes, "true"));
-    a = a.arg(gen_flag!(Key::RemoveUnreferencedIds, "true"));
-    a = a.arg(gen_flag!(Key::TrimIds, "true"));
-    a = a.arg(gen_flag!(Key::RemoveTextAttributes, "true"));
-    a = a.arg(gen_flag!(Key::RemoveUnusedCoordinates, "true"));
-    a = a.arg(gen_flag!(Key::RemoveDefaultAttributes, "true"));
-    a = a.arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute, "true"));
-    a = a.arg(gen_flag!(Key::RemoveNeedlessAttributes, "true"));
-    a = a.arg(gen_flag!(Key::RemoveGradientAttributes, "false"));
-    a = a.arg(gen_flag!(Key::MoveStylesToGroup, "true"));
-    a = a.arg(gen_flag!(Key::JoinStyleAttributes, "true"));
-    a = a.arg(gen_flag!(Key::ApplyTransformToGradients, "true"));
-    a = a.arg(gen_flag!(Key::RemoveUnresolvedClasses, "true"));
+        // attributes
+        .arg(gen_flag!(Key::RemoveVersion, "true"))
+        .arg(gen_flag!(Key::RemoveNonsvgAttributes, "true"))
+        .arg(gen_flag!(Key::RemoveUnreferencedIds, "true"))
+        .arg(gen_flag!(Key::TrimIds, "true"))
+        .arg(gen_flag!(Key::RemoveTextAttributes, "true"))
+        .arg(gen_flag!(Key::RemoveUnusedCoordinates, "true"))
+        .arg(gen_flag!(Key::RemoveDefaultAttributes, "true"))
+        .arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute, "true"))
+        .arg(gen_flag!(Key::RemoveNeedlessAttributes, "true"))
+        .arg(gen_flag!(Key::RemoveGradientAttributes, "false"))
+        .arg(gen_flag!(Key::MoveStylesToGroup, "true"))
+        .arg(gen_flag!(Key::JoinStyleAttributes, "true"))
+        .arg(gen_flag!(Key::ApplyTransformToGradients, "true"))
+        .arg(gen_flag!(Key::RemoveUnresolvedClasses, "true"))
 
-    // paths
-    a = a.arg(gen_flag!(Key::PathsToRelative, "true"));
-    a = a.arg(gen_flag!(Key::RemoveUnusedSegments, "true"));
-    a = a.arg(gen_flag!(Key::TrimPaths, "true"));
-    a = a.arg(gen_flag!(Key::JoinArcToFlags, "false"));
-    a = a.arg(gen_flag!(Key::RemoveDuplCmdInPaths, "true"));
+        // paths
+        .arg(gen_flag!(Key::PathsToRelative, "true"))
+        .arg(gen_flag!(Key::RemoveUnusedSegments, "true"))
+        .arg(gen_flag!(Key::TrimPaths, "true"))
+        .arg(gen_flag!(Key::JoinArcToFlags, "false"))
+        .arg(gen_flag!(Key::RemoveDuplCmdInPaths, "true"))
 
-    // output
-    a = a.arg(gen_flag!(Key::TrimColors, "true"));
-    a = a.arg(gen_flag!(Key::SimplifyTransforms, "true"));
-    a = a.arg(Arg::with_name(KEYS[Key::Indent])
+        // output
+        .arg(gen_flag!(Key::TrimColors, "true"))
+        .arg(gen_flag!(Key::SimplifyTransforms, "true"))
+        .arg(Arg::with_name(KEYS[Key::Indent])
             .long(KEYS[Key::Indent])
             .value_name("INDENT")
             .validator(is_indent)
-            .default_value("-1"));
+            .default_value("-1"))
 
-    // other
-    a = a.arg(gen_flag!(Key::Multipass, "false"));
-    a = a.arg(gen_flag!(Key::CopyOnError, "false"));
-    a = a.arg(gen_flag!(Key::Quiet, "false"));
-
-    a
+        // other
+        .arg(gen_flag!(Key::Multipass, "false"))
+        .arg(gen_flag!(Key::CopyOnError, "false"))
+        .arg(gen_flag!(Key::Quiet, "false"))
 }
 
 fn is_svg(val: String) -> Result<(), String> {
@@ -306,8 +304,6 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
 
     opt.trim_hex_colors = get_flag!(args, Key::TrimColors);
     opt.indent = value_t!(args, KEYS[Key::Indent], i8).unwrap();
-
-    // opt.write_hidden_attributes = true;
 
     opt
 }

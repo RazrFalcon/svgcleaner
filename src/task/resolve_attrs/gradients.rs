@@ -22,7 +22,7 @@
 
 use task::short::{EId, AId, Unit};
 use task::is_gradient;
-use error::CleanerError;
+use error::Error;
 
 use svgdom::{Document, Node, Attribute, AttributeValue, ValueId};
 use svgdom::types::Color;
@@ -65,7 +65,7 @@ pub fn radial_gradients(doc: &Document) {
     }
 }
 
-pub fn stop(doc: &Document) -> Result<(), CleanerError> {
+pub fn stop(doc: &Document) -> Result<(), Error> {
     for gradient in doc.descendants().svg().filter(|n| is_gradient(n)) {
         for (idx, node) in gradient.children().enumerate() {
             if !node.has_attribute(AId::Offset) {
@@ -75,8 +75,8 @@ pub fn stop(doc: &Document) -> Result<(), CleanerError> {
                               Fallback to 'offset=0'.");
                     node.set_attribute(AId::Offset, 0);
                 } else {
-                    return Err(CleanerError::MissingAttribute("stop".to_string(),
-                                                              "offset".to_string()));
+                    return Err(Error::MissingAttribute("stop".to_string(),
+                                                       "offset".to_string()));
                 }
             } else {
                 let a = node.attribute_value(AId::Offset).unwrap();

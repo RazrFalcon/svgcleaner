@@ -26,11 +26,12 @@ use std::io;
 
 use clap::ArgMatches;
 
-use svgdom::{Document, ParseOptions, WriteOptions, WriteBuffer, Error, ElementId};
+use svgdom;
+use svgdom::{Document, ParseOptions, WriteOptions, WriteBuffer, ElementId};
 
 use cli::{KEYS, Key};
 use task::*;
-use error::CleanerError;
+use error;
 
 pub fn load_file(path: &str) -> Result<Vec<u8>, io::Error> {
     let mut file = try!(fs::File::open(path));
@@ -42,12 +43,12 @@ pub fn load_file(path: &str) -> Result<Vec<u8>, io::Error> {
     Ok(v)
 }
 
-pub fn parse_data(data: &[u8], opt: &ParseOptions) -> Result<Document, Error> {
+pub fn parse_data(data: &[u8], opt: &ParseOptions) -> Result<Document, svgdom::Error> {
     Document::from_data_with_opt(data, opt)
 }
 
 pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions)
-                 -> Result<(), CleanerError> {
+                 -> Result<(), error::Error> {
     try!(preclean_checks(doc));
 
     // NOTE: Order is important.

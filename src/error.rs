@@ -23,7 +23,7 @@
 use std::fmt;
 
 #[derive(PartialEq)]
-pub enum CleanerError {
+pub enum Error {
     UnresolvedAttribute(String), // attribute name
     MissingAttribute(String, String), // tag name, attribute name
     ScriptingIsNotSupported,
@@ -34,25 +34,25 @@ pub enum CleanerError {
     InputFileDoesNotExist,
 }
 
-impl fmt::Debug for CleanerError {
+impl fmt::Debug for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            CleanerError::UnresolvedAttribute(ref name) =>
+            Error::UnresolvedAttribute(ref name) =>
                 write!(f, "Failed to resolved attribute '{}'", name),
-            CleanerError::MissingAttribute(ref tag_name, ref attr_name) =>
+            Error::MissingAttribute(ref tag_name, ref attr_name) =>
                 write!(f, "The attribute '{}' is missing in the '{}' element", attr_name, tag_name),
-            CleanerError::ScriptingIsNotSupported =>
+            Error::ScriptingIsNotSupported =>
                 write!(f, "Scripting is not supported"),
-            CleanerError::AnimationIsNotSupported =>
+            Error::AnimationIsNotSupported =>
                 write!(f, "Animation is not supported"),
-            CleanerError::BiggerFile =>
+            Error::BiggerFile =>
                 write!(f, "Cleaned file is bigger than original"),
-            CleanerError::ConditionalProcessingIsNotSupported =>
+            Error::ConditionalProcessingIsNotSupported =>
                 write!(f, "Conditional processing attributes is not supported"),
-            CleanerError::ExternalHrefIsNotSupported(ref s) =>
+            Error::ExternalHrefIsNotSupported(ref s) =>
                 write!(f, "The 'xlink:href' attribute is referencing an external object '{}', \
                            which is not supported", s),
-            CleanerError::InputFileDoesNotExist =>
+            Error::InputFileDoesNotExist =>
                 write!(f, "Input file does not exist"),
         }
     }

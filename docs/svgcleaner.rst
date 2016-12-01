@@ -1172,6 +1172,32 @@ CLI argument: ``--remove-dupl-cmd-in-paths``
 .. |after-remove-dupl-cmd-in-paths| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-dupl-cmd-in-paths.svg
 
 
+Use implicit LineTo commands
+----------------------------
+
+By SVG spec: 'if a moveto is followed by multiple pairs of coordinates, the subsequent pairs
+are treated as implicit lineto commands'.
+
+CLI argument: ``--use-implicit-cmds``
+
++------------------------------------------+--------------------------------------+
+| Before (214b)                            | After (210b)                         |
++------------------------------------------+--------------------------------------+
+| .. code-block:: XML                      | .. code-block:: XML                  |
+|                                          |                                      |
+|   <svg>                                  |   <svg>                              |
+|     <path fill="green" stroke="red"      |     <path fill="green" stroke="red"  |
+|           stroke-width="2"               |           stroke-width="2"           |
+|           d="M 10 10 L 50 50 L 120 50"/> |           d="M 10 10 50 50 120 50"/> |
+|   </svg>                                 |   </svg>                             |
++------------------------------------------+--------------------------------------+
+| |before-use-implicit-cmds|               | |after-use-implicit-cmds|            |
++------------------------------------------+--------------------------------------+
+
+.. |before-use-implicit-cmds| image:: https://razrfalcon.github.io/svgcleaner/images/before/use-implicit-cmds.svg
+.. |after-use-implicit-cmds| image:: https://razrfalcon.github.io/svgcleaner/images/after/use-implicit-cmds.svg
+
+
 Output
 ======
 

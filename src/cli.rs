@@ -66,6 +66,7 @@ pub enum Key {
     TrimPaths,
     JoinArcToFlags,
     RemoveDuplCmdInPaths,
+    UseImplicitCommands,
 
     TrimColors,
     SimplifyTransforms,
@@ -125,6 +126,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "trim-paths",
     "join-arcto-flags",
     "remove-dupl-cmd-in-paths",
+    "use-implicit-cmds",
 
     "trim-colors",
     "simplify-transforms",
@@ -204,6 +206,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::TrimPaths, "true"))
         .arg(gen_flag!(Key::JoinArcToFlags, "false"))
         .arg(gen_flag!(Key::RemoveDuplCmdInPaths, "true"))
+        .arg(gen_flag!(Key::UseImplicitCommands, "true"))
 
         // output
         .arg(gen_flag!(Key::TrimColors, "true"))
@@ -297,6 +300,7 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     opt.paths.use_compact_notation = get_flag!(args, Key::TrimPaths);
     opt.paths.remove_duplicated_commands = get_flag!(args, Key::RemoveDuplCmdInPaths);
     opt.paths.join_arc_to_flags = get_flag!(args, Key::JoinArcToFlags);
+    opt.paths.use_implicit_lineto_commands = get_flag!(args, Key::UseImplicitCommands);
 
     opt.simplify_transform_matrices = get_flag!(args, Key::SimplifyTransforms);
 

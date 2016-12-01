@@ -49,6 +49,7 @@ Paths:
     --trim-paths <FLAG>                      Use compact notation for paths [default: true]
     --join-arcto-flags <FLAG>                Join ArcTo flags [default: false]
     --remove-dupl-cmd-in-paths <FLAG>        Remove subsequent segments command from paths [default: true]
+    --use-implicit-cmds <FLAG>               Use implicit LineTo commands [default: true]
 
 Output:
     --trim-colors <FLAG>                     Use #RGB notation [default: true]

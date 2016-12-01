@@ -37,6 +37,7 @@ remove-unused-segments.rst
 trim-paths.rst
 join-arcto-flags.rst
 remove-dupl-cmd-in-paths.rst
+use-implicit-cmds.rst
 -- Output
 trim-colors.rst
 simplify-transforms.rst

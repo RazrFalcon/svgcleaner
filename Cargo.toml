@@ -11,11 +11,11 @@ readme = "README.md"
 
 [dependencies]
 # latest
-# svgdom = { git = "https://github.com/RazrFalcon/libsvgdom.git" }
+svgdom = { git = "https://github.com/RazrFalcon/libsvgdom.git" }
 # local copy
 # svgdom = { path = "../svgdom" }
 # from crates
-svgdom = "0.2.0"
+# svgdom = "0.2.0"
 
 [dependencies.clap]
 version = "2"

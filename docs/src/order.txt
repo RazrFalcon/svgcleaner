@@ -34,6 +34,7 @@ remove-unresolved-classes.rst
 -- Paths
 paths-to-relative.rst
 remove-unused-segments.rst
+convert-segments.rst
 trim-paths.rst
 join-arcto-flags.rst
 remove-dupl-cmd-in-paths.rst

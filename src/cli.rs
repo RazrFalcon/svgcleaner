@@ -63,6 +63,7 @@ pub enum Key {
 
     PathsToRelative,
     RemoveUnusedSegments,
+    ConvertSegments,
     TrimPaths,
     JoinArcToFlags,
     RemoveDuplCmdInPaths,
@@ -123,6 +124,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
 
     "paths-to-relative",
     "remove-unused-segments",
+    "convert-segments",
     "trim-paths",
     "join-arcto-flags",
     "remove-dupl-cmd-in-paths",
@@ -203,6 +205,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         // paths
         .arg(gen_flag!(Key::PathsToRelative, "true"))
         .arg(gen_flag!(Key::RemoveUnusedSegments, "true"))
+        .arg(gen_flag!(Key::ConvertSegments, "true"))
         .arg(gen_flag!(Key::TrimPaths, "true"))
         .arg(gen_flag!(Key::JoinArcToFlags, "false"))
         .arg(gen_flag!(Key::RemoveDuplCmdInPaths, "true"))
@@ -275,6 +278,10 @@ pub fn check_values(args: &ArgMatches) -> bool {
     }
 
     if !check_value(args, Key::PathsToRelative, Key::RemoveUnusedSegments) {
+        return false;
+    }
+
+    if !check_value(args, Key::PathsToRelative, Key::ConvertSegments) {
         return false;
     }
 

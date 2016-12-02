@@ -28,6 +28,7 @@ use svgdom::types::path::Path;
 use task::short::{EId, AId};
 use cli::{KEYS, Key};
 
+mod conv_segments;
 mod rm_unused;
 
 pub fn process_paths(doc: &Document, args: &ArgMatches) {
@@ -48,12 +49,17 @@ pub fn process_paths(doc: &Document, args: &ArgMatches) {
 fn process_path(path: &mut Path, has_marker: bool, args: &ArgMatches) {
     path.conv_to_absolute();
 
+    if get_flag!(args, Key::ConvertSegments) {
+        conv_segments::convert_segments(path);
+    }
+
     if get_flag!(args, Key::RemoveUnusedSegments) && !has_marker {
         rm_unused::remove_unused_segments(path);
     }
 
     path.conv_to_relative();
 
+    // TODO: estimate path length
     // NOTE: A relative path can be bigger, but usually only on few chars.
     //       But to check it - we need to convert an original and a new path to strings
     //       and compare theme. And in case that new path is bigger - fallback to original,
@@ -61,4 +67,48 @@ fn process_path(path: &mut Path, has_marker: bool, args: &ArgMatches) {
     //       implementation gives us 2x slowdown of the whole application time.
     //       Which is unacceptable.
     //       So we sacrifice a very small amount of cleaning ratio for performance benefits.
+}
+
+mod utils {
+    use svgdom::types::path::{Path};
+
+    pub fn resolve_x(path: &Path, start: usize) -> f64 {
+        // VerticalLineTo does not have `x` coordinate, so we have to find it in previous segments
+        let mut i = start;
+        loop {
+            if let Some(x) = path.d[i].x() {
+                return x;
+            }
+
+            if i == 0 {
+                break;
+            }
+            i -= 1;
+        }
+
+        // First segment must be MoveTo, so we will always have an `x`.
+        unreachable!();
+    }
+
+    pub fn resolve_y(path: &Path, start: usize) -> f64 {
+        // HorizontalLineTo does not have `x` coordinate, so we have to find it in previous segments
+        let mut i = start;
+        loop {
+            if let Some(y) = path.d[i].y() {
+                return y;
+            }
+
+            if i == 0 {
+                break;
+            }
+            i -= 1;
+        }
+
+        // First segment must be MoveTo, so we will always have an `y`.
+        unreachable!();
+    }
+
+    pub fn resolve_xy(path: &Path, start: usize) -> (f64, f64) {
+        (resolve_x(path, start), resolve_y(path, start))
+    }
 }

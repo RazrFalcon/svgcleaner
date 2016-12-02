@@ -1037,8 +1037,8 @@ CLI argument: ``--remove-unresolved-classes``
 Paths
 =====
 
-Convert path's segments into relative one
------------------------------------------
+Convert path segments into relative ones
+----------------------------------------
 
 Since segments of the path data can be set in absolute and relative coordinates -
 we can convert all of them into relative one, which is generally shorter.
@@ -1089,6 +1089,44 @@ CLI argument: ``--remove-unused-segments``
 
 .. |before-remove-unused-segments| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-unused-segments.svg
 .. |after-remove-unused-segments| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-unused-segments.svg
+
+
+Convert path segments into shorter ones
+---------------------------------------
+
+Some segments can be represented using different segment types
+keeping a resulting shape exactly the same.
+We only use conversions that make path notation shorter.
+
+Currently supported conversions are:
+
+- LineTo -> HorizontalLineTo
+- LineTo -> VerticalLineTo
+- CurveTo -> HorizontalLineTo
+- CurveTo -> VerticalLineTo
+- CurveTo -> LineTo
+- CurveTo -> SmoothCurveTo
+
+CLI argument: ``--convert-segments``
+
++---------------------------------------------------+----------------------------------------+
+| Before (265b)                                     | After (247b)                           |
++---------------------------------------------------+----------------------------------------+
+| .. code-block:: XML                               | .. code-block:: XML                    |
+|                                                   |                                        |
+|   <svg>                                           |   <svg>                                |
+|     <path fill="none" stroke="red"                |     <path fill="none" stroke="red"     |
+|           stroke-width="2"                        |           stroke-width="2"             |
+|           d="M 10 15 C 10 15 72.5 10 72.5 55      |           d="M 10 15 S 72.5 10 72.5 55 |
+|              C 72.5 100 135 100 135 55 L 10 55"/> |              S 135 100 135 55 H 10"/>  |
+|   </svg>                                          |   </svg>                               |
++---------------------------------------------------+----------------------------------------+
+| |before-convert-segments|                         | |after-convert-segments|               |
++---------------------------------------------------+----------------------------------------+
+
+.. |before-convert-segments| image:: https://razrfalcon.github.io/svgcleaner/images/before/convert-segments.svg
+.. |after-convert-segments| image:: https://razrfalcon.github.io/svgcleaner/images/after/convert-segments.svg
+
 
 
 Use compact notation for paths

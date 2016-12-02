@@ -1,5 +1,5 @@
-Convert path's segments into relative one
------------------------------------------
+Convert path segments into relative ones
+----------------------------------------
 
 Since segments of the path data can be set in absolute and relative coordinates -
 we can convert all of them into relative one, which is generally shorter.

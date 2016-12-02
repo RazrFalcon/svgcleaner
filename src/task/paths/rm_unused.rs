@@ -22,8 +22,10 @@
 
 // TODO: split to submodules and suboptions
 
-use svgdom::types::path::{Path, Segment, SegmentData, Command};
+use svgdom::types::path::{Path, Segment, Command};
 use svgdom::types::FuzzyEq;
+
+use super::utils;
 
 pub fn remove_unused_segments(path: &mut Path) {
     // repeat until we have any changes
@@ -40,7 +42,6 @@ pub fn remove_unused_segments(path: &mut Path) {
         remove_zz(path, &mut is_changed);
         remove_mz(path, &mut is_changed);
         process_lz(path, &mut is_changed);
-        convert_segments(path, &mut is_changed);
     }
 }
 
@@ -123,8 +124,7 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
             let prev_i = i - 1;
             let prev_cmd = path.d[prev_i].cmd();
             if is_line_based(prev_cmd) {
-                let x = resolve_x(path, prev_i);
-                let y = resolve_y(path, prev_i);
+                let (x, y) = utils::resolve_xy(path, prev_i);
                 if mx.fuzzy_eq(&x) && my.fuzzy_eq(&y) {
                     // remove this line-based segment
                     path.d.remove(prev_i);
@@ -142,8 +142,7 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
             let prev_i = if is_last { i } else { i - 1 };
             let prev_cmd = path.d[prev_i].cmd();
             if is_line_based(prev_cmd) {
-                let x = resolve_x(path, prev_i);
-                let y = resolve_y(path, prev_i);
+                let (x, y) = utils::resolve_xy(path, prev_i);
                 if mx.fuzzy_eq(&x) && my.fuzzy_eq(&y) {
                     // replace line-based segment with ClosePath.
                     path.d[prev_i] = Segment::new_close_path();
@@ -170,74 +169,6 @@ fn is_line_based(seg: Command) -> bool
         | Command::HorizontalLineTo
         | Command::VerticalLineTo => true,
         _ => false,
-    }
-}
-
-fn resolve_x(path: &Path, start: usize) -> f64 {
-    // VerticalLineTo does not have `x` coordinate, so we have to find it in previous segments
-    let mut i = start;
-    loop {
-        let s: &Segment = &path.d[i];
-        match s.cmd() {
-            Command::VerticalLineTo | Command::ClosePath => {}
-            _ => {
-                return s.x().unwrap()
-            }
-        }
-
-        if i == 0 {
-            break;
-        }
-        i -= 1;
-    }
-
-    // First segment must be MoveTo, so we will always have an `x`.
-    unreachable!();
-}
-
-fn resolve_y(path: &Path, start: usize) -> f64 {
-    // HorizontalLineTo does not have `x` coordinate, so we have to find it in previous segments
-    let mut i = start;
-    loop {
-        let s: &Segment = &path.d[i];
-        match s.cmd() {
-            Command::HorizontalLineTo | Command::ClosePath => {}
-            _ => {
-                return s.y().unwrap()
-            }
-        }
-
-        if i == 0 {
-            break;
-        }
-        i -= 1;
-    }
-
-    // First segment must be MoveTo, so we will always have an `y`.
-    unreachable!();
-}
-
-fn convert_segments(path: &mut Path, is_changed: &mut bool) {
-    let mut i = 1;
-    while i < path.d.len() {
-        let prev_x = resolve_x(path, i - 1);
-        let prev_y = resolve_y(path, i - 1);
-        let curr_seg = &mut path.d[i];
-        match *curr_seg.data() {
-            SegmentData::LineTo { x, y } => {
-                if prev_x.fuzzy_eq(&x) && prev_y.fuzzy_ne(&y) {
-                    *curr_seg = Segment::new_vline_to(y);
-                    *is_changed = true;
-                } else if prev_x.fuzzy_ne(&x) && prev_y.fuzzy_eq(&y) {
-                    *curr_seg = Segment::new_hline_to(x);
-                    *is_changed = true;
-                }
-            }
-            // TODO: other types
-            _ => {}
-        }
-
-        i += 1;
     }
 }
 
@@ -297,7 +228,4 @@ mod tests {
 
     test!(rm_lz_4, b"M 10 10 L 50 50 L 10 10 M 50 50 L 50 50",
                     "M 10 10 L 50 50 Z");
-
-    test!(conv_l, b"M 10 10 L 15 10 L 15 15",
-                   "M 10 10 H 15 V 15");
 }

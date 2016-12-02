@@ -4,8 +4,8 @@ USAGE:
     svgcleaner [OPTIONS] <in-file> <out-file>
 
 FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
+    -h, --help                               Prints help information
+    -V, --version                            Prints version information
 
 OPTIONS:
 Elements:
@@ -44,8 +44,9 @@ Attributes:
     --remove-unresolved-classes <FLAG>       Remove unresolved classes from 'class' attributes [default: true]
 
 Paths:
-    --paths-to-relative <FLAG>               Convert path's segments into relative one [default: true]
+    --paths-to-relative <FLAG>               Convert path segments into relative ones [default: true]
     --remove-unused-segments <FLAG>          Remove unused path segments [default: true]
+    --convert-segments <FLAG>                Convert path segments into shorter ones [default: true]
     --trim-paths <FLAG>                      Use compact notation for paths [default: true]
     --join-arcto-flags <FLAG>                Join ArcTo flags [default: false]
     --remove-dupl-cmd-in-paths <FLAG>        Remove subsequent segments command from paths [default: true]
@@ -62,5 +63,5 @@ Other:
     --quiet <FLAG>                           Show only warnings and errors [default: false]
 
 ARGS:
-    <in-file>     Input file
-    <out-file>    Output file
+    <in-file>                                Input file
+    <out-file>                               Output file

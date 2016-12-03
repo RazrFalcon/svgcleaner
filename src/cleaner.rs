@@ -29,7 +29,7 @@ use clap::ArgMatches;
 use svgdom;
 use svgdom::{Document, ParseOptions, WriteOptions, WriteBuffer, ElementId};
 
-use cli::{KEYS, Key};
+use cli::{Key, get_flag};
 use task::*;
 use error;
 
@@ -66,126 +66,126 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions)
     // Do not remove any attributes before this methods
     // since they uses them.
 
-    if get_flag!(args, Key::RemoveTitle) {
+    if get_flag(args, Key::RemoveTitle) {
         remove_element(doc, ElementId::Title);
     }
 
-    if get_flag!(args, Key::RemoveDesc) {
+    if get_flag(args, Key::RemoveDesc) {
         remove_element(doc, ElementId::Desc);
     }
 
-    if get_flag!(args, Key::RemoveMetadata) {
+    if get_flag(args, Key::RemoveMetadata) {
         remove_element(doc, ElementId::Metadata);
     }
 
-    if get_flag!(args, Key::RemoveUnusedDefs) {
+    if get_flag(args, Key::RemoveUnusedDefs) {
         remove_unused_defs(doc);
     }
 
-    if get_flag!(args, Key::RemoveInvalidStops) {
+    if get_flag(args, Key::RemoveInvalidStops) {
         remove_invalid_stops(doc);
     }
 
-    if get_flag!(args, Key::ApplyTransformToGradients) {
+    if get_flag(args, Key::ApplyTransformToGradients) {
         // Apply transform to gradients before processing to simplify duplicates
         // detecting and merging.
         apply_transforms::apply_transform_to_gradients(doc);
     }
 
-    if get_flag!(args, Key::RemoveDuplLinearGradients) {
+    if get_flag(args, Key::RemoveDuplLinearGradients) {
         remove_dupl_linear_gradients(doc);
     }
 
-    if get_flag!(args, Key::RemoveDuplRadialGradients) {
+    if get_flag(args, Key::RemoveDuplRadialGradients) {
         remove_dupl_radial_gradients(doc);
     }
 
-    if get_flag!(args, Key::RemoveDuplFeGaussianBlur) {
+    if get_flag(args, Key::RemoveDuplFeGaussianBlur) {
         remove_dupl_fe_gaussian_blur(doc);
     }
 
-    if get_flag!(args, Key::MergeGradients) {
+    if get_flag(args, Key::MergeGradients) {
         merge_gradients(doc);
     }
 
-    if get_flag!(args, Key::ApplyTransformToGradients) {
+    if get_flag(args, Key::ApplyTransformToGradients) {
         // Do it again, because something may changed after gradient processing.
         apply_transforms::apply_transform_to_gradients(doc);
     }
 
-    if get_flag!(args, Key::ConvertShapes) {
+    if get_flag(args, Key::ConvertShapes) {
         convert_shapes_to_paths(doc);
     }
 
     // NOTE: run before `remove_invisible_elements`, because this method can remove all
     //       segments from the path which makes it invisible.
-    if get_flag!(args, Key::PathsToRelative) {
+    if get_flag(args, Key::PathsToRelative) {
         // we only process path's segments if 'PathsToRelative' is enabled
         paths::process_paths(doc, args);
     }
 
-    if get_flag!(args, Key::RemoveInvisibleElements) {
+    if get_flag(args, Key::RemoveInvisibleElements) {
         remove_invisible_elements(doc);
     }
 
-    if get_flag!(args, Key::RegroupGradientStops) {
+    if get_flag(args, Key::RegroupGradientStops) {
         regroup_gradient_stops(doc);
     }
 
-    if get_flag!(args, Key::UngroupGroups) {
+    if get_flag(args, Key::UngroupGroups) {
         ungroup_groups(doc);
     }
 
     // now we can remove any unneeded attributes
 
-    if get_flag!(args, Key::RemoveDefaultAttributes) {
+    if get_flag(args, Key::RemoveDefaultAttributes) {
         remove_default_attributes(doc);
     }
 
-    if get_flag!(args, Key::RemoveTextAttributes) {
+    if get_flag(args, Key::RemoveTextAttributes) {
         remove_text_attributes(doc);
     }
 
-    if get_flag!(args, Key::RemoveNeedlessAttributes) {
+    if get_flag(args, Key::RemoveNeedlessAttributes) {
         remove_needless_attributes(doc);
     }
 
-    if get_flag!(args, Key::RemoveGradientAttributes) {
+    if get_flag(args, Key::RemoveGradientAttributes) {
         remove_gradient_attributes(doc);
     }
 
-    if get_flag!(args, Key::MoveStylesToGroup) {
+    if get_flag(args, Key::MoveStylesToGroup) {
         move_styles_to_group(doc);
     }
 
-    if get_flag!(args, Key::RemoveUnusedCoordinates) {
+    if get_flag(args, Key::RemoveUnusedCoordinates) {
         remove_unused_coordinates(doc);
     }
 
     // final fixes
     // list of things that can't break anything
 
-    if get_flag!(args, Key::RemoveUnreferencedIds) {
+    if get_flag(args, Key::RemoveUnreferencedIds) {
         remove_unreferenced_ids(doc);
     }
 
-    if get_flag!(args, Key::TrimIds) {
+    if get_flag(args, Key::TrimIds) {
         trim_ids(doc);
     }
 
-    if get_flag!(args, Key::RemoveVersion) {
+    if get_flag(args, Key::RemoveVersion) {
         remove_version(doc);
     }
 
-    if get_flag!(args, Key::UngroupDefs) {
+    if get_flag(args, Key::UngroupDefs) {
         ungroup_defs(doc);
     }
 
     final_fixes(doc);
-    fix_xmlns_attribute(doc, get_flag!(args, Key::RemoveXmlnsXlinkAttribute));
+    fix_xmlns_attribute(doc, get_flag(args, Key::RemoveXmlnsXlinkAttribute));
 
     // NOTE: must be run at last, since it breaks the linking.
-    if get_flag!(args, Key::JoinStyleAttributes) {
+    if get_flag(args, Key::JoinStyleAttributes) {
         join_style_attributes(doc, opt);
     }
 

@@ -254,20 +254,17 @@ fn is_flag(val: String) -> Result<(), String> {
     }
 }
 
-#[macro_export]
-macro_rules! get_flag {
-    ($args:ident, $key:expr) => (
-        value_t!($args, KEYS[$key], bool).unwrap()
-    )
+pub fn get_flag(args: &ArgMatches, key: Key) -> bool {
+    value_t!(args, KEYS[key], bool).unwrap()
 }
 
 // I don't know how to check it using `clap`, so here is manual checks.
 pub fn check_values(args: &ArgMatches) -> bool {
 
     fn check_value(args: &ArgMatches, flag: Key, dep: Key) -> bool {
-        if !get_flag!(args, dep) && get_flag!(args, flag) {
+        if !get_flag(args, dep) && get_flag(args, flag) {
             println!("Error: You can use '--{}=true' only with '--{}=true'.",
-                KEYS[flag], KEYS[dep]);
+                     KEYS[flag], KEYS[dep]);
             return false;
         }
         true
@@ -291,12 +288,12 @@ pub fn check_values(args: &ArgMatches) -> bool {
 pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
     let mut opt = ParseOptions::default();
 
-    opt.parse_comments              = !get_flag!(args, Key::RemoveComments);
-    opt.parse_declarations          = !get_flag!(args, Key::RemoveDeclarations);
-    opt.parse_unknown_elements      = !get_flag!(args, Key::RemoveNonsvgElements);
-    opt.parse_unknown_attributes    = !get_flag!(args, Key::RemoveNonsvgAttributes);
-    opt.skip_unresolved_classes     =  get_flag!(args, Key::RemoveUnresolvedClasses);
-    opt.parse_px_unit = false;
+    opt.parse_comments              = !get_flag(args, Key::RemoveComments);
+    opt.parse_declarations          = !get_flag(args, Key::RemoveDeclarations);
+    opt.parse_unknown_elements      = !get_flag(args, Key::RemoveNonsvgElements);
+    opt.parse_unknown_attributes    = !get_flag(args, Key::RemoveNonsvgAttributes);
+    opt.skip_unresolved_classes     =  get_flag(args, Key::RemoveUnresolvedClasses);
+    opt.parse_px_unit               = false;
 
     opt
 }
@@ -304,16 +301,16 @@ pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
 pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     let mut opt = WriteOptions::default();
 
-    opt.paths.use_compact_notation = get_flag!(args, Key::TrimPaths);
-    opt.paths.remove_duplicated_commands = get_flag!(args, Key::RemoveDuplCmdInPaths);
-    opt.paths.join_arc_to_flags = get_flag!(args, Key::JoinArcToFlags);
-    opt.paths.use_implicit_lineto_commands = get_flag!(args, Key::UseImplicitCommands);
+    opt.paths.use_compact_notation          = get_flag(args, Key::TrimPaths);
+    opt.paths.remove_duplicated_commands    = get_flag(args, Key::RemoveDuplCmdInPaths);
+    opt.paths.join_arc_to_flags             = get_flag(args, Key::JoinArcToFlags);
+    opt.paths.use_implicit_lineto_commands  = get_flag(args, Key::UseImplicitCommands);
 
-    opt.simplify_transform_matrices = get_flag!(args, Key::SimplifyTransforms);
+    opt.simplify_transform_matrices = get_flag(args, Key::SimplifyTransforms);
 
     opt.remove_leading_zero = true;
 
-    opt.trim_hex_colors = get_flag!(args, Key::TrimColors);
+    opt.trim_hex_colors = get_flag(args, Key::TrimColors);
     opt.indent = value_t!(args, KEYS[Key::Indent], i8).unwrap();
 
     opt

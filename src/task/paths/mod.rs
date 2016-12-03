@@ -26,7 +26,8 @@ use svgdom::{Document, AttributeValue};
 use svgdom::types::path::Path;
 
 use task::short::{EId, AId};
-use cli::{KEYS, Key};
+use cli;
+use cli::{Key};
 
 mod conv_segments;
 mod rm_unused;
@@ -49,11 +50,11 @@ pub fn process_paths(doc: &Document, args: &ArgMatches) {
 fn process_path(path: &mut Path, has_marker: bool, args: &ArgMatches) {
     path.conv_to_absolute();
 
-    if get_flag!(args, Key::ConvertSegments) {
+    if cli::get_flag(args, Key::ConvertSegments) {
         conv_segments::convert_segments(path);
     }
 
-    if get_flag!(args, Key::RemoveUnusedSegments) && !has_marker {
+    if cli::get_flag(args, Key::RemoveUnusedSegments) && !has_marker {
         rm_unused::remove_unused_segments(path);
     }
 

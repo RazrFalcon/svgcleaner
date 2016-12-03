@@ -20,9 +20,7 @@
 **
 ****************************************************************************/
 
-// TODO: reexport clap from lib
-#[macro_use] extern crate clap;
-#[macro_use] extern crate svgcleaner;
+extern crate svgcleaner;
 
 use std::fs;
 use std::path::Path;
@@ -73,7 +71,7 @@ fn main() {
 
     let on_err = || {
         // copy original file to destination
-        if get_flag!(args, Key::CopyOnError) {
+        if get_flag(&args, Key::CopyOnError) {
             // copy a file only when paths are different
             if in_file != out_file {
                 try_msg!(fs::copy(in_file, out_file));
@@ -114,7 +112,7 @@ fn main() {
         // write it
         write_buffer(&doc, &write_opt, &mut buf);
 
-        if !get_flag!(args, Key::Multipass) {
+        if !get_flag(&args, Key::Multipass) {
             // do not repeat without '--multipass'
             break;
         }
@@ -136,7 +134,7 @@ fn main() {
     // save it
     try_msg!(save_file(&buf[..], out_file));
 
-    if get_flag!(args, Key::Quiet) {
+    if get_flag(&args, Key::Quiet) {
         return;
     }
 

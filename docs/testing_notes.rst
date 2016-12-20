@@ -30,10 +30,10 @@ only because rendering application will treat new data differently.
 There are lots of examples (which is not categorized yet):
 
 - These two paths are the same: ``M 10 -20 A 5.5 0.3 -4 1 1 0 -0.1``, ``M10-20A5.5.3-4 110-.1``.
-  Sadly, most of the application doesn't support such notation, even throw it's valid by SVG spec.
+  Sadly, most of the applications doesn't support such notation, even throw it's valid by SVG spec.
 - ``clipPath`` element can contain only specific elements, but some applications renders all of them.
   So when *svgcleaner* removes invalid elements - the result image will be rendered differently,
-  even throw it's valid by SVG spec.
+  even throw it's correct by SVG spec.
 - And so on...
 
 And again - such artifacts is not an error.
@@ -42,7 +42,7 @@ A fixed file
 ------------
 
 Some images, after cleaning, may render differently, but in a better way. It's because
-modifications made them simpler to render. Such "differences" is not treated as errors.
+modifications made them simpler to render. Such "differences" are not treated as errors.
 
 A bigger file
 -------------
@@ -72,7 +72,7 @@ Notes
 =====
 
 - PC: i5-3570k 3.8GHz, Gentoo Linux Stable x86_64.
-- Input files are stored on HDD, cleaned files was saved to the ``tmpfs``.
+- Input files are stored on HDD, cleaned files were saved to the ``tmpfs``.
 - All tests are single-threaded.
 - I know that a performance comparison is not fair since `svgo` have to restart nodejs
   each time. But I don't know how to prevent it or ignore nodejs starting time.

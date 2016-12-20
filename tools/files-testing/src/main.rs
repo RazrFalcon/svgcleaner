@@ -400,6 +400,8 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
                    || so.find("Error: The attribute 'offset'").is_some()
                    || so.find("Error: Document didn't have any nodes").is_some()
                    || so.find("Error: Invalid color at").is_some()
+                   || so.find("Error: Unsupported token at").is_some()
+                   || so.find("Error: Invalid length at").is_some()
                    || so.find("Error: Cleaned file is bigger").is_some() {
                     return true;
                 }

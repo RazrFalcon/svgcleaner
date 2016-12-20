@@ -160,6 +160,16 @@
         {
             "name": "struct-image-14-f.svg",
             "valid_ae": 266
+        },
+        {
+            "name": "painting-marker-03-f.svg",
+            "valid_ae": 664,
+            "info": "QtWebKit and Chromium doesn't support 'marker' property."
+        },
+        {
+            "name": "painting-marker-05-f.svg",
+            "valid_ae": 6823,
+            "info": "QtWebKit and Chromium doesn't support 'marker' property."
         }
     ],
     "ignore": [

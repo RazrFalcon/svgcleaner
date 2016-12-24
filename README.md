@@ -14,11 +14,11 @@
     * [Cleaning ratio](#cleaning-ratio)
     * [Cleaning time](#cleaning-time)
   * [Limitations](#limitations)
+  * [Downloads](#downloads)
   * [Building](#building)
   * [Usage](#usage)
     * [CLI](#cli)
     * [GUI](#gui)
-  * [Downloads](#downloads)
   * [Contributing and Issues](#contributing-and-issues)
   * [FAQ](#faq)
   * [License](#license)
@@ -109,6 +109,10 @@ that will be changed:
 - If the `offset` attribute value of the `stop` element represented as percent - it will be
   converted into number.
 
+## Downloads
+
+You can get prebuild packages [here](https://github.com/RazrFalcon/svgcleaner-gui/releases).
+
 ## Building
 
 You need the latest stable [Rust](https://www.rust-lang.org/) compiler.
@@ -136,10 +140,6 @@ Use `--help` for a list of the cleaning options and the [doc](docs/svgcleaner.rs
 ### GUI
 
 You can get a GUI [here](https://github.com/RazrFalcon/svgcleaner-gui).
-
-## Downloads
-
-You can get prebuild packages [here](https://github.com/RazrFalcon/svgcleaner-gui/releases).
 
 ## Contributing and Issues
 

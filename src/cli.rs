@@ -71,6 +71,7 @@ pub enum Key {
 
     TrimColors,
     SimplifyTransforms,
+    PathsCoordinatesPrecision,
     Indent,
 
     Multipass,
@@ -132,6 +133,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
 
     "trim-colors",
     "simplify-transforms",
+    "paths-coordinates-precision",
     "indent",
 
     "multipass",
@@ -214,6 +216,11 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         // output
         .arg(gen_flag!(Key::TrimColors, "true"))
         .arg(gen_flag!(Key::SimplifyTransforms, "true"))
+        .arg(Arg::with_name(KEYS[Key::PathsCoordinatesPrecision])
+            .long(KEYS[Key::PathsCoordinatesPrecision])
+            .value_name("VALUE")
+            .validator(is_precision)
+            .default_value("8"))
         .arg(Arg::with_name(KEYS[Key::Indent])
             .long(KEYS[Key::Indent])
             .value_name("INDENT")
@@ -244,6 +251,19 @@ fn is_indent(val: String) -> Result<(), String> {
         Ok(())
     } else {
         Err(String::from("Invalid indent value."))
+    }
+}
+
+fn is_precision(val: String) -> Result<(), String> {
+    let n = match val.parse::<u8>() {
+        Ok(v) => v,
+        Err(e) => return Err(format!("{}", e)),
+    };
+
+    if n >= 1 && n <= 12 {
+        Ok(())
+    } else {
+        Err(String::from("Invalid precision value."))
     }
 }
 
@@ -305,6 +325,10 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     opt.paths.remove_duplicated_commands    = get_flag(args, Key::RemoveDuplCmdInPaths);
     opt.paths.join_arc_to_flags             = get_flag(args, Key::JoinArcToFlags);
     opt.paths.use_implicit_lineto_commands  = get_flag(args, Key::UseImplicitCommands);
+
+    let paths_precision = value_t!(args, KEYS[Key::PathsCoordinatesPrecision], u8).unwrap();
+    opt.paths.coordinates_precision = paths_precision;
+
 
     opt.simplify_transform_matrices = get_flag(args, Key::SimplifyTransforms);
 

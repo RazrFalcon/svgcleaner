@@ -55,6 +55,7 @@ Paths:
 Output:
     --trim-colors <FLAG>                     Use #RGB notation [default: true]
     --simplify-transforms <FLAG>             Simplify transform matrices [default: true]
+    --paths-coordinates-precision <VALUE>    Set path's coordinates numeric precision (1..12) [default: 8]
     --indent <INDENT>                        Sets XML nodes indent (-1..4) [default: -1]
 
 Other:

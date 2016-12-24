@@ -1290,6 +1290,40 @@ CLI argument: ``--simplify-transforms``
 .. |after-simplify-transforms| image:: https://razrfalcon.github.io/svgcleaner/images/after/simplify-transforms.svg
 
 
+Set path's coordinates numeric precision
+----------------------------------------
+
+We can reduce the numeric precision of path's coordinates without breaking it.
+
+Range: 1..12, where
+- 8..12 is basically lossless
+- 4..7 will give an actual impact on the file size
+- 1..3 is very dangerous and will probably break your file
+
+Default: 8
+
+CLI argument: ``--paths-coordinates-precision``
+
++-------------------------------------------+---------------------------------------+
+| Before (286b)                             | After (273b)                          |
++-------------------------------------------+---------------------------------------+
+| .. code-block:: XML                       | .. code-block:: XML                   |
+|                                           |                                       |
+|   <svg>                                   |   <svg>                               |
+|     <path d="M 10.000001 10.000005        |     <path d="M 10 10.00001            |
+|              L 89.99999 10.11111          |              L 89.99999 10.11111      |
+|              L 89.997777 90.0005          |              L 89.99778 90.0005       |
+|              L 10.123456789 90 L 10 10 z" |              L 10.12346 90 L 10 10 z" |
+|           fill="none" stroke="red"/>      |           fill="none" stroke="red"/>  |
+|   </svg>                                  |   </svg>                              |
++-------------------------------------------+---------------------------------------+
+| |before-paths-coordinates-precision|      | |after-paths-coordinates-precision|   |
++-------------------------------------------+---------------------------------------+
+
+.. |before-paths-coordinates-precision| image:: https://razrfalcon.github.io/svgcleaner/images/before/paths-coordinates-precision.svg
+.. |after-paths-coordinates-precision| image:: https://razrfalcon.github.io/svgcleaner/images/after/paths-coordinates-precision.svg
+
+
 Sets XML nodes indent
 ---------------------
 

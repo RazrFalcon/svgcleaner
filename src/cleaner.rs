@@ -136,6 +136,10 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions)
         ungroup_groups(doc);
     }
 
+    if get_flag(args, Key::ResolveUse) {
+        resolve_use(doc);
+    }
+
     // now we can remove any unneeded attributes
 
     if get_flag(args, Key::RemoveDefaultAttributes) {

@@ -607,6 +607,34 @@ CLI argument: ``--remove-invisible-elements``
 .. |after-remove-invisible-elements| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-invisible-elements.svg
 
 
+Resolve ``use`` elements
+------------------------
+
+We can replace ``use`` element with linked element if it used only by this ``use``.
+
+CLI argument: ``--resolve-use``
+
++------------------------------------+----------------------------------+
+| Before (253b)                      | After (197b)                     |
++------------------------------------+----------------------------------+
+| .. code-block:: XML                | .. code-block:: XML              |
+|                                    |                                  |
+|   <svg>                            |   <svg>                          |
+|     <defs>                         |     <circle id='circle1'         |
+|       <circle id='circle1'         |             fill="green" cx="50" |
+|               fill="green" cx="50" |             cy="50" r="45"/>     |
+|               cy="50" r="45"/>     |   </svg>                         |
+|     </defs>                        |                                  |
+|     <use xlink:href='#circle1'/>   |                                  |
+|   </svg>                           |                                  |
++------------------------------------+----------------------------------+
+| |before-resolve-use|               | |after-resolve-use|              |
++------------------------------------+----------------------------------+
+
+.. |before-resolve-use| image:: https://razrfalcon.github.io/svgcleaner/images/before/resolve-use.svg
+.. |after-resolve-use| image:: https://razrfalcon.github.io/svgcleaner/images/after/resolve-use.svg
+
+
 Attributes
 ==========
 
@@ -1296,9 +1324,9 @@ Set path's coordinates numeric precision
 We can reduce the numeric precision of path's coordinates without breaking it.
 
 Range: 1..12, where
-- 8..12 is basically lossless
-- 4..7 will give an actual impact on the file size
-- 1..3 is very dangerous and will probably break your file
+ - 8..12 is basically lossless
+ - 4..7 will give an actual impact on the file size
+ - 1..3 is **very dangerous** and will probably break your file
 
 Default: 8
 

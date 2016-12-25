@@ -245,10 +245,10 @@ b"<svg>
 </svg>",
 "<svg>
     <radialGradient id='rg1' cx='10' cy='20' fx='30' fy='40' \
-        gradientTransform='matrix(1 0 0 1 10 20)' gradientUnits='userSpaceOnUse' r='5' \
+        gradientTransform='translate(10 20)' gradientUnits='userSpaceOnUse' r='5' \
         spreadMethod='repeat'/>
     <radialGradient id='rg2' cx='10' cy='20' fx='30' fy='40' \
-        gradientTransform='matrix(1 0 0 1 10 20)' gradientUnits='userSpaceOnUse' r='5' \
+        gradientTransform='translate(10 20)' gradientUnits='userSpaceOnUse' r='5' \
         spreadMethod='repeat' xlink:href='#rg1'/>
 </svg>
 ");
@@ -263,13 +263,13 @@ b"<svg>
 </svg>",
 "<svg>
     <radialGradient id='rg1' cx='10' cy='20' fx='30' fy='40' \
-        gradientTransform='matrix(1 0 0 1 10 20)' gradientUnits='userSpaceOnUse' r='5' \
+        gradientTransform='translate(10 20)' gradientUnits='userSpaceOnUse' r='5' \
         spreadMethod='repeat'/>
     <radialGradient id='rg2' cx='10' cy='20' fx='30' fy='40' \
-        gradientTransform='matrix(1 0 0 1 10 20)' gradientUnits='userSpaceOnUse' r='5' \
+        gradientTransform='translate(10 20)' gradientUnits='userSpaceOnUse' r='5' \
         spreadMethod='repeat' xlink:href='#rg1'/>
     <radialGradient id='rg3' cx='10' cy='20' fx='30' fy='40' \
-        gradientTransform='matrix(1 0 0 1 10 20)' gradientUnits='userSpaceOnUse' r='5' \
+        gradientTransform='translate(10 20)' gradientUnits='userSpaceOnUse' r='5' \
         spreadMethod='repeat' xlink:href='#rg2'/>
 </svg>
 ");

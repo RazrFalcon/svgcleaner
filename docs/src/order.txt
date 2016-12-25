@@ -16,6 +16,7 @@ merge-gradients.rst
 regroup-gradient-stops.rst
 remove-invalid-stops.rst
 remove-invisible-elements.rst
+resolve-use.rst
 -- Attributes
 remove-version.rst
 remove-nonsvg-attributes.rst

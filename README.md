@@ -45,11 +45,11 @@ Usually, more than half of an SVG image data is useless for rendering:
 There are only one real alternative to the *svgcleaner* - [svgo](https://github.com/svg/svgo).
 
 Despite obvious advantages of the *svgcleaner*, like correctness, cleaning ratio and performance,
-which is shown bellow, there are some more nuances:
+which is shown below, there are some more nuances:
 
 1. *svgcleaner* cleans only one SVG file. It doesn't process SVGZ files.
    It doesn't process directories. It doesn't do anything else. Just one task*.
-1. *svgcleaner* is strictly lossless. There are no destructing cleaning options and never will be.
+1. *svgcleaner* is strictly lossless. There are no destructing cleaning options.
 1. *svgcleaner* is portable. You can build it into a single executable without any external dependency.
 
 \* You can get all of this features using [GUI](https://github.com/RazrFalcon/svgcleaner-gui).

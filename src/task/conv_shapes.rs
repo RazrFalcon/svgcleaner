@@ -52,15 +52,12 @@ fn convert_line(node: &Node) {
     {
         let mut attrs = node.attributes_mut();
 
-        let def_value = AttributeValue::from(Length::new(0.0, Unit::None));
-
         let mut path = path::Builder::new();
         {
-            // unwrap is safe, because coordinates must have a Length type
-            let x1 = attrs.get_value_or(AId::X1, &def_value).as_length().unwrap();
-            let y1 = attrs.get_value_or(AId::Y1, &def_value).as_length().unwrap();
-            let x2 = attrs.get_value_or(AId::X2, &def_value).as_length().unwrap();
-            let y2 = attrs.get_value_or(AId::Y2, &def_value).as_length().unwrap();
+            let x1 = get_value!(attrs, Length, AId::X1, Length::zero());
+            let y1 = get_value!(attrs, Length, AId::Y1, Length::zero());
+            let x2 = get_value!(attrs, Length, AId::X2, Length::zero());
+            let y2 = get_value!(attrs, Length, AId::Y2, Length::zero());
 
             // We can't convert line with non-pixel coordinates.
             // Unit will newer be Px, since we disable it globally via ParseOptions.
@@ -85,11 +82,9 @@ fn convert_rect(node: &Node) {
     let path;
     {
         let attrs = node.attributes();
-        let def_value = AttributeValue::from(Length::new(0.0, Unit::None));
 
-        // unwrap is safe, because coordinates must have a Length type
-        let rx = attrs.get_value_or(AId::Rx, &def_value).as_length().unwrap();
-        let ry = attrs.get_value_or(AId::Ry, &def_value).as_length().unwrap();
+        let rx = get_value!(attrs, Length, AId::Rx, Length::zero());
+        let ry = get_value!(attrs, Length, AId::Ry, Length::zero());
 
         // we converts only simple rects, not rounded,
         // because their path will be longer
@@ -97,18 +92,16 @@ fn convert_rect(node: &Node) {
             return;
         }
 
-        // unwrap is safe, because coordinates must have a Length type
-        let w = attrs.get_value_or(AId::Width, &def_value).as_length().unwrap();
-        let h = attrs.get_value_or(AId::Height, &def_value).as_length().unwrap();
+        let w = get_value!(attrs, Length, AId::Width, Length::zero());
+        let h = get_value!(attrs, Length, AId::Height, Length::zero());
 
         // If values equals to zero than the rect is invisible. Skip it.
         if w.num == 0.0 || h.num == 0.0 {
             return;
         }
 
-        // unwrap is safe, because coordinates must have a Length type
-        let x = attrs.get_value_or(AId::X, &def_value).as_length().unwrap();
-        let y = attrs.get_value_or(AId::Y, &def_value).as_length().unwrap();
+        let x = get_value!(attrs, Length, AId::X, Length::zero());
+        let y = get_value!(attrs, Length, AId::Y, Length::zero());
 
         if !(x.unit == Unit::None && y.unit == Unit::None &&
              w.unit == Unit::None && h.unit == Unit::None) {
@@ -162,13 +155,11 @@ fn points_to_path(node: &Node) -> Option<path::Path> {
 
     let attrs = node.attributes();
 
-    let points;
-    if let Some(v) = attrs.get_value(AId::Points) {
-        // unwrap is safe, because coordinates must have a NumberList type
-        points = v.as_number_list().unwrap();
+    let points = if let Some(&AttributeValue::NumberList(ref v)) = attrs.get_value(AId::Points) {
+        v
     } else {
         return None;
-    }
+    };
 
     // points with an odd count of coordinates must be fixed in fix_attrs::fix_poly
     debug_assert!(points.len() % 2 == 0);

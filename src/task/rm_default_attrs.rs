@@ -92,13 +92,13 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
 
             match attr.value {
                 AttributeValue::Length(l) => {
-                    if l == Length::new(0.0, Unit::None) {
+                    if l == Length::zero() {
                         return true;
                     }
                 }
                 AttributeValue::LengthList(ref list) => {
                     if tag_name == EId::Text && list.len() == 1 {
-                        if list[0] == Length::new(0.0, Unit::None) {
+                        if list[0] == Length::zero() {
                             return true;
                         }
                     }

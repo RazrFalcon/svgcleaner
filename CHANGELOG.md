@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `--use-implicit-cmds`.
 - `--convert-segments`.
+- `--resolve-use`.
+- `--paths-coordinates-precision`.
 
 ## [0.7.1] - 2016-11-04
 ### Added

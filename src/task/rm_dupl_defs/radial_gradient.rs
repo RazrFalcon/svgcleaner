@@ -141,7 +141,7 @@ b"<svg>
 "<svg>
     <defs>
         <radialGradient id='rg1' cx='5' cy='5' fx='5' \
-            gradientTransform='matrix(1 0 0 1 10 20)' r='10'/>
+            gradientTransform='translate(10 20)' r='10'/>
         <radialGradient id='rg3' cx='5' cy='5' fy='5' r='10'/>
     </defs>
     <rect fill='url(#rg1)'/>

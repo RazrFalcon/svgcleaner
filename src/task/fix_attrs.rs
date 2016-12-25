@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 
-use super::short::{EId, AId, Unit};
+use super::short::{EId, AId};
 
 use svgdom::{Document, Node, AttributeValue};
 use svgdom::types::Length;
@@ -42,8 +42,8 @@ pub fn fix_invalid_attributes(doc: &Document) {
 fn fix_rect(node: &Node) {
     // fix attributes according to: https://www.w3.org/TR/SVG/shapes.html#RectElement
 
-    fix_len(node, AId::Width,  Length::new(0.0, Unit::None));
-    fix_len(node, AId::Height, Length::new(0.0, Unit::None));
+    fix_len(node, AId::Width,  Length::zero());
+    fix_len(node, AId::Height, Length::zero());
 
     rm_negative_len(node, AId::Rx);
     rm_negative_len(node, AId::Ry);

@@ -45,6 +45,7 @@ pub enum Key {
     RegroupGradientStops,
     RemoveInvalidStops,
     RemoveInvisibleElements,
+    ResolveUse,
 
     RemoveVersion,
     RemoveNonsvgAttributes,
@@ -107,6 +108,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "regroup-gradient-stops",
     "remove-invalid-stops",
     "remove-invisible-elements",
+    "resolve-use",
 
     "remove-version",
     "remove-nonsvg-attributes",
@@ -187,6 +189,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::RegroupGradientStops, "true"))
         .arg(gen_flag!(Key::RemoveInvalidStops, "true"))
         .arg(gen_flag!(Key::RemoveInvisibleElements, "true"))
+        .arg(gen_flag!(Key::ResolveUse, "true"))
 
         // attributes
         .arg(gen_flag!(Key::RemoveVersion, "true"))

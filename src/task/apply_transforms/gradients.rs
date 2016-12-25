@@ -162,7 +162,7 @@ mod tests {
 
     test!(apply_1,
 b"<svg>
-    <linearGradient x1='10' x2='10' y1='10' y2='10' gradientTransform='matrix(1 0 0 1 10 20)'/>
+    <linearGradient x1='10' x2='10' y1='10' y2='10' gradientTransform='translate(10 20)'/>
 </svg>",
 "<svg>
     <linearGradient x1='20' x2='20' y1='30' y2='30'/>
@@ -180,7 +180,7 @@ b"<svg>
 
     test_eq!(keep_1,
 b"<svg>
-    <linearGradient gradientTransform='matrix(1 0 0 1 10 20)'/>
+    <linearGradient gradientTransform='translate(10 20)'/>
 </svg>
 ");
 
@@ -193,13 +193,13 @@ b"<svg>
 
     test_eq!(keep_3,
 b"<svg>
-    <linearGradient gradientTransform='matrix(1.5 0 0 2 0 0)' x1='10' x2='10' y1='10' y2='10'/>
+    <linearGradient gradientTransform='scale(1.5 2)' x1='10' x2='10' y1='10' y2='10'/>
 </svg>
 ");
 
     test_eq!(keep_4,
 b"<svg>
-    <linearGradient id='lg1' gradientTransform='matrix(1 0 0 1 10 20)' x1='10' x2='10' y1='10' y2='10'/>
+    <linearGradient id='lg1' gradientTransform='translate(10 20)' x1='10' x2='10' y1='10' y2='10'/>
     <linearGradient xlink:href='#lg1'/>
 </svg>
 ");

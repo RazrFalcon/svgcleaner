@@ -26,6 +26,7 @@ macro_rules! write_opt_for_tests {
         use svgdom::WriteOptions;
         let mut opt = WriteOptions::default();
         opt.use_single_quote = true;
+        opt.simplify_transform_matrices = true;
         opt
     })
 }
@@ -55,4 +56,14 @@ macro_rules! assert_eq_text {
             }
         }
     })
+}
+
+macro_rules! get_value {
+    ($attrs:expr, $t:ident, $aid:expr, $def:expr) => (
+        if let Some(&AttributeValue::$t(v)) = $attrs.get_value($aid) {
+            v
+        } else {
+            $def
+        }
+    )
 }

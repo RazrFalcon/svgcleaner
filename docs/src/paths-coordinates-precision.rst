@@ -4,9 +4,9 @@ Set path's coordinates numeric precision
 We can reduce the numeric precision of path's coordinates without breaking it.
 
 Range: 1..12, where
-- 8..12 is basically lossless
-- 4..7 will give an actual impact on the file size
-- 1..3 is very dangerous and will probably break your file
+ - 8..12 is basically lossless
+ - 4..7 will give an actual impact on the file size
+ - 1..3 is **very dangerous** and will probably break your file
 
 Default: 8
 

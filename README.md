@@ -91,8 +91,6 @@ of the files - it's pointless. Same goes for *svgo*.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.7.1/docs/images/performance_chart_oxygen.svg)
 
-You can find more tests, with detailed explanations of errors, [here](docs/extended_testing.rst).
-
 ### Other
 
 | Collection | Size Before (MiB) | Size After (MiB) | Ratio (%) |
@@ -100,10 +98,12 @@ You can find more tests, with detailed explanations of errors, [here](docs/exten
 | [Breeze icons theme](https://github.com/KDE/breeze-icons) | 21.72 | 11.09 | 48.91 |
 | [Ardis icons theme](https://github.com/NitruxSA/ardis-icon-theme) | 11.82 | 5.23 | 55.74 |
 | [Humanity icons theme](https://wiki.ubuntu.com/Artwork/Incoming/Karmic/Humanity_Icons?action=AttachFile&do=view&target=humanity_2.1.tar.gz) | 8.56 | 3.08 | 64.01 |
-| [Open Icon Library](https://sourceforge.net/projects/openiconlibrary/) | 69.44 | 207.45 | 66.53 |
-| [Elementary icons theme](https://github.com/elementary/icons) | 7.09 | 17.72 | 59.95 |
-| [Adwaita icons theme](https://github.com/GNOME/adwaita-icon-theme) | 0.37 | 2.21 | 83.08 |
-| [Faience icon theme](https://www.archlinux.org/packages/community/any/faience-icon-theme/) | 11.14 | 22.35 | 50.16 |
+| [Open Icon Library](https://sourceforge.net/projects/openiconlibrary/) | 207.45 |69.44 | 66.53 |
+| [Elementary icons theme](https://github.com/elementary/icons) | 17.72 | 7.09 | 59.95 |
+| [Adwaita icons theme](https://github.com/GNOME/adwaita-icon-theme) | 2.21 | 0.37 | 83.08 |
+| [Faience icon theme](https://www.archlinux.org/packages/community/any/faience-icon-theme/) | 22.35 | 11.14 | 50.16 |
+
+You can find more tests, with detailed explanations of errors, [here](docs/extended_testing.rst).
 
 ## [Documentation](docs/svgcleaner.rst)
 

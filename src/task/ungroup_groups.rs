@@ -169,7 +169,7 @@ fn ungroup_group(g: &Node) {
 mod tests {
     use super::*;
     use svgdom::{Document, WriteToString};
-    use task::{group_defs, final_fixes, rm_unused_defs};
+    use task::{group_defs, remove_empty_defs, rm_unused_defs};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -188,7 +188,7 @@ mod tests {
                 rm_unused_defs::remove_unused_defs(&doc);
 
                 // removes `defs` element
-                final_fixes(&doc);
+                remove_empty_defs(&doc);
 
                 let mut opt = write_opt_for_tests!();
                 opt.simplify_transform_matrices = true;

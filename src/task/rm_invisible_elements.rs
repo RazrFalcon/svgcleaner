@@ -313,7 +313,7 @@ fn process_rect(doc: &Document, is_any_removed: &mut bool) {
 mod tests {
     use super::*;
     use svgdom::{Document, WriteToString};
-    use task::{group_defs, final_fixes};
+    use task::{group_defs, remove_empty_defs};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -325,7 +325,7 @@ mod tests {
                 group_defs(&doc);
                 remove_invisible_elements(&doc);
                 // removes `defs` element
-                final_fixes(&doc);
+                remove_empty_defs(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
         )

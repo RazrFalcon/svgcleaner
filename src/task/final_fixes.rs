@@ -73,7 +73,7 @@ mod tests {
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
-            base_test!($name, final_fixes, $in_text, $out_text);
+            base_test!($name, remove_empty_defs, $in_text, $out_text);
         )
     }
 

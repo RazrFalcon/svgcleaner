@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--convert-segments`.
 - `--resolve-use`.
 - `--paths-coordinates-precision`.
+- `--group-by-style`.
+
+### Removed
+- `--move-styles-to-group`. Use `--group-by-style` instead.
+
+### Other
+- Updated to the latest version of the libsvgdom.
 
 ## [0.7.1] - 2016-11-04
 ### Added

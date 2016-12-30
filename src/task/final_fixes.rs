@@ -24,9 +24,9 @@ use super::short::{EId, AId};
 
 use svgdom::{Document};
 
-// TODO: rename
-pub fn final_fixes(doc: &Document) {
-    // Remove empty 'defs' element.
+// TODO: is 'svg' element contains only one element and it's 'g' element - ungroup it
+
+pub fn remove_empty_defs(doc: &Document) {
     // We don't remove all empty 'defs' elements, since it was already done by group_defs().
     // We only remove first 'defs', which is probably was created by us.
 

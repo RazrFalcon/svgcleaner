@@ -41,6 +41,7 @@ pub enum Key {
     RemoveDuplFeGaussianBlur,
     UngroupGroups,
     UngroupDefs,
+    GroupByStyle,
     MergeGradients,
     RegroupGradientStops,
     RemoveInvalidStops,
@@ -57,7 +58,6 @@ pub enum Key {
     RemoveXmlnsXlinkAttribute,
     RemoveNeedlessAttributes,
     RemoveGradientAttributes,
-    MoveStylesToGroup,
     JoinStyleAttributes,
     ApplyTransformToGradients,
     RemoveUnresolvedClasses,
@@ -104,6 +104,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-dupl-fegaussianblur",
     "ungroup-groups",
     "ungroup-defs",
+    "group-by-style",
     "merge-gradients",
     "regroup-gradient-stops",
     "remove-invalid-stops",
@@ -120,7 +121,6 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-xmlns-xlink-attribute",
     "remove-needless-attributes",
     "remove-gradient-attributes",
-    "move-styles-to-group",
     "join-style-attributes",
     "apply-transform-to-gradients",
     "remove-unresolved-classes",
@@ -185,6 +185,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::RemoveDuplFeGaussianBlur, "true"))
         .arg(gen_flag!(Key::UngroupGroups, "true"))
         .arg(gen_flag!(Key::UngroupDefs, "true"))
+        .arg(gen_flag!(Key::GroupByStyle, "true"))
         .arg(gen_flag!(Key::MergeGradients, "true"))
         .arg(gen_flag!(Key::RegroupGradientStops, "true"))
         .arg(gen_flag!(Key::RemoveInvalidStops, "true"))
@@ -202,7 +203,6 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute, "true"))
         .arg(gen_flag!(Key::RemoveNeedlessAttributes, "true"))
         .arg(gen_flag!(Key::RemoveGradientAttributes, "false"))
-        .arg(gen_flag!(Key::MoveStylesToGroup, "true"))
         .arg(gen_flag!(Key::JoinStyleAttributes, "true"))
         .arg(gen_flag!(Key::ApplyTransformToGradients, "true"))
         .arg(gen_flag!(Key::RemoveUnresolvedClasses, "true"))

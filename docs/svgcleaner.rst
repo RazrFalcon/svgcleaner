@@ -462,6 +462,40 @@ CLI argument: ``--ungroup-defs``
 .. |after-ungroup-defs| image:: https://razrfalcon.github.io/svgcleaner/images/after/ungroup-defs.svg
 
 
+Group elements by equal styles
+------------------------------
+
+If a continuous range of elements contains equal, inheritable attributes - we can
+group such elements and move this attributes to a new or an existing parent group.
+
+**Note:** this option is mostly poinless when XML indent is enabled,
+so you should use it with *Sets XML nodes indent*/``--indent`` option equal to ``-1`` or ``0``.
+
+CLI argument: ``--group-by-style``
+
++---------------------------------+----------------------------------+
+| Before (292b)                   | After (291b)                     |
++---------------------------------+----------------------------------+
+| .. code-block:: XML             | .. code-block:: XML              |
+|                                 |                                  |
+|   <svg>                         |   <svg>                          |
+|     <circle fill="green" r="45" |     <g fill="green">             |
+|             cx="50" cy="50"/>   |       <circle r="45"             |
+|     <circle fill="green" r="45" |               cx="50" cy="50"/>  |
+|             cx="100" cy="50"/>  |       <circle r="45"             |
+|     <circle fill="green" r="45" |               cx="100" cy="50"/> |
+|             cx="150" cy="50"/>  |       <circle r="45"             |
+|   </svg>                        |               cx="150" cy="50"/> |
+|                                 |     </g>                         |
+|                                 |   </svg>                         |
++---------------------------------+----------------------------------+
+| |before-group-by-style|         | |after-group-by-style|           |
++---------------------------------+----------------------------------+
+
+.. |before-group-by-style| image:: https://razrfalcon.github.io/svgcleaner/images/before/group-by-style.svg
+.. |after-group-by-style| image:: https://razrfalcon.github.io/svgcleaner/images/after/group-by-style.svg
+
+
 Merge gradients
 ---------------
 
@@ -949,39 +983,6 @@ CLI argument: ``--remove-gradient-attributes``
 
 .. |before-remove-gradient-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-gradient-attributes.svg
 .. |after-remove-gradient-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-gradient-attributes.svg
-
-
-Move presentational attributes to the parent group
---------------------------------------------------
-
-If all children of the group element have the same presentation attribute - we can move this
-attribute to the group and remove it from children.
-
-This method does not create new groups.
-
-CLI argument: ``--move-styles-to-group``
-
-+-----------------------------------------+--------------------------------+
-| Before (317b)                           | After (291b)                   |
-+-----------------------------------------+--------------------------------+
-| .. code-block:: XML                     | .. code-block:: XML            |
-|                                         |                                |
-|   <svg>                                 |   <svg>                        |
-|     <g>                                 |     <g fill="green">           |
-|       <circle fill="green"              |       <circle cx="50" cy="50"  |
-|               cx="50" cy="50" r="45"/>  |               r="45"/>         |
-|       <circle fill="green"              |       <circle cx="100" cy="50" |
-|               cx="100" cy="50" r="45"/> |               r="45"/>         |
-|       <circle fill="green"              |       <circle cx="150" cy="50" |
-|               cx="150" cy="50" r="45"/> |               r="45"/>         |
-|     </g>                                |     </g>                       |
-|   </svg>                                |   </svg>                       |
-+-----------------------------------------+--------------------------------+
-| |before-move-styles-to-group|           | |after-move-styles-to-group|   |
-+-----------------------------------------+--------------------------------+
-
-.. |before-move-styles-to-group| image:: https://razrfalcon.github.io/svgcleaner/images/before/move-styles-to-group.svg
-.. |after-move-styles-to-group| image:: https://razrfalcon.github.io/svgcleaner/images/after/move-styles-to-group.svg
 
 
 Join presentational attributes

@@ -158,12 +158,15 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions)
         remove_gradient_attributes(doc);
     }
 
-    if get_flag(args, Key::MoveStylesToGroup) {
-        move_styles_to_group(doc);
-    }
-
     if get_flag(args, Key::RemoveUnusedCoordinates) {
         remove_unused_coordinates(doc);
+    }
+
+    // Run only after attributes processed, because
+    // there is no point in grouping default/unneeded attributes.
+    // Also it may create empty groups.
+    if get_flag(args, Key::GroupByStyle) {
+        group_by_style(doc);
     }
 
     // final fixes
@@ -185,7 +188,7 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions)
         ungroup_defs(doc);
     }
 
-    final_fixes(doc);
+    remove_empty_defs(doc);
     fix_xmlns_attribute(doc, get_flag(args, Key::RemoveXmlnsXlinkAttribute));
 
     // NOTE: must be run at last, since it breaks the linking.

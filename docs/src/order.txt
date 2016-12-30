@@ -12,6 +12,7 @@ remove-dupl-radialgradient.rst
 remove-dupl-fegaussianblur.rst
 ungroup-groups.rst
 ungroup-defs.rst
+group-by-style.rst
 merge-gradients.rst
 regroup-gradient-stops.rst
 remove-invalid-stops.rst
@@ -28,7 +29,6 @@ remove-default-attributes.rst
 remove-xmlns-xlink-attribute.rst
 remove-needless-attributes.rst
 remove-gradient-attributes.rst
-move-styles-to-group.rst
 join-style-attributes.rst
 apply-transform-to-gradients.rst
 remove-unresolved-classes.rst

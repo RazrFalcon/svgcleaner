@@ -13,12 +13,14 @@
     * [Correctness](#correctness)
     * [Cleaning ratio](#cleaning-ratio)
     * [Cleaning time](#cleaning-time)
+    * [Other](#other)
+  * [Documentation](#documentation)
   * [Limitations](#limitations)
-  * [Downloads](#downloads)
-  * [Building](#building)
   * [Usage](#usage)
     * [CLI](#cli)
     * [GUI](#gui)
+  * [Downloads](#downloads)
+  * [Building](#building)
   * [Contributing and Issues](#contributing-and-issues)
   * [FAQ](#faq)
   * [License](#license)
@@ -58,6 +60,8 @@ which is shown below, there are some more nuances:
 
 See ['Testing notes'](docs/testing_notes.rst) for details.
 
+All stats was collected using latest release version.
+
 ### Correctness
 
 *Less is better.*
@@ -89,6 +93,20 @@ of the files - it's pointless. Same goes for *svgo*.
 
 You can find more tests, with detailed explanations of errors, [here](docs/extended_testing.rst).
 
+### Other
+
+| Collection | Size Before (MiB) | Size After (MiB) | Ratio (%) |
+|--------------------------|------------------:|-----------------:|----------:|
+| [Breeze icons theme](https://github.com/KDE/breeze-icons) | 21.72 | 11.09 | 48.91 |
+| [Ardis icons theme](https://github.com/NitruxSA/ardis-icon-theme) | 11.82 | 5.23 | 55.74 |
+| [Humanity icons theme](https://wiki.ubuntu.com/Artwork/Incoming/Karmic/Humanity_Icons?action=AttachFile&do=view&target=humanity_2.1.tar.gz) | 8.56 | 3.08 | 64.01 |
+| [Open Icon Library](https://sourceforge.net/projects/openiconlibrary/) | 69.44 | 207.45 | 66.53 |
+| [Elementary icons theme](https://github.com/elementary/icons) | 7.09 | 17.72 | 59.95 |
+| [Adwaita icons theme](https://github.com/GNOME/adwaita-icon-theme) | 0.37 | 2.21 | 83.08 |
+| [Faience icon theme](https://www.archlinux.org/packages/community/any/faience-icon-theme/) | 11.14 | 22.35 | 50.16 |
+
+## [Documentation](docs/svgcleaner.rst)
+
 ## Limitations
 
 *svgcleaner* shouldn't change your file unless you say it to, but there are still
@@ -109,6 +127,20 @@ that will be changed:
 - If the `offset` attribute value of the `stop` element represented as percent - it will be
   converted into number.
 
+## Usage
+
+### CLI
+
+```
+svgcleaner in.svg out.svg
+```
+
+Use `--help` for a list of the cleaning options and the [doc](docs/svgcleaner.rst) for more details.
+
+### GUI
+
+You can get a GUI [here](https://github.com/RazrFalcon/svgcleaner-gui).
+
 ## Downloads
 
 You can get prebuild packages [here](https://github.com/RazrFalcon/svgcleaner-gui/releases).
@@ -126,20 +158,6 @@ If you're a Rust programmer, you can install *svgcleaner* using:
 ```bash
 cargo install svgcleaner
 ```
-
-## Usage
-
-### CLI
-
-```
-svgcleaner in.svg out.svg
-```
-
-Use `--help` for a list of the cleaning options and the [doc](docs/svgcleaner.rst) for more details.
-
-### GUI
-
-You can get a GUI [here](https://github.com/RazrFalcon/svgcleaner-gui).
 
 ## Contributing and Issues
 

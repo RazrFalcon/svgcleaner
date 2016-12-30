@@ -36,6 +36,7 @@ stats \
  - https://wiki.ubuntu.com/Artwork/Incoming/Karmic/Humanity_Icons?action=AttachFile&do=view&target=humanity_2.1.tar.gz
  - https://github.com/NitruxSA/ardis-icon-theme
  - https://www.archlinux.org/packages/community/any/faience-icon-theme/
+ - https://github.com/GNOME/adwaita-icon-theme
 
 ## Convert svgz to svg
 

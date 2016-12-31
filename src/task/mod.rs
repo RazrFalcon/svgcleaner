@@ -94,3 +94,29 @@ mod short {
 fn is_gradient(node: &super::svgdom::Node) -> bool {
     node.is_tag_name(short::EId::LinearGradient) || node.is_tag_name(short::EId::RadialGradient)
 }
+
+mod utils {
+    use svgdom::{Node, AttributeValue};
+    use task::short::AId;
+
+    pub fn recalc_stroke_width(node: &Node, scale_factor: f64) {
+        // resolve current 'stroke-width'
+        let stroke_width_val = if let Some(attr) = node.attribute(AId::StrokeWidth) {
+            // defined in the current node
+            attr.value
+        } else {
+            if let Some(n) = node.parents().find(|n| n.has_attribute(AId::StrokeWidth)) {
+                // defined in the parent node
+                n.attribute_value(AId::StrokeWidth).unwrap()
+            } else {
+                // default value
+                AttributeValue::default_value(AId::StrokeWidth).unwrap()
+            }
+        };
+
+        let mut stroke_width = *stroke_width_val.as_length().unwrap();
+        stroke_width.num *= scale_factor;
+
+        node.set_attribute(AId::StrokeWidth, stroke_width);
+    }
+}

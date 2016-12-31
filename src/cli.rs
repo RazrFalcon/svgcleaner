@@ -60,6 +60,7 @@ pub enum Key {
     RemoveGradientAttributes,
     JoinStyleAttributes,
     ApplyTransformToGradients,
+    ApplyTransformToShapes,
     RemoveUnresolvedClasses,
 
     PathsToRelative,
@@ -123,6 +124,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-gradient-attributes",
     "join-style-attributes",
     "apply-transform-to-gradients",
+    "apply-transform-to-shapes",
     "remove-unresolved-classes",
 
     "paths-to-relative",
@@ -205,6 +207,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::RemoveGradientAttributes, "false"))
         .arg(gen_flag!(Key::JoinStyleAttributes, "true"))
         .arg(gen_flag!(Key::ApplyTransformToGradients, "true"))
+        .arg(gen_flag!(Key::ApplyTransformToShapes, "true"))
         .arg(gen_flag!(Key::RemoveUnresolvedClasses, "true"))
 
         // paths

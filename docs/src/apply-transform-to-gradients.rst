@@ -1,7 +1,7 @@
 Apply transformations to gradients
 ----------------------------------
 
-Transformations that contain only translate, rotate and proportional scale parts
+Transformations that contain only translate, rotate and/or proportional scale parts
 can be applied to some gradients.
 
 .. GEN_TABLE

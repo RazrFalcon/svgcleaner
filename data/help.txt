@@ -44,6 +44,7 @@ Attributes:
     --remove-gradient-attributes <FLAG>      Remove inheritable gradient attributes [default: false]
     --join-style-attributes <FLAG>           Join presentational attributes [default: true]
     --apply-transform-to-gradients <FLAG>    Apply transformations to gradients [default: true]
+    --apply-transform-to-shapes <FLAG>       Apply transformations to shapes [default: true]
     --remove-unresolved-classes <FLAG>       Remove unresolved classes from 'class' attributes [default: true]
 
 Paths:

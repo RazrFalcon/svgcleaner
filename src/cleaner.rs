@@ -113,6 +113,11 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions)
         apply_transforms::apply_transform_to_gradients(doc);
     }
 
+    if get_flag(args, Key::ApplyTransformToShapes) {
+        // Apply before 'convert_shapes_to_paths'.
+        apply_transforms::apply_transform_to_shapes(doc);
+    }
+
     if get_flag(args, Key::ConvertShapes) {
         convert_shapes_to_paths(doc);
     }

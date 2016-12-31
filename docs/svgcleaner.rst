@@ -998,7 +998,7 @@ Otherwise ``style`` is shorter.
 Apply transformations to gradients
 ----------------------------------
 
-Transformations that contain only translate, rotate and proportional scale parts
+Transformations that contain only translate, rotate and/or proportional scale parts
 can be applied to some gradients.
 
 CLI argument: ``--apply-transform-to-gradients``
@@ -1027,6 +1027,34 @@ CLI argument: ``--apply-transform-to-gradients``
 
 .. |before-apply-transform-to-gradients| image:: https://razrfalcon.github.io/svgcleaner/images/before/apply-transform-to-gradients.svg
 .. |after-apply-transform-to-gradients| image:: https://razrfalcon.github.io/svgcleaner/images/after/apply-transform-to-gradients.svg
+
+
+Apply transformations to shapes
+-------------------------------
+
+Transformations that contain only translate, rotate and/or proportional scale parts
+can be applied to some shapes.
+
+This option will apply transformations to: ``rect``, ``circle``, ``ellipse`` and ``line``.
+
+CLI argument: ``--apply-transform-to-shapes``
+
++---------------------------------------------------+-------------------------------------------+
+| Before (239b)                                     | After (191b)                              |
++---------------------------------------------------+-------------------------------------------+
+| .. code-block:: XML                               | .. code-block:: XML                       |
+|                                                   |                                           |
+|   <svg>                                           |   <svg>                                   |
+|     <circle fill="green" stroke-width='0'         |     <circle fill="green" stroke-width='0' |
+|             transform="translate(10 10) scale(2)" |             cx="50" cy="50" r="44"/>      |
+|             cx="20" cy="20" r="22"/>              |   </svg>                                  |
+|   </svg>                                          |                                           |
++---------------------------------------------------+-------------------------------------------+
+| |before-apply-transform-to-shapes|                | |after-apply-transform-to-shapes|         |
++---------------------------------------------------+-------------------------------------------+
+
+.. |before-apply-transform-to-shapes| image:: https://razrfalcon.github.io/svgcleaner/images/before/apply-transform-to-shapes.svg
+.. |after-apply-transform-to-shapes| image:: https://razrfalcon.github.io/svgcleaner/images/after/apply-transform-to-shapes.svg
 
 
 Remove unresolved classes from ``class`` attributes

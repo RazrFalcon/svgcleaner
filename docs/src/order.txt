@@ -31,6 +31,7 @@ remove-needless-attributes.rst
 remove-gradient-attributes.rst
 join-style-attributes.rst
 apply-transform-to-gradients.rst
+apply-transform-to-shapes.rst
 remove-unresolved-classes.rst
 -- Paths
 paths-to-relative.rst

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--resolve-use`.
 - `--paths-coordinates-precision`.
 - `--group-by-style`.
+- `--apply-transform-to-shapes`.
 
 ### Removed
 - `--move-styles-to-group`. Use `--group-by-style` instead.

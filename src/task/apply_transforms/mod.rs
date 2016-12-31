@@ -21,5 +21,7 @@
 ****************************************************************************/
 
 pub use self::gradients::apply_transform_to_gradients;
+pub use self::shapes::apply_transform_to_shapes;
 
 mod gradients;
+mod shapes;

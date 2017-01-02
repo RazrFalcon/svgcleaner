@@ -73,6 +73,7 @@ fn process_path(path: &mut Path, has_marker: bool, args: &ArgMatches) {
 mod utils {
     use svgdom::types::path::{Path};
 
+    // TODO: replace with macro
     pub fn resolve_x(path: &Path, start: usize) -> f64 {
         // VerticalLineTo does not have `x` coordinate, so we have to find it in previous segments
         let mut i = start;

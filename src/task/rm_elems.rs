@@ -24,6 +24,7 @@ use super::short::EId;
 
 use svgdom::Document;
 
+// TODO: to mod::utils
 pub fn remove_element(doc: &Document, id: EId) {
     doc.drain(|n| n.is_tag_name(id));
 }
@@ -43,6 +44,8 @@ mod tests {
             }
         )
     }
+
+    // TODO: this tests should be in svgdom
 
     test!(rm_1, ElementId::Title,
 b"<svg>

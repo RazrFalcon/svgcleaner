@@ -20,10 +20,10 @@
 **
 ****************************************************************************/
 
-use task::short::{EId, AId, Unit};
+use task::short::{EId, AId};
+use super::utils;
 
-use svgdom::{Document, Node};
-use svgdom::types::{Length};
+use svgdom::Document;
 
 pub fn apply_transform_to_gradients(doc: &Document) {
     let iter = doc.descendants().svg()
@@ -58,82 +58,31 @@ pub fn apply_transform_to_gradients(doc: &Document) {
 
         let ts = *node.attribute_value(AId::GradientTransform).unwrap().as_transform().unwrap();
 
-        // If transform has non-proportional scale - we should skip it,
-        // because it can be applied only to a raster.
-        if ts.has_scale() && !ts.has_proportional_scale() {
+        if !utils::is_valid_transform(&ts) {
             continue;
         }
 
-        // If transform has skew part - we should skip it,
-        // because it can be applied only to a raster.
-        if ts.has_skew() {
+        if !utils::is_valid_coords(&node) {
             continue;
         }
 
         if node.is_tag_name(EId::LinearGradient) {
-            let x1 = get_coord(&node, AId::X1);
-            let y1 = get_coord(&node, AId::Y1);
-
-            let x2 = get_coord(&node, AId::X2);
-            let y2 = get_coord(&node, AId::Y2);
-
-            // We can apply transform only to coordinates with px/none units.
-            if    x1.unit != Unit::None || y1.unit != Unit::None
-               || x2.unit != Unit::None || y2.unit != Unit::None {
-                continue;
-            }
-
-            {
-                let (x, y) = ts.apply(x1.num, y1.num);
-                node.set_attribute(AId::X1, (x, Unit::None));
-                node.set_attribute(AId::Y1, (y, Unit::None));
-            }
-
-            {
-                let (x, y) = ts.apply(x2.num, y2.num);
-                node.set_attribute(AId::X2, (x, Unit::None));
-                node.set_attribute(AId::Y2, (y, Unit::None));
-            }
+            let mut attrs = node.attributes_mut();
+            utils::transform_coords(&mut attrs, AId::X1, AId::Y1, &ts);
+            utils::transform_coords(&mut attrs, AId::X2, AId::Y2, &ts);
         } else {
-            let cx = get_coord(&node, AId::Cx);
-            let cy = get_coord(&node, AId::Cy);
+            let mut attrs = node.attributes_mut();
+            utils::transform_coords(&mut attrs, AId::Cx, AId::Cy, &ts);
+            utils::transform_coords(&mut attrs, AId::Fx, AId::Fy, &ts);
 
-            let fx = get_coord(&node, AId::Fx);
-            let fy = get_coord(&node, AId::Fy);
-
-            let r = get_coord(&node, AId::R);
-
-            // We can apply transform only to coordinates with px/none units.
-            if    cx.unit != Unit::None || cy.unit != Unit::None
-               || fx.unit != Unit::None || fy.unit != Unit::None
-               || r.unit  != Unit::None {
-                continue;
-            }
-
-            {
-                let (x, y) = ts.apply(cx.num, cy.num);
-                node.set_attribute(AId::Cx, (x, Unit::None));
-                node.set_attribute(AId::Cy, (y, Unit::None));
-            }
-
-            {
-                let (x, y) = ts.apply(fx.num, fy.num);
-                node.set_attribute(AId::Fx, (x, Unit::None));
-                node.set_attribute(AId::Fy, (y, Unit::None));
-            }
-
-            {
+            if ts.has_scale() {
                 let (sx, _) = ts.get_scale();
-                node.set_attribute(AId::R, (r.num * sx, Unit::None));
+                utils::scale_coord(&mut attrs, AId::R, &sx);
             }
         }
 
         node.remove_attribute(AId::GradientTransform);
     }
-}
-
-fn get_coord(node: &Node, aid: AId) -> Length {
-    *node.attribute_value(aid).unwrap().as_length().unwrap()
 }
 
 #[cfg(test)]

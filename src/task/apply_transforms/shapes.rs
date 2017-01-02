@@ -20,10 +20,11 @@
 **
 ****************************************************************************/
 
-use task::short::{EId, AId, Unit};
+use task::short::{EId, AId};
+use super::utils;
 
-use svgdom::{Document, Node, Attributes, AttributeValue};
-use svgdom::types::{Length, Transform};
+use svgdom::{Document, Node, Attributes};
+use svgdom::types::{Transform};
 
 pub fn apply_transform_to_shapes(doc: &Document) {
     // If group has transform and contains only valid shapes
@@ -35,7 +36,7 @@ pub fn apply_transform_to_shapes(doc: &Document) {
                                                   && n.has_attribute(AId::Transform));
 
     for node in iter {
-        if !is_valid_transform(&node) || !is_valid_attrs(&node) {
+        if !utils::has_valid_transform(&node) || !utils::is_valid_attrs(&node) {
             continue;
         }
 
@@ -49,16 +50,19 @@ pub fn apply_transform_to_shapes(doc: &Document) {
                 _ => false,
             };
 
-            flag && is_valid_transform(&n) && is_valid_attrs(&n) && is_valid_coords(&n)
+               flag
+            && utils::has_valid_transform(&n)
+            && utils::is_valid_attrs(&n)
+            && utils::is_valid_coords(&n)
         }) {
-            let ts = get_ts(&node);
+            let ts = utils::get_ts(&node);
 
             // apply group's transform to children
             for child in node.children().svg() {
                 if child.has_attribute(AId::Transform) {
                     // we should multiply transform matrices
                     let mut ts1 = ts.clone();
-                    let ts2 = get_ts(&child);
+                    let ts2 = utils::get_ts(&child);
                     ts1.append(&ts2);
                     child.set_attribute(AId::Transform, ts1);
                 } else {
@@ -89,11 +93,13 @@ pub fn apply_transform_to_shapes(doc: &Document) {
 fn process<F>(node: &Node, func: F)
     where F : Fn(&mut Attributes, &Transform)
 {
-    if !is_valid_transform(node) || !is_valid_attrs(node) || !is_valid_coords(node) {
+    if    !utils::has_valid_transform(node)
+       || !utils::is_valid_attrs(node)
+       || !utils::is_valid_coords(node) {
         return;
     }
 
-    let ts = get_ts(node);
+    let ts = utils::get_ts(node);
 
     {
         let mut attrs = node.attributes_mut();
@@ -110,148 +116,48 @@ fn process<F>(node: &Node, func: F)
 
 fn process_rect(node: &Node) {
     process(node, |mut attrs, ts| {
-        scale_pos_coord(&mut attrs, AId::X, AId::Y, &ts);
+        utils::transform_coords(&mut attrs, AId::X, AId::Y, &ts);
 
         if ts.has_scale() {
             let (sx, _) = ts.get_scale();
 
-            scale_coord(&mut attrs, AId::Width, &sx);
-            scale_coord(&mut attrs, AId::Height, &sx);
+            utils::scale_coord(&mut attrs, AId::Width, &sx);
+            utils::scale_coord(&mut attrs, AId::Height, &sx);
 
-            scale_coord(&mut attrs, AId::Rx, &sx);
-            scale_coord(&mut attrs, AId::Ry, &sx);
+            utils::scale_coord(&mut attrs, AId::Rx, &sx);
+            utils::scale_coord(&mut attrs, AId::Ry, &sx);
         }
     });
 }
 
 fn process_circle(node: &Node) {
     process(node, |mut attrs, ts| {
-        scale_pos_coord(&mut attrs, AId::Cx, AId::Cy, &ts);
+        utils::transform_coords(&mut attrs, AId::Cx, AId::Cy, &ts);
 
         if ts.has_scale() {
             let (sx, _) = ts.get_scale();
-            scale_coord(&mut attrs, AId::R, &sx);
+            utils::scale_coord(&mut attrs, AId::R, &sx);
         }
     });
 }
 
 fn process_ellipse(node: &Node) {
     process(node, |mut attrs, ts| {
-        scale_pos_coord(&mut attrs, AId::Cx, AId::Cy, &ts);
+        utils::transform_coords(&mut attrs, AId::Cx, AId::Cy, &ts);
 
         if ts.has_scale() {
             let (sx, _) = ts.get_scale();
-            scale_coord(&mut attrs, AId::Rx, &sx);
-            scale_coord(&mut attrs, AId::Ry, &sx);
+            utils::scale_coord(&mut attrs, AId::Rx, &sx);
+            utils::scale_coord(&mut attrs, AId::Ry, &sx);
         }
     });
 }
 
 fn process_line(node: &Node) {
     process(node, |mut attrs, ts| {
-        scale_pos_coord(&mut attrs, AId::X1, AId::Y1, &ts);
-        scale_pos_coord(&mut attrs, AId::X2, AId::Y2, &ts);
+        utils::transform_coords(&mut attrs, AId::X1, AId::Y1, &ts);
+        utils::transform_coords(&mut attrs, AId::X2, AId::Y2, &ts);
     });
-}
-
-fn is_valid_transform(node: &Node) -> bool {
-    if !node.has_attribute(AId::Transform) {
-        return true;
-    }
-
-    let ts = get_ts(node);
-
-    // If transform has non-proportional scale - we should skip it,
-    // because it can be applied only to a raster.
-    if ts.has_scale() && !ts.has_proportional_scale() {
-        return false;
-    }
-
-    // If transform has skew part - we should skip it,
-    // because it can be applied only to a raster.
-    if ts.has_skew() {
-        return false;
-    }
-
-    return true;
-}
-
-// Element shouldn't have any linked elements, because they also must be transformed.
-// TODO: process 'fill', 'stroke' and 'filter' linked elements only if they
-//       used only by this element.
-fn is_valid_attrs(node: &Node) -> bool {
-    let attrs = node.attributes();
-
-    if let Some(&AttributeValue::FuncLink(_)) = attrs.get_value(AId::Fill) {
-        return false;
-    }
-
-    if let Some(&AttributeValue::FuncLink(_)) = attrs.get_value(AId::Stroke) {
-        return false;
-    }
-
-    if let Some(&AttributeValue::FuncLink(_)) = attrs.get_value(AId::Filter) {
-        return false;
-    }
-
-    if attrs.contains(AId::Mask) || attrs.contains(AId::ClipPath) {
-        return false;
-    }
-
-    return true;
-}
-
-// We can process only coordinates without units.
-fn is_valid_coords(node: &Node) -> bool {
-    match node.tag_id().unwrap() {
-        EId::Rect =>    _is_valid_coords(node, &[AId::X, AId::Y]),
-        EId::Circle =>  _is_valid_coords(node, &[AId::Cx, AId::Cy]),
-        EId::Ellipse => _is_valid_coords(node, &[AId::Cx, AId::Cy]),
-        EId::Line =>    _is_valid_coords(node, &[AId::X1, AId::Y1, AId::X2, AId::Y2]),
-        _ => false,
-    }
-}
-
-fn _is_valid_coords(node: &Node, attr_ids: &[AId]) -> bool {
-    let attrs = node.attributes();
-
-    fn is_valid_coord(attrs: &Attributes, aid: AId) -> bool {
-        if let Some(&AttributeValue::Length(v)) = attrs.get_value(aid) {
-            v.unit == Unit::None
-        } else {
-            true
-        }
-    }
-
-    for id in attr_ids {
-        if !is_valid_coord(&attrs, *id) {
-            return false;
-        }
-    }
-
-    true
-}
-
-fn scale_pos_coord(attrs: &mut Attributes, aid_x: AId, aid_y: AId, ts: &Transform) {
-    let x = get_value!(attrs, Length, aid_x, Length::zero());
-    let y = get_value!(attrs, Length, aid_y, Length::zero());
-
-    debug_assert!(x.unit == Unit::None);
-    debug_assert!(y.unit == Unit::None);
-
-    let (nx, ny) = ts.apply(x.num, y.num);
-    attrs.insert_from(aid_x, (nx, Unit::None));
-    attrs.insert_from(aid_y, (ny, Unit::None));
-}
-
-fn scale_coord(attrs: &mut Attributes, aid: AId, scale_factor: &f64) {
-    if let Some(&mut AttributeValue::Length(ref mut len)) = attrs.get_value_mut(aid) {
-        len.num *= *scale_factor;
-    }
-}
-
-fn get_ts(node: &Node) -> Transform {
-    *node.attribute_value(AId::Transform).unwrap().as_transform().unwrap()
 }
 
 #[cfg(test)]

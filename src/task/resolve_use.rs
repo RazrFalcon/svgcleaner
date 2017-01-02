@@ -78,9 +78,10 @@ pub fn resolve_use(doc: &Document) {
                     continue;
                 }
 
-                let ts = get_value!(attrs, Transform, AId::Transform, Transform::default());
+                let mut ts = get_value!(attrs, Transform, AId::Transform, Transform::default());
+                ts.translate(x.num, y.num);
 
-                attrs.insert_from(AId::Transform, ts.translate(x.num, y.num));
+                attrs.insert_from(AId::Transform, ts);
                 attrs.remove(AId::X);
                 attrs.remove(AId::Y);
             }

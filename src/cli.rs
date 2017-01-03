@@ -288,15 +288,17 @@ pub fn get_flag(args: &ArgMatches, key: Key) -> bool {
 pub fn check_values(args: &ArgMatches) -> bool {
 
     fn check_value(args: &ArgMatches, flag: Key, dep: Key) -> bool {
-        if !get_flag(args, dep) && get_flag(args, flag) {
+        if !get_flag(args, flag) && get_flag(args, dep) {
             println!("Error: You can use '--{}=true' only with '--{}=true'.",
-                     KEYS[flag], KEYS[dep]);
+                     KEYS[dep], KEYS[flag]);
             return false;
         }
         true
     }
 
-    if !check_value(args, Key::JoinArcToFlags, Key::TrimPaths) {
+    // TODO: JoinArcToFlags should be automaticaly disabled if TrimPaths is disabled
+
+    if !check_value(args, Key::TrimPaths, Key::JoinArcToFlags) {
         return false;
     }
 

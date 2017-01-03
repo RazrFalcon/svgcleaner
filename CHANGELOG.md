@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--group-by-style`.
 - `--apply-transform-to-shapes`.
 
+### Fixed
+- CLI arguments processing.
+
 ### Removed
 - `--move-styles-to-group`. Use `--group-by-style` instead.
 

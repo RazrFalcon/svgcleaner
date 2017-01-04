@@ -25,7 +25,7 @@ use std::cmp;
 
 use super::short::{EId, AId};
 
-use svgdom::{Document, Node, Attribute};
+use svgdom::{Document, Node, Attribute, AttributeType};
 
 // TODO: optimize, since Table is basically Vec<(Vec,Vec)>, which is not very efficient
 struct Table {

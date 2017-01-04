@@ -22,7 +22,7 @@
 
 use super::short::{EId, AId};
 
-use svgdom::{Document, Node, AttributeValue, ValueId};
+use svgdom::{Document, Node, ElementType, AttributeValue, ValueId};
 use svgdom::types::FuzzyEq;
 
 // TODO: process mask element

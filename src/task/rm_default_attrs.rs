@@ -22,7 +22,7 @@
 
 use super::short::{EId, AId, Unit};
 
-use svgdom::{Document, Attribute, AttributeValue, ValueId};
+use svgdom::{Document, Attribute, AttributeType, AttributeValue, ValueId};
 use svgdom::types::{Length};
 
 pub fn remove_default_attributes(doc: &Document) {

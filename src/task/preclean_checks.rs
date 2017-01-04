@@ -22,7 +22,7 @@
 
 use super::short::{EId, AId};
 
-use svgdom::{Document, AttributeValue};
+use svgdom::{Document, AttributeValue, AttributeType};
 
 use error::Error;
 

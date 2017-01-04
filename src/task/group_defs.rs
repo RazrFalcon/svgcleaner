@@ -22,7 +22,7 @@
 
 use super::short::{EId};
 
-use svgdom::{Document, Node, AttributeValue};
+use svgdom::{Document, Node, ElementType, AttributeType, AttributeValue};
 
 pub fn group_defs(doc: &Document) {
     // doc must contain 'svg' node, so we can safely unwrap

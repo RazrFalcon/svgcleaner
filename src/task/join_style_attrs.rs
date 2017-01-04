@@ -22,7 +22,7 @@
 
 use super::short::{AId};
 
-use svgdom::{Document, Attribute, AttributeValue, WriteOptions, WriteBuffer};
+use svgdom::{Document, Attribute, AttributeType, AttributeValue, WriteOptions, WriteBuffer};
 
 pub fn join_style_attributes(doc: &Document, opt: &WriteOptions) {
     // NOTE: must be run at last, since it breaks linking.

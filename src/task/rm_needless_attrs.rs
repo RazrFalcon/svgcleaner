@@ -22,7 +22,7 @@
 
 use super::short::{EId, AId};
 
-use svgdom::{Document, Node, Attribute, AttributeValue, ValueId};
+use svgdom::{Document, Node, ElementType, Attribute, AttributeType, AttributeValue, ValueId};
 
 // TODO: split to suboptions
 

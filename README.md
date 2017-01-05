@@ -102,6 +102,7 @@ of the files - it's pointless. Same goes for *svgo*.
 | [Elementary icons theme](https://github.com/elementary/icons) | 17.72 | 7.09 | 59.95 |
 | [Adwaita icons theme](https://github.com/GNOME/adwaita-icon-theme) | 2.21 | 0.37 | 83.08 |
 | [Faience icon theme](https://www.archlinux.org/packages/community/any/faience-icon-theme/) | 22.35 | 11.14 | 50.16 |
+| [GCP Icons](GCP Icons) | 0.344 | 0.082 | 75.9 |
 
 You can find more tests, with detailed explanations of errors, [here](docs/extended_testing.rst).
 

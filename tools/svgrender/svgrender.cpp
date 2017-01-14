@@ -121,9 +121,9 @@ void WebKitSVGRenderer::saveResult(bool ok)
 static void usage()
 {
     std::cout << "Rasterize an SVG icon to a PNG image" << std::endl << std::endl;
-    std::cout << "  svg2png input.svg output.png width" << std::endl << std::endl;
+    std::cout << "  svgrender input.svg output.png width" << std::endl << std::endl;
     std::cout << "Examples: " << std::endl;
-    std::cout << "  svg2png icon.svg icon.png 256" << std::endl;
+    std::cout << "  svgrender icon.svg icon.png 256" << std::endl;
     std::cout << std::endl;
 }
 

@@ -23,7 +23,7 @@
 use super::short::{EId, AId, Unit};
 
 use svgdom::{Document, Attribute, AttributeType, AttributeValue, ValueId};
-use svgdom::types::{Length};
+use svgdom::types::Length;
 
 pub fn remove_default_attributes(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);

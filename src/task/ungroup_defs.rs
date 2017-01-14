@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 
-use task::short::{EId};
+use task::short::EId;
 
 use svgdom::{Document, Node, ElementType};
 

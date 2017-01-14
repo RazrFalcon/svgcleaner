@@ -6,12 +6,12 @@
     },
     "items": [
         {
-            "name": "svgcleaner 0.7.1",
+            "name": "svgcleaner 0.8.0",
             "value": 32.74
         },
         {
-            "name": "svgcleaner 0.6.2",
-            "value": 71.89
+            "name": "svgcleaner 0.7.1",
+            "value": 32.21
         },
         {
             "name": "svgo 0.7.1",

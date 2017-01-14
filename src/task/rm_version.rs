@@ -20,9 +20,9 @@
 **
 ****************************************************************************/
 
-use super::short::{AId};
+use super::short::AId;
 
-use svgdom::{Document};
+use svgdom::Document;
 
 pub fn remove_version(doc: &Document) {
     // doc must contain 'svg' node, so we can safely unwrap

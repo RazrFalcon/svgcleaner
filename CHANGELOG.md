@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [0.8.0] - 2017-01-14
 ### Added
 - `--use-implicit-cmds`.
 - `--convert-segments`.
@@ -185,7 +187,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First public release with Perl backend and Qt GUI.
 
-[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.91...v0.7.0
 [0.6.91]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6.90...v0.6.91

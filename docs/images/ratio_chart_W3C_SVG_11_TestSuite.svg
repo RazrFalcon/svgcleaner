@@ -4,11 +4,11 @@
     <text font-family="Arial" font-size="16" font-weight="bold" x="132" y="16">
         Cleaning ratio in W3C SVG 1.1 TestSuite
     </text>
-    <text font-family="Arial" font-size="16" x="6" y="58">
-        svgcleaner 0.7.1
+    <text font-family="Arial" font-size="16" x="4" y="58">
+        svgcleaner 0.8.0
     </text>
-    <text font-family="Arial" font-size="16" x="4" y="91">
-        svgcleaner 0.6.2
+    <text font-family="Arial" font-size="16" x="6" y="91">
+        svgcleaner 0.7.1
     </text>
     <text font-family="Arial" font-size="16" x="50" y="124">
         svgo 0.7.1
@@ -33,13 +33,13 @@
     <text fill="#000" font-family="Arial" font-size="16" x="581" y="154">
         100%
     </text>
-    <rect fill="#3260cd" height="22" width="151" x="132" y="41"/>
+    <rect fill="#3260cd" height="22" width="153" x="132" y="41"/>
     <text fill="#fff" font-family="Arial" font-size="16" x="241" y="58">
-        32.21
+        32.74
     </text>
-    <rect fill="#3260cd" height="22" width="337" x="132" y="74"/>
-    <text fill="#fff" font-family="Arial" font-size="16" x="425" y="91">
-        71.89
+    <rect fill="#3260cd" height="22" width="151" x="132" y="74"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="241" y="91">
+        32.21
     </text>
     <rect fill="#3260cd" height="22" width="191" x="132" y="107"/>
     <text fill="#fff" font-family="Arial" font-size="16" x="279" y="124">

@@ -28,7 +28,7 @@ mod linear_gradient;
 mod radial_gradient;
 mod fe_gaussian_blur;
 
-use task::short::{AId};
+use task::short::AId;
 use svgdom::types::{Transform};
 use svgdom::{Node, AttributeValue};
 

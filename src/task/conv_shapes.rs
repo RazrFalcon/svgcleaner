@@ -23,7 +23,7 @@
 use super::short::{EId, AId, Unit};
 
 use svgdom::{Document, Node, Attribute, AttributeValue};
-use svgdom::types::{Length};
+use svgdom::types::Length;
 use svgdom::types::path;
 
 // TODO: convert thin rect to line-to path
@@ -167,9 +167,9 @@ fn points_to_path(node: &Node) -> Option<path::Path> {
     let mut i = 0;
     while i < points.len() {
         let seg = if i == 0 {
-            path::Segment::new_move_to(points[i], points[i+1])
+            path::Segment::new_move_to(points[i], points[i + 1])
         } else {
-            path::Segment::new_line_to(points[i], points[i+1])
+            path::Segment::new_line_to(points[i], points[i + 1])
         };
         path.d.push(seg);
 

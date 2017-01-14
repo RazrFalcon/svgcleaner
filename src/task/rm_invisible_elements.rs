@@ -30,6 +30,7 @@ use svgdom::types::FuzzyEq;
 // TODO: process feGaussianBlur with stdDeviation=0
 // TODO: split to suboptions
 // TODO: polyline/polygon without points
+// TODO: remove elements with transform="matrix(0 0 0 0 0 0)"
 
 pub fn remove_invisible_elements(doc: &Document) {
     let mut is_any_removed = false;

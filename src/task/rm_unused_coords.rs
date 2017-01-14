@@ -22,7 +22,7 @@
 
 use super::short::{EId, AId};
 
-use svgdom::{Document};
+use svgdom::Document;
 
 pub fn remove_unused_coordinates(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);

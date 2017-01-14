@@ -22,7 +22,7 @@
 
 use super::short::{EId, AId};
 
-use svgdom::{Document};
+use svgdom::Document;
 
 // TODO: is 'svg' element contains only one element and it's 'g' element - ungroup it
 

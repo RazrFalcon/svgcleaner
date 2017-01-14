@@ -1,6 +1,6 @@
 [package]
 name = "svgcleaner"
-version = "0.7.1"
+version = "0.8.0"
 authors = ["Evgeniy Reizner <razrfalcon@gmail.com>"]
 keywords = ["svg", "cleaner", "optimizer"]
 license = "GPL-2.0"
@@ -9,13 +9,13 @@ documentation = "https://github.com/RazrFalcon/svgcleaner/blob/master/docs/svgcl
 repository = "https://github.com/RazrFalcon/svgcleaner"
 readme = "README.md"
 
-[dependencies]
+[dependencies.svgdom]
 # latest
-svgdom = { git = "https://github.com/RazrFalcon/libsvgdom.git" }
+# git = "https://github.com/RazrFalcon/libsvgdom.git"
 # local copy
-# svgdom = { path = "../svgdom" }
+# path = "../svgdom"
 # from crates
-# svgdom = "0.2.0"
+version = "0.3.0"
 
 [dependencies.clap]
 version = "2"
@@ -23,9 +23,9 @@ default-features = false
 
 # makes it 5-10% faster, but very slow to compile
 # use only for main releases
-# [profile.release]
-# opt-level = 3
-# lto = true
+[profile.release]
+opt-level = 3
+lto = true
 
 [lib]
 doctest = false

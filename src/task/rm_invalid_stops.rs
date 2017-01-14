@@ -20,9 +20,9 @@
 **
 ****************************************************************************/
 
-use task::short::{AId};
+use task::short::AId;
 
-use svgdom::{Document};
+use svgdom::Document;
 
 pub fn remove_invalid_stops(doc: &Document) {
     let mut nodes = Vec::new();

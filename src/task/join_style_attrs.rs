@@ -20,7 +20,7 @@
 **
 ****************************************************************************/
 
-use super::short::{AId};
+use super::short::AId;
 
 use svgdom::{Document, Attribute, AttributeType, AttributeValue, WriteOptions, WriteBuffer};
 

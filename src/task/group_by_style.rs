@@ -361,7 +361,7 @@ fn _group_by_style(parent: &Node) {
     for node in &node_list {
         let attrs = node.attributes();
         for (_, attr) in attrs.iter_svg() {
-            if attr.is_inheritable() {
+            if attr.visible && attr.is_inheritable() {
                 // append only unique attributes
                 if !table.d.iter().any(|ref x| x.attributes[0] == *attr) {
                     table.append(attr, nodes_count);

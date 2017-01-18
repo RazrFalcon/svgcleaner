@@ -169,7 +169,6 @@ pub fn clean_doc(doc: &Document, args: &ArgMatches, opt: &WriteOptions)
 
     // Run only after attributes processed, because
     // there is no point in grouping default/unneeded attributes.
-    // Also it may create empty groups.
     if get_flag(args, Key::GroupByStyle) {
         group_by_style(doc);
     }

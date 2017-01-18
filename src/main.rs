@@ -117,7 +117,7 @@ fn main() {
             break;
         }
 
-        // if a size is unchaged - stop multipass
+        // if the size is unchaged - exit from the loop
         if prev_size == buf.len() {
             break;
         }

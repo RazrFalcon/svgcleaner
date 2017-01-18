@@ -60,7 +60,7 @@ which is shown below, there are some more nuances:
 
 See ['Testing notes'](docs/testing_notes.rst) for details.
 
-All stats was collected using latest release version.
+All stats was collected using the latest release version.
 
 ### Correctness
 
@@ -76,7 +76,7 @@ All stats was collected using latest release version.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg)
 
-* Note that `svgo` breaks most of the files.
+\* Note that `svgo` breaks most of the files.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/ratio_chart_oxygen.svg)
 

@@ -21,7 +21,10 @@
 ****************************************************************************/
 
 pub use self::conv_shapes::convert_shapes_to_paths;
-pub use self::final_fixes::{remove_empty_defs, fix_xmlns_attribute};
+pub use self::final_fixes::{
+    remove_empty_defs,
+    fix_xmlns_attribute,
+};
 pub use self::fix_attrs::fix_invalid_attributes;
 pub use self::group_by_style::group_by_style;
 pub use self::group_defs::group_defs;

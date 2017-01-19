@@ -51,6 +51,7 @@ fn _ungroup_groups(root: &Node, groups: &mut Vec<Node>) {
     let invalid_attrs = [AId::Mask, AId::ClipPath, AId::Filter];
 
     // TODO: we should not ungroup groups with non-inheritable attributes.
+    // TODO: ungroup groups with 'transform' attribute when all/most of children has it too
 
     for node in root.children() {
         if node.is_tag_name(EId::G) {

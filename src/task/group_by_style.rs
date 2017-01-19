@@ -100,7 +100,7 @@ impl Table {
         });
     }
 
-    /// Sorts rows by a longest continuous range of set flags.
+    /// Sort rows by the longest continuous range of set flags.
     fn sort(&mut self) {
         self.d.sort_by(|a, b| {
             let ac = a.longest();
@@ -109,7 +109,7 @@ impl Table {
         });
     }
 
-    /// Joins rows.
+    /// Join rows.
     fn join(&mut self) {
         // replace
         // a |-***-|
@@ -139,7 +139,7 @@ impl TableRow {
         self.flags.iter().filter(|f| **f).count()
     }
 
-    /// Returns a length of longest continuous range of set flags.
+    /// Returns a length of the longest continuous range of set flags.
     fn longest(&self) -> usize {
         let mut max_count = 0;
         let mut count = 0;
@@ -156,7 +156,7 @@ impl TableRow {
         max_count
     }
 
-    /// Returns a longest continuous range of set flags.
+    /// Returns the longest continuous range of set flags.
     ///
     /// # Example
     ///
@@ -328,6 +328,9 @@ pub fn group_by_style(doc: &Document) {
 fn _group_by_style(parent: &Node) {
     let mut node_list = Vec::with_capacity(16);
 
+    // we can reuse an existing group only if all children are valid
+    let mut is_all_children = true;
+
     // collect nodes
     // TODO: currently we ignore non-SVG elements, which is bad
     for node in parent.children().svg() {
@@ -337,6 +340,7 @@ fn _group_by_style(parent: &Node) {
         // and not parent ones. So if we move attributes to the group - 'use' element
         // will be rendered incorrectly.
         if node.is_tag_name(EId::Defs) || node.is_used() {
+            is_all_children = false;
             node_list.clear();
             continue;
         }
@@ -360,12 +364,30 @@ fn _group_by_style(parent: &Node) {
     // fill table with attributes
     for node in &node_list {
         let attrs = node.attributes();
-        for (_, attr) in attrs.iter_svg() {
-            if attr.visible && attr.is_inheritable() {
-                // append only unique attributes
-                if !table.d.iter().any(|ref x| x.attributes[0] == *attr) {
-                    table.append(attr, nodes_count);
+
+        for (aid, attr) in attrs.iter_svg() {
+            if !attr.visible {
+                continue;
+            }
+
+            if aid == AId::Transform {
+                // we can't modify a transform if node has linked elements
+
+                if !super::apply_transforms::utils::is_valid_attrs(node) {
+                    continue;
                 }
+
+                if    parent.has_attribute(AId::Transform)
+                   && !super::apply_transforms::utils::is_valid_attrs(parent) {
+                    continue;
+                }
+            } else if !attr.is_inheritable() {
+                continue;
+            }
+
+            // append only unique attributes
+            if !table.d.iter().any(|ref x| x.attributes[0] == *attr) {
+                table.append(attr, nodes_count);
             }
         }
     }
@@ -400,7 +422,7 @@ fn _group_by_style(parent: &Node) {
     if table.d[0].count_flags() == nodes_count {
         // If parent node is 'g' - use it,
         // it not - create new one.
-        let g_node = if parent.is_tag_name(EId::G) {
+        let g_node = if parent.is_tag_name(EId::G) && is_all_children {
             parent.clone()
         } else {
             let g_node = parent.document().create_element(EId::G);
@@ -426,7 +448,7 @@ fn _group_by_style(parent: &Node) {
     {
         let d = &table.d[0];
 
-        // get longest range on nodes
+        // get the longest range on nodes
         let (start, end) = d.longest_range();
 
         // do the same as in previous block
@@ -459,6 +481,7 @@ fn _group_by_style(parent: &Node) {
     // </g>
 }
 
+// TODO: use std::ops::Range
 fn move_nodes(attributes: &Vec<Attribute>, g_node: &Node, node_list: &Vec<Node>,
               range: (usize, usize)) {
     let attr_ids: Vec<AId> = attributes.iter().map(|a| a.id().unwrap()).collect();
@@ -473,7 +496,16 @@ fn move_nodes(attributes: &Vec<Attribute>, g_node: &Node, node_list: &Vec<Node>,
 
     // set moved attributes to the 'g' element
     for attr in attributes {
-        g_node.set_attribute_object(attr.clone());
+        if attr.id().unwrap() == AId::Transform && g_node.has_attribute(AId::Transform) {
+            let mut group_ts = *g_node.attribute_value(AId::Transform).unwrap()
+                                      .as_transform().unwrap();
+            let child_ts = attr.value.as_transform().unwrap();
+
+            group_ts.append(child_ts);
+            g_node.set_attribute(AId::Transform, group_ts);
+        } else {
+            g_node.set_attribute_object(attr.clone());
+        }
     }
 }
 
@@ -579,6 +611,31 @@ b"<svg>
         <rect id='r2'/>
         <rect id='r3'/>
         <rect id='r4'/>
+    </g>
+</svg>
+");
+
+    // do not group 'defs'
+    // elements must be grouped into a new group
+    test!(group_5_1,
+b"<svg>
+    <g>
+        <rect id='r1' fill='#ff0000'/>
+        <defs/>
+        <rect id='r2' fill='#ff0000'/>
+        <rect id='r3' fill='#ff0000'/>
+        <rect id='r4' fill='#ff0000'/>
+    </g>
+</svg>",
+"<svg>
+    <g>
+        <rect id='r1' fill='#ff0000'/>
+        <defs/>
+        <g fill='#ff0000'>
+            <rect id='r2'/>
+            <rect id='r3'/>
+            <rect id='r4'/>
+        </g>
     </g>
 </svg>
 ");
@@ -767,6 +824,40 @@ b"<svg>
         <rect id='r2'/>
         <rect id='r3'/>
         <rect id='r4'/>
+    </g>
+</svg>
+");
+
+    // group transform too
+    test!(group_14,
+b"<svg>
+    <rect id='r1' transform='scale(10)'/>
+    <rect id='r2' transform='scale(10)'/>
+    <rect id='r3' transform='scale(10)'/>
+</svg>",
+"<svg>
+    <g transform='scale(10)'>
+        <rect id='r1'/>
+        <rect id='r2'/>
+        <rect id='r3'/>
+    </g>
+</svg>
+");
+
+    // group and merge transform too
+    test!(group_15,
+b"<svg>
+    <g transform='translate(10)'>
+        <rect id='r1' transform='scale(10)'/>
+        <rect id='r2' transform='scale(10)'/>
+        <rect id='r3' transform='scale(10)'/>
+    </g>
+</svg>",
+"<svg>
+    <g transform='matrix(10 0 0 10 10 0)'>
+        <rect id='r1'/>
+        <rect id='r2'/>
+        <rect id='r3'/>
     </g>
 </svg>
 ");

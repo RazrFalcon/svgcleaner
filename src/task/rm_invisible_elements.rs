@@ -40,7 +40,7 @@ pub fn remove_invisible_elements(doc: &Document) {
     process_empty_filter(doc, &mut is_any_removed);
     process_fe_color_matrix(doc);
     process_use(doc, &mut is_any_removed);
-    process_gradients(doc);
+    process_gradients(doc, &mut is_any_removed);
     process_rect(doc, &mut is_any_removed);
 
     if is_any_removed {
@@ -168,10 +168,13 @@ fn process_empty_filter(doc: &Document, is_any_removed: &mut bool) {
                               .filter(|n| n.is_tag_name(EId::Filter) && !n.has_children())
                               .collect();
 
+    if !nodes.is_empty() {
+        *is_any_removed = true;
+    }
+
     // Note, that all elements that uses this filter also became invisible,
     // so we can remove them as well.
     for n in nodes {
-        *is_any_removed = true;
         for link in n.linked_nodes().collect::<Vec<Node>>() {
             link.remove();
         }
@@ -223,7 +226,7 @@ fn process_use(doc: &Document, is_any_removed: &mut bool) {
     if c != 0 { *is_any_removed = true; }
 }
 
-fn process_gradients(doc: &Document) {
+fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
     let mut nodes = Vec::with_capacity(16);
 
     {
@@ -255,7 +258,11 @@ fn process_gradients(doc: &Document) {
             let color = *stop.attribute_value(AId::StopColor).unwrap().as_color().unwrap();
             let opacity = *stop.attribute_value(AId::StopOpacity).unwrap().as_number().unwrap();
 
-            for link in n.linked_nodes().collect::<Vec<Node>>() {
+            // replace links with colors, but not in gradients,
+            // because it will lead to 'xlink:href=#ffffff', which is wrong
+            for link in n.linked_nodes()
+                         .filter(|n| !super::is_gradient(n))
+                         .collect::<Vec<Node>>() {
                 while let Some(aid) = find_link_attribute(&link, &n) {
                     link.set_attribute(aid, color);
                     if opacity.fuzzy_ne(&1.0) {
@@ -269,6 +276,10 @@ fn process_gradients(doc: &Document) {
             }
             nodes.push(n.clone());
         }
+    }
+
+    if !nodes.is_empty() {
+        *is_any_removed = true;
     }
 
     for n in nodes {
@@ -492,6 +503,19 @@ b"<svg>
     <linearGradient id='lg1'>
         <stop offset='0.5' stop-color='#ff0000' stop-opacity='0.5'/>
     </linearGradient>
+    <rect fill='url(#lg1)' stroke='url(#lg1)' height='5' width='5'/>
+</svg>",
+"<svg>
+    <rect fill='#ff0000' fill-opacity='0.5' height='5' stroke='#ff0000' stroke-opacity='0.5' width='5'/>
+</svg>
+");
+
+    test!(rm_gradient_3,
+b"<svg>
+    <linearGradient id='lg1'>
+        <stop offset='0.5' stop-color='#ff0000' stop-opacity='0.5'/>
+    </linearGradient>
+    <linearGradient id='lg2' xlink:href='#lg1'/>
     <rect fill='url(#lg1)' stroke='url(#lg1)' height='5' width='5'/>
 </svg>",
 "<svg>

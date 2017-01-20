@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Incorrect grouping in `--group-by-style`.
+- Gradients with one `stop` children processing in `--remove-invisible-elements`.
 
 ## [0.8.0] - 2017-01-14
 ### Added

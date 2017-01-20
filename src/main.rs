@@ -144,4 +144,3 @@ fn main() {
     let ratio = 100.0 - out_size / (raw.len() as f64) * 100.0;
     println!("Your image is {:.2}% smaller now.", ratio);
 }
-

@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- `--group-by-style` can group by `transform` now.
+
 ### Fixed
 - Incorrect grouping in `--group-by-style`.
 

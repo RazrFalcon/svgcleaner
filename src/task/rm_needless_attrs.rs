@@ -50,6 +50,7 @@ pub fn remove_needless_attributes(doc: &Document) {
 
         process_fill(&node);
         process_stroke(&node);
+        process_overflow(&node);
     }
 }
 
@@ -226,6 +227,25 @@ fn process_stroke(node: &Node) {
     }
 }
 
+fn process_overflow(node: &Node) {
+    // The 'overflow' property applies to elements that establish new viewports,
+    // 'pattern' elements and 'marker' elements. For all other elements,
+    // the property has no effect.
+    //
+    // https://www.w3.org/TR/SVG/masking.html#OverflowProperty
+    match node.tag_id().unwrap() {
+          EId::Svg
+        | EId::Symbol
+        | EId::Image
+        | EId::ForeignObject
+        | EId::Pattern
+        | EId::Marker => {}
+        _ => {
+            node.remove_attribute(AId::Overflow);
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -314,7 +334,6 @@ b"<svg>
 </svg>
 ");
 
-
     test_eq!(keep_fill_1,
 b"<svg>
     <g fill='#ff0000' fill-rule='evenodd'>
@@ -341,6 +360,15 @@ b"<svg>
     <g stroke='#ff0000'>
         <rect stroke='none'/>
     </g>
+</svg>
+");
+
+    test!(rm_overflow_1,
+b"<svg overflow='scroll'>
+    <rect overflow='visible'/>
+</svg>",
+"<svg overflow='scroll'>
+    <rect/>
 </svg>
 ");
 

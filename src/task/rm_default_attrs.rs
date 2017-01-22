@@ -45,6 +45,30 @@ pub fn remove_default_attributes(doc: &Document) {
                         } else {
                             rm_list.push(aid);
                         }
+                    } else if aid == AId::Overflow {
+                        // The initial value for 'overflow' as defined in CSS2 is 'visible',
+                        // and this applies also to the root 'svg' element;
+                        // however, for child elements of an SVG document,
+                        // SVG's user agent style sheet overrides this initial value and sets the
+                        // 'overflow' property on elements that establish new viewports
+                        // (e.g., 'svg' elements), 'pattern' elements and 'marker' elements
+                        // to the value 'hidden'.
+                        //
+                        // https://www.w3.org/TR/SVG/masking.html#OverflowProperty
+
+                        if node == doc.svg_element().unwrap() {
+                            if let AttributeValue::PredefValue(id) = attr.value {
+                                if id == ValueId::Visible {
+                                    rm_list.push(aid);
+                                }
+                            }
+                        } else {
+                            if let AttributeValue::PredefValue(id) = attr.value {
+                                if id == ValueId::Hidden {
+                                    rm_list.push(aid);
+                                }
+                            }
+                        }
                     }
                 } else if is_default(attr, tag_name) {
                     // check default values of an non-presentation attributes
@@ -255,6 +279,17 @@ b"<svg>
 </svg>",
 "<svg>
     <filter/>
+</svg>
+");
+
+    test!(rm_overflow_1,
+b"<svg overflow='visible'>
+    <rect overflow='hidden'/>
+    <svg overflow='visible'/>
+</svg>",
+"<svg>
+    <rect/>
+    <svg overflow='visible'/>
 </svg>
 ");
 }

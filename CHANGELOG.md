@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - `--group-by-style` can group by `transform` now.
+- `--remove-needless-attributes` and `--remove-default-attributes`
+  now supports `overflow` attribute.
 
 ### Fixed
 - Incorrect grouping in `--group-by-style`.

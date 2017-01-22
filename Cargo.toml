@@ -8,6 +8,10 @@ description = "svgcleaner could help you to clean up yours SVG files from the un
 documentation = "https://github.com/RazrFalcon/svgcleaner/blob/master/docs/svgcleaner.rst"
 repository = "https://github.com/RazrFalcon/svgcleaner"
 readme = "README.md"
+categories = ["multimedia::images"]
+
+[badges]
+travis-ci = { repository = "https://github.com/RazrFalcon/svgcleaner" }
 
 [dependencies.svgdom]
 # latest

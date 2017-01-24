@@ -44,7 +44,8 @@ Usually, more than half of an SVG image data is useless for rendering:
 
 ## Alternatives
 
-There are only one real alternative to the *svgcleaner* - [svgo](https://github.com/svg/svgo).
+ - [svgo](https://github.com/svg/svgo)
+ - [scour](https://github.com/scour-project/scour)
 
 Despite obvious advantages of the *svgcleaner*, like correctness, cleaning ratio and performance,
 which is shown below, there are some more nuances:
@@ -68,6 +69,10 @@ All stats was collected using the latest release version.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/correctness_chart_W3C_SVG_11_TestSuite.svg)
 
+\* Most of the errors are due to incorrect `font-face` processing. Not font-based errors:
+ - `svgo`: 100
+ - `scour`: 78
+
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/correctness_chart_oxygen.svg)
 
 ### Cleaning ratio
@@ -76,7 +81,7 @@ All stats was collected using the latest release version.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg)
 
-\* Note that `svgo` breaks most of the files.
+\* Note that `svgo` and `scour` breaks most of the files.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/ratio_chart_oxygen.svg)
 
@@ -114,8 +119,8 @@ that will be changed:
 - Original indent is not preserved.
 - All colors will be formatted as #RRGGBB and #RGB.
 - DOCTYPE, CDATA will be processed and removed.
-- CSS2 support is minimal. Only simple *class* and *group* selectors are supported.
-- CSS2 from the `style` element will be extracted and processes. The `style` element will be removed.
+- CSS support is minimal.
+- CSS from the `style` element will be extracted and processes. The `style` element will be removed.
 - The `style` attribute will be split into attributes.
 - The `class` attribute will be processed and removed.
 - Paths and transformations will be reformatted.
@@ -123,7 +128,7 @@ that will be changed:
 - Referenced elements will be moved to the `defs` element.
 - IRI and FuncIRI attributes that reference non-existing objects will be removed.
 - If the `offset` attribute value of the `stop` element represented as percent - it will be
-  converted into number.
+  converted into a number.
 
 ## Usage
 
@@ -131,6 +136,11 @@ that will be changed:
 
 ```
 svgcleaner in.svg out.svg
+```
+
+Change default options:
+```
+svgcleaner in.svg out.svg --indent=2 --paths-coordinates-precision=5 --join-arcto-flags=true
 ```
 
 Use `--help` for a list of the cleaning options and the [doc](docs/svgcleaner.rst) for more details.

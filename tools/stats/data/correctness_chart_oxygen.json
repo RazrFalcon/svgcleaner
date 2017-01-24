@@ -12,6 +12,10 @@
         {
             "name": "svgo 0.7.1",
             "value": 374
+        },
+        {
+            "name": "scour 0.35",
+            "value": 8
         }
     ],
     "hor_axis": {

@@ -41,7 +41,7 @@ pub fn apply_transform_to_shapes(doc: &Document) {
         }
 
         // check that all children is valid
-        if node.children().svg().all(|n| {
+        let is_valid = node.children().svg().all(|n| {
             let flag = match n.tag_id().unwrap() {
                   EId::Rect
                 | EId::Circle
@@ -54,14 +54,16 @@ pub fn apply_transform_to_shapes(doc: &Document) {
             && utils::has_valid_transform(&n)
             && utils::is_valid_attrs(&n)
             && utils::is_valid_coords(&n)
-        }) {
+        });
+
+        if is_valid {
             let ts = utils::get_ts(&node);
 
             // apply group's transform to children
             for child in node.children().svg() {
                 if child.has_attribute(AId::Transform) {
                     // we should multiply transform matrices
-                    let mut ts1 = ts.clone();
+                    let mut ts1 = ts;
                     let ts2 = utils::get_ts(&child);
                     ts1.append(&ts2);
                     child.set_attribute(AId::Transform, ts1);
@@ -116,7 +118,7 @@ fn process<F>(node: &Node, func: F)
 
 fn process_rect(node: &Node) {
     process(node, |mut attrs, ts| {
-        utils::transform_coords(&mut attrs, AId::X, AId::Y, &ts);
+        utils::transform_coords(&mut attrs, AId::X, AId::Y, ts);
 
         if ts.has_scale() {
             let (sx, _) = ts.get_scale();
@@ -132,7 +134,7 @@ fn process_rect(node: &Node) {
 
 fn process_circle(node: &Node) {
     process(node, |mut attrs, ts| {
-        utils::transform_coords(&mut attrs, AId::Cx, AId::Cy, &ts);
+        utils::transform_coords(&mut attrs, AId::Cx, AId::Cy, ts);
 
         if ts.has_scale() {
             let (sx, _) = ts.get_scale();
@@ -143,7 +145,7 @@ fn process_circle(node: &Node) {
 
 fn process_ellipse(node: &Node) {
     process(node, |mut attrs, ts| {
-        utils::transform_coords(&mut attrs, AId::Cx, AId::Cy, &ts);
+        utils::transform_coords(&mut attrs, AId::Cx, AId::Cy, ts);
 
         if ts.has_scale() {
             let (sx, _) = ts.get_scale();
@@ -155,8 +157,8 @@ fn process_ellipse(node: &Node) {
 
 fn process_line(node: &Node) {
     process(node, |mut attrs, ts| {
-        utils::transform_coords(&mut attrs, AId::X1, AId::Y1, &ts);
-        utils::transform_coords(&mut attrs, AId::X2, AId::Y2, &ts);
+        utils::transform_coords(&mut attrs, AId::X1, AId::Y1, ts);
+        utils::transform_coords(&mut attrs, AId::X2, AId::Y2, ts);
     });
 }
 

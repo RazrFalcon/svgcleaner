@@ -57,7 +57,7 @@ pub mod utils {
             return false;
         }
 
-        return true;
+        true
     }
 
     // Element shouldn't have any linked elements, because they also must be transformed.
@@ -82,17 +82,17 @@ pub mod utils {
             return false;
         }
 
-        return true;
+        true
     }
 
     // We can process only coordinates without units.
     pub fn is_valid_coords(node: &Node) -> bool {
         match node.tag_id().unwrap() {
-            EId::Rect =>    _is_valid_coords(node, &[AId::X, AId::Y]),
-            EId::Circle =>  _is_valid_coords(node, &[AId::Cx, AId::Cy]),
-            EId::Ellipse => _is_valid_coords(node, &[AId::Cx, AId::Cy]),
-            EId::Line =>    _is_valid_coords(node, &[AId::X1, AId::Y1, AId::X2, AId::Y2]),
-            EId::LinearGradient => _is_valid_coords(node, &[AId::X1, AId::Y1, AId::X2, AId::Y2]),
+            EId::Rect => _is_valid_coords(node, &[AId::X, AId::Y]),
+              EId::Circle
+            | EId::Ellipse => _is_valid_coords(node, &[AId::Cx, AId::Cy]),
+              EId::Line
+            | EId::LinearGradient => _is_valid_coords(node, &[AId::X1, AId::Y1, AId::X2, AId::Y2]),
             EId::RadialGradient => _is_valid_coords(node, &[AId::Cx, AId::Cy, AId::Fx, AId::Fy, AId::R]),
             _ => false,
         }

@@ -60,7 +60,7 @@ impl Table {
 
         // we group only three or more elements,
         // so rows with less than 3 flags are useless
-        self.d.retain(|ref x| {
+        self.d.retain(|x| {
             x.count_flags() > 2
         });
 
@@ -71,7 +71,7 @@ impl Table {
         // |***-*-*| -> |***----|
         // etc.
 
-        for d in self.d.iter_mut() {
+        for d in &mut self.d {
             let f = &mut d.flags;
 
             let mut idx = 0;
@@ -95,7 +95,7 @@ impl Table {
         }
 
         // remove again
-        self.d.retain(|ref x| {
+        self.d.retain(|x| {
             x.count_flags() > 2
         });
     }
@@ -217,7 +217,7 @@ impl fmt::Debug for Table {
         let max_len = lines.iter().max_by_key(|s| s.len()).unwrap().len();
 
         for (idx, line) in lines.iter().enumerate() {
-            s.push_str(&line);
+            s.push_str(line);
 
             // indent
             for _ in 0..max_len - line.len() {
@@ -386,7 +386,7 @@ fn _group_by_style(parent: &Node) {
             }
 
             // append only unique attributes
-            if !table.d.iter().any(|ref x| x.attributes[0] == *attr) {
+            if !table.d.iter().any(|x| x.attributes[0] == *attr) {
                 table.append(attr, nodes_count);
             }
         }
@@ -397,10 +397,10 @@ fn _group_by_style(parent: &Node) {
     }
 
     // set attributes flags inside the table
-    for d in table.d.iter_mut() {
+    for d in &mut table.d {
         for (idx, node) in node_list.iter().enumerate() {
             let attrs = node.attributes();
-            if attrs.iter().any(|ref a| **a == d.attributes[0]) {
+            if attrs.iter().any(|a| *a == d.attributes[0]) {
                 d.flags[idx] = true;
             }
         }
@@ -453,7 +453,7 @@ fn _group_by_style(parent: &Node) {
 
         // do the same as in previous block
         let g_node = parent.document().create_element(EId::G);
-        node_list.iter().nth(start).unwrap().insert_before(g_node.clone());
+        node_list[start].insert_before(g_node.clone());
 
         move_nodes(&d.attributes, &g_node, &node_list, (start, end));
     }

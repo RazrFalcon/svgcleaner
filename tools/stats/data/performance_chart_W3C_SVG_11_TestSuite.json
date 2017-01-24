@@ -11,7 +11,11 @@
         },
         {
             "name": "svgo 0.7.1",
-            "value": 244.228
+            "value": 215.327
+        },
+        {
+            "name": "scour 0.35",
+            "value": 137.773
         }
     ],
     "hor_axis": {

@@ -152,20 +152,17 @@ fn resolve_attribute(node: &Node, id: AId, def_value: Option<AttributeValue>)
     match node.attribute_value(AId::XlinkHref) {
         Some(av) => {
             match av {
-                AttributeValue::Link(ref_node) =>
-                    return resolve_attribute(&ref_node, id, def_value),
+                AttributeValue::Link(ref_node) => resolve_attribute(&ref_node, id, def_value),
                 _ => unreachable!(),
             }
         }
         None => {
             match node.attribute_value(id) {
-                Some(v) => return Some(v),
-                None => return def_value,
+                Some(v) => Some(v),
+                None => def_value,
             }
         }
     }
-
-    def_value
 }
 
 #[cfg(test)]

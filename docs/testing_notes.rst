@@ -74,11 +74,16 @@ Notes
 - PC: i5-3570k 3.8GHz, Gentoo Linux Stable x86_64.
 - Input files are stored on HDD, cleaned files were saved to the ``tmpfs``.
 - All tests are single-threaded.
-- I know that a performance comparison is not fair since `svgo` have to restart nodejs
-  each time. But I don't know how to prevent it or ignore nodejs starting time.
-- *svgcleaner* was running using default options.
-- ``svgo`` was running using default options with ``--precision=8``.
-- Used nodejs: ``net-libs/nodejs-6.7.0(icu npm snapshot ssl -debug -doc -test
+- I know that a performance comparison is not fair since ``svgo`` have to restart ``node.js``
+  each time. But I don't know how to prevent it or ignore ``node.js`` starting time.
+- Cleaners options can be found [here](../tools/stats/src/main.rs).
+- Used ``node.js``: ``net-libs/nodejs-7.3.0(icu npm snapshot ssl -debug -doc -test
   CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")``.
 - You can find links to the data sets `here <../tools/files-testing/README.md>`_.
 - You can repeat tests by yourself using `stats <../tools/stats>`_ app.
+
+Why Oxygen icons for testing?
+-----------------------------
+
+They not just plain/flat/simple icons, therefore they contain more complex structures.
+So we have a higher probability of a cleaning error.

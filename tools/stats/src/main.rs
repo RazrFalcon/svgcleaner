@@ -77,8 +77,8 @@ impl Default for FileStats {
 }
 
 enum Cleaner<'a> {
-    New(&'a str),
-    Old(&'a str),
+    SvgCleaner(&'a str),
+    Scour(&'a str),
     Svgo(&'a str),
 }
 
@@ -96,7 +96,7 @@ fn main() {
         .arg(Arg::with_name("type")
             .long("type").help("Sets type of SVG cleaning program.")
             .value_name("NAME")
-            .possible_values(&["svgcleaner", "svgcleaner-old", "svgo"])
+            .possible_values(&["svgcleaner", "scour", "svgo"])
             .required(true))
         .arg(Arg::with_name("cleaner")
             .long("cleaner").help("Sets path to cleaning software")
@@ -142,8 +142,8 @@ fn main() {
     let cleaner_path = m.value_of("cleaner").unwrap();
 
     let stats = match m.value_of("type").unwrap() {
-        "svgcleaner" => collect_stats(&data, input_dir, Cleaner::New(cleaner_path)),
-        "svgcleaner-old" => collect_stats(&data, input_dir, Cleaner::Old(cleaner_path)),
+        "svgcleaner" => collect_stats(&data, input_dir, Cleaner::SvgCleaner(cleaner_path)),
+        "scour" => collect_stats(&data, input_dir, Cleaner::Scour(cleaner_path)),
         "svgo" => collect_stats(&data, input_dir, Cleaner::Svgo(cleaner_path)),
         _ => return,
     };
@@ -163,8 +163,8 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
     total_stats.files_count = total;
 
     total_stats.title = match &cleaner {
-        &Cleaner::New(path) => "svgcleaner ".to_owned() + &detect_new_cleaner_ver(path).unwrap(),
-        &Cleaner::Old(path) => "svgcleaner ".to_owned() + &detect_old_cleaner_ver(path).unwrap(),
+        &Cleaner::SvgCleaner(path) => "svgcleaner ".to_owned() + &detect_svgcleaner_ver(path).unwrap(),
+        &Cleaner::Scour(path) => "scour ".to_owned() + &detect_scour_ver(path).unwrap(),
         &Cleaner::Svgo(path) => "svgo ".to_owned() + &detect_svgo_ver(path).unwrap(),
     };
 
@@ -230,8 +230,8 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
 
     let start = time::precise_time_ns();
     let res = match *cleaner {
-        Cleaner::New(path) => clean_with_new_cleaner(path, svg_path_str, new_svg_path_str),
-        Cleaner::Old(path) => clean_with_old_cleaner(path, svg_path_str, new_svg_path_str),
+        Cleaner::SvgCleaner(path) => clean_with_svgcleaner(path, svg_path_str, new_svg_path_str),
+        Cleaner::Scour(path) => clean_with_scour(path, svg_path_str, new_svg_path_str),
         Cleaner::Svgo(path) => clean_with_svgo(path, svg_path_str, new_svg_path_str),
     };
     let end = time::precise_time_ns();
@@ -324,7 +324,7 @@ fn print_total_stats(stats: &TotalStats) {
     println!("Broken files: {:?}", stats.cleaned_with_errors);
 }
 
-fn clean_with_new_cleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool {
+fn clean_with_svgcleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     let res = Command::new(exe_path)
                 .arg(in_path)
                 .arg(out_path)
@@ -347,64 +347,19 @@ fn clean_with_new_cleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool
     }
 }
 
-fn clean_with_old_cleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool {
-    // Old cleaner did not support default options, so we need to set all of them.
-    // This list is equal to preset=complete, but precision set to 6
-    // and viewbox convertions is disabled.
+fn clean_with_scour(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     let res = Command::new(exe_path)
                 .arg(in_path)
                 .arg(out_path)
-                .arg("--remove-prolog")
-                .arg("--remove-comments")
-                .arg("--remove-proc-instr")
-                .arg("--remove-unused-defs")
-                .arg("--remove-nonsvg-elts")
-                .arg("--remove-metadata-elts")
-                .arg("--remove-inkscape-elts")
-                .arg("--remove-sodipodi-elts")
-                .arg("--remove-ai-elts")
-                .arg("--remove-corel-elts")
-                .arg("--remove-msvisio-elts")
-                .arg("--remove-sketch-elts")
-                .arg("--remove-invisible-elts")
-                .arg("--remove-empty-containers")
-                .arg("--remove-duplicated-defs")
-                .arg("--remove-outside-elts")
-                .arg("--equal-elts-to-use")
-                .arg("--ungroup-containers")
-                .arg("--merge-gradients")
-                .arg("--remove-gaussian-blur=0.1")
-                .arg("--remove-version")
-                .arg("--remove-unreferenced-ids")
-                .arg("--trim-ids")
-                .arg("--remove-notappl-atts")
-                .arg("--remove-default-atts")
-                .arg("--remove-inkscape-atts")
-                .arg("--remove-sodipodi-atts")
-                .arg("--remove-ai-atts")
-                .arg("--remove-corel-atts")
-                .arg("--remove-msvisio-atts")
-                .arg("--remove-sketch-atts")
-                .arg("--remove-stroke-props")
-                .arg("--remove-fill-props")
-                .arg("--remove-unused-xlinks")
-                .arg("--group-elts-by-styles")
-                .arg("--simplify-transform-matrix")
-                .arg("--apply-transforms-to-defs")
-                .arg("--apply-transforms-to-shapes")
-                .arg("--convert-to-relative")
-                .arg("--remove-unneeded-symbols")
-                .arg("--remove-tiny-segments")
-                .arg("--convert-segments")
-                .arg("--colors-to-rrggbb")
-                .arg("--rrggbb-to-rgb")
-                .arg("--convert-basic-shapes")
-                .arg("--apply-transforms-to-defs")
-                .arg("--compact-output")
-                .arg("--transform-precision=8")
-                .arg("--coordinates-precision=8")
-                .arg("--attributes-precision=8")
-                .arg("--sort-defs")
+                .arg("--enable-id-stripping")
+                .arg("--enable-comment-stripping")
+                .arg("--shorten-ids")
+                .arg("--indent=none")
+                .arg("--no-line-breaks")
+                .arg("--strip-xml-prolog")
+                .arg("--remove-descriptive-elements")
+                .arg("--set-precision=8")
+                .arg("--create-groups")
                 .output();
 
     match res {
@@ -454,7 +409,7 @@ fn clean_with_svgo(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     }
 }
 
-fn detect_new_cleaner_ver(exe_path: &str) -> Option<String> {
+fn detect_svgcleaner_ver(exe_path: &str) -> Option<String> {
     let res = Command::new(exe_path).arg("-V").output();
     match res {
         Ok(o) => {
@@ -469,8 +424,8 @@ fn detect_new_cleaner_ver(exe_path: &str) -> Option<String> {
     }
 }
 
-fn detect_old_cleaner_ver(exe_path: &str) -> Option<String> {
-    let res = Command::new(exe_path).arg("-v").output();
+fn detect_scour_ver(exe_path: &str) -> Option<String> {
+    let res = Command::new(exe_path).arg("--version").output();
     match res {
         Ok(o) => {
             let s = String::from_utf8_lossy(&o.stderr);

@@ -19,10 +19,10 @@ git = "https://github.com/RazrFalcon/libsvgdom.git"
 # local copy
 # path = "../svgdom"
 # from crates
-# version = "0.3.0"
+# version = "=0.3.0"
 
 [dependencies.clap]
-version = "2"
+version = "=2.20.0"
 default-features = false
 
 # makes it 5-10% faster, but very slow to compile

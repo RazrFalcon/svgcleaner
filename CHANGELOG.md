@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--group-by-style` can group by `transform` now.
 - `--remove-needless-attributes` and `--remove-default-attributes`
   now supports `overflow` attribute.
+- svgcleaner can be used as a library now.
 
 ### Fixed
 - Incorrect grouping in `--group-by-style`.

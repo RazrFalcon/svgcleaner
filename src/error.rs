@@ -30,8 +30,6 @@ pub enum Error {
     AnimationIsNotSupported,
     ConditionalProcessingIsNotSupported,
     ExternalHrefIsNotSupported(String), // ref data
-    BiggerFile,
-    InputFileDoesNotExist,
 }
 
 impl fmt::Debug for Error {
@@ -45,15 +43,11 @@ impl fmt::Debug for Error {
                 write!(f, "Scripting is not supported"),
             Error::AnimationIsNotSupported =>
                 write!(f, "Animation is not supported"),
-            Error::BiggerFile =>
-                write!(f, "Cleaned file is bigger than original"),
             Error::ConditionalProcessingIsNotSupported =>
                 write!(f, "Conditional processing attributes is not supported"),
             Error::ExternalHrefIsNotSupported(ref s) =>
                 write!(f, "The 'xlink:href' attribute is referencing an external object '{}', \
                            which is not supported", s),
-            Error::InputFileDoesNotExist =>
-                write!(f, "Input file does not exist"),
         }
     }
 }

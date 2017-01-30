@@ -20,19 +20,16 @@
 **
 ****************************************************************************/
 
-use clap::ArgMatches;
-
 use svgdom::{Document, AttributeValue};
 use svgdom::types::path::Path;
 
 use task::short::{EId, AId};
-use cli;
-use cli::{Key};
+use options::Options;
 
 mod conv_segments;
 mod rm_unused;
 
-pub fn process_paths(doc: &Document, args: &ArgMatches) {
+pub fn process_paths(doc: &Document, options: &Options) {
     for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::Path)) {
         // We can't process paths with marker, because if we remove all segments
         // it will break rendering.
@@ -42,19 +39,19 @@ pub fn process_paths(doc: &Document, args: &ArgMatches) {
 
         let mut attrs = node.attributes_mut();
         if let Some(&mut AttributeValue::Path(ref mut path)) = attrs.get_value_mut(AId::D) {
-            process_path(path, has_marker, args);
+            process_path(path, has_marker, options);
         }
     }
 }
 
-fn process_path(path: &mut Path, has_marker: bool, args: &ArgMatches) {
+fn process_path(path: &mut Path, has_marker: bool, options: &Options) {
     path.conv_to_absolute();
 
-    if cli::get_flag(args, Key::ConvertSegments) {
+    if options.convert_segments {
         conv_segments::convert_segments(path);
     }
 
-    if cli::get_flag(args, Key::RemoveUnusedSegments) && !has_marker {
+    if options.remove_unused_segments && !has_marker {
         rm_unused::remove_unused_segments(path);
     }
 

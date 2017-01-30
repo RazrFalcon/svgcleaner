@@ -24,6 +24,11 @@ git = "https://github.com/RazrFalcon/libsvgdom.git"
 [dependencies.clap]
 version = "=2.20.0"
 default-features = false
+optional = true
+
+[features]
+default = ["cli-parsing"]
+cli-parsing = ["clap"]
 
 # makes it 5-10% faster, but very slow to compile
 # use only for main releases
@@ -32,4 +37,5 @@ default-features = false
 # lto = true
 
 [lib]
+name = "libsvgcleaner"
 doctest = false

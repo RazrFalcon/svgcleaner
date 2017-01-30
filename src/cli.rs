@@ -26,6 +26,8 @@ use clap::{Arg, App, ArgMatches};
 
 use svgdom::{ParseOptions, WriteOptions};
 
+use options::Options;
+
 #[derive(Clone,Copy)]
 pub enum Key {
     RemoveComments,
@@ -346,4 +348,42 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     opt.indent = value_t!(args, KEYS[Key::Indent], i8).unwrap();
 
     opt
+}
+
+pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
+    Options {
+        remove_unused_defs: get_flag(args, Key::RemoveUnusedDefs),
+        convert_shapes: get_flag(args, Key::ConvertShapes),
+        remove_title: get_flag(args, Key::RemoveTitle),
+        remove_desc: get_flag(args, Key::RemoveDesc),
+        remove_metadata: get_flag(args, Key::RemoveMetadata),
+        remove_dupl_linear_gradients: get_flag(args, Key::RemoveDuplLinearGradients),
+        remove_dupl_radial_gradients: get_flag(args, Key::RemoveDuplRadialGradients),
+        remove_dupl_fe_gaussian_blur: get_flag(args, Key::RemoveDuplFeGaussianBlur),
+        ungroup_groups: get_flag(args, Key::UngroupGroups),
+        ungroup_defs: get_flag(args, Key::UngroupDefs),
+        group_by_style: get_flag(args, Key::GroupByStyle),
+        merge_gradients: get_flag(args, Key::MergeGradients),
+        regroup_gradient_stops: get_flag(args, Key::RegroupGradientStops),
+        remove_invalid_stops: get_flag(args, Key::RemoveInvalidStops),
+        remove_invisible_elements: get_flag(args, Key::RemoveInvisibleElements),
+        resolve_use: get_flag(args, Key::ResolveUse),
+
+        remove_version: get_flag(args, Key::RemoveVersion),
+        remove_unreferenced_ids: get_flag(args, Key::RemoveUnreferencedIds),
+        trim_ids: get_flag(args, Key::TrimIds),
+        remove_text_attributes: get_flag(args, Key::RemoveTextAttributes),
+        remove_unused_coordinates: get_flag(args, Key::RemoveUnusedCoordinates),
+        remove_default_attributes: get_flag(args, Key::RemoveDefaultAttributes),
+        remove_xmlns_xlink_attribute: get_flag(args, Key::RemoveXmlnsXlinkAttribute),
+        remove_needless_attributes: get_flag(args, Key::RemoveNeedlessAttributes),
+        remove_gradient_attributes: get_flag(args, Key::RemoveGradientAttributes),
+        join_style_attributes: get_flag(args, Key::JoinStyleAttributes),
+        apply_transform_to_gradients: get_flag(args, Key::ApplyTransformToGradients),
+        apply_transform_to_shapes: get_flag(args, Key::ApplyTransformToShapes),
+
+        paths_to_relative: get_flag(args, Key::PathsToRelative),
+        remove_unused_segments: get_flag(args, Key::RemoveUnusedSegments),
+        convert_segments: get_flag(args, Key::ConvertSegments),
+    }
 }

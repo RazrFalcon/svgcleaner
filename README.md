@@ -75,6 +75,8 @@ All stats was collected using the latest release version.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/correctness_chart_oxygen.svg)
 
+\* Errors produced by the numeric rounding are ignored.
+
 ### Cleaning ratio
 
 *More is better.*

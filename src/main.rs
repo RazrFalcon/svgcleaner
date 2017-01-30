@@ -20,14 +20,14 @@
 **
 ****************************************************************************/
 
-extern crate svgcleaner;
+extern crate libsvgcleaner;
 
 use std::fs;
 use std::path::Path;
 
-use svgcleaner::cli::*;
-use svgcleaner::cleaner::*;
-use svgcleaner::error::Error;
+use libsvgcleaner::cli;
+use libsvgcleaner::cli::Key;
+use libsvgcleaner::cleaner;
 
 macro_rules! try_msg {
     ($e:expr) => ({
@@ -42,7 +42,7 @@ macro_rules! try_msg {
 }
 
 fn main() {
-    let app = prepare_app();
+    let app = cli::prepare_app();
     let args = match app.get_matches_safe() {
         Ok(a) => a,
         Err(mut e) => {
@@ -54,24 +54,25 @@ fn main() {
         }
     };
 
-    if !check_values(&args) { return; }
-    let parse_opt = gen_parse_options(&args);
-    let write_opt = gen_write_options(&args);
+    if !cli::check_values(&args) { return; }
+    let parse_opt = cli::gen_parse_options(&args);
+    let write_opt = cli::gen_write_options(&args);
+    let cleaning_opt = cli::gen_cleaning_options(&args);
 
     let in_file  = args.value_of("in-file").unwrap();
     let out_file = args.value_of("out-file").unwrap();
 
     if !Path::new(in_file).exists() {
-        println!("Error: {:?}.", Error::InputFileDoesNotExist);
-        std::process::exit(0);
+        println!("Error: Input file does not exist.");
+        return;
     }
 
     // load file
-    let raw = try_msg!(load_file(in_file));
+    let raw = try_msg!(cleaner::load_file(in_file));
 
     let on_err = || {
         // copy original file to destination
-        if get_flag(&args, Key::CopyOnError) {
+        if cli::get_flag(&args, Key::CopyOnError) {
             // copy a file only when paths are different
             if in_file != out_file {
                 try_msg!(fs::copy(in_file, out_file));
@@ -82,7 +83,7 @@ fn main() {
     };
 
     // parse it
-    let doc = match parse_data(&raw[..], &parse_opt) {
+    let doc = match cleaner::parse_data(&raw[..], &parse_opt) {
         Ok(d) => d,
         Err(e) => {
             println!("Error: {:?}.", e);
@@ -100,19 +101,20 @@ fn main() {
         // clear buffer
         buf.clear();
 
-        // clean it
-        match clean_doc(&doc, &args, &write_opt) {
+        // clean document
+        match cleaner::clean_doc(&doc, &cleaning_opt, &write_opt) {
             Ok(_) => {}
             Err(e) => {
                 println!("Error: {:?}.", e);
                 on_err();
+                break;
             }
         }
 
-        // write it
-        write_buffer(&doc, &write_opt, &mut buf);
+        // write buffer
+        cleaner::write_buffer(&doc, &write_opt, &mut buf);
 
-        if !get_flag(&args, Key::Multipass) {
+        if !cli::get_flag(&args, Key::Multipass) {
             // do not repeat without '--multipass'
             break;
         }
@@ -127,14 +129,15 @@ fn main() {
 
     // check that cleaned file is smaller
     if buf.len() > raw.len() {
-        println!("Error: {:?}.", Error::BiggerFile);
+        println!("Error: Cleaned file is bigger than original.");
         on_err();
+        return;
     }
 
-    // save it
-    try_msg!(save_file(&buf[..], out_file));
+    // save buffer
+    try_msg!(cleaner::save_file(&buf[..], out_file));
 
-    if get_flag(&args, Key::Quiet) {
+    if cli::get_flag(&args, Key::Quiet) {
         return;
     }
 

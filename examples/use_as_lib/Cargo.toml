@@ -1,0 +1,8 @@
+[package]
+name = "use_as_lib"
+version = "0.0.1"
+
+[dependencies.svgcleaner]
+path = "../../"
+# disables 'cli-parsing' feature with 'clap' dependency
+default-features = false

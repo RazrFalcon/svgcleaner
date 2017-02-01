@@ -1,50 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Generated with https://github.com/RazrFalcon/barh -->
-<svg height="148" shape-rendering="crispEdges" width="622" xmlns="http://www.w3.org/2000/svg">
-    <text font-family="Arial" font-size="16" font-weight="bold" x="125" y="16">
+<svg height="181" shape-rendering="crispEdges" width="620" xmlns="http://www.w3.org/2000/svg">
+    <text font-family="Arial" font-size="16" font-weight="bold" x="123" y="16">
         Broken files in W3C SVG 1.1 TestSuite
     </text>
     <text font-family="Arial" font-size="16" x="4" y="56">
-        svgcleaner 0.8.0
+        svgcleaner 0.8.1
     </text>
-    <text font-family="Arial" font-size="16" x="50" y="91">
+    <text font-family="Arial" font-size="16" x="48" y="91">
         svgo 0.7.1
     </text>
-    <rect fill="#ccc" height="77" width="1" x="125" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="121" y="121">
+    <text font-family="Arial" font-size="16" x="44" y="124">
+        scour 0.35
+    </text>
+    <rect fill="#ccc" height="110" width="1" x="123" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="119" y="154">
         0
     </text>
-    <rect fill="#ccc" height="77" width="1" x="217" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="204" y="121">
+    <rect fill="#ccc" height="110" width="1" x="215" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="202" y="154">
         100
     </text>
-    <rect fill="#ccc" height="77" width="1" x="309" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="296" y="121">
+    <rect fill="#ccc" height="110" width="1" x="307" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="294" y="154">
         200
     </text>
-    <rect fill="#ccc" height="77" width="1" x="401" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="388" y="121">
+    <rect fill="#ccc" height="110" width="1" x="399" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="386" y="154">
         300
     </text>
-    <rect fill="#ccc" height="77" width="1" x="493" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="480" y="121">
+    <rect fill="#ccc" height="110" width="1" x="491" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="478" y="154">
         400
     </text>
-    <rect fill="#ccc" height="77" width="1" x="608" y="30"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="595" y="121">
+    <rect fill="#ccc" height="110" width="1" x="606" y="30"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="593" y="154">
         525
     </text>
-    <rect fill="#3260cd" height="22" width="0" x="125" y="41"/>
-    <rect fill="#999" height="1" width="12" x="125" y="52"/>
-    <text fill="#000" font-family="Arial" font-size="16" x="139" y="56">
+    <rect fill="#3260cd" height="22" width="0" x="123" y="41"/>
+    <rect fill="#999" height="1" width="12" x="123" y="52"/>
+    <text fill="#000" font-family="Arial" font-size="16" x="137" y="56">
         1
     </text>
-    <rect fill="#3260cd" height="22" width="261" x="125" y="74"/>
-    <text fill="#fff" font-family="Arial" font-size="16" x="356" y="91">
+    <rect fill="#3260cd" height="22" width="261" x="123" y="74"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="354" y="91">
         284
     </text>
-    <rect fill="#333" height="77" width="1" x="125" y="30"/>
-    <text font-family="Arial" font-size="16" font-style="italic" x="354" y="143">
+    <rect fill="#3260cd" height="22" width="247" x="123" y="107"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="340" y="124">
+        269
+    </text>
+    <rect fill="#333" height="110" width="1" x="123" y="30"/>
+    <text font-family="Arial" font-size="16" font-style="italic" x="352" y="176">
         Files
     </text>
 </svg>

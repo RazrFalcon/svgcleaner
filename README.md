@@ -67,13 +67,13 @@ All stats was collected using the latest release version.
 
 *Less is better.*
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/correctness_chart_W3C_SVG_11_TestSuite.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/correctness_chart_W3C_SVG_11_TestSuite.svg)
 
 \* Most of the errors are due to incorrect `font-face` processing. Not font-based errors:
  - `svgo`: 100
  - `scour`: 78
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/correctness_chart_oxygen.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/correctness_chart_oxygen.svg)
 
 \* Errors produced by the numeric rounding are ignored.
 
@@ -81,19 +81,19 @@ All stats was collected using the latest release version.
 
 *More is better.*
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg)
 
 \* Note that `svgo` and `scour` breaks most of the files.
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/ratio_chart_oxygen.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/ratio_chart_oxygen.svg)
 
 ### Cleaning time
 
 *Less is better.*
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/performance_chart_W3C_SVG_11_TestSuite.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/performance_chart_W3C_SVG_11_TestSuite.svg)
 
-![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.0/docs/images/performance_chart_oxygen.svg)
+![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/performance_chart_oxygen.svg)
 
 ### Other
 

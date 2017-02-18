@@ -2,7 +2,7 @@
 name = "svgcleaner"
 version = "0.8.1"
 dependencies = [
- "clap 2.20.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "clap 2.20.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "svgdom 0.3.1 (git+https://github.com/RazrFalcon/libsvgdom.git)",
  "svgdom-utils 0.1.0 (git+https://github.com/RazrFalcon/libsvgdom-utils.git)",
 ]
@@ -14,7 +14,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "clap"
-version = "2.20.4"
+version = "2.20.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -57,7 +57,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "svgdom"
 version = "0.3.1"
-source = "git+https://github.com/RazrFalcon/libsvgdom.git#ad93cd6379396d6cf3b47a6d17ea3eaf91f369a7"
+source = "git+https://github.com/RazrFalcon/libsvgdom.git#5873687b43348c664df386c8eeaaff38c6ebb063"
 dependencies = [
  "float-cmp 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "simplecss 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -75,7 +75,7 @@ dependencies = [
 [[package]]
 name = "svgparser"
 version = "0.2.1"
-source = "git+https://github.com/RazrFalcon/libsvgparser.git#b8d958a56736bf3445a788131530874ce9f3fb81"
+source = "git+https://github.com/RazrFalcon/libsvgparser.git#1dbcebae01facdf4624a7da229370641ed7897ce"
 dependencies = [
  "phf 0.7.20 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -97,7 +97,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
 "checksum bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "aad18937a628ec6abcd26d1489012cc0e18c21798210f491af69ded9b881106d"
-"checksum clap 2.20.4 (registry+https://github.com/rust-lang/crates.io-index)" = "a60af5cb867dd4ee2378398acde80c73b466b58a963f598061ce7e394800998d"
+"checksum clap 2.20.5 (registry+https://github.com/rust-lang/crates.io-index)" = "7db281b0520e97fbd15cd615dcd8f8bcad0c26f5f7d5effe705f090f39e9a758"
 "checksum float-cmp 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "ae5c9d3ac80527346eb21666d9135b695243a48ef5f2df19022856975a66c411"
 "checksum num-traits 0.1.36 (registry+https://github.com/rust-lang/crates.io-index)" = "a16a42856a256b39c6d3484f097f6713e14feacd9bfb02290917904fae46c81c"
 "checksum phf 0.7.20 (registry+https://github.com/rust-lang/crates.io-index)" = "0c6afb2057bb5f846a7b75703f90bc1cef4970c35209f712925db7768e999202"

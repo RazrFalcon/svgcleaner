@@ -100,7 +100,7 @@ pub mod utils {
     pub fn resolve_gradient_attributes(doc: &Document) -> Result<(), svgdom_utils::Error> {
         svgdom_utils::resolve_linear_gradient_attributes(doc);
         svgdom_utils::resolve_radial_gradient_attributes(doc);
-        try!(svgdom_utils::resolve_stop_attributes(doc));
+        svgdom_utils::resolve_stop_attributes(doc)?;
         Ok(())
     }
 

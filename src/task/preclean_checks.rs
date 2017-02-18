@@ -27,10 +27,10 @@ use svgdom::{Document, AttributeValue, AttributeType};
 use error::Error;
 
 pub fn preclean_checks(doc: &Document) -> Result<(), Error> {
-    try!(check_for_unsupported_elements(doc));
-    try!(check_for_script_attributes(doc));
-    try!(check_for_conditional_attributes(doc));
-    try!(check_for_external_xlink(doc));
+    check_for_unsupported_elements(doc)?;
+    check_for_script_attributes(doc)?;
+    check_for_conditional_attributes(doc)?;
+    check_for_external_xlink(doc)?;
 
     Ok(())
 }

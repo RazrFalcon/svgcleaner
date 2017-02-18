@@ -34,11 +34,11 @@ use task::*;
 use error;
 
 pub fn load_file(path: &str) -> Result<Vec<u8>, io::Error> {
-    let mut file = try!(fs::File::open(path));
-    let length = try!(file.metadata()).len() as usize;
+    let mut file = fs::File::open(path)?;
+    let length = file.metadata()?.len() as usize;
 
     let mut v = Vec::with_capacity(length + 1);
-    try!(file.read_to_end(&mut v));
+    file.read_to_end(&mut v)?;
 
     Ok(v)
 }
@@ -49,7 +49,7 @@ pub fn parse_data(data: &[u8], opt: &ParseOptions) -> Result<Document, svgdom::E
 
 pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
                  -> Result<(), error::Error> {
-    try!(preclean_checks(doc));
+    preclean_checks(doc)?;
 
     // NOTE: Order is important.
     //       Methods should not depend on each other, but for performance reasons
@@ -57,8 +57,8 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
 
     // Prepare our document.
     // This methods is not optional.
-    try!(utils::resolve_gradient_attributes(doc));
-    try!(svgdom_utils::resolve_inherit(doc));
+    utils::resolve_gradient_attributes(doc)?;
+    svgdom_utils::resolve_inherit(doc)?;
     fix_invalid_attributes(doc);
     group_defs(doc);
 
@@ -208,8 +208,8 @@ pub fn write_buffer(doc: &Document, opt: &WriteOptions, buf: &mut Vec<u8>) {
 }
 
 pub fn save_file(data: &[u8], path: &str) -> Result<(), io::Error> {
-    let mut f = try!(fs::File::create(&path));
-    try!(f.write_all(&data));
+    let mut f = fs::File::create(&path)?;
+    f.write_all(&data)?;
 
     Ok(())
 }

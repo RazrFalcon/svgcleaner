@@ -55,14 +55,14 @@ pub fn remove_dupl_linear_gradients(doc: &Document) {
 mod tests {
     use super::*;
     use svgdom::{Document, WriteToString};
-    use task::resolve_attrs;
+    use svgdom_utils;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
-                resolve_attrs::linear_gradients(&doc);
+                svgdom_utils::resolve_linear_gradient_attributes(&doc);
                 remove_dupl_linear_gradients(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }

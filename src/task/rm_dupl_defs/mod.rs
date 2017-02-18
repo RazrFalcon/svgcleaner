@@ -153,14 +153,14 @@ pub fn is_equal_stops(node1: &Node, node2: &Node) -> bool {
 mod tests {
     use svgdom::{Document, Node};
     use task::short::EId;
-    use task::resolve_attributes;
+    use task::utils;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $flag:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
-                resolve_attributes(&doc).unwrap();
+                utils::resolve_gradient_attributes(&doc).unwrap();
                 let vec = doc.descendants().svg().filter(|n| n.is_tag_name(EId::LinearGradient))
                              .collect::<Vec<Node>>();
 

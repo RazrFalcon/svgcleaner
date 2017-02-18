@@ -59,7 +59,7 @@ pub fn remove_invalid_stops(doc: &Document) {
 mod tests {
     use super::*;
     use svgdom::{Document, WriteToString};
-    use task::resolve_attributes;
+    use task::utils;
     use task::fix_attrs;
 
     macro_rules! test {
@@ -67,7 +67,7 @@ mod tests {
             #[test]
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
-                resolve_attributes(&doc).unwrap();
+                utils::resolve_gradient_attributes(&doc).unwrap();
                 fix_attrs::fix_invalid_attributes(&doc);
                 remove_invalid_stops(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);

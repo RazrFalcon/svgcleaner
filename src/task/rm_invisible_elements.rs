@@ -245,6 +245,9 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
         }
     }
 
+    // TODO: If 'x1' = 'x2' and 'y1' = 'y2', then the area to be painted will be painted as
+    //       a single color using the color and opacity of the last gradient stop.
+
     {
         // 'If one stop is defined, then paint with the solid color fill using the color
         // defined for that gradient stop.'

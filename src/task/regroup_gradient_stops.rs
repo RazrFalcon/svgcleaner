@@ -21,9 +21,10 @@
 ****************************************************************************/
 
 use task::short::{EId, AId};
-use task::resolve_attrs;
 
 use svgdom::{Document, Node};
+
+use svgdom_utils;
 
 pub fn regroup_gradient_stops(doc: &Document) {
     let mut nodes: Vec<Node> = doc.descendants().svg()
@@ -85,7 +86,7 @@ pub fn regroup_gradient_stops(doc: &Document) {
 
     if is_changed {
         // we must resolve attributes for gradients created above
-        resolve_attrs::gradients::linear_gradients(doc);
+        svgdom_utils::resolve_linear_gradient_attributes(doc);
     }
 }
 
@@ -112,14 +113,14 @@ fn gen_id(doc: &Document, prefix: &str) -> String {
 mod tests {
     use super::*;
     use svgdom::{Document, WriteToString};
-    use task::resolve_attrs;
+    use task::utils;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
-                resolve_attrs::resolve_attributes(&doc).unwrap();
+                utils::resolve_gradient_attributes(&doc).unwrap();
                 regroup_gradient_stops(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }

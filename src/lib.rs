@@ -24,6 +24,7 @@
 #[macro_use] extern crate clap;
 
 extern crate svgdom;
+extern crate svgdom_utils;
 
 pub use svgdom::{ParseOptions, WriteOptions};
 

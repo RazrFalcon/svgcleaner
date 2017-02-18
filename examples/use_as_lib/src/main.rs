@@ -1,9 +1,9 @@
-extern crate libsvgcleaner;
+extern crate svgcleaner;
 
 use std::env;
 
-use libsvgcleaner::cleaner;
-use libsvgcleaner::{ParseOptions, WriteOptions, CleaningOptions};
+use svgcleaner::cleaner;
+use svgcleaner::{ParseOptions, WriteOptions, CleaningOptions};
 
 // svgcleaner can be used as a library
 fn main() {

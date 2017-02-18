@@ -22,6 +22,8 @@
 
 use std::fmt;
 
+use svgdom_utils;
+
 #[derive(PartialEq)]
 pub enum Error {
     UnresolvedAttribute(String), // attribute name
@@ -48,6 +50,17 @@ impl fmt::Debug for Error {
             Error::ExternalHrefIsNotSupported(ref s) =>
                 write!(f, "The 'xlink:href' attribute is referencing an external object '{}', \
                            which is not supported", s),
+        }
+    }
+}
+
+impl From<svgdom_utils::Error> for Error {
+    fn from(value: svgdom_utils::Error) -> Error {
+        match value {
+            svgdom_utils::Error::UnresolvedAttribute(name) =>
+                Error::UnresolvedAttribute(name),
+            svgdom_utils::Error::MissingAttribute(tag_name, attr_name) =>
+                Error::MissingAttribute(tag_name, attr_name),
         }
     }
 }

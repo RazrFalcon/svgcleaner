@@ -20,6 +20,8 @@
 **
 ****************************************************************************/
 
+use svgdom_utils::is_gradient;
+
 pub use self::conv_shapes::convert_shapes_to_paths;
 pub use self::final_fixes::{
     remove_empty_defs,
@@ -31,8 +33,6 @@ pub use self::group_defs::group_defs;
 pub use self::join_style_attrs::join_style_attributes;
 pub use self::merge_gradients::merge_gradients;
 pub use self::preclean_checks::preclean_checks;
-pub use self::resolve_attrs::resolve_attributes;
-pub use self::resolve_inherit::resolve_inherit;
 pub use self::rm_default_attrs::remove_default_attributes;
 pub use self::rm_dupl_defs::{
     remove_dupl_linear_gradients,
@@ -66,8 +66,6 @@ mod join_style_attrs;
 mod merge_gradients;
 mod preclean_checks;
 mod regroup_gradient_stops;
-mod resolve_attrs;
-mod resolve_inherit;
 mod resolve_use;
 mod rm_default_attrs;
 mod rm_dupl_defs;
@@ -94,13 +92,17 @@ mod short {
     pub use svgdom::AttributeId as AId;
 }
 
-fn is_gradient(node: &super::svgdom::Node) -> bool {
-    node.is_tag_name(short::EId::LinearGradient) || node.is_tag_name(short::EId::RadialGradient)
-}
-
-mod utils {
-    use svgdom::{Node, AttributeValue};
+pub mod utils {
+    use svgdom::{Document, Node, AttributeValue};
     use task::short::AId;
+    use svgdom_utils;
+
+    pub fn resolve_gradient_attributes(doc: &Document) -> Result<(), svgdom_utils::Error> {
+        svgdom_utils::resolve_linear_gradient_attributes(doc);
+        svgdom_utils::resolve_radial_gradient_attributes(doc);
+        try!(svgdom_utils::resolve_stop_attributes(doc));
+        Ok(())
+    }
 
     pub fn recalc_stroke_width(node: &Node, scale_factor: f64) {
         // resolve current 'stroke-width'

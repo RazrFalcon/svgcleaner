@@ -27,6 +27,8 @@ use std::io;
 use svgdom;
 use svgdom::{Document, ParseOptions, WriteOptions, WriteBuffer, ElementId};
 
+use svgdom_utils;
+
 use options::Options;
 use task::*;
 use error;
@@ -55,8 +57,8 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
 
     // Prepare our document.
     // This methods is not optional.
-    try!(resolve_attributes(doc));
-    try!(resolve_inherit(doc));
+    try!(utils::resolve_gradient_attributes(doc));
+    try!(svgdom_utils::resolve_inherit(doc));
     fix_invalid_attributes(doc);
     group_defs(doc);
 

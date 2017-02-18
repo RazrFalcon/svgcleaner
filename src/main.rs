@@ -20,14 +20,14 @@
 **
 ****************************************************************************/
 
-extern crate libsvgcleaner;
+extern crate svgcleaner;
 
 use std::fs;
 use std::path::Path;
 
-use libsvgcleaner::cli;
-use libsvgcleaner::cli::Key;
-use libsvgcleaner::cleaner;
+use svgcleaner::cli;
+use svgcleaner::cli::Key;
+use svgcleaner::cleaner;
 
 macro_rules! try_msg {
     ($e:expr) => ({
@@ -40,6 +40,8 @@ macro_rules! try_msg {
         }
     })
 }
+
+use std::str;
 
 fn main() {
     let app = cli::prepare_app();

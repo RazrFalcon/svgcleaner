@@ -171,14 +171,14 @@ fn make_attr_invisible(node: &Node, aid: AId) {
 mod tests {
     use super::*;
     use svgdom::{Document, WriteToString};
-    use task::resolve_attributes;
+    use task::utils;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
-                resolve_attributes(&doc).unwrap();
+                utils::resolve_gradient_attributes(&doc).unwrap();
                 remove_gradient_attributes(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }

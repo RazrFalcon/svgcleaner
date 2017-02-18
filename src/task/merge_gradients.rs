@@ -65,6 +65,7 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
     let iter = doc.descendants().svg().filter(|n| super::is_gradient(n));
     for node in iter {
         let linked_node;
+
         if let Some(av) = node.attribute_value(AId::XlinkHref) {
             if let AttributeValue::Link(link) = av {
                 if link.uses_count() == 1 && !link.has_attribute(AId::XlinkHref) {
@@ -128,14 +129,14 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
 mod tests {
     use super::*;
     use svgdom::{Document, WriteToString};
-    use task::resolve_attributes;
+    use task::utils;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_data($in_text).unwrap();
-                resolve_attributes(&doc).unwrap();
+                utils::resolve_gradient_attributes(&doc).unwrap();
                 merge_gradients(&doc);
                 let mut opt = write_opt_for_tests!();
                 opt.simplify_transform_matrices = true;

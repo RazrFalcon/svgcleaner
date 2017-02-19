@@ -87,29 +87,13 @@ pub fn resolve_use(doc: &Document) {
             }
         }
 
-        {
-            let attrs = node.attributes();
-
-            // copy SVG attributes
-            for (aid, attr) in attrs.iter_svg() {
-                match attr.value {
-                    AttributeValue::Link(ref iri) | AttributeValue::FuncLink(ref iri) => {
-                        // if it's fail - it's already a huge problem, so unwrap is harmless
-                        link.set_link_attribute(aid, iri.clone()).unwrap();
-                    }
-                    _ => link.set_attribute(aid, attr.value.clone()),
-                }
-            }
-
-            // copy non-SVG attributes
-            for attr in attrs.iter() {
-                if !attr.is_svg() {
-                    link.set_attribute_object(attr.clone());
-                }
-            }
+        // copy attributes
+        for attr in node.attributes().iter() {
+            link.set_attribute_object(attr.clone());
         }
 
-        node.insert_after(link);
+        // TODO: maybe just change the tag name
+        node.insert_after(&link);
 
         node.remove();
     }
@@ -181,6 +165,22 @@ b"<svg>
 "<svg>
     <defs/>
     <rect id='r1' transform='translate(20 10)' width='10'/>
+</svg>
+");
+
+    test!(resolve_5,
+b"<svg>
+    <defs>
+        <linearGradient id='lg1'/>
+        <rect id='r1' fill='url(#lg1)'/>
+    </defs>
+    <use xlink:href='#r1'/>
+</svg>",
+"<svg>
+    <defs>
+        <linearGradient id='lg1'/>
+    </defs>
+    <rect id='r1' fill='url(#lg1)'/>
 </svg>
 ");
 

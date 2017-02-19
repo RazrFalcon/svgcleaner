@@ -57,7 +57,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "svgdom"
 version = "0.3.1"
-source = "git+https://github.com/RazrFalcon/libsvgdom.git#5873687b43348c664df386c8eeaaff38c6ebb063"
+source = "git+https://github.com/RazrFalcon/libsvgdom.git#6a1123bd39bb810582768c072c797c8042376565"
 dependencies = [
  "float-cmp 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "simplecss 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",

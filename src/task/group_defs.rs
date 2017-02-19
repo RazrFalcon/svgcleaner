@@ -33,7 +33,7 @@ pub fn group_defs(doc: &Document) {
         None => {
             // create 'defs' node if it didn't exist already
             let defs = doc.create_element(EId::Defs);
-            svg.prepend(defs.clone());
+            svg.prepend(&defs);
             defs
         }
     };

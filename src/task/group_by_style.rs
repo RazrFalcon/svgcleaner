@@ -426,7 +426,7 @@ fn _group_by_style(parent: &Node) {
             parent.clone()
         } else {
             let g_node = parent.document().create_element(EId::G);
-            node_list[0].insert_before(g_node.clone());
+            node_list[0].insert_before(&g_node);
             g_node
         };
 
@@ -453,7 +453,7 @@ fn _group_by_style(parent: &Node) {
 
         // do the same as in previous block
         let g_node = parent.document().create_element(EId::G);
-        node_list[start].insert_before(g_node.clone());
+        node_list[start].insert_before(&g_node);
 
         move_nodes(&d.attributes, &g_node, &node_list, (start, end));
     }

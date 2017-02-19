@@ -67,7 +67,7 @@ pub fn regroup_gradient_stops(doc: &Document) {
             // if it's fail - it's already a huge problem, so unwrap is harmless
             node1.set_link_attribute(AId::XlinkHref, new_lg.clone()).unwrap();
 
-            node1.insert_before(new_lg.clone());
+            node1.insert_before(&new_lg);
 
             for jn in &join_nodes {
                 while jn.has_children() {

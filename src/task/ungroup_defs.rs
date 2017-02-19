@@ -38,7 +38,7 @@ pub fn ungroup_defs(doc: &Document) {
             let nodes: Vec<Node> = node.children().collect();
             for n in nodes {
                 n.detach();
-                node.insert_before(n);
+                node.insert_before(&n);
             }
 
             node.remove();

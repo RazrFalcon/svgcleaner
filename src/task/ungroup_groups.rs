@@ -162,7 +162,7 @@ fn ungroup_group(g: &Node) {
     while g.has_children() {
         let c = g.last_child().unwrap();
         c.detach();
-        g.insert_after(c);
+        g.insert_after(&c);
     }
 }
 

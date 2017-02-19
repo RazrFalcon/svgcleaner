@@ -34,14 +34,12 @@ macro_rules! try_msg {
         match $e {
             Ok(o) => o,
             Err(e) => {
-                println!("Error: {:?}.", e);
+                println!("Error: {}.", e);
                 return;
             }
         }
     })
 }
-
-use std::str;
 
 fn main() {
     let app = cli::prepare_app();

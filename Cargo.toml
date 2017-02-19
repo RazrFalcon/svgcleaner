@@ -13,6 +13,16 @@ categories = ["multimedia::images"]
 [badges]
 travis-ci = { repository = "https://github.com/RazrFalcon/svgcleaner" }
 
+[lib]
+name = "svgcleaner"
+path = "src/lib.rs"
+doctest = false
+
+[[bin]]
+doc = false
+name = "svgcleaner"
+path = "src/main.rs"
+
 [dependencies.svgdom]
 # latest
 git = "https://github.com/RazrFalcon/libsvgdom.git"
@@ -39,6 +49,3 @@ cli-parsing = ["clap"]
 # [profile.release]
 # opt-level = 3
 # lto = true
-
-[lib]
-doctest = false

@@ -142,7 +142,7 @@ svgcleaner in.svg out.svg
 
 Change default options:
 ```
-svgcleaner in.svg out.svg --indent=2 --paths-coordinates-precision=5 --join-arcto-flags=true
+svgcleaner --indent=2 --paths-coordinates-precision=5 --join-arcto-flags=true in.svg out.svg
 ```
 
 Use `--help` for a list of the cleaning options and the [doc](docs/svgcleaner.rst) for more details.

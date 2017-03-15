@@ -4,7 +4,7 @@ version = "0.8.1"
 authors = ["Evgeniy Reizner <razrfalcon@gmail.com>"]
 keywords = ["svg", "cleaner", "optimizer"]
 license = "GPL-2.0"
-description = "svgcleaner could help you to clean up yours SVG files from the unnecessary data."
+description = "svgcleaner could help you to clean up your SVG files from the unnecessary data."
 documentation = "https://github.com/RazrFalcon/svgcleaner/blob/master/docs/svgcleaner.rst"
 repository = "https://github.com/RazrFalcon/svgcleaner"
 readme = "README.md"
@@ -25,11 +25,11 @@ path = "src/main.rs"
 
 [dependencies.svgdom]
 # latest
-git = "https://github.com/RazrFalcon/libsvgdom.git"
+# git = "https://github.com/RazrFalcon/libsvgdom.git"
 # local copy
 # path = "../svgdom"
 # from crates
-# version = "=0.3.1"
+version = "0.4"
 
 [dependencies.svgdom-utils]
 # path = "../svgdom-utils"

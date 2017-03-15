@@ -1,4 +1,4 @@
-svgcleaner could help you to clean up yours SVG files from the unnecessary data.
+svgcleaner could help you to clean up your SVG files from the unnecessary data.
 
 A complete documentation can be found here: https://github.com/RazrFalcon/svgcleaner/blob/master/docs/svgcleaner.rst
 

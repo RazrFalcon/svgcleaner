@@ -8,17 +8,18 @@ No need to implement them, though. Just create an issue on GitHub that explains 
 ## Broken image
 
 If you found that *svgcleaner* broke your image, firstly open them (original and cleaned) in
-Google Chrome, since it has a very good support of the SVG, unlike many other applications.
+Google Chrome, since it has very good support of the SVG spec, unlike many other applications.
 
-- If images are still renders differently - then they probably broken.
+- If images still render differently - then they are probably broken.
 Create an issue on GitHub with your image attached to it.
 - If images are rendered the same - then there are some problems with your rendering
 application/editor. Such cases are not treated as errors, but you still can open an issue.
 
-## Performace
+## Performance
 
 Note that actual cleaning takes less than 30% of the execution time.
-Other 70% is spent on parsing and saving. So you should start from there.
+The other 70% is spent on parsing and saving. So, if you're investigating performance issues,
+you should start there.
 
 ## Other
 

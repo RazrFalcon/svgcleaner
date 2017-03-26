@@ -1,8 +1,6 @@
-# svgcleaner
+# svgcleaner [![Build Status](https://travis-ci.org/RazrFalcon/svgcleaner.svg?branch=master)](https://travis-ci.org/RazrFalcon/svgcleaner)
 
-*svgcleaner* could help you to clean up your SVG files from the unnecessary data.
-
-[![Build Status](https://travis-ci.org/RazrFalcon/svgcleaner.svg?branch=master)](https://travis-ci.org/RazrFalcon/svgcleaner)
+*svgcleaner* helps you clean up your SVG files, keeping them free from unnecessary data.
 
 ## Table of Contents
 
@@ -27,41 +25,42 @@
 
 ## Purpose
 
-The main purpose of the *svgcleaner* is to losslessly reduce size of an SVG image, created in a
+The main purpose of *svgcleaner* is to losslessly reduce the size of an SVG image, created in a
 vector editing application, before publishing.
 
-Usually, more than half of an SVG image data is useless for rendering:
-- Temporary data used by the vector editing application.
-- Non-optimal SVG structure representation.
-- Unused and invisible graphical elements.
-- ...
+Usually more than half of an SVG image's data is useless for rendering. For example:
+- Temporary data used by the vector editing application
+- Non-optimal SVG structure representation
+- Unused and invisible graphical elements
+
+... Are all unnecessary in a published SVG.
 
 ## Goals
 
-1. **Correctness.** *svgcleaner* should not break an SVG file.
-1. **Cleaning ratio.** More is better.
-1. **Performance.** An average SVG file processing time should be closer to ~1ms on a modern PC.
+1. **Correctness** - *svgcleaner* should not break an SVG file
+1. **Cleaning ratio** - Higher is better
+1. **Performance** - An average SVG file processing time should be closer to ~1ms on a modern PC
 
 ## Alternatives
 
  - [svgo](https://github.com/svg/svgo)
  - [scour](https://github.com/scour-project/scour)
 
-Despite obvious advantages of the *svgcleaner*, like correctness, cleaning ratio and performance,
-which is shown below, there are some more nuances:
+In addition to the obvious advantages of *svgcleaner* — like correctness, cleaning ratio and performance,
+which are described below — there are some more nuances to be aware of:
 
 1. *svgcleaner* cleans only one SVG file. It doesn't process SVGZ files.
    It doesn't process directories. It doesn't do anything else. Just one task*.
-1. *svgcleaner* is strictly lossless. There are no destructing cleaning options.
-1. *svgcleaner* is portable. You can build it into a single executable without any external dependency.
+1. *svgcleaner* is strictly lossless. There are no destructive cleaning options.
+1. *svgcleaner* is portable. You can build it into a single executable without any external dependencies.
 
-\* You can get all of this features using [GUI](https://github.com/RazrFalcon/svgcleaner-gui).
+\* You can get all of these features using the [GUI](https://github.com/RazrFalcon/svgcleaner-gui).
 
 ## Charts
 
 See ['Testing notes'](docs/testing_notes.rst) for details.
 
-All stats was collected using the latest release version.
+All stats were collected using the latest release version.
 
 ### Correctness
 
@@ -69,13 +68,15 @@ All stats was collected using the latest release version.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/correctness_chart_W3C_SVG_11_TestSuite.svg)
 
-\* Most of the errors are due to incorrect `font-face` processing. Not font-based errors:
+\* Most of the errors were due to incorrect `font-face` processing. Without including font-based errors, scores were:
  - `svgo`: 100
  - `scour`: 78
 
+***
+
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/correctness_chart_oxygen.svg)
 
-\* Errors produced by the numeric rounding are ignored.
+\* Errors produced by numeric rounding were ignored.
 
 ### Cleaning ratio
 
@@ -83,7 +84,9 @@ All stats was collected using the latest release version.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg)
 
-\* Note that `svgo` and `scour` breaks most of the files.
+\* Note that `svgo` and `scour` break most of the files.
+
+***
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/ratio_chart_oxygen.svg)
 
@@ -92,6 +95,8 @@ All stats was collected using the latest release version.
 *Less is better.*
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/performance_chart_W3C_SVG_11_TestSuite.svg)
+
+***
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/performance_chart_oxygen.svg)
 
@@ -114,23 +119,23 @@ You can find more tests, with detailed explanations of errors, [here](docs/exten
 
 ## Limitations
 
-*svgcleaner* shouldn't change your file unless you say it to, but there are still
+*svgcleaner* shouldn't change your file unless you tell it to, but there are still
 things that can't be preserved. So even if you disable all cleaning options there are still things
-that will be changed:
+that will be changed, such as:
 
-- Original indent is not preserved.
-- All colors will be formatted as #RRGGBB and #RGB.
-- DOCTYPE, CDATA will be processed and removed.
-- CSS support is minimal.
+- Original indent is not preserved
+- All colors will be formatted as #RRGGBB and #RGB
+- DOCTYPE, CDATA will be processed and removed
+- CSS support is minimal
 - CSS from the `style` element will be extracted and processes. The `style` element will be removed.
-- The `style` attribute will be split into attributes.
-- The `class` attribute will be processed and removed.
-- Paths and transformations will be reformatted.
-- `currentColor` and `inherit` attributes values will be resolved.
-- Referenced elements will be moved to the `defs` element.
-- IRI and FuncIRI attributes that reference non-existing objects will be removed.
-- If the `offset` attribute value of the `stop` element represented as percent - it will be
-  converted into a number.
+- The `style` attribute will be split into attributes
+- The `class` attribute will be processed and removed
+- Paths and transformations will be reformatted
+- `currentColor` and `inherit` attributes values will be resolved
+- Referenced elements will be moved to the `defs` element
+- IRI and FuncIRI attributes that reference non-existing objects will be removed
+- If the `offset` attribute value of the `stop` element is represented as percentage - it will be
+  converted into a decimal number
 
 ## Usage
 
@@ -145,7 +150,7 @@ Change default options:
 svgcleaner --indent=2 --paths-coordinates-precision=5 --join-arcto-flags=true in.svg out.svg
 ```
 
-Use `--help` for a list of the cleaning options and the [doc](docs/svgcleaner.rst) for more details.
+Use `--help` for a list of the cleaning options and see the [doc](docs/svgcleaner.rst) for more details.
 
 ### GUI
 
@@ -153,11 +158,11 @@ You can get a GUI [here](https://github.com/RazrFalcon/svgcleaner-gui).
 
 ## Downloads
 
-You can get prebuild packages [here](https://github.com/RazrFalcon/svgcleaner-gui/releases).
+You can get prebuilt packages [here](https://github.com/RazrFalcon/svgcleaner-gui/releases).
 
 ## Building
 
-You need the latest stable [Rust](https://www.rust-lang.org/) compiler.
+You need the latest stable [Rust](https://www.rust-lang.org/) compiler to build.
 
 ```bash
 cargo build --release

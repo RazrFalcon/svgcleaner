@@ -21,6 +21,7 @@
 ****************************************************************************/
 
 use std::ops::Index;
+use std::io::{Write, stderr};
 
 use clap::{Arg, App, ArgMatches};
 
@@ -81,6 +82,7 @@ pub enum Key {
     Multipass,
     CopyOnError,
     Quiet,
+    Stdout,
 }
 
 pub struct KeysData<'a>(&'a [&'a str]);
@@ -145,6 +147,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "multipass",
     "copy-on-error",
     "quiet",
+    "stdout",
 ]);
 
 macro_rules! gen_flag {
@@ -158,7 +161,7 @@ macro_rules! gen_flag {
 }
 
 pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
-    debug_assert!(KEYS.0.len() - 1 == Key::Quiet as usize);
+    debug_assert!(KEYS.0.len() - 1 == Key::Stdout as usize);
 
     // NOTE: We use custom help output, because `clap` doesn't support
     //       args grouping.
@@ -171,9 +174,12 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             .index(1)
             .validator(is_svg))
         .arg(Arg::with_name("out-file")
-            .required(true)
+            .required_unless(KEYS[Key::Stdout])
             .index(2)
             .validator(is_svg))
+        .arg(Arg::with_name(KEYS[Key::Stdout])
+            .short("c")
+            .long(KEYS[Key::Stdout]))
 
         // elements
         .arg(gen_flag!(Key::RemoveComments, "true"))
@@ -297,8 +303,8 @@ pub fn check_values(args: &ArgMatches) -> bool {
 
     fn check_value(args: &ArgMatches, flag: Key, dep: Key) -> bool {
         if !get_flag(args, flag) && get_flag(args, dep) {
-            println!("Error: You can use '--{}=true' only with '--{}=true'.",
-                     KEYS[dep], KEYS[flag]);
+            writeln!(stderr(), "Error: You can use '--{}=true' only with '--{}=true'.",
+                     KEYS[dep], KEYS[flag]).unwrap();
             return false;
         }
         true

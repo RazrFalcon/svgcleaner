@@ -226,7 +226,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::SimplifyTransforms, "true"))
         .arg(Arg::with_name(KEYS[Key::PathsCoordinatesPrecision])
             .long(KEYS[Key::PathsCoordinatesPrecision])
-            .value_name("VALUE")
+            .value_name("NUM")
             .validator(is_precision)
             .default_value("8"))
         .arg(Arg::with_name(KEYS[Key::Indent])
@@ -277,13 +277,19 @@ fn is_precision(val: String) -> Result<(), String> {
 
 fn is_flag(val: String) -> Result<(), String> {
     match val.as_ref() {
-        "true" | "false" => Ok(()),
+        "true" | "false" |
+        "yes"  | "no" |
+        "y"    | "n" => Ok(()),
         _ => Err(String::from("Invalid flag value.")),
     }
 }
 
 pub fn get_flag(args: &ArgMatches, key: Key) -> bool {
-    value_t!(args, KEYS[key], bool).unwrap()
+    match args.value_of(KEYS[key]).unwrap() {
+        "true" | "yes" | "y" => true,
+        "false" | "no" | "n" => false,
+        _ => unreachable!(), // unreachable because we already validated values at is_flag()
+    }
 }
 
 // I don't know how to check it using `clap`, so here is manual checks.

@@ -5,6 +5,11 @@ A complete documentation can be found here: https://github.com/RazrFalcon/svgcle
 USAGE:
     svgcleaner [OPTIONS] <in-file> <out-file>
 
+    <FLAG> can contain values: true, false, yes, no, y, n
+
+EXAMPLE:
+    svgcleaner --indent=2 --paths-coordinates-precision=5 --join-arcto-flags=yes in.svg out.svg
+
 FLAGS:
     -h, --help                               Prints help information
     -V, --version                            Prints version information
@@ -59,7 +64,7 @@ Paths:
 Output:
     --trim-colors <FLAG>                     Use #RGB notation [default: true]
     --simplify-transforms <FLAG>             Simplify transform matrices [default: true]
-    --paths-coordinates-precision <VALUE>    Set path's coordinates numeric precision (1..12) [default: 8]
+    --paths-coordinates-precision <NUM>      Set path's coordinates numeric precision (1..12) [default: 8]
     --indent <INDENT>                        Sets XML nodes indent (-1..4) [default: -1]
 
 Other:

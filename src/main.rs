@@ -24,6 +24,7 @@ extern crate svgcleaner;
 
 use std::fs;
 use std::path::Path;
+use std::io::{Write, stderr};
 
 use svgcleaner::cli;
 use svgcleaner::cli::Key;
@@ -34,7 +35,7 @@ macro_rules! try_msg {
         match $e {
             Ok(o) => o,
             Err(e) => {
-                println!("Error: {}.", e);
+                writeln!(stderr(), "Error: {}.", e).unwrap();
                 return;
             }
         }
@@ -59,11 +60,12 @@ fn main() {
     let write_opt = cli::gen_write_options(&args);
     let cleaning_opt = cli::gen_cleaning_options(&args);
 
-    let in_file  = args.value_of("in-file").unwrap();
-    let out_file = args.value_of("out-file").unwrap();
+    let in_file = args.value_of("in-file").unwrap();
+    let out_file = args.value_of("out-file");
+    let stdout_enabled = args.is_present("stdout");
 
     if !Path::new(in_file).exists() {
-        println!("Error: Input file does not exist.");
+        writeln!(stderr(), "Error: Input file does not exist.").unwrap();
         return;
     }
 
@@ -72,10 +74,12 @@ fn main() {
 
     let on_err = || {
         // copy original file to destination
-        if cli::get_flag(&args, Key::CopyOnError) {
+        if out_file.is_some() && cli::get_flag(&args, Key::CopyOnError) {
             // copy a file only when paths are different
-            if in_file != out_file {
-                try_msg!(fs::copy(in_file, out_file));
+            if let Some(out_file) = out_file {
+                if in_file != out_file {
+                    try_msg!(fs::copy(in_file, out_file));
+                }
             }
         }
 
@@ -86,7 +90,7 @@ fn main() {
     let doc = match cleaner::parse_data(&raw[..], &parse_opt) {
         Ok(d) => d,
         Err(e) => {
-            println!("Error: {:?}.", e);
+            writeln!(stderr(), "Error: {:?}.", e).unwrap();
             on_err();
             return;
         }
@@ -105,7 +109,7 @@ fn main() {
         match cleaner::clean_doc(&doc, &cleaning_opt, &write_opt) {
             Ok(_) => {}
             Err(e) => {
-                println!("Error: {:?}.", e);
+                writeln!(stderr(), "Error: {:?}.", e).unwrap();
                 on_err();
                 break;
             }
@@ -129,21 +133,25 @@ fn main() {
 
     // check that cleaned file is smaller
     if buf.len() > raw.len() {
-        println!("Error: Cleaned file is bigger than original.");
+        writeln!(stderr(), "Error: Cleaned file is bigger than original.").unwrap();
         on_err();
         return;
     }
 
     // save buffer
-    try_msg!(cleaner::save_file(&buf[..], out_file));
+    if stdout_enabled {
+        try_msg!(cleaner::write_stdout(&buf[..]));
+    }
 
-    if cli::get_flag(&args, Key::Quiet) {
-        return;
+    if let Some(out_file) = out_file {
+        try_msg!(cleaner::save_file(&buf[..], out_file));
     }
 
     // unwrap is safe, because 'save_file' will fail on write error,
     // so file is totally exist
-    let out_size = fs::File::open(out_file).unwrap().metadata().unwrap().len() as f64;
-    let ratio = 100.0 - out_size / (raw.len() as f64) * 100.0;
-    println!("Your image is {:.2}% smaller now.", ratio);
+    if !stdout_enabled && out_file.is_some() && !cli::get_flag(&args, Key::Quiet) {
+        let out_size = fs::File::open(out_file.unwrap()).unwrap().metadata().unwrap().len() as f64;
+        let ratio = 100.0 - out_size / (raw.len() as f64) * 100.0;
+        println!("Your image is {:.2}% smaller now.", ratio);
+    }
 }

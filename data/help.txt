@@ -13,6 +13,7 @@ EXAMPLE:
 FLAGS:
     -h, --help                               Prints help information
     -V, --version                            Prints version information
+    -c, --stdout                             Prints result as standard output
 
 OPTIONS:
 Elements:

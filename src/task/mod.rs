@@ -20,8 +20,6 @@
 **
 ****************************************************************************/
 
-use svgdom_utils::is_gradient;
-
 pub use self::conv_shapes::convert_shapes_to_paths;
 pub use self::final_fixes::{
     remove_empty_defs,
@@ -93,14 +91,14 @@ mod short {
 }
 
 pub mod utils {
-    use svgdom::{Document, Node, AttributeValue};
+    use svgdom::{Document, Node, AttributeValue, Error as SvgDomError};
+    use svgdom::postproc;
     use task::short::AId;
-    use svgdom_utils;
 
-    pub fn resolve_gradient_attributes(doc: &Document) -> Result<(), svgdom_utils::Error> {
-        svgdom_utils::resolve_linear_gradient_attributes(doc);
-        svgdom_utils::resolve_radial_gradient_attributes(doc);
-        svgdom_utils::resolve_stop_attributes(doc)?;
+    pub fn resolve_gradient_attributes(doc: &Document) -> Result<(), SvgDomError> {
+        postproc::resolve_linear_gradient_attributes(doc);
+        postproc::resolve_radial_gradient_attributes(doc);
+        postproc::resolve_stop_attributes(doc)?;
         Ok(())
     }
 

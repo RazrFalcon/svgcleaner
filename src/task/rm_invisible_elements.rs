@@ -232,7 +232,7 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
     {
         // gradient without children and link to other gradient is pointless
         let iter = doc.descendants().svg()
-                      .filter(|n| super::is_gradient(n))
+                      .filter(|n| n.is_gradient())
                       .filter(|n| !n.has_children() && !n.has_attribute(AId::XlinkHref));
 
         for n in iter {
@@ -252,7 +252,7 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
         // 'If one stop is defined, then paint with the solid color fill using the color
         // defined for that gradient stop.'
         let iter = doc.descendants().svg()
-                      .filter(|n| super::is_gradient(n))
+                      .filter(|n| n.is_gradient())
                       .filter(|n| n.children().count() == 1 && !n.has_attribute(AId::XlinkHref));
 
         for n in iter {
@@ -264,7 +264,7 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
             // replace links with colors, but not in gradients,
             // because it will lead to 'xlink:href=#ffffff', which is wrong
             for link in n.linked_nodes()
-                         .filter(|n| !super::is_gradient(n))
+                         .filter(|n| !n.is_gradient())
                          .collect::<Vec<Node>>() {
                 while let Some(aid) = find_link_attribute(&link, &n) {
                     link.set_attribute(aid, color);

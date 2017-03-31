@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- New dependency: `svgdom-utils`. Some algorithms are moved to this crate.
+- Some algorithms are moved to the `svgdom` crate.
 
 ## [0.8.1] - 2017-02-01
 ### Added

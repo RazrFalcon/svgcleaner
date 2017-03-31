@@ -22,7 +22,7 @@
 
 use std::fmt;
 
-use svgdom_utils;
+use svgdom;
 
 #[derive(PartialEq)]
 pub enum Error {
@@ -54,13 +54,14 @@ impl fmt::Debug for Error {
     }
 }
 
-impl From<svgdom_utils::Error> for Error {
-    fn from(value: svgdom_utils::Error) -> Error {
+impl From<svgdom::Error> for Error {
+    fn from(value: svgdom::Error) -> Error {
         match value {
-            svgdom_utils::Error::UnresolvedAttribute(name) =>
+            svgdom::Error::UnresolvedAttribute(name) =>
                 Error::UnresolvedAttribute(name),
-            svgdom_utils::Error::MissingAttribute(tag_name, attr_name) =>
+            svgdom::Error::MissingAttribute(tag_name, attr_name) =>
                 Error::MissingAttribute(tag_name, attr_name),
+            _ => unreachable!(),
         }
     }
 }

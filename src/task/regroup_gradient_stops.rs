@@ -22,13 +22,12 @@
 
 use task::short::{EId, AId};
 
-use svgdom::{Document, Node};
-
-use svgdom_utils;
+use svgdom::{Document, ElementType, Node};
+use svgdom::postproc;
 
 pub fn regroup_gradient_stops(doc: &Document) {
     let mut nodes: Vec<Node> = doc.descendants().svg()
-        .filter(|n| super::is_gradient(n))
+        .filter(|n| n.is_gradient())
         .filter(|n| n.has_children())
         .filter(|n| !n.has_attribute(AId::XlinkHref))
         .collect();
@@ -86,7 +85,7 @@ pub fn regroup_gradient_stops(doc: &Document) {
 
     if is_changed {
         // we must resolve attributes for gradients created above
-        svgdom_utils::resolve_linear_gradient_attributes(doc);
+        postproc::resolve_linear_gradient_attributes(doc);
     }
 }
 

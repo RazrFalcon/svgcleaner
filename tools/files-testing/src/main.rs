@@ -1,4 +1,3 @@
-#[macro_use]
 extern crate libtest;
 extern crate clap;
 extern crate time;
@@ -373,7 +372,7 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     match res {
         Ok(o) => {
             let se: String = String::from_utf8_lossy(&o.stderr).into_owned();
-            if !se.is_empty() {
+            if !se.is_empty() && se.find("Warning").is_none() {
                 println!("{}", se);
                 return false;
             }

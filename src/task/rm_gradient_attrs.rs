@@ -22,7 +22,7 @@
 
 use super::short::AId;
 
-use svgdom::{Document, Node, AttributeValue, ValueId};
+use svgdom::{Document, ElementType, Node, AttributeValue, ValueId};
 
 pub fn remove_gradient_attributes(doc: &Document) {
     // TODO: process coordinates and transform
@@ -39,9 +39,9 @@ fn process_units(doc: &Document) {
 // we can remove such attribute
 fn rm_equal(doc: &Document) {
     let mut order = Vec::new();
-    for node in doc.descendants().svg().filter(|n|    super::is_gradient(n)
-                                             && n.has_attribute(AId::XlinkHref)) {
-        let c = node.linked_nodes().filter(|n| super::is_gradient(n)).count();
+    for node in doc.descendants().svg().filter(|n|    n.is_gradient()
+                                                   && n.has_attribute(AId::XlinkHref)) {
+        let c = node.linked_nodes().filter(|n| n.is_gradient()).count();
         // the gradient element and count of gradient elements than uses it
         order.push((node.clone(), c));
     }
@@ -92,9 +92,9 @@ fn rm_equal(doc: &Document) {
 // we can move their 'gradientUnits' to the parent
 fn group_to_parent(doc: &Document) {
     let nodes: Vec<Node> = doc.descendants().svg()
-                              .filter(|n| super::is_gradient(n))
+                              .filter(|n| n.is_gradient())
                               .filter(|n| !n.has_attribute(AId::XlinkHref))
-                              .filter(|n| n.linked_nodes().all(|l| super::is_gradient(&l)))
+                              .filter(|n| n.linked_nodes().all(|l| l.is_gradient()))
                               .collect();
 
     for node in &nodes {

@@ -22,7 +22,7 @@
 
 use super::short::{EId, AId};
 
-use svgdom::{Document, Node, AttributeValue};
+use svgdom::{Document, ElementType, Node, AttributeValue};
 
 static LG_ATTRIBUTES: &'static [AId] = &[
     AId::GradientUnits,
@@ -62,7 +62,7 @@ pub fn merge_gradients(doc: &Document) {
 }
 
 fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
-    let iter = doc.descendants().svg().filter(|n| super::is_gradient(n));
+    let iter = doc.descendants().svg().filter(|n| n.is_gradient());
     for node in iter {
         let linked_node;
 

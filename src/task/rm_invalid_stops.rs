@@ -22,13 +22,13 @@
 
 use task::short::AId;
 
-use svgdom::Document;
+use svgdom::{Document, ElementType};
 
 pub fn remove_invalid_stops(doc: &Document) {
     let mut nodes = Vec::new();
 
     let iter = doc.descendants().svg()
-                  .filter(|n| super::is_gradient(n))
+                  .filter(|n| n.is_gradient())
                   .filter(|n| n.has_children());
     for node in iter {
         let mut prev_child = node.children().nth(0).unwrap();

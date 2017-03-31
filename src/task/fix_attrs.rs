@@ -23,8 +23,7 @@
 use super::short::EId;
 
 use svgdom::Document;
-
-use svgdom_utils;
+use svgdom::postproc;
 
 /// We don't remove invalid elements, just make them invisible.
 /// Then they can be removed via `remove_invisible_elements`.
@@ -32,9 +31,9 @@ pub fn fix_invalid_attributes(doc: &Document) {
     for node in doc.descendants().svg() {
         // descendants() iterates only over svg elements, which all have a tag name
         match node.tag_id().unwrap() {
-            EId::Rect => svgdom_utils::fix_rect_attributes(&node),
-            EId::Polyline | EId::Polygon => svgdom_utils::fix_poly_attributes(&node),
-            EId::LinearGradient | EId::RadialGradient => svgdom_utils::fix_stop_attributes(&node),
+            EId::Rect => postproc::fix_rect_attributes(&node),
+            EId::Polyline | EId::Polygon => postproc::fix_poly_attributes(&node),
+            EId::LinearGradient | EId::RadialGradient => postproc::fix_stop_attributes(&node),
             _ => {}
         }
     }

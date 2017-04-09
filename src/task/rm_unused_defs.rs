@@ -92,14 +92,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(simple_1,
-b"<svg>
+"<svg>
     <defs>
         <rect id='rect1'/>
         <rect/>
@@ -116,7 +110,7 @@ b"<svg>
 ");
 
     test!(recursive_1,
-b"<svg>
+"<svg>
     <defs>
         <linearGradient id='linearGradient1'>
             <stop/>
@@ -131,7 +125,7 @@ b"<svg>
 ");
 
     test!(correct_ungroup_1,
-b"<svg>
+"<svg>
     <defs>
         <clipPath id='clipPath1'>
             <path id='path1'/>
@@ -148,7 +142,7 @@ b"<svg>
 ");
 
     test_eq!(correct_ungroup_2,
-b"<svg>
+"<svg>
     <defs>
         <clipPath id='clipPath1'>
             <path id='path1'/>
@@ -159,7 +153,7 @@ b"<svg>
 ");
 
     test_eq!(correct_ungroup_3,
-b"<svg>
+"<svg>
     <defs>
         <clipPath id='clipPath1'>
             <rect/>
@@ -174,7 +168,7 @@ b"<svg>
 ");
 
     test!(correct_ungroup_4,
-b"<svg>
+"<svg>
     <defs>
         <clipPath>
             <g>
@@ -193,7 +187,7 @@ b"<svg>
 ");
 
     test!(correct_ungroup_5,
-b"<svg>
+"<svg>
     <defs>
         <foreignObject>
             <svg>
@@ -218,7 +212,7 @@ b"<svg>
 ");
 
     test!(correct_ungroup_6,
-b"<svg>
+"<svg>
     <defs>
         <g>
             <rect id='rect1'/>
@@ -235,7 +229,7 @@ b"<svg>
 ");
 
     test!(keep_font_1,
-b"<svg>
+"<svg>
     <defs>
         <font-face/>
         <font/>
@@ -250,7 +244,7 @@ b"<svg>
 ");
 
     test_eq!(keep_font_2,
-b"<svg>
+"<svg>
     <defs>
         <font-face font-family='SVGFreeSansASCII' unicode-range='U+0-7F'>
             <font-face-src>

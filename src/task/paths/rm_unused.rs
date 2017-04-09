@@ -182,7 +182,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let mut path = Path::from_data($in_text).unwrap();
+                let mut path = Path::from_str($in_text).unwrap();
                 path.conv_to_absolute();
                 remove_unused_segments(&mut path);
                 assert_eq_text!(path.to_string(), $out_text);
@@ -190,42 +190,42 @@ mod tests {
         )
     }
 
-    test!(rm_dulp_moveto_1, b"m 10 10 m 20 20 l 10 20",
-                             "M 30 30 L 40 50");
+    test!(rm_dulp_moveto_1, "m 10 10 m 20 20 l 10 20",
+                            "M 30 30 L 40 50");
 
-    test!(rm_dulp_moveto_2, b"m 10 10 20 20 l 10 20",
-                             "M 10 10 L 30 30 L 40 50");
+    test!(rm_dulp_moveto_2, "m 10 10 20 20 l 10 20",
+                            "M 10 10 L 30 30 L 40 50");
 
-    test!(rm_dulp_moveto_3, b"M 10 10 M 10 10 M 10 10 M 10 10 L 15 20",
-                             "M 10 10 L 15 20");
-
-
-    test!(rm_single_1, b"M 10 10", "");
+    test!(rm_dulp_moveto_3, "M 10 10 M 10 10 M 10 10 M 10 10 L 15 20",
+                            "M 10 10 L 15 20");
 
 
-    test!(rm_mz_1, b"M 10 10 Z", "");
-
-    test!(rm_mz_2, b"M 10 10 Z M 10 10 Z M 10 10 Z", "");
-
-    test!(rm_mz_3, b"M 10 10 L 15 20 M 10 20 Z M 10 20 L 15 30",
-                    "M 10 10 L 15 20 M 10 20 L 15 30");
+    test!(rm_single_1, "M 10 10", "");
 
 
-    test!(rm_z_1, b"M 10 10 Z Z Z", "");
+    test!(rm_mz_1, "M 10 10 Z", "");
 
-    test!(rm_z_2, b"M 10 10 L 15 20 Z Z Z M 10 20 L 20 30",
-                   "M 10 10 L 15 20 Z M 10 20 L 20 30");
+    test!(rm_mz_2, "M 10 10 Z M 10 10 Z M 10 10 Z", "");
+
+    test!(rm_mz_3, "M 10 10 L 15 20 M 10 20 Z M 10 20 L 15 30",
+                   "M 10 10 L 15 20 M 10 20 L 15 30");
 
 
-    test!(rm_lz_1, b"M 10 10 L 50 50 L 10 10 Z",
-                    "M 10 10 L 50 50 Z");
+    test!(rm_z_1, "M 10 10 Z Z Z", "");
 
-    test!(rm_lz_2, b"M 10 10 L 50 50 L 10 10",
-                    "M 10 10 L 50 50 Z");
+    test!(rm_z_2, "M 10 10 L 15 20 Z Z Z M 10 20 L 20 30",
+                  "M 10 10 L 15 20 Z M 10 20 L 20 30");
 
-    test!(rm_lz_3, b"M 10 10 L 50 50 L 10 10 M 50 50 L 60 60",
-                    "M 10 10 L 50 50 Z M 50 50 L 60 60");
 
-    test!(rm_lz_4, b"M 10 10 L 50 50 L 10 10 M 50 50 L 50 50",
-                    "M 10 10 L 50 50 Z");
+    test!(rm_lz_1, "M 10 10 L 50 50 L 10 10 Z",
+                   "M 10 10 L 50 50 Z");
+
+    test!(rm_lz_2, "M 10 10 L 50 50 L 10 10",
+                   "M 10 10 L 50 50 Z");
+
+    test!(rm_lz_3, "M 10 10 L 50 50 L 10 10 M 50 50 L 60 60",
+                   "M 10 10 L 50 50 Z M 50 50 L 60 60");
+
+    test!(rm_lz_4, "M 10 10 L 50 50 L 10 10 M 50 50 L 50 50",
+                   "M 10 10 L 50 50 Z");
 }

@@ -78,14 +78,14 @@ mod tests {
     }
 
     test!(rm_defs_1,
-b"<svg>
+"<svg>
     <defs/>
 </svg>",
 "<svg/>
 ");
 
     test!(rm_defs_2,
-b"<svg>
+"<svg>
     <rect/>
     <!--comment-->
     <defs/>
@@ -97,7 +97,7 @@ b"<svg>
 ");
 
     test!(keep_1,
-b"<svg>
+"<svg>
     <defs>
         <rect/>
     </defs>
@@ -113,7 +113,7 @@ b"<svg>
         ($name:ident, $in_text:expr, $out_text:expr, $rm_unused:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 fix_xmlns_attribute(&doc, $rm_unused);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
@@ -121,17 +121,17 @@ b"<svg>
     }
 
     test_xmlns!(xmlns_rm_1,
-b"<svg xmlns:xlink='http://www.w3.org/1999/xlink'/>",
+"<svg xmlns:xlink='http://www.w3.org/1999/xlink'/>",
 "<svg/>
 ", true);
 
     test_xmlns!(xmlns_rm_2,
-b"<svg xmlns:xlink='http://www.w3.org/1999/xlink'/>",
+"<svg xmlns:xlink='http://www.w3.org/1999/xlink'/>",
 "<svg xmlns:xlink='http://www.w3.org/1999/xlink'/>
 ", false);
 
     test_xmlns!(xmlns_keep_1,
-b"<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
+"<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
     <rect id='rect1'/>
     <use xlink:href='#rect1'/>
 </svg>",
@@ -142,7 +142,7 @@ b"<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
 ", true);
 
     test_xmlns!(xmlns_keep_2,
-b"<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
+"<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
     <font-face-uri xlink:href='../resources/SVGFreeSans.svg#ascii'/>
 </svg>",
 "<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
@@ -151,7 +151,7 @@ b"<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
 ", true);
 
     test_xmlns!(xmlns_fix_1,
-b"<svg>
+"<svg>
     <rect id='rect1'/>
     <use xlink:href='#rect1'/>
 </svg>",

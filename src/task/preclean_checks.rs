@@ -126,7 +126,7 @@ mod tests {
         ($name:ident, $in_text:expr, $err:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 assert_eq!(preclean_checks(&doc).err().unwrap(), $err);
             }
         )
@@ -136,27 +136,27 @@ mod tests {
         ($name:ident, $in_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 assert_eq!(preclean_checks(&doc).is_ok(), true);
             }
         )
     }
 
-    test!(test_scripting_1, b"<svg><script/></svg>",
+    test!(test_scripting_1, "<svg><script/></svg>",
           Error::ScriptingIsNotSupported);
 
-    test!(test_scripting_2, b"<svg onload=''/>",
+    test!(test_scripting_2, "<svg onload=''/>",
           Error::ScriptingIsNotSupported);
 
-    test!(test_animation_1, b"<svg><set/></svg>",
+    test!(test_animation_1, "<svg><set/></svg>",
           Error::AnimationIsNotSupported);
 
-    test!(test_conditions_1, b"<svg><switch requiredFeatures='text'/></svg>",
+    test!(test_conditions_1, "<svg><switch requiredFeatures='text'/></svg>",
           Error::ConditionalProcessingIsNotSupported);
 
-    test!(test_conditions_2, b"<svg><switch systemLanguage='en'/></svg>",
+    test!(test_conditions_2, "<svg><switch systemLanguage='en'/></svg>",
           Error::ConditionalProcessingIsNotSupported);
 
-    test_ok!(test_conditions_3, b"<svg><switch requiredFeatures=''/></svg>");
-    test_ok!(test_conditions_4, b"<svg><switch systemLanguage=''/></svg>");
+    test_ok!(test_conditions_3, "<svg><switch requiredFeatures=''/></svg>");
+    test_ok!(test_conditions_4, "<svg><switch systemLanguage=''/></svg>");
 }

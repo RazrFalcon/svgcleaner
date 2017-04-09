@@ -232,7 +232,7 @@ mod tests {
     }
 
     test!(rm_1,
-b"<svg>
+"<svg>
     <rect fill='#000000'/>
 </svg>",
 "<svg>
@@ -241,7 +241,7 @@ b"<svg>
 ");
 
     test!(keep_1,
-b"<svg fill='#ff0000'>
+"<svg fill='#ff0000'>
     <rect fill='#000000'/>
 </svg>",
 "<svg fill='#ff0000'>
@@ -250,13 +250,13 @@ b"<svg fill='#ff0000'>
 ");
 
     test!(rm_svg_w_h,
-b"<svg width='100%' height='100%'/>",
+"<svg width='100%' height='100%'/>",
 "<svg/>
 ");
 
     // x, y attributes inside 'text' elements are not Length rather LengthList
     test!(rm_len_list,
-b"<svg>
+"<svg>
     <text x='0'/>
 </svg>",
 "<svg>
@@ -265,7 +265,7 @@ b"<svg>
 ");
 
     test!(rm_mask,
-b"<svg>
+"<svg>
     <mask x='-10%' y='-10%' width='120%' height='120%'/>
 </svg>",
 "<svg>
@@ -274,7 +274,7 @@ b"<svg>
 ");
 
     test!(rm_filter,
-b"<svg>
+"<svg>
     <filter x='-10%' y='-10%' width='120%' height='120%'/>
 </svg>",
 "<svg>
@@ -283,7 +283,7 @@ b"<svg>
 ");
 
     test!(rm_overflow_1,
-b"<svg overflow='visible'>
+"<svg overflow='visible'>
     <rect overflow='hidden'/>
     <svg overflow='visible'/>
 </svg>",

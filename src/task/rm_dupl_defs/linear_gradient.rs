@@ -61,7 +61,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 svgdom::postproc::resolve_linear_gradient_attributes(&doc);
                 remove_dupl_linear_gradients(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
@@ -70,7 +70,7 @@ mod tests {
     }
 
     test!(rm_1,
-b"<svg>
+"<svg>
     <defs>
         <linearGradient id='lg1'>
             <stop offset='0' stop-color='#ff0000'/>
@@ -95,7 +95,7 @@ b"<svg>
 ");
 
     test!(rm_2,
-b"<svg>
+"<svg>
     <defs>
         <linearGradient id='lg1'>
             <stop offset='0' stop-color='#ff0000'/>
@@ -127,7 +127,7 @@ b"<svg>
 
     // different default attributes
     test!(rm_3,
-b"<svg>
+"<svg>
     <defs>
         <linearGradient id='lg1' x1='0%'/>
         <linearGradient id='lg2' x2='100%'/>
@@ -144,7 +144,7 @@ b"<svg>
 
     // no 'stop' elements
     test!(rm_4,
-b"<svg>
+"<svg>
     <defs>
         <linearGradient id='lg1'/>
         <linearGradient id='lg2'/>
@@ -160,7 +160,7 @@ b"<svg>
 ");
 
     test!(rm_5,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'>
         <stop/>
     </linearGradient>
@@ -180,7 +180,7 @@ b"<svg>
 ");
 
     test!(rm_6,
-b"<svg>
+"<svg>
     <linearGradient id='lg1' xlink:href='#lg2'/>
     <linearGradient id='lg2'/>
 </svg>",

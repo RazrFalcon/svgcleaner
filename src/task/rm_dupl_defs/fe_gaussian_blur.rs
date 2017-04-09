@@ -121,14 +121,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(rm_1,
-b"<svg>
+"<svg>
     <defs>
         <filter id='f1'>
             <feGaussianBlur stdDeviation='2'/>
@@ -150,7 +144,7 @@ b"<svg>
 ");
 
     test!(rm_2,
-b"<svg>
+"<svg>
     <defs>
         <filter id='f1' x='5' y='5' width='10' height='10'>
             <feGaussianBlur stdDeviation='2'/>
@@ -173,7 +167,7 @@ b"<svg>
 
     // keep when attrs is different
     test_eq!(keep_1,
-b"<svg>
+"<svg>
     <filter id='f1' height='10' width='10' x='50' y='5'>
         <feGaussianBlur stdDeviation='2'/>
     </filter>
@@ -184,7 +178,7 @@ b"<svg>
 ");
 
     test_eq!(keep_2,
-b"<svg>
+"<svg>
     <filter id='f1'>
         <feGaussianBlur stdDeviation='1'/>
     </filter>
@@ -195,7 +189,7 @@ b"<svg>
 ");
 
     test_eq!(keep_3,
-b"<svg>
+"<svg>
     <filter id='f1' xlink:href='#f2'>
         <feGaussianBlur stdDeviation='1'/>
     </filter>

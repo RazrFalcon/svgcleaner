@@ -36,7 +36,7 @@ macro_rules! base_test {
     ($name:ident, $functor:expr, $in_text:expr, $out_text:expr) => (
         #[test]
         fn $name() {
-            let doc = Document::from_data($in_text).unwrap();
+            let doc = Document::from_str($in_text).unwrap();
             $functor(&doc);
             assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
         }
@@ -56,6 +56,13 @@ macro_rules! assert_eq_text {
             }
         }
     })
+}
+
+#[cfg(test)]
+macro_rules! test_eq {
+    ($name:ident, $in_text:expr) => (
+        test!($name, $in_text, $in_text);
+    )
 }
 
 macro_rules! get_value {

@@ -110,14 +110,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(resolve_1,
-b"<svg>
+"<svg>
     <defs>
         <rect id='r1' width='10'/>
     </defs>
@@ -130,7 +124,7 @@ b"<svg>
 ");
 
     test!(resolve_2,
-b"<svg>
+"<svg>
     <defs>
         <rect id='r1' width='10'/>
     </defs>
@@ -143,7 +137,7 @@ b"<svg>
 ");
 
     test!(resolve_3,
-b"<svg>
+"<svg>
     <defs>
         <rect id='r1' width='10'/>
     </defs>
@@ -156,7 +150,7 @@ b"<svg>
 ");
 
     test!(resolve_4,
-b"<svg>
+"<svg>
     <defs>
         <rect id='r1' width='10'/>
     </defs>
@@ -169,7 +163,7 @@ b"<svg>
 ");
 
     test!(resolve_5,
-b"<svg>
+"<svg>
     <defs>
         <linearGradient id='lg1'/>
         <rect id='r1' fill='url(#lg1)'/>
@@ -185,14 +179,14 @@ b"<svg>
 ");
 
     test_eq!(keep_1,
-b"<svg>
+"<svg>
     <rect id='r1'/>
     <use xlink:href='#r1'/>
 </svg>
 ");
 
     test_eq!(keep_2,
-b"<svg>
+"<svg>
     <defs>
         <symbol id='r1'>
             <rect/>

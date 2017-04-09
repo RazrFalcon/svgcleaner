@@ -159,7 +159,7 @@ mod tests {
         ($name:ident, $in_text:expr, $flag:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 utils::resolve_gradient_attributes(&doc).unwrap();
                 let vec = doc.descendants().svg().filter(|n| n.is_tag_name(EId::LinearGradient))
                              .collect::<Vec<Node>>();
@@ -170,7 +170,7 @@ mod tests {
     }
 
     test!(cmp_1,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'>
         <stop offset='0' stop-color='#ff0000' stop-opacity='1'/>
         <stop offset='1' stop-color='#000000' stop-opacity='1'/>
@@ -182,7 +182,7 @@ b"<svg>
 </svg>", true);
 
     test!(cmp_2,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'>
         <stop offset='0' stop-color='#ff0000'/>
         <stop offset='1' stop-color='#000000'/>
@@ -194,7 +194,7 @@ b"<svg>
 </svg>", true);
 
     test!(cmp_3,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -206,7 +206,7 @@ b"<svg>
 </svg>", true);
 
     test!(cmp_4,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -218,7 +218,7 @@ b"<svg>
 </svg>", false);
 
     test!(cmp_5,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'>
         <stop offset='0'/>
     </linearGradient>

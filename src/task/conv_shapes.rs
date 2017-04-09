@@ -191,7 +191,7 @@ mod tests {
     }
 
     test!(conv_line_1,
-b"<svg>
+"<svg>
     <line x1='100' y1='200' x2='300' y2='400'/>
 </svg>",
 "<svg>
@@ -200,7 +200,7 @@ b"<svg>
 ");
 
     test!(conv_line_2,
-b"<svg>
+"<svg>
     <line x2='30'/>
 </svg>",
 "<svg>
@@ -210,7 +210,7 @@ b"<svg>
 
     // ignore, because of non-px unit
     test!(conv_line_3,
-b"<svg>
+"<svg>
     <line x2='30pt'/>
 </svg>",
 "<svg>
@@ -219,7 +219,7 @@ b"<svg>
 ");
 
     test!(conv_rect_1,
-b"<svg>
+"<svg>
     <rect x='10' y='20' width='30' height='40'/>
 </svg>",
 "<svg>
@@ -228,7 +228,7 @@ b"<svg>
 ");
 
     test!(conv_rect_2,
-b"<svg>
+"<svg>
     <rect width='30' height='40'/>
 </svg>",
 "<svg>
@@ -237,7 +237,7 @@ b"<svg>
 ");
     // ignore invalid rects
     test!(conv_rect_3,
-b"<svg>
+"<svg>
     <rect width='30' height='30' rx='1'/>
     <rect width='30' height='30' ry='1'/>
     <rect width='30' height='0'/>
@@ -252,7 +252,7 @@ b"<svg>
 ");
 
     test!(conv_polyline_1,
-b"<svg>
+"<svg>
     <polyline points='30 40 50 60 70 80'/>
 </svg>",
 "<svg>
@@ -261,7 +261,7 @@ b"<svg>
 ");
 
     test!(conv_polyline_2,
-b"<svg>
+"<svg>
     <polyline/>
 </svg>",
 "<svg>
@@ -270,7 +270,7 @@ b"<svg>
 ");
 
     test!(conv_polygon_1,
-b"<svg>
+"<svg>
     <polygon points='30 40 50 60 70 80'/>
 </svg>",
 "<svg>

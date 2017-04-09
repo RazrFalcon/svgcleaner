@@ -334,7 +334,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 // we must prepare defs, because `remove_invisible_elements`
                 // invokes `remove_unused_defs`
                 group_defs(&doc);
@@ -346,14 +346,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(rm_clip_path_children_1,
-b"<svg>
+"<svg>
     <defs>
         <clipPath>
             <g/>
@@ -371,7 +365,7 @@ b"<svg>
 ");
 
     test!(rm_clip_path_children_2,
-b"<svg>
+"<svg>
     <defs>
         <clipPath>
             <use/>
@@ -394,7 +388,7 @@ b"<svg>
 ");
 
     test!(rm_clip_path_1,
-b"<svg>
+"<svg>
     <clipPath id='cp1'/>
     <rect clip-path='url(#cp1)' height='5' width='5'/>
     <rect clip-path='url(#cp1)' height='5' width='5'/>
@@ -403,7 +397,7 @@ b"<svg>
 ");
 
     test!(rm_clip_path_2,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'/>
     <clipPath id='cp1'/>
     <rect clip-path='url(#cp1)' fill='url(#lg1)' height='5' width='5'/>
@@ -412,7 +406,7 @@ b"<svg>
 ");
 
     test!(rm_clip_path_3,
-b"<svg>
+"<svg>
     <clipPath>
         <rect display='none' height='5' width='5'/>
     </clipPath>
@@ -421,21 +415,21 @@ b"<svg>
 ");
 
     test!(rm_path_1,
-b"<svg>
+"<svg>
     <path/>
 </svg>",
 "<svg/>
 ");
 
     test!(rm_path_2,
-b"<svg>
+"<svg>
     <path d=''/>
 </svg>",
 "<svg/>
 ");
 
     test!(rm_path_3,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'/>
     <path d='' fill='url(#lg1)'/>
 </svg>",
@@ -443,14 +437,14 @@ b"<svg>
 ");
 
     test!(rm_display_none_1,
-b"<svg>
+"<svg>
     <path display='none'/>
 </svg>",
 "<svg/>
 ");
 
     test!(rm_display_none_2,
-b"<svg>
+"<svg>
     <g display='none'>
         <rect height='5' width='5'/>
     </g>
@@ -459,7 +453,7 @@ b"<svg>
 ");
 
     test_eq!(skip_display_none_1,
-b"<svg>
+"<svg>
     <g display='none'>
         <rect id='r1' height='5' width='5'/>
     </g>
@@ -468,14 +462,14 @@ b"<svg>
 ");
 
     test!(rm_filter_1,
-b"<svg>
+"<svg>
     <filter/>
 </svg>",
 "<svg/>
 ");
 
     test!(rm_filter_2,
-b"<svg>
+"<svg>
     <filter id='f1'/>
     <rect filter='url(#f1)' height='5' width='5'/>
 </svg>",
@@ -483,14 +477,14 @@ b"<svg>
 ");
 
     test!(rm_use_1,
-b"<svg>
+"<svg>
     <use/>
 </svg>",
 "<svg/>
 ");
 
     test!(rm_gradient_1,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'/>
     <rect fill='url(#lg1)' height='5' width='5'/>
     <rect stroke='url(#lg1)' height='5' width='5'/>
@@ -502,7 +496,7 @@ b"<svg>
 ");
 
     test!(rm_gradient_2,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'>
         <stop offset='0.5' stop-color='#ff0000' stop-opacity='0.5'/>
     </linearGradient>
@@ -514,7 +508,7 @@ b"<svg>
 ");
 
     test!(rm_gradient_3,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'>
         <stop offset='0.5' stop-color='#ff0000' stop-opacity='0.5'/>
     </linearGradient>
@@ -527,7 +521,7 @@ b"<svg>
 ");
 
     test!(rm_rect_1,
-b"<svg>
+"<svg>
     <rect width='0' height='0'/>
     <rect width='10' height='0'/>
     <rect width='0' height='10'/>
@@ -536,7 +530,7 @@ b"<svg>
 ");
 
     test!(rm_fe_color_matrix_1,
-b"<svg>
+"<svg>
     <filter id='filter1'>
         <feColorMatrix type='matrix' values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0'/>
     </filter>

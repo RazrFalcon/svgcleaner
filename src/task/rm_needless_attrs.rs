@@ -255,21 +255,15 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 remove_needless_attributes(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(rm_clip_path_attrs_1,
-b"<svg>
+"<svg>
     <clipPath>
         <rect width='10' fill='red'/>
     </clipPath>
@@ -282,7 +276,7 @@ b"<svg>
 ");
 
     test!(rm_clip_path_attrs_2,
-b"<svg>
+"<svg>
     <clipPath>
         <text fill='red' font-size='10'/>
     </clipPath>
@@ -295,7 +289,7 @@ b"<svg>
 ");
 
     test!(rm_rect_attrs_1,
-b"<svg>
+"<svg>
     <rect dx='10' fill='#ff0000' r='5'/>
 </svg>",
 "<svg>
@@ -304,7 +298,7 @@ b"<svg>
 ");
 
     test!(rm_eb_1,
-b"<svg enable-background='new'>
+"<svg enable-background='new'>
     <g enable-background='new'>
         <rect enable-background='new'/>
     </g>
@@ -317,7 +311,7 @@ b"<svg enable-background='new'>
 ");
 
     test!(rm_fill_1,
-b"<svg>
+"<svg>
     <rect fill='none' fill-rule='evenodd' fill-opacity='0.5'/>
 </svg>",
 "<svg>
@@ -326,7 +320,7 @@ b"<svg>
 ");
 
     test!(rm_fill_2,
-b"<svg>
+"<svg>
     <rect fill='red' fill-rule='evenodd' fill-opacity='0'/>
 </svg>",
 "<svg>
@@ -335,7 +329,7 @@ b"<svg>
 ");
 
     test_eq!(keep_fill_1,
-b"<svg>
+"<svg>
     <g fill='#ff0000' fill-rule='evenodd'>
         <rect fill='none'/>
     </g>
@@ -343,7 +337,7 @@ b"<svg>
 ");
 
     test!(rm_stroke_1,
-b"<svg>
+"<svg>
     <rect stroke='none' stroke-width='5' stroke-linecap='square'/>
     <rect stroke='red' stroke-width='0' stroke-linecap='square'/>
     <rect stroke='red' stroke-opacity='0' stroke-linecap='square'/>
@@ -356,7 +350,7 @@ b"<svg>
 ");
 
     test_eq!(keep_stroke_1,
-b"<svg>
+"<svg>
     <g stroke='#ff0000'>
         <rect stroke='none'/>
     </g>
@@ -364,7 +358,7 @@ b"<svg>
 ");
 
     test!(rm_overflow_1,
-b"<svg overflow='scroll'>
+"<svg overflow='scroll'>
     <rect overflow='visible'/>
 </svg>",
 "<svg overflow='scroll'>

@@ -135,7 +135,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 utils::resolve_gradient_attributes(&doc).unwrap();
                 merge_gradients(&doc);
                 let mut opt = write_opt_for_tests!();
@@ -145,15 +145,9 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     // there is nothing to merge - just remove it
     test!(merge_1,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'/>
     <linearGradient xlink:href='#lg1'/>
 </svg>",
@@ -165,7 +159,7 @@ b"<svg>
     // move 'stop' elements
     // order is important
     test!(merge_2,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'>
         <stop id='s1' offset='0'/>
         <stop id='s2' offset='1'/>
@@ -182,7 +176,7 @@ b"<svg>
 
     // move attributes
     test!(merge_3,
-b"<svg>
+"<svg>
     <linearGradient id='lg1' x1='5' x2='5'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -199,7 +193,7 @@ b"<svg>
 
     // recursive
     test!(merge_4,
-b"<svg>
+"<svg>
     <linearGradient id='lg1' x1='5' x2='5'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -217,7 +211,7 @@ b"<svg>
 
     // same as above, but in different order
     test!(merge_5,
-b"<svg>
+"<svg>
     <linearGradient x1='10' xlink:href='#lg2'/>
     <linearGradient id='lg2' xlink:href='#lg1'/>
     <linearGradient id='lg1' x1='5' x2='5'>
@@ -235,7 +229,7 @@ b"<svg>
 
     // move only element-specific attributes
     test!(merge_6,
-b"<svg>
+"<svg>
     <linearGradient id='lg1' x1='5' x2='5'/>
     <radialGradient xlink:href='#lg1'/>
 </svg>",
@@ -246,7 +240,7 @@ b"<svg>
 
     // skip existing stop's
     test!(merge_7,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'>
         <stop id='s1' offset='0'/>
         <stop id='s2' offset='1'/>

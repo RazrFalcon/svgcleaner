@@ -142,7 +142,7 @@ mod tests {
 
     // add 'defs' to 'svg' node, not to first node
     test!(create_defs_1,
-b"<!--comment--><svg/>",
+"<!--comment--><svg/>",
 "<!--comment-->
 <svg>
     <defs/>
@@ -150,7 +150,7 @@ b"<!--comment--><svg/>",
 ");
 
     test!(move_defs_1,
-b"<svg>
+"<svg>
     <altGlyphDef/>
     <clipPath/>
     <cursor/>
@@ -182,7 +182,7 @@ b"<svg>
 
     // complex, recursive
     test!(move_defs_2,
-b"<svg>
+"<svg>
     <defs id='a'>
         <altGlyphDef/>
         <defs id='b'>
@@ -213,7 +213,7 @@ b"<svg>
 
         // we should ungroup any nodes from 'defs'
     test!(move_defs_3,
-b"<svg>
+"<svg>
     <defs id='a'>
         <altGlyphDef/>
         <defs id='b'>
@@ -231,7 +231,7 @@ b"<svg>
 
     // ungroupping should only work for direct 'defs' nodes
     test!(move_defs_4,
-b"<svg>
+"<svg>
     <defs id='a'>
         <defs id='b'>
             <clipPath>
@@ -256,7 +256,7 @@ b"<svg>
 ");
 
     test!(move_mask_1,
-b"<svg>
+"<svg>
     <g fill='#ff0000'>
         <marker>
             <path/>
@@ -274,7 +274,7 @@ b"<svg>
 ");
 
     test!(move_attrs_1,
-b"<svg>
+"<svg>
     <g fill='#ff0000'>
         <marker>
             <path/>
@@ -294,7 +294,7 @@ b"<svg>
 ");
 
     test!(move_attrs_2,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'/>
     <g fill='url(#lg1)'>
         <marker>

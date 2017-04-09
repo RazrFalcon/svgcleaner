@@ -121,14 +121,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(rm_svg_x_y,
-b"<svg x='5' y='5'>
+"<svg x='5' y='5'>
     <svg x='5' y='5'/>
 </svg>",
 "<svg>
@@ -137,7 +131,7 @@ b"<svg x='5' y='5'>
 ");
 
     test!(rm_rect_rx_ry,
-b"<svg>
+"<svg>
     <rect rx='5' ry='5'/>
     <rect rx='5' ry='5em'/>
 </svg>",
@@ -148,13 +142,13 @@ b"<svg>
 ");
 
     test_eq!(rect_rx_ry,
-b"<svg>
+"<svg>
     <rect/>
 </svg>
 ");
 
     test!(rm_radial_gradient_fx,
-b"<svg>
+"<svg>
     <radialGradient cx='5' cy='5' fx='5' fy='5'/>
 </svg>",
 "<svg>
@@ -163,14 +157,14 @@ b"<svg>
 ");
 
     test_eq!(keep_radial_gradient_fx_1,
-b"<svg>
+"<svg>
     <radialGradient id='rg1' fx='5'/>
     <radialGradient xlink:href='#rg1'/>
 </svg>
 ");
 
     test_eq!(keep_radial_gradient_fx_2,
-b"<svg>
+"<svg>
     <radialGradient id='rg1'/>
     <radialGradient fx='5' xlink:href='#rg1'/>
 </svg>

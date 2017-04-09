@@ -31,18 +31,18 @@ use options::Options;
 use task::*;
 use error;
 
-pub fn load_file(path: &str) -> Result<Vec<u8>, io::Error> {
+pub fn load_file(path: &str) -> Result<String, io::Error> {
     let mut file = fs::File::open(path)?;
     let length = file.metadata()?.len() as usize;
 
-    let mut v = Vec::with_capacity(length + 1);
-    file.read_to_end(&mut v)?;
+    let mut s = String::with_capacity(length + 1);
+    file.read_to_string(&mut s)?;
 
-    Ok(v)
+    Ok(s)
 }
 
-pub fn parse_data(data: &[u8], opt: &ParseOptions) -> Result<Document, svgdom::Error> {
-    Document::from_data_with_opt(data, opt)
+pub fn parse_data(data: &str, opt: &ParseOptions) -> Result<Document, svgdom::Error> {
+    Document::from_str_with_opt(data, opt)
 }
 
 pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)

@@ -118,7 +118,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 utils::resolve_gradient_attributes(&doc).unwrap();
                 regroup_gradient_stops(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
@@ -126,14 +126,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(rm_1,
-b"<svg>
+"<svg>
     <linearGradient id='lg1' x1='50'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -154,7 +148,7 @@ b"<svg>
 ");
 
     test!(rm_2,
-b"<svg>
+"<svg>
     <linearGradient id='lg1' x1='50'>
         <stop offset='0'/>
         <stop offset='1'/>

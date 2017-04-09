@@ -66,7 +66,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 utils::resolve_gradient_attributes(&doc).unwrap();
                 fix_attrs::fix_invalid_attributes(&doc);
                 remove_invalid_stops(&doc);
@@ -75,14 +75,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(rm_1,
-b"<svg>
+"<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='0'/>
@@ -98,7 +92,7 @@ b"<svg>
 ");
 
     test!(rm_2,
-b"<svg>
+"<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -114,7 +108,7 @@ b"<svg>
 ");
 
     test!(rm_3,
-b"<svg>
+"<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='0.5' stop-color='#ff0000'/>
@@ -132,7 +126,7 @@ b"<svg>
 ");
 
     test_eq!(keep_1,
-b"<svg>
+"<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='0.5' stop-color='#ff0000'/>
@@ -143,7 +137,7 @@ b"<svg>
 ");
 
     test_eq!(keep_2,
-b"<svg>
+"<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='0.5' stop-opacity='0.6'/>
@@ -154,7 +148,7 @@ b"<svg>
 ");
 
     test_eq!(keep_3,
-b"<svg>
+"<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='1' stop-color='#ff0000'/>

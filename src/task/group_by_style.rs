@@ -518,7 +518,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 group_by_style(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
@@ -527,7 +527,7 @@ mod tests {
 
     // group elements with equal style
     test!(group_1,
-b"<svg>
+"<svg>
     <rect id='r1' fill='#ff0000'/>
     <rect id='r2' fill='#ff0000'/>
     <rect id='r3' fill='#ff0000'/>
@@ -543,7 +543,7 @@ b"<svg>
 
     // group elements with equal style to an existing group
     test!(group_2,
-b"<svg>
+"<svg>
     <g>
         <rect id='r1' fill='#ff0000'/>
         <rect id='r2' fill='#ff0000'/>
@@ -561,7 +561,7 @@ b"<svg>
 
     // mixed order
     test!(group_3,
-b"<svg>
+"<svg>
     <rect id='r1' fill='#ff0000'/>
     <rect id='r2'/>
     <rect id='r3' fill='#ff0000'/>
@@ -581,7 +581,7 @@ b"<svg>
 
     // find most popular
     test!(group_4,
-b"<svg>
+"<svg>
     <rect id='r1' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r2' stroke='#00ff00'/>
     <rect id='r3' fill='#ff0000' stroke='#00ff00'/>
@@ -597,7 +597,7 @@ b"<svg>
 
     // do not group 'defs'
     test!(group_5,
-b"<svg>
+"<svg>
     <rect id='r1' fill='#ff0000'/>
     <defs/>
     <rect id='r2' fill='#ff0000'/>
@@ -618,7 +618,7 @@ b"<svg>
     // do not group 'defs'
     // elements must be grouped into a new group
     test!(group_5_1,
-b"<svg>
+"<svg>
     <g>
         <rect id='r1' fill='#ff0000'/>
         <defs/>
@@ -642,7 +642,7 @@ b"<svg>
 
     // test IRI
     test!(group_6,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'/>
     <rect id='r1' fill='url(#lg1)'/>
     <rect id='r2' fill='url(#lg1)'/>
@@ -660,7 +660,7 @@ b"<svg>
 
     // complex order
     test!(group_7,
-b"<svg>
+"<svg>
     <rect id='r1' stroke='#00ff00'/>
     <rect id='r2' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r3' fill='#ff0000' stroke='#00ff00'/>
@@ -688,7 +688,7 @@ b"<svg>
 
 //     // complex order
 //     test!(group_8,
-// b"<svg>
+// "<svg>
 //     <rect id='r1' fill='#ff0000'/>
 //     <rect id='r2' fill='#ff0000'/>
 //     <rect id='r3' fill='#ff0000'/>
@@ -714,7 +714,7 @@ b"<svg>
 
     // two attributes
     test!(group_9,
-b"<svg>
+"<svg>
     <rect id='r1' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r2' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r3' fill='#ff0000' stroke='#00ff00'/>
@@ -730,7 +730,7 @@ b"<svg>
 
     // choose longest
     test!(group_10,
-b"<svg>
+"<svg>
     <rect id='r1' fill='#ff0000'/>
     <rect id='r2' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r3' fill='#ff0000' stroke='#00ff00'/>
@@ -760,7 +760,7 @@ b"<svg>
 
     // choose longest range
     test!(group_11,
-b"<svg>
+"<svg>
     <rect id='r1' fill='#ff0000'/>
     <rect id='r2' fill='#ff0000'/>
     <rect id='r3' fill='#ff0000'/>
@@ -786,7 +786,7 @@ b"<svg>
 
     // test range detection
     test!(group_12,
-b"<svg>
+"<svg>
     <rect id='r1'/>
     <rect id='r2'/>
     <rect id='r3' fill='#ff0000' stroke='#ff0000'/>
@@ -810,7 +810,7 @@ b"<svg>
 
     // do not group used elements
     test!(group_13,
-b"<svg>
+"<svg>
     <rect id='r1' fill='#ff0000'/>
     <use xlink:href='#r1'/>
     <rect id='r2' fill='#ff0000'/>
@@ -830,7 +830,7 @@ b"<svg>
 
     // group transform too
     test!(group_14,
-b"<svg>
+"<svg>
     <rect id='r1' transform='scale(10)'/>
     <rect id='r2' transform='scale(10)'/>
     <rect id='r3' transform='scale(10)'/>
@@ -846,7 +846,7 @@ b"<svg>
 
     // group and merge transform too
     test!(group_15,
-b"<svg>
+"<svg>
     <g transform='translate(10)'>
         <rect id='r1' transform='scale(10)'/>
         <rect id='r2' transform='scale(10)'/>

@@ -177,7 +177,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 utils::resolve_gradient_attributes(&doc).unwrap();
                 remove_gradient_attributes(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
@@ -185,14 +185,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(move_gradient_units_1,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'/>
     <linearGradient xlink:href='#lg1' gradientUnits='userSpaceOnUse'/>
     <radialGradient xlink:href='#lg1' gradientUnits='userSpaceOnUse'/>
@@ -205,7 +199,7 @@ b"<svg>
 ");
 
     test!(move_1,
-b"<svg>
+"<svg>
     <linearGradient id='lg1-1'/>
     <linearGradient id='lg2-1' gradientUnits='userSpaceOnUse' xlink:href='#lg1-1'/>
     <linearGradient id='lg2-2' gradientUnits='userSpaceOnUse' xlink:href='#lg1-1'/>
@@ -222,7 +216,7 @@ b"<svg>
 ");
 
     test!(move_gradient_units_2,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
@@ -237,7 +231,7 @@ b"<svg>
 ");
 
     test!(move_gradient_units_3,
-b"<svg>
+"<svg>
     <linearGradient id='lg1' gradientUnits='objectBoundingBox'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient gradientUnits='objectBoundingBox' xlink:href='#lg1'/>
@@ -252,7 +246,7 @@ b"<svg>
 ");
 
     test!(move_gradient_units_4,
-b"<svg>
+"<svg>
     <linearGradient id='lg1' gradientUnits='userSpaceOnUse'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient gradientUnits='objectBoundingBox' xlink:href='#lg1'/>
@@ -265,7 +259,7 @@ b"<svg>
 ");
 
     test!(move_gradient_units_5,
-b"<svg>
+"<svg>
     <linearGradient id='lg1'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>

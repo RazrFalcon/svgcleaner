@@ -163,14 +163,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(rm_text_1,
-b"<svg font='Verdana'>
+"<svg font='Verdana'>
     <rect text-anchor='middle'/>
 </svg>",
 "<svg>
@@ -181,7 +175,7 @@ b"<svg font='Verdana'>
     // we can remove text attributes from the 'font-face' element
     // only when there is no text in a whole doc
     test!(rm_text_2,
-b"<svg>
+"<svg>
     <font-face font-family='Verdana'/>
 </svg>",
 "<svg>
@@ -190,7 +184,7 @@ b"<svg>
 ");
 
     test!(rm_text_3,
-b"<svg>
+"<svg>
     <g font-family='Verdana'>
         <text text-anchor='middle'>
             text
@@ -213,7 +207,7 @@ b"<svg>
 ");
 
     test!(rm_text_4,
-b"<svg>
+"<svg>
     <g font-size='10'>
         <rect width='10ex'/>
     </g>
@@ -232,7 +226,7 @@ b"<svg>
 ");
 
     test!(keep_text_1,
-b"<svg font='Verdana'>
+"<svg font='Verdana'>
     <g word-spacing='normal'>
         <text text-anchor='middle'>text</text>
     </g>
@@ -248,7 +242,7 @@ b"<svg font='Verdana'>
 
     // keep font attributes on font-face, since it's global
     test_eq!(keep_text_2,
-b"<svg>
+"<svg>
     <font-face font-family='Verdana'/>
     <text>
         text
@@ -257,7 +251,7 @@ b"<svg>
 ");
 
     test_eq!(keep_text_3,
-b"<svg>
+"<svg>
     <defs>
         <text id='hello'>
             Hello
@@ -270,7 +264,7 @@ b"<svg>
 ");
 
     test_eq!(keep_text_4,
-b"<svg>
+"<svg>
     <g font-size='50'>
         <rect width='50ex'/>
     </g>
@@ -281,7 +275,7 @@ b"<svg>
 ");
 
     test_eq!(keep_text_5,
-b"<svg>
+"<svg>
     <defs>
         <text id='text'>
             Text
@@ -293,7 +287,7 @@ b"<svg>
 
     // do not take first node, take first element
     test_eq!(keep_text_6,
-b"<!-- Comment -->
+"<!-- Comment -->
 <svg>
     <text font-size='16'>
         text
@@ -302,7 +296,7 @@ b"<!-- Comment -->
 ");
 
     test_eq!(keep_text_7,
-b"<svg>
+"<svg>
     <g font-size='10'>
         <rect width='10'/>
         <g>

@@ -372,36 +372,29 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     match res {
         Ok(o) => {
             let se: String = String::from_utf8_lossy(&o.stderr).into_owned();
-            if !se.is_empty() && se.find("Warning").is_none() {
-                println!("{}", se);
-                return false;
+
+            if !se.is_empty() {
+                println!("{}", se.trim());
             }
 
-            let mut so: String = String::from_utf8_lossy(&o.stdout).into_owned();
-            so = so.trim().to_owned();
-
-            if !so.is_empty() {
-                println!("{}", so);
-            }
-
-            if so.find("Error").is_some() {
+            if se.find("Error").is_some() {
                 // list of "not errors"
-                if    so.find("Error: Scripting is not supported.").is_some()
-                   || so.find("Error: Animation is not supported.").is_some()
-                   || so.find("Error: Valid FuncIRI").is_some()
-                   || so.find("Error: Broken FuncIRI").is_some()
-                   || so.find("Error: Unsupported CSS at").is_some()
-                   || so.find("Error: Element crosslink").is_some()
-                   || so.find("Error: Conditional processing").is_some()
-                   || so.find("Error: The 'xlink:href' attribute").is_some()
-                   || so.find("Error: Unsupported ENTITY").is_some()
-                   || so.find("Error: The 'use' element with").is_some()
-                   || so.find("Error: The attribute 'offset'").is_some()
-                   || so.find("Error: Document didn't have any nodes").is_some()
-                   || so.find("Error: Invalid color at").is_some()
-                   || so.find("Error: Unsupported token at").is_some()
-                   || so.find("Error: Invalid length at").is_some()
-                   || so.find("Error: Cleaned file is bigger").is_some() {
+                if    se.find("Error: Scripting is not supported.").is_some()
+                   || se.find("Error: Animation is not supported.").is_some()
+                   || se.find("Error: Valid FuncIRI").is_some()
+                   || se.find("Error: Broken FuncIRI").is_some()
+                   || se.find("Error: Unsupported CSS at").is_some()
+                   || se.find("Error: Element crosslink").is_some()
+                   || se.find("Error: Conditional processing").is_some()
+                   || se.find("Error: The 'xlink:href' attribute").is_some()
+                   || se.find("Error: Unsupported ENTITY").is_some()
+                   || se.find("Error: The 'use' element with").is_some()
+                   || se.find("Error: The attribute 'offset'").is_some()
+                   || se.find("Error: Document didn't have any nodes").is_some()
+                   || se.find("Error: Invalid color at").is_some()
+                   || se.find("Error: Unsupported token at").is_some()
+                   || se.find("Error: Invalid length at").is_some()
+                   || se.find("Error: Cleaned file is bigger").is_some() {
                     return true;
                 }
                 return false;

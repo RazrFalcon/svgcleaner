@@ -172,7 +172,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let mut path = Path::from_data($in_text).unwrap();
+                let mut path = Path::from_str($in_text).unwrap();
                 path.conv_to_absolute();
                 convert_segments(&mut path);
                 assert_eq_text!(path.to_string(), $out_text);
@@ -180,41 +180,41 @@ mod tests {
         )
     }
 
-    test!(conv_l, b"M 10 10 L 15 10 L 15 15",
-                   "M 10 10 H 15 V 15");
+    test!(conv_l, "M 10 10 L 15 10 L 15 15",
+                  "M 10 10 H 15 V 15");
 
-    test!(conv_cs_1, b"M 10 20 C 10 10 25 10 25 20 C 25 30 40 30 40 20",
-                      "M 10 20 C 10 10 25 10 25 20 S 40 30 40 20");
+    test!(conv_cs_1, "M 10 20 C 10 10 25 10 25 20 C 25 30 40 30 40 20",
+                     "M 10 20 C 10 10 25 10 25 20 S 40 30 40 20");
 
-    test!(conv_cs_2, b"M 10 10 C 10 10 10 20 30 40 C 20 35 40 50 60 70 C 80 90 10 20 30 40",
-                      "M 10 10 S 10 20 30 40 C 20 35 40 50 60 70 S 10 20 30 40");
+    test!(conv_cs_2, "M 10 10 C 10 10 10 20 30 40 C 20 35 40 50 60 70 C 80 90 10 20 30 40",
+                     "M 10 10 S 10 20 30 40 C 20 35 40 50 60 70 S 10 20 30 40");
 
     // convert CurveTo to VerticalLineTo when control points are on the same vertical line
-    test!(conv_cv_1, b"M 10 10 C 10 15 10 20 10 40",
-                      "M 10 10 V 40");
+    test!(conv_cv_1, "M 10 10 C 10 15 10 20 10 40",
+                     "M 10 10 V 40");
 
     // ignore converting, because Y1 is outsize the curve
-    test!(conv_cv_2, b"M 10 10 C 10 5 10 20 10 40",
-                      "M 10 10 C 10 5 10 20 10 40");
+    test!(conv_cv_2, "M 10 10 C 10 5 10 20 10 40",
+                     "M 10 10 C 10 5 10 20 10 40");
 
     // convert CurveTo to VerticalLineTo when control points
     // are at the start and at the end of the curve
-    test!(conv_cv_3, b"M 10 10 C 10 10 10 40 10 40",
-                      "M 10 10 V 40");
+    test!(conv_cv_3, "M 10 10 C 10 10 10 40 10 40",
+                     "M 10 10 V 40");
 
     // same for H
-    test!(conv_ch_1, b"M 10 10 C 15 10 25 10 40 10",
-                      "M 10 10 H 40");
+    test!(conv_ch_1, "M 10 10 C 15 10 25 10 40 10",
+                     "M 10 10 H 40");
 
-    test!(conv_ch_2, b"M 10 10 C 5 10 50 10 40 10",
-                      "M 10 10 C 5 10 50 10 40 10");
+    test!(conv_ch_2, "M 10 10 C 5 10 50 10 40 10",
+                     "M 10 10 C 5 10 50 10 40 10");
 
-    test!(conv_ch_3, b"M 10 10 C 10 10 40 10 40 10",
-                      "M 10 10 H 40");
+    test!(conv_ch_3, "M 10 10 C 10 10 40 10 40 10",
+                     "M 10 10 H 40");
 
-    test!(conv_cl_1, b"M 10 118 C 45 83 85 43 120 8",
-                      "M 10 118 L 120 8");
+    test!(conv_cl_1, "M 10 118 C 45 83 85 43 120 8",
+                     "M 10 118 L 120 8");
 
-    test!(conv_cl_2, b"M 10,15 C 10,15 72.5,10 72.5,55 C 72.5,100 135,100 135,55 L 10,55",
-                      "M 10 15 S 72.5 10 72.5 55 S 135 100 135 55 H 10");
+    test!(conv_cl_2, "M 10,15 C 10,15 72.5,10 72.5,55 C 72.5,100 135,100 135,55 L 10,55",
+                     "M 10 15 S 72.5 10 72.5 55 S 135 100 135 55 H 10");
 }

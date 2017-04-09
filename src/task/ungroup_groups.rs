@@ -176,7 +176,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
 
                 // prepare defs
                 group_defs(&doc);
@@ -198,21 +198,15 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(rm_1,
-b"<svg>
+"<svg>
     <g/>
 </svg>",
 "<svg/>
 ");
 
     test!(rm_2,
-b"<svg>
+"<svg>
     <g>
         <g/>
     </g>
@@ -221,7 +215,7 @@ b"<svg>
 ");
 
     test!(ungroup_1,
-b"<svg>
+"<svg>
     <g>
         <rect/>
     </g>
@@ -232,7 +226,7 @@ b"<svg>
 ");
 
     test!(ungroup_2,
-b"<svg>
+"<svg>
     <g>
         <g>
             <g>
@@ -250,7 +244,7 @@ b"<svg>
 
     // keep order
     test!(ungroup_3,
-b"<svg>
+"<svg>
     <g>
         <rect id='1'/>
         <rect id='2'/>
@@ -263,7 +257,7 @@ b"<svg>
 ");
 
     test!(ungroup_4,
-b"<svg>
+"<svg>
     <g>
         <rect/>
         <g>
@@ -278,7 +272,7 @@ b"<svg>
 ");
 
     test!(ungroup_5,
-b"<svg>
+"<svg>
     <switch>
         <foreignObject/>
         <g>
@@ -296,17 +290,17 @@ b"<svg>
 
     // TODO: implement
 //     test!(ungroup_5,
-// b"<svg>
+// "<svg>
 //     <g id='g1'/>
 //     <use xlink:href='#g1'/>
 // </svg>",
-// b"<svg>
+// "<svg>
 //     <use/>
 // </svg>
 // ");
 
     test_eq!(skip_ungroup_1,
-b"<svg>
+"<svg>
     <g fill='#ff0000'>
         <rect/>
         <rect/>
@@ -315,7 +309,7 @@ b"<svg>
 ");
 
     test_eq!(skip_ungroup_2,
-b"<svg>
+"<svg>
     <defs>
         <filter id='f1'/>
     </defs>
@@ -324,7 +318,7 @@ b"<svg>
 ");
 
     test_eq!(skip_ungroup_3,
-b"<svg>
+"<svg>
     <g id='g1'>
         <rect/>
     </g>
@@ -333,7 +327,7 @@ b"<svg>
 ");
 
     test_eq!(skip_ungroup_4,
-b"<svg>
+"<svg>
     <defs>
         <clipPath id='clip1'/>
     </defs>
@@ -344,7 +338,7 @@ b"<svg>
 ");
 
     test_eq!(skip_ungroup_5,
-b"<svg>
+"<svg>
     <defs>
         <clipPath id='cp1'>
             <g transform='translate(5)'>
@@ -357,7 +351,7 @@ b"<svg>
 ");
 
     test_eq!(skip_ungroup_6,
-b"<svg>
+"<svg>
     <switch>
         <foreignObject/>
         <g>
@@ -369,7 +363,7 @@ b"<svg>
 ");
 
     test!(ungroup_with_attrs_1,
-b"<svg>
+"<svg>
     <g fill='#ff0000'>
         <rect/>
     </g>
@@ -380,7 +374,7 @@ b"<svg>
 ");
 
     test!(ungroup_with_attrs_2,
-b"<svg>
+"<svg>
     <defs>
         <linearGradient id='lg1'/>
     </defs>
@@ -397,7 +391,7 @@ b"<svg>
 ");
 
     test!(ungroup_with_attrs_3,
-b"<svg>
+"<svg>
     <g display='none'>
         <rect display='inline'/>
     </g>
@@ -408,7 +402,7 @@ b"<svg>
 ");
 
     test!(ungroup_with_opacity_1,
-b"<svg>
+"<svg>
     <g opacity='0.5'>
         <rect/>
     </g>
@@ -423,7 +417,7 @@ b"<svg>
 ");
 
     test!(ungroup_with_transform_1,
-b"<svg>
+"<svg>
     <g transform='translate(10 20)'>
         <rect/>
     </g>
@@ -434,7 +428,7 @@ b"<svg>
 ");
 
     test!(ungroup_with_transform_2,
-b"<svg>
+"<svg>
     <g transform='translate(10 20)'>
         <rect transform='translate(20 30)'/>
     </g>
@@ -445,7 +439,7 @@ b"<svg>
 ");
 
     test!(ungroup_with_transform_3,
-b"<svg>
+"<svg>
     <g transform='translate(10 20)'>
         <g transform='translate(20 30)'>
             <rect/>
@@ -458,7 +452,7 @@ b"<svg>
 ");
 
     test!(ungroup_with_transform_4,
-b"<svg>
+"<svg>
     <g transform='translate(10 20)'>
         <g transform='translate(20 30)'>
             <g>

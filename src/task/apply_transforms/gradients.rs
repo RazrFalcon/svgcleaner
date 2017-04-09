@@ -95,7 +95,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 utils::resolve_gradient_attributes(&doc).unwrap();
                 apply_transform_to_gradients(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
@@ -103,14 +103,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(apply_1,
-b"<svg>
+"<svg>
     <linearGradient x1='10' x2='10' y1='10' y2='10' gradientTransform='translate(10 20)'/>
 </svg>",
 "<svg>
@@ -119,7 +113,7 @@ b"<svg>
 ");
 
     test!(apply_2,
-b"<svg>
+"<svg>
     <radialGradient cx='10' cy='10' fx='10' fy='10' r='5' gradientTransform='matrix(2 0 0 2 10 20)'/>
 </svg>",
 "<svg>
@@ -128,26 +122,26 @@ b"<svg>
 ");
 
     test_eq!(keep_1,
-b"<svg>
+"<svg>
     <linearGradient gradientTransform='translate(10 20)'/>
 </svg>
 ");
 
     // skewX(3)
     test_eq!(keep_2,
-b"<svg>
+"<svg>
     <linearGradient gradientTransform='matrix(1 0 0.05240778 1 0 0)' x1='10' x2='10' y1='10' y2='10'/>
 </svg>
 ");
 
     test_eq!(keep_3,
-b"<svg>
+"<svg>
     <linearGradient gradientTransform='scale(1.5 2)' x1='10' x2='10' y1='10' y2='10'/>
 </svg>
 ");
 
     test_eq!(keep_4,
-b"<svg>
+"<svg>
     <linearGradient id='lg1' gradientTransform='translate(10 20)' x1='10' x2='10' y1='10' y2='10'/>
     <linearGradient xlink:href='#lg1'/>
 </svg>

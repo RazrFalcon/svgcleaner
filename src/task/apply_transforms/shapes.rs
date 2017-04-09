@@ -172,7 +172,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 utils::resolve_gradient_attributes(&doc).unwrap();
                 apply_transform_to_shapes(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
@@ -180,14 +180,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(apply_1,
-b"<svg>
+"<svg>
     <rect height='10' width='10' x='10' y='10' transform='translate(10 20)'/>
 </svg>",
 "<svg>
@@ -196,7 +190,7 @@ b"<svg>
 ");
 
     test!(apply_2,
-b"<svg>
+"<svg>
     <rect height='10' rx='2' ry='2' width='10' x='10' y='10' transform='translate(10 20) scale(2)'/>
 </svg>",
 "<svg>
@@ -205,7 +199,7 @@ b"<svg>
 ");
 
     test!(apply_3,
-b"<svg>
+"<svg>
     <rect height='10' width='10' transform='translate(10 20) scale(2)'/>
 </svg>",
 "<svg>
@@ -214,7 +208,7 @@ b"<svg>
 ");
 
     test!(apply_4,
-b"<svg stroke-width='2'>
+"<svg stroke-width='2'>
     <rect height='10' width='10' transform='scale(2)'/>
 </svg>",
 "<svg stroke-width='2'>
@@ -223,7 +217,7 @@ b"<svg stroke-width='2'>
 ");
 
     test!(apply_circle_1,
-b"<svg>
+"<svg>
     <circle cx='10' cy='10' r='15' transform='translate(10 20) scale(2)'/>
 </svg>",
 "<svg>
@@ -232,7 +226,7 @@ b"<svg>
 ");
 
     test!(apply_ellipse_1,
-b"<svg>
+"<svg>
     <ellipse cx='10' cy='10' rx='15' ry='15' transform='translate(10 20) scale(2)'/>
 </svg>",
 "<svg>
@@ -241,7 +235,7 @@ b"<svg>
 ");
 
     test!(apply_line_1,
-b"<svg>
+"<svg>
     <line x1='10' x2='10' y1='15' y2='15' transform='translate(10 20) scale(2)'/>
 </svg>",
 "<svg>
@@ -250,7 +244,7 @@ b"<svg>
 ");
 
     test!(apply_g_1,
-b"<svg>
+"<svg>
     <g transform='translate(10 20) scale(2)'>
         <rect height='10' width='10' x='10' y='10' transform='scale(2)'/>
         <rect height='10' width='10' x='10' y='10'/>
@@ -268,7 +262,7 @@ b"<svg>
 
     // ignore shapes with invalid coordinates units
     test_eq!(keep_1,
-b"<svg>
+"<svg>
     <rect height='10' transform='scale(2)' width='10' x='10in' y='10'/>
 </svg>
 "
@@ -277,7 +271,7 @@ b"<svg>
     // ignore groups processing with invalid transform types
     // and attributes
     test_eq!(keep_2,
-b"<svg>
+"<svg>
     <g transform='scale(2 3)'>
         <rect height='10' width='10' x='10' y='10'/>
     </g>

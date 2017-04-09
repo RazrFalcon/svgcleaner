@@ -62,7 +62,7 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_data($in_text).unwrap();
+                let doc = Document::from_str($in_text).unwrap();
                 svgdom::postproc::resolve_radial_gradient_attributes(&doc);
                 remove_dupl_radial_gradients(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
@@ -71,7 +71,7 @@ mod tests {
     }
 
     test!(rm_1,
-b"<svg>
+"<svg>
     <defs>
         <radialGradient id='rg1' cx='0' cy='0' fx='5' fy='5' r='10'>
             <stop offset='0' stop-color='#ff0000'/>
@@ -96,7 +96,7 @@ b"<svg>
 ");
 
     test!(rm_2,
-b"<svg>
+"<svg>
     <defs>
         <radialGradient id='rg1' cx='0' cy='0' fx='5' fy='5' r='10'/>
         <radialGradient id='rg2' cx='0' cy='0' fx='5' fy='5' r='10'/>
@@ -112,7 +112,7 @@ b"<svg>
 ");
 
     test!(rm_3,
-b"<svg>
+"<svg>
     <defs>
         <radialGradient id='rg1' cx='5' cy='5' fx='5' r='10'/>
         <radialGradient id='rg2' cx='5' cy='5' fy='5' r='10'/>
@@ -128,7 +128,7 @@ b"<svg>
 ");
 
     test!(rm_4,
-b"<svg>
+"<svg>
     <defs>
         <radialGradient id='rg1' cx='5' cy='5' fx='5' \
             gradientTransform='matrix(1 0 0 1 10 20)' r='10'/>
@@ -149,7 +149,7 @@ b"<svg>
 ");
 
     test!(rm_5,
-b"<svg>
+"<svg>
     <radialGradient id='rg1'/>
     <radialGradient id='rg2' xlink:href='#rg1'/>
 </svg>",
@@ -161,7 +161,7 @@ b"<svg>
 // TODO: this
 
 //     test!(rm_6,
-// b"<svg>
+// "<svg>
 //     <radialGradient id='rg2' xlink:href='#rg1'/>
 //     <radialGradient id='rg1'/>
 // </svg>",
@@ -171,7 +171,7 @@ b"<svg>
 // ");
 
     test!(rm_7,
-b"<svg>
+"<svg>
     <radialGradient id='rg1'/>
     <radialGradient id='rg2' xlink:href='#rg1'/>
     <radialGradient id='rg3' xlink:href='#rg2'/>
@@ -182,7 +182,7 @@ b"<svg>
 ");
 
     test!(rm_8,
-b"<svg>
+"<svg>
     <lenearGradient id='lg1'/>
     <radialGradient id='rg1' xlink:href='#lg1'/>
     <radialGradient id='rg2' xlink:href='#lg1'/>

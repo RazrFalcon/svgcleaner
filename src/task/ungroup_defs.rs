@@ -57,14 +57,8 @@ mod tests {
         )
     }
 
-    macro_rules! test_eq {
-        ($name:ident, $in_text:expr) => (
-            test!($name, $in_text, String::from_utf8_lossy($in_text));
-        )
-    }
-
     test!(ungroup_1,
-b"<svg>
+"<svg>
     <defs>
         <linearGradient/>
     </defs>
@@ -75,7 +69,7 @@ b"<svg>
 ");
 
     test!(ungroup_2,
-b"<svg>
+"<svg>
     <defs>
         <linearGradient/>
     </defs>
@@ -90,7 +84,7 @@ b"<svg>
 ");
 
     test!(ungroup_3,
-b"<svg>
+"<svg>
     <defs>
         <linearGradient/>
         <radialGradient/>
@@ -103,7 +97,7 @@ b"<svg>
 ");
 
     test_eq!(keep_1,
-b"<svg>
+"<svg>
     <defs>
         <linearGradient/>
         <rect/>

@@ -43,7 +43,7 @@ mod tests {
     }
 
     test!(test_1,
-b"<svg>
+"<svg>
     <radialGradient id='lg1'/>
     <radialGradient id='lg2'/>
     <rect id='unused' fill='url(#lg1)'/>

@@ -6,5 +6,4 @@ license = "MIT"
 
 [dependencies]
 walkdir = "0.1"
-rusqlite = "0.7"
 rust-crypto = "0.2"

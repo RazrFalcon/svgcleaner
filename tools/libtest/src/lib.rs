@@ -1,5 +1,4 @@
 extern crate walkdir;
-extern crate rusqlite;
 extern crate crypto;
 
 use std::io;
@@ -12,61 +11,6 @@ use std::process::Command;
 use crypto::digest::Digest;
 
 pub use walkdir::{WalkDir, WalkDirIterator};
-
-/// Very simple implementation of caching.
-pub struct TestCache {
-    connection: rusqlite::Connection,
-}
-
-impl TestCache {
-    pub fn init(path: &str) -> TestCache {
-        let is_exist = path::Path::new(path).exists();
-        let conn = rusqlite::Connection::open(path).unwrap();
-        if !is_exist {
-            conn.execute("CREATE TABLE Files (
-                          ID              INTEGER PRIMARY KEY,
-                          Path            TEXT NOT NULL,
-                          Md5Hash         TEXT NOT NULL
-                          )", &[]).unwrap();
-        }
-
-        TestCache {
-            connection: conn,
-        }
-    }
-
-    pub fn cache_id(&self, file_path: &str) -> Option<i64> {
-        // let h = hash(&file_path);
-        let mut stmt = self.connection.prepare("SELECT ID FROM Files WHERE Path=?").unwrap();
-        let mut rows = stmt.query(&[&file_path]).unwrap();
-        match rows.next() {
-            Some(res) => {
-                let id: i64 = res.unwrap().get(0);
-                Some(id)
-            }
-            None => None,
-        }
-    }
-
-    pub fn append_hash(&self, file_path: &str, md5: &str) {
-        let mut stmt = self.connection.prepare("INSERT INTO Files (Path, Md5Hash) \
-                                                VALUES (?, ?)").unwrap();
-        stmt.execute(&[&file_path, &md5]).unwrap();
-    }
-
-    pub fn get_hash(&self, id: i64) -> String {
-        let mut stmt = self.connection.prepare("SELECT Md5Hash FROM Files WHERE ID=?").unwrap();
-        let mut rows = stmt.query(&[&id]).unwrap();
-        let res = rows.next().unwrap().unwrap();
-        let h: String = res.get(0);
-        h
-    }
-
-    pub fn update_hash(&self, id: i64, md5: &str) {
-        let mut stmt = self.connection.prepare("UPDATE Files SET Md5Hash=? WHERE ID=?").unwrap();
-        stmt.execute(&[&md5, &id]).unwrap();
-    }
-}
 
 pub fn compare_imgs(work_dir: &str, path1: &str, path2: &str, path_diff: &str) -> Option<u32> {
     // compare -metric AE -fuzz 1% foo.png foo2.png diff.png

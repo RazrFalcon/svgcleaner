@@ -6,7 +6,8 @@ license = "MIT"
 
 [dependencies]
 time = "0.1"
-serde_json = "0.8.2"
+serde_json = "0.8"
+rusqlite = "0.7"
 
 [dependencies.clap]
 version = "2"

@@ -2,17 +2,19 @@ extern crate libtest;
 extern crate clap;
 extern crate time;
 extern crate serde_json;
+extern crate rusqlite;
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::io::prelude::*;
+use std::str;
 use std::fs;
 use std::fs::File;
 use std::collections::HashMap;
 
-use libtest::*;
-
 use clap::{Arg, App};
+
+use libtest::*;
 
 // NOTE: This app uses a panic-based error processing.
 //       It's bad, but simpler for such small applications like this.
@@ -45,7 +47,8 @@ struct Data<'a> {
 fn main() {
     let m = App::new("files-testing")
         .arg(Arg::with_name("workdir")
-            .long("workdir").help("Sets path to the work dir")
+            .long("workdir").help("Sets path to the work dir.\n\
+                                   Will contain all the temporary data")
             .value_name("DIR")
             .required(true))
         .arg(Arg::with_name("input-data")
@@ -54,10 +57,10 @@ fn main() {
             .required(true))
         .arg(Arg::with_name("cache-db")
             .long("cache-db").help("Sets path to the test cache db.")
-            .value_name("PATH")
-            .required(true))
+            .value_name("PATH"))
         .arg(Arg::with_name("input-data-config")
-            .long("input-data-config").help("Sets path to the input data config.")
+            .long("input-data-config").help("Sets path to the input data config (optional).\n\
+                                             JSON config contains list of ignored files")
             .value_name("PATH"))
         .get_matches();
 
@@ -360,21 +363,26 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     let res = Command::new(exe_path)
                 .arg(in_path)
                 .arg(out_path)
-                .arg("--indent=2")
                 .arg("--copy-on-error=true")
                 .arg("--quiet=true")
                 .arg("--remove-gradient-attributes=true")
                 .arg("--join-arcto-flags=true")
+                .arg("--indent=2")
                 .arg("--remove-unreferenced-ids=false")
                 .arg("--trim-ids=false")
                 .output();
 
     match res {
         Ok(o) => {
-            let se: String = String::from_utf8_lossy(&o.stderr).into_owned();
+            let se = str::from_utf8(&o.stderr).unwrap();
 
             if !se.is_empty() {
                 println!("{}", se.trim());
+            }
+
+            if !o.stdout.is_empty() {
+                println!("stdout must be empty: {}", str::from_utf8(&o.stdout).unwrap());
+                return false;
             }
 
             if se.find("Error").is_some() {
@@ -403,8 +411,62 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
             return true;
         }
         Err(e) => {
-            println!("My err: {:?}", e);
+            println!("Unknown error: {:?}", e);
             return false;
         }
+    }
+}
+
+/// A very simple implementation of caching.
+pub struct TestCache {
+    connection: rusqlite::Connection,
+}
+
+impl TestCache {
+    pub fn init(path: &str) -> TestCache {
+        let is_exist = Path::new(path).exists();
+        let conn = rusqlite::Connection::open(path).unwrap();
+        if !is_exist {
+            conn.execute("CREATE TABLE Files (
+                          ID              INTEGER PRIMARY KEY,
+                          Path            TEXT NOT NULL,
+                          Md5Hash         TEXT NOT NULL
+                          )", &[]).unwrap();
+        }
+
+        TestCache {
+            connection: conn,
+        }
+    }
+
+    pub fn cache_id(&self, file_path: &str) -> Option<i64> {
+        let mut stmt = self.connection.prepare("SELECT ID FROM Files WHERE Path=?").unwrap();
+        let mut rows = stmt.query(&[&file_path]).unwrap();
+        match rows.next() {
+            Some(res) => {
+                let id: i64 = res.unwrap().get(0);
+                Some(id)
+            }
+            None => None,
+        }
+    }
+
+    pub fn append_hash(&self, file_path: &str, md5: &str) {
+        let mut stmt = self.connection.prepare("INSERT INTO Files (Path, Md5Hash) \
+                                                VALUES (?, ?)").unwrap();
+        stmt.execute(&[&file_path, &md5]).unwrap();
+    }
+
+    pub fn get_hash(&self, id: i64) -> String {
+        let mut stmt = self.connection.prepare("SELECT Md5Hash FROM Files WHERE ID=?").unwrap();
+        let mut rows = stmt.query(&[&id]).unwrap();
+        let res = rows.next().unwrap().unwrap();
+        let h: String = res.get(0);
+        h
+    }
+
+    pub fn update_hash(&self, id: i64, md5: &str) {
+        let mut stmt = self.connection.prepare("UPDATE Files SET Md5Hash=? WHERE ID=?").unwrap();
+        stmt.execute(&[&md5, &id]).unwrap();
     }
 }

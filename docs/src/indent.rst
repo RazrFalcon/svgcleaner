@@ -1,10 +1,14 @@
 Sets XML nodes indent
 ---------------------
 
-Set indent for XML nodes. Values between 0 and 4 indicate the number of indent spaces.
-The value of ``-1`` indicates no indent.
+Set indent for XML nodes.
 
-Default: -1
+ - none - no indention and new lines
+ - 0 - no indention
+ - 1..4 - indent with *n* spaces
+ - tabs - indent with tabs
+
+Default: none
 
 .. GEN_TABLE
 .. BEFORE

@@ -8,10 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Some algorithms are moved to the `svgdom` crate.
 - `--no-defaults` flag.
+- XML nodes can be indented with tabs now. Using `--indent=tabs`.
 
 ### Changed
 - `<FLAG>` argument type accepts `true`, `false`, `yes`, `no`, `y`, `n` now.
 - Flags `--multipass`, `--copy-on-error` and `--quiet` doesn't accepts value now.
+- `--indent` accepts only `none`, `0`, `1`, `2`, `3`, `4`, `tabs` now.
 
 ## [0.8.1] - 2017-02-01
 ### Added

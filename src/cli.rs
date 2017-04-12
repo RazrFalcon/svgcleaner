@@ -26,7 +26,7 @@ use std::io::{Write, stderr};
 use clap::{Arg, App, ArgMatches};
 
 use svgdom::types;
-use svgdom::{ParseOptions, WriteOptions, WriteOptionsPaths};
+use svgdom::{ParseOptions, WriteOptions, WriteOptionsPaths, Indent};
 
 use options::Options;
 
@@ -249,8 +249,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(Arg::with_name(KEYS[Key::Indent])
             .long(KEYS[Key::Indent])
             .value_name("INDENT")
-            .validator(is_indent)
-            .default_value("-1"))
+            .possible_values(&["none", "0", "1", "2", "3", "4", "tabs"])
+            .default_value("none"))
 }
 
 fn is_svg(val: String) -> Result<(), String> {
@@ -258,19 +258,6 @@ fn is_svg(val: String) -> Result<(), String> {
         Ok(())
     } else {
         Err(String::from("The file format must be SVG."))
-    }
-}
-
-fn is_indent(val: String) -> Result<(), String> {
-    let n = match val.parse::<i8>() {
-        Ok(v) => v,
-        Err(e) => return Err(format!("{}", e)),
-    };
-
-    if n >= -1 && n <= 4 {
-        Ok(())
-    } else {
-        Err(String::from("Invalid indent value."))
     }
 }
 
@@ -402,7 +389,7 @@ pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
 pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     // initial options should be opposite to default ones
     let mut opt = WriteOptions {
-        indent: 4,
+        indent: Indent::Spaces(4),
         use_single_quote: false,
         trim_hex_colors: false,
         write_hidden_attributes: false,
@@ -430,7 +417,17 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     flags.resolve(&mut opt.simplify_transform_matrices, Key::SimplifyTransforms);
 
     flags.resolve(&mut opt.trim_hex_colors, Key::TrimColors);
-    opt.indent = value_t!(args, KEYS[Key::Indent], i8).unwrap();
+
+    opt.indent = match args.value_of(KEYS[Key::Indent]).unwrap() {
+        "none"  => Indent::None,
+        "0"     => Indent::Spaces(0),
+        "1"     => Indent::Spaces(1),
+        "2"     => Indent::Spaces(2),
+        "3"     => Indent::Spaces(3),
+        "4"     => Indent::Spaces(4),
+        "tabs"  => Indent::Tabs,
+        _ => unreachable!(), // clap will validate the input
+    };
 
     opt
 }

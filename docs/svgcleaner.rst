@@ -1384,10 +1384,14 @@ CLI argument: ``--paths-coordinates-precision``
 Sets XML nodes indent
 ---------------------
 
-Set indent for XML nodes. Values between 0 and 4 indicate the number of indent spaces.
-The value of ``-1`` indicates no indent.
+Set indent for XML nodes.
 
-Default: -1
+ - none - no indention and new lines
+ - 0 - no indention
+ - 1..4 - indent with *n* spaces
+ - tabs - indent with tabs
+
+Default: none
 
 CLI argument: ``--indent``
 
@@ -1422,4 +1426,6 @@ It can be useful if you need only few cleaning options.
 
 Note that this flag applies only to options with the ``<FLAG>`` type.
 Options like ``indent`` will still use default values.
+
+CLI argument: ``--no-defaults``
 

@@ -11,68 +11,67 @@ EXAMPLE:
     svgcleaner --indent=2 --paths-coordinates-precision=5 --join-arcto-flags=yes in.svg out.svg
 
 FLAGS:
-    -h, --help                               Prints help information
-    -V, --version                            Prints version information
-    -c, --stdout                             Prints result as standard output
+    -h, --help                              Print help information
+    -V, --version                           Print version information
+    -c, --stdout                            Print result to the standard output
+        --no-defaults                       Reset default flags to 'no'
+        --multipass                         Clean a file multiple times
+        --copy-on-error                     Copy an original file to the destination on error
+        --quiet                             Show only warnings and errors
 
 OPTIONS:
 Elements:
-    --remove-comments <FLAG>                 Remove XML comments [default: true]
-    --remove-declarations <FLAG>             Remove XML declarations [default: true]
-    --remove-nonsvg-elements <FLAG>          Remove non-SVG elements [default: true]
-    --remove-unused-defs <FLAG>              Remove unused referenced elements [default: true]
-    --convert-shapes <FLAG>                  Convert basic shapes into paths [default: true]
-    --remove-title <FLAG>                    Remove 'title' element [default: true]
-    --remove-desc <FLAG>                     Remove 'desc' element [default: true]
-    --remove-metadata <FLAG>                 Remove 'metadata' element [default: true]
-    --remove-dupl-lineargradient <FLAG>      Remove duplicated 'linearGradient' elements [default: true]
-    --remove-dupl-radialgradient <FLAG>      Remove duplicated 'radialGradient' elements [default: true]
-    --remove-dupl-fegaussianblur <FLAG>      Remove duplicated 'feGaussianBlur' elements [default: true]
-    --ungroup-groups <FLAG>                  Ungroup groups [default: true]
-    --ungroup-defs <FLAG>                    Ungroup 'defs' element [default: true]
-    --group-by-style <FLAG>                  Group elements by equal styles [default: true]
-    --merge-gradients <FLAG>                 Merge gradients [default: true]
-    --regroup-gradient-stops <FLAG>          Regroup gradient 'stop' elements [default: true]
-    --remove-invalid-stops <FLAG>            Remove invalid 'stop' elements [default: true]
-    --remove-invisible-elements <FLAG>       Remove invisible elements [default: true]
-    --resolve-use <FLAG>                     Resolve 'use' elements [default: true]
+    --remove-comments <FLAG>                Remove XML comments [default: yes]
+    --remove-declarations <FLAG>            Remove XML declarations [default: yes]
+    --remove-nonsvg-elements <FLAG>         Remove non-SVG elements [default: yes]
+    --remove-unused-defs <FLAG>             Remove unused referenced elements [default: yes]
+    --convert-shapes <FLAG>                 Convert basic shapes into paths [default: yes]
+    --remove-title <FLAG>                   Remove 'title' element [default: yes]
+    --remove-desc <FLAG>                    Remove 'desc' element [default: yes]
+    --remove-metadata <FLAG>                Remove 'metadata' element [default: yes]
+    --remove-dupl-lineargradient <FLAG>     Remove duplicated 'linearGradient' elements [default: yes]
+    --remove-dupl-radialgradient <FLAG>     Remove duplicated 'radialGradient' elements [default: yes]
+    --remove-dupl-fegaussianblur <FLAG>     Remove duplicated 'feGaussianBlur' elements [default: yes]
+    --ungroup-groups <FLAG>                 Ungroup groups [default: yes]
+    --ungroup-defs <FLAG>                   Ungroup 'defs' element [default: yes]
+    --group-by-style <FLAG>                 Group elements by equal styles [default: yes]
+    --merge-gradients <FLAG>                Merge gradients [default: yes]
+    --regroup-gradient-stops <FLAG>         Regroup gradient 'stop' elements [default: yes]
+    --remove-invalid-stops <FLAG>           Remove invalid 'stop' elements [default: yes]
+    --remove-invisible-elements <FLAG>      Remove invisible elements [default: yes]
+    --resolve-use <FLAG>                    Resolve 'use' elements [default: yes]
 
 Attributes:
-    --remove-version <FLAG>                  Remove 'version' and 'baseProfile' attributes [default: true]
-    --remove-nonsvg-attributes <FLAG>        Remove non-SVG attributes [default: true]
-    --remove-unreferenced-ids <FLAG>         Remove unreferenced 'id' attributes [default: true]
-    --trim-ids <FLAG>                        Trim 'id' attributes [default: true]
-    --remove-text-attributes <FLAG>          Remove text-related attributes if there is no text [default: true]
-    --remove-unused-coordinates <FLAG>       Remove unused coordinate attributes [default: true]
-    --remove-default-attributes <FLAG>       Remove attributes with default values [default: true]
-    --remove-xmlns-xlink-attribute <FLAG>    Remove an unused 'xmlns:xlink' attribute [default: true]
-    --remove-needless-attributes <FLAG>      Remove attributes that doesn't belong to this element [default: true]
-    --remove-gradient-attributes <FLAG>      Remove inheritable gradient attributes [default: false]
-    --join-style-attributes <FLAG>           Join presentational attributes [default: true]
-    --apply-transform-to-gradients <FLAG>    Apply transformations to gradients [default: true]
-    --apply-transform-to-shapes <FLAG>       Apply transformations to shapes [default: true]
-    --remove-unresolved-classes <FLAG>       Remove unresolved classes from 'class' attributes [default: true]
+    --remove-version <FLAG>                 Remove 'version' and 'baseProfile' attributes [default: yes]
+    --remove-nonsvg-attributes <FLAG>       Remove non-SVG attributes [default: yes]
+    --remove-unreferenced-ids <FLAG>        Remove unreferenced 'id' attributes [default: yes]
+    --trim-ids <FLAG>                       Trim 'id' attributes [default: yes]
+    --remove-text-attributes <FLAG>         Remove text-related attributes if there is no text [default: yes]
+    --remove-unused-coordinates <FLAG>      Remove unused coordinate attributes [default: yes]
+    --remove-default-attributes <FLAG>      Remove attributes with default values [default: yes]
+    --remove-xmlns-xlink-attribute <FLAG>   Remove an unused 'xmlns:xlink' attribute [default: yes]
+    --remove-needless-attributes <FLAG>     Remove attributes that doesn't belong to this element [default: yes]
+    --remove-gradient-attributes <FLAG>     Remove inheritable gradient attributes [default: no]
+    --join-style-attributes <FLAG>          Join presentational attributes [default: yes]
+    --apply-transform-to-gradients <FLAG>   Apply transformations to gradients [default: yes]
+    --apply-transform-to-shapes <FLAG>      Apply transformations to shapes [default: yes]
+    --remove-unresolved-classes <FLAG>      Remove unresolved classes from 'class' attributes [default: yes]
 
 Paths:
-    --paths-to-relative <FLAG>               Convert path segments into relative ones [default: true]
-    --remove-unused-segments <FLAG>          Remove unused path segments [default: true]
-    --convert-segments <FLAG>                Convert path segments into shorter ones [default: true]
-    --trim-paths <FLAG>                      Use compact notation for paths [default: true]
-    --join-arcto-flags <FLAG>                Join ArcTo flags [default: false]
-    --remove-dupl-cmd-in-paths <FLAG>        Remove subsequent segments command from paths [default: true]
-    --use-implicit-cmds <FLAG>               Use implicit LineTo commands [default: true]
+    --paths-to-relative <FLAG>              Convert path segments into relative ones [default: yes]
+    --remove-unused-segments <FLAG>         Remove unused path segments [default: yes]
+    --convert-segments <FLAG>               Convert path segments into shorter ones [default: yes]
+    --trim-paths <FLAG>                     Use compact notation for paths [default: yes]
+    --join-arcto-flags <FLAG>               Join ArcTo flags [default: no]
+    --remove-dupl-cmd-in-paths <FLAG>       Remove subsequent segments command from paths [default: yes]
+    --use-implicit-cmds <FLAG>              Use implicit LineTo commands [default: yes]
 
 Output:
-    --trim-colors <FLAG>                     Use #RGB notation [default: true]
-    --simplify-transforms <FLAG>             Simplify transform matrices [default: true]
-    --paths-coordinates-precision <NUM>      Set path's coordinates numeric precision (1..12) [default: 8]
-    --indent <INDENT>                        Sets XML nodes indent (-1..4) [default: -1]
-
-Other:
-    --multipass <FLAG>                       Clean a file multiple times [default: false]
-    --copy-on-error <FLAG>                   Copy an original file to the destination on error [default: false]
-    --quiet <FLAG>                           Show only warnings and errors [default: false]
+    --trim-colors <FLAG>                    Use #RGB notation [default: yes]
+    --simplify-transforms <FLAG>            Simplify transform matrices [default: yes]
+    --paths-coordinates-precision <NUM>     Set path's coordinates numeric precision (1..12) [default: 8]
+    --indent <INDENT>                       Set XML nodes indent (-1..4) [default: -1]
 
 ARGS:
-    <in-file>                                Input file
-    <out-file>                               Output file
+    <in-file>                               Input file
+    <out-file>                              Output file

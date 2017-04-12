@@ -57,6 +57,7 @@ pub struct Options {
     pub convert_segments: bool,
 }
 
+// should all be `false`
 impl Default for Options {
     fn default() -> Options {
         Options {

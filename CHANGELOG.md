@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - Some algorithms are moved to the `svgdom` crate.
+- `--no-defaults` flag.
+
+### Changed
+- `<FLAG>` argument type accepts `true`, `false`, `yes`, `no`, `y`, `n` now.
+- Flags `--multipass`, `--copy-on-error` and `--quiet` doesn't accepts value now.
 
 ## [0.8.1] - 2017-02-01
 ### Added

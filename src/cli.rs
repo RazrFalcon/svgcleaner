@@ -25,7 +25,8 @@ use std::io::{Write, stderr};
 
 use clap::{Arg, App, ArgMatches};
 
-use svgdom::{ParseOptions, WriteOptions};
+use svgdom::types;
+use svgdom::{ParseOptions, WriteOptions, WriteOptionsPaths};
 
 use options::Options;
 
@@ -79,6 +80,7 @@ pub enum Key {
     PathsCoordinatesPrecision,
     Indent,
 
+    NoDefaults,
     Multipass,
     CopyOnError,
     Quiet,
@@ -144,6 +146,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "paths-coordinates-precision",
     "indent",
 
+    "no-defaults",
     "multipass",
     "copy-on-error",
     "quiet",
@@ -180,6 +183,14 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(Arg::with_name(KEYS[Key::Stdout])
             .short("c")
             .long(KEYS[Key::Stdout]))
+        .arg(Arg::with_name(KEYS[Key::NoDefaults])
+            .long(KEYS[Key::NoDefaults]))
+        .arg(Arg::with_name(KEYS[Key::Multipass])
+            .long(KEYS[Key::Multipass]))
+        .arg(Arg::with_name(KEYS[Key::CopyOnError])
+            .long(KEYS[Key::CopyOnError]))
+        .arg(Arg::with_name(KEYS[Key::Quiet])
+            .long(KEYS[Key::Quiet]))
 
         // elements
         .arg(gen_flag!(Key::RemoveComments, "true"))
@@ -240,11 +251,6 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             .value_name("INDENT")
             .validator(is_indent)
             .default_value("-1"))
-
-        // other
-        .arg(gen_flag!(Key::Multipass, "false"))
-        .arg(gen_flag!(Key::CopyOnError, "false"))
-        .arg(gen_flag!(Key::Quiet, "false"))
 }
 
 fn is_svg(val: String) -> Result<(), String> {
@@ -290,7 +296,7 @@ fn is_flag(val: String) -> Result<(), String> {
     }
 }
 
-pub fn get_flag(args: &ArgMatches, key: Key) -> bool {
+fn get_flag(args: &ArgMatches, key: Key) -> bool {
     match args.value_of(KEYS[key]).unwrap() {
         "true" | "yes" | "y" => true,
         "false" | "no" | "n" => false,
@@ -327,75 +333,147 @@ pub fn check_values(args: &ArgMatches) -> bool {
     true
 }
 
-pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
-    let mut opt = ParseOptions::default();
+struct Flags<'a> {
+    args: &'a ArgMatches<'a>,
+    is_no_defaults: bool,
+}
 
-    opt.parse_comments              = !get_flag(args, Key::RemoveComments);
-    opt.parse_declarations          = !get_flag(args, Key::RemoveDeclarations);
-    opt.parse_unknown_elements      = !get_flag(args, Key::RemoveNonsvgElements);
-    opt.parse_unknown_attributes    = !get_flag(args, Key::RemoveNonsvgAttributes);
-    opt.skip_unresolved_classes     =  get_flag(args, Key::RemoveUnresolvedClasses);
-    opt.parse_px_unit               = false;
+impl<'a> Flags<'a> {
+    fn new(args: &'a ArgMatches) -> Flags<'a> {
+        Flags {
+            args: args,
+            is_no_defaults: args.is_present(KEYS[Key::NoDefaults]),
+        }
+    }
+
+    fn resolve(&self, value: &mut bool, key: Key) {
+        if let Some(v) = self._resolve(key) {
+            *value = v;
+        }
+    }
+
+    fn resolve_inv(&self, value: &mut bool, key: Key) {
+        if let Some(v) = self._resolve(key) {
+            *value = !v;
+        }
+    }
+
+    fn _resolve(&self, key: Key) -> Option<bool> {
+        if self.is_no_defaults {
+            // if `--no-defaults` flag is set, check that
+            // provided flag is actually set by user and not default
+            //
+            // note that `is_present` will always return `true`,
+            // because all the flags has a default value
+            if self.args.occurrences_of(KEYS[key]) != 0 {
+                Some(get_flag(self.args, key))
+            } else {
+                // if flag is not set - keep value unchanged
+                None
+            }
+        } else {
+            Some(get_flag(self.args, key))
+        }
+    }
+}
+
+pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
+    // initial options should be opposite to default ones
+    let mut opt = ParseOptions {
+        parse_comments: true,
+        parse_declarations: true,
+        parse_unknown_elements: true,
+        parse_unknown_attributes: true,
+        parse_px_unit: false,
+        skip_unresolved_classes: false,
+    };
+
+    let flags = Flags::new(args);
+
+    flags.resolve_inv(&mut opt.parse_comments, Key::RemoveComments);
+    flags.resolve_inv(&mut opt.parse_declarations, Key::RemoveDeclarations);
+    flags.resolve_inv(&mut opt.parse_unknown_elements, Key::RemoveNonsvgElements);
+    flags.resolve_inv(&mut opt.parse_unknown_attributes, Key::RemoveNonsvgAttributes);
+    flags.resolve(&mut opt.skip_unresolved_classes, Key::RemoveNonsvgAttributes);
 
     opt
 }
 
 pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
-    let mut opt = WriteOptions::default();
+    // initial options should be opposite to default ones
+    let mut opt = WriteOptions {
+        indent: 4,
+        use_single_quote: false,
+        trim_hex_colors: false,
+        write_hidden_attributes: false,
+        remove_leading_zero: true,
+        paths: WriteOptionsPaths {
+            use_compact_notation: false,
+            join_arc_to_flags: false,
+            remove_duplicated_commands: false,
+            use_implicit_lineto_commands: false,
+            coordinates_precision: types::DEFAULT_PRECISION,
+        },
+        simplify_transform_matrices: false,
+    };
 
-    opt.paths.use_compact_notation          = get_flag(args, Key::TrimPaths);
-    opt.paths.remove_duplicated_commands    = get_flag(args, Key::RemoveDuplCmdInPaths);
-    opt.paths.join_arc_to_flags             = get_flag(args, Key::JoinArcToFlags);
-    opt.paths.use_implicit_lineto_commands  = get_flag(args, Key::UseImplicitCommands);
+    let flags = Flags::new(args);
+
+    flags.resolve(&mut opt.paths.use_compact_notation, Key::TrimPaths);
+    flags.resolve(&mut opt.paths.remove_duplicated_commands, Key::RemoveDuplCmdInPaths);
+    flags.resolve(&mut opt.paths.join_arc_to_flags, Key::JoinArcToFlags);
+    flags.resolve(&mut opt.paths.use_implicit_lineto_commands, Key::UseImplicitCommands);
 
     let paths_precision = value_t!(args, KEYS[Key::PathsCoordinatesPrecision], u8).unwrap();
     opt.paths.coordinates_precision = paths_precision;
 
+    flags.resolve(&mut opt.simplify_transform_matrices, Key::SimplifyTransforms);
 
-    opt.simplify_transform_matrices = get_flag(args, Key::SimplifyTransforms);
-
-    opt.remove_leading_zero = true;
-
-    opt.trim_hex_colors = get_flag(args, Key::TrimColors);
+    flags.resolve(&mut opt.trim_hex_colors, Key::TrimColors);
     opt.indent = value_t!(args, KEYS[Key::Indent], i8).unwrap();
 
     opt
 }
 
 pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
-    Options {
-        remove_unused_defs: get_flag(args, Key::RemoveUnusedDefs),
-        convert_shapes: get_flag(args, Key::ConvertShapes),
-        remove_title: get_flag(args, Key::RemoveTitle),
-        remove_desc: get_flag(args, Key::RemoveDesc),
-        remove_metadata: get_flag(args, Key::RemoveMetadata),
-        remove_dupl_linear_gradients: get_flag(args, Key::RemoveDuplLinearGradients),
-        remove_dupl_radial_gradients: get_flag(args, Key::RemoveDuplRadialGradients),
-        remove_dupl_fe_gaussian_blur: get_flag(args, Key::RemoveDuplFeGaussianBlur),
-        ungroup_groups: get_flag(args, Key::UngroupGroups),
-        ungroup_defs: get_flag(args, Key::UngroupDefs),
-        group_by_style: get_flag(args, Key::GroupByStyle),
-        merge_gradients: get_flag(args, Key::MergeGradients),
-        regroup_gradient_stops: get_flag(args, Key::RegroupGradientStops),
-        remove_invalid_stops: get_flag(args, Key::RemoveInvalidStops),
-        remove_invisible_elements: get_flag(args, Key::RemoveInvisibleElements),
-        resolve_use: get_flag(args, Key::ResolveUse),
+    let flags = Flags::new(args);
 
-        remove_version: get_flag(args, Key::RemoveVersion),
-        remove_unreferenced_ids: get_flag(args, Key::RemoveUnreferencedIds),
-        trim_ids: get_flag(args, Key::TrimIds),
-        remove_text_attributes: get_flag(args, Key::RemoveTextAttributes),
-        remove_unused_coordinates: get_flag(args, Key::RemoveUnusedCoordinates),
-        remove_default_attributes: get_flag(args, Key::RemoveDefaultAttributes),
-        remove_xmlns_xlink_attribute: get_flag(args, Key::RemoveXmlnsXlinkAttribute),
-        remove_needless_attributes: get_flag(args, Key::RemoveNeedlessAttributes),
-        remove_gradient_attributes: get_flag(args, Key::RemoveGradientAttributes),
-        join_style_attributes: get_flag(args, Key::JoinStyleAttributes),
-        apply_transform_to_gradients: get_flag(args, Key::ApplyTransformToGradients),
-        apply_transform_to_shapes: get_flag(args, Key::ApplyTransformToShapes),
+    // all cleaning options are disabled by default
+    let mut opt = Options::default();
 
-        paths_to_relative: get_flag(args, Key::PathsToRelative),
-        remove_unused_segments: get_flag(args, Key::RemoveUnusedSegments),
-        convert_segments: get_flag(args, Key::ConvertSegments),
-    }
+    flags.resolve(&mut opt.remove_unused_defs, Key::RemoveUnusedDefs);
+    flags.resolve(&mut opt.convert_shapes, Key::ConvertShapes);
+    flags.resolve(&mut opt.remove_title, Key::RemoveTitle);
+    flags.resolve(&mut opt.remove_desc, Key::RemoveDesc);
+    flags.resolve(&mut opt.remove_metadata, Key::RemoveMetadata);
+    flags.resolve(&mut opt.remove_dupl_linear_gradients, Key::RemoveDuplLinearGradients);
+    flags.resolve(&mut opt.remove_dupl_radial_gradients, Key::RemoveDuplRadialGradients);
+    flags.resolve(&mut opt.remove_dupl_fe_gaussian_blur, Key::RemoveDuplFeGaussianBlur);
+    flags.resolve(&mut opt.ungroup_groups, Key::UngroupGroups);
+    flags.resolve(&mut opt.ungroup_defs, Key::UngroupDefs);
+    flags.resolve(&mut opt.group_by_style, Key::GroupByStyle);
+    flags.resolve(&mut opt.merge_gradients, Key::MergeGradients);
+    flags.resolve(&mut opt.regroup_gradient_stops, Key::RegroupGradientStops);
+    flags.resolve(&mut opt.remove_invalid_stops, Key::RemoveInvalidStops);
+    flags.resolve(&mut opt.remove_invisible_elements, Key::RemoveInvisibleElements);
+    flags.resolve(&mut opt.resolve_use, Key::ResolveUse);
+
+    flags.resolve(&mut opt.remove_version, Key::RemoveVersion);
+    flags.resolve(&mut opt.remove_unreferenced_ids, Key::RemoveUnreferencedIds);
+    flags.resolve(&mut opt.trim_ids, Key::TrimIds);
+    flags.resolve(&mut opt.remove_text_attributes, Key::RemoveTextAttributes);
+    flags.resolve(&mut opt.remove_unused_coordinates, Key::RemoveUnusedCoordinates);
+    flags.resolve(&mut opt.remove_default_attributes, Key::RemoveDefaultAttributes);
+    flags.resolve(&mut opt.remove_xmlns_xlink_attribute, Key::RemoveXmlnsXlinkAttribute);
+    flags.resolve(&mut opt.remove_needless_attributes, Key::RemoveNeedlessAttributes);
+    flags.resolve(&mut opt.remove_gradient_attributes, Key::RemoveGradientAttributes);
+    flags.resolve(&mut opt.join_style_attributes, Key::JoinStyleAttributes);
+    flags.resolve(&mut opt.apply_transform_to_gradients, Key::ApplyTransformToGradients);
+    flags.resolve(&mut opt.apply_transform_to_shapes, Key::ApplyTransformToShapes);
+
+    flags.resolve(&mut opt.paths_to_relative, Key::PathsToRelative);
+    flags.resolve(&mut opt.remove_unused_segments, Key::RemoveUnusedSegments);
+    flags.resolve(&mut opt.convert_segments, Key::ConvertSegments);
+
+    opt
 }

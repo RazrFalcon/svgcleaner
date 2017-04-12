@@ -46,3 +46,5 @@ trim-colors.rst
 simplify-transforms.rst
 paths-coordinates-precision.rst
 indent.rst
+-- Other
+no-defaults.rst

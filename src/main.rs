@@ -27,7 +27,7 @@ use std::path::Path;
 use std::io::{Write, stderr};
 
 use svgcleaner::cli;
-use svgcleaner::cli::Key;
+use svgcleaner::cli::{Key, KEYS};
 use svgcleaner::cleaner;
 
 macro_rules! try_msg {
@@ -62,7 +62,7 @@ fn main() {
 
     let in_file = args.value_of("in-file").unwrap();
     let out_file = args.value_of("out-file");
-    let stdout_enabled = args.is_present("stdout");
+    let stdout_enabled = args.is_present(KEYS[Key::Stdout]);
 
     if !Path::new(in_file).exists() {
         writeln!(stderr(), "Error: Input file does not exist.").unwrap();
@@ -74,7 +74,7 @@ fn main() {
 
     let on_err = || {
         // copy original file to destination
-        if out_file.is_some() && cli::get_flag(&args, Key::CopyOnError) {
+        if out_file.is_some() && args.is_present(KEYS[Key::CopyOnError]) {
             // copy a file only when paths are different
             if let Some(out_file) = out_file {
                 if in_file != out_file {
@@ -118,7 +118,7 @@ fn main() {
         // write buffer
         cleaner::write_buffer(&doc, &write_opt, &mut buf);
 
-        if !cli::get_flag(&args, Key::Multipass) {
+        if !args.is_present(KEYS[Key::Multipass]) {
             // do not repeat without '--multipass'
             break;
         }
@@ -149,7 +149,7 @@ fn main() {
 
     // unwrap is safe, because 'save_file' will fail on write error,
     // so file is totally exist
-    if !stdout_enabled && out_file.is_some() && !cli::get_flag(&args, Key::Quiet) {
+    if !stdout_enabled && out_file.is_some() && !args.is_present(KEYS[Key::Quiet]) {
         let out_size = fs::File::open(out_file.unwrap()).unwrap().metadata().unwrap().len() as f64;
         let ratio = 100.0 - out_size / (raw.len() as f64) * 100.0;
         println!("Your image is {:.2}% smaller now.", ratio);

@@ -24,8 +24,14 @@ use super::short::AId;
 
 use svgdom::{Document, Attribute, AttributeType, AttributeValue, WriteOptions, WriteBuffer};
 
-pub fn join_style_attributes(doc: &Document, opt: &WriteOptions) {
+use options::StyleJoinMode;
+
+pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOptions) {
     // NOTE: must be run at last, since it breaks linking.
+
+    if mode == StyleJoinMode::None {
+        return;
+    }
 
     for node in doc.descendants().svg() {
         let count;
@@ -36,7 +42,7 @@ pub fn join_style_attributes(doc: &Document, opt: &WriteOptions) {
 
         // 5 - is an amount of attributes when style notation is becoming more efficient than
         // split attributes.
-        if count > 5 {
+        if (mode == StyleJoinMode::Some && count > 5) || mode == StyleJoinMode::All {
             let mut attrs = node.attributes_mut();
             let mut ids = Vec::new();
             let mut style = Vec::new();
@@ -62,5 +68,53 @@ pub fn join_style_attributes(doc: &Document, opt: &WriteOptions) {
                 attrs.remove(id);
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use svgdom::{Document};
+
+    #[test]
+    fn join_styles_1() {
+        let doc = Document::from_str(
+            "<svg fill='black' stroke='red' stroke-width='1' opacity='1' \
+                  fill-opacity='1' stroke-opacity='1'/>"
+        ).unwrap();
+
+        let svg_node = doc.svg_element().unwrap();
+        let wopt = WriteOptions::default();
+
+        join_style_attributes(&doc, StyleJoinMode::None, &wopt);
+        assert_eq!(svg_node.attribute(AId::Style), None);
+
+        // we have 6 style attributes so they should be joined
+        join_style_attributes(&doc, StyleJoinMode::Some, &wopt);
+        assert_eq_text!(
+            svg_node.attribute(AId::Style).unwrap().value.as_string().unwrap(),
+            "fill:#000000;stroke:#ff0000;stroke-width:1;opacity:1;fill-opacity:1;stroke-opacity:1"
+        );
+    }
+
+    #[test]
+    fn join_styles_2() {
+        let doc = Document::from_str(
+            "<svg fill='black' stroke='red'/>"
+        ).unwrap();
+
+        let svg_node = doc.svg_element().unwrap();
+        let wopt = WriteOptions::default();
+
+        // we have only 2 style attributes so they shouldn't be joined
+        join_style_attributes(&doc, StyleJoinMode::Some, &wopt);
+        assert_eq!(svg_node.attribute(AId::Style), None);
+
+        // join anyway
+        join_style_attributes(&doc, StyleJoinMode::All, &wopt);
+        assert_eq_text!(
+            svg_node.attribute(AId::Style).unwrap().value.as_string().unwrap(),
+            "fill:#000000;stroke:#ff0000"
+        );
     }
 }

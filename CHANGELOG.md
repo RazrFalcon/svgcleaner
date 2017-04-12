@@ -9,11 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Some algorithms are moved to the `svgdom` crate.
 - `--no-defaults` flag.
 - XML nodes can be indented with tabs now. Using `--indent=tabs`.
+- Presentational attributes joining can be forced with `--join-style-attributes=all` now.
 
 ### Changed
 - `<FLAG>` argument type accepts `true`, `false`, `yes`, `no`, `y`, `n` now.
 - Flags `--multipass`, `--copy-on-error` and `--quiet` doesn't accepts value now.
 - `--indent` accepts only `none`, `0`, `1`, `2`, `3`, `4`, `tabs` now.
+- `--join-style-attributes` accepts only `no`, `some`, `all` now.
 
 ## [0.8.1] - 2017-02-01
 ### Added

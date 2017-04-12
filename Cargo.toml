@@ -32,7 +32,7 @@ git = "https://github.com/RazrFalcon/libsvgdom.git"
 # version = "0.4"
 
 [dependencies.clap]
-version = "2.20"
+version = "2"
 default-features = false
 optional = true
 

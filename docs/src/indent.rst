@@ -3,10 +3,10 @@ Sets XML nodes indent
 
 Set indent for XML nodes.
 
- - none - no indention and new lines
- - 0 - no indention
- - 1..4 - indent with *n* spaces
- - tabs - indent with tabs
+- none - no indention and new lines
+- 0 - no indention
+- 1..4 - indent with *n* spaces
+- tabs - indent with tabs
 
 Default: none
 

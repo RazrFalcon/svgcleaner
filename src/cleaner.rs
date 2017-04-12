@@ -194,9 +194,7 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
     fix_xmlns_attribute(doc, options.remove_xmlns_xlink_attribute);
 
     // NOTE: must be run at last, since it breaks the linking.
-    if options.join_style_attributes {
-        join_style_attributes(doc, opt);
-    }
+    join_style_attributes(doc, options.join_style_attributes, opt);
 
     Ok(())
 }

@@ -28,7 +28,7 @@ use clap::{Arg, App, ArgMatches};
 use svgdom::types;
 use svgdom::{ParseOptions, WriteOptions, WriteOptionsPaths, Indent};
 
-use options::Options;
+use options::{Options, StyleJoinMode};
 
 #[derive(Clone,Copy)]
 pub enum Key {
@@ -224,7 +224,11 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute, "true"))
         .arg(gen_flag!(Key::RemoveNeedlessAttributes, "true"))
         .arg(gen_flag!(Key::RemoveGradientAttributes, "false"))
-        .arg(gen_flag!(Key::JoinStyleAttributes, "true"))
+        .arg(Arg::with_name(KEYS[Key::JoinStyleAttributes])
+            .long(KEYS[Key::JoinStyleAttributes])
+            .value_name("VALUE")
+            .possible_values(&["no", "some", "all"])
+            .default_value("some"))
         .arg(gen_flag!(Key::ApplyTransformToGradients, "true"))
         .arg(gen_flag!(Key::ApplyTransformToShapes, "true"))
         .arg(gen_flag!(Key::RemoveUnresolvedClasses, "true"))
@@ -464,9 +468,15 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
     flags.resolve(&mut opt.remove_xmlns_xlink_attribute, Key::RemoveXmlnsXlinkAttribute);
     flags.resolve(&mut opt.remove_needless_attributes, Key::RemoveNeedlessAttributes);
     flags.resolve(&mut opt.remove_gradient_attributes, Key::RemoveGradientAttributes);
-    flags.resolve(&mut opt.join_style_attributes, Key::JoinStyleAttributes);
     flags.resolve(&mut opt.apply_transform_to_gradients, Key::ApplyTransformToGradients);
     flags.resolve(&mut opt.apply_transform_to_shapes, Key::ApplyTransformToShapes);
+
+    opt.join_style_attributes = match args.value_of(KEYS[Key::JoinStyleAttributes]).unwrap() {
+        "no"    => StyleJoinMode::None,
+        "some"  => StyleJoinMode::Some,
+        "all"   => StyleJoinMode::All,
+        _ => unreachable!(), // clap will validate the input
+    };
 
     flags.resolve(&mut opt.paths_to_relative, Key::PathsToRelative);
     flags.resolve(&mut opt.remove_unused_segments, Key::RemoveUnusedSegments);

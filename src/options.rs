@@ -20,6 +20,13 @@
 **
 ****************************************************************************/
 
+#[derive(Clone,Copy,PartialEq)]
+pub enum StyleJoinMode {
+    None,
+    Some,
+    All,
+}
+
 /// Documentation can be found in: docs/svgcleaner.rst
 pub struct Options {
     pub remove_unused_defs: bool,
@@ -48,7 +55,7 @@ pub struct Options {
     pub remove_xmlns_xlink_attribute: bool,
     pub remove_needless_attributes: bool,
     pub remove_gradient_attributes: bool,
-    pub join_style_attributes: bool,
+    pub join_style_attributes: StyleJoinMode,
     pub apply_transform_to_gradients: bool,
     pub apply_transform_to_shapes: bool,
 
@@ -87,7 +94,7 @@ impl Default for Options {
             remove_xmlns_xlink_attribute: false,
             remove_needless_attributes: false,
             remove_gradient_attributes: false,
-            join_style_attributes: false,
+            join_style_attributes: StyleJoinMode::None,
             apply_transform_to_gradients: false,
             apply_transform_to_shapes: false,
 

@@ -71,6 +71,7 @@ Paths:
     --paths-to-relative <FLAG>              Convert path segments into relative ones [default: yes]
     --remove-unused-segments <FLAG>         Remove unused path segments [default: yes]
     --convert-segments <FLAG>               Convert path segments into shorter ones [default: yes]
+    --apply-transform-to-paths <FLAG>       Apply transformations to paths [default: no]
     --trim-paths <FLAG>                     Use compact notation for paths [default: yes]
     --join-arcto-flags <FLAG>               Join ArcTo flags [default: no]
     --remove-dupl-cmd-in-paths <FLAG>       Remove subsequent segments command from paths [default: yes]

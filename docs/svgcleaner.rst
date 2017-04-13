@@ -1195,6 +1195,35 @@ CLI argument: ``--convert-segments``
 
 
 
+Apply transformations to paths
+------------------------------
+
+Transformations that contain only translate, rotate and/or proportional scale parts
+can be applied to some paths.
+
+This usually creates bigger files, so it's disabled by default.
+But it some cases it can be useful.
+
+CLI argument: ``--apply-transform-to-paths``
+
++----------------------------------------+----------------------------------+
+| Before (203b)                          | After (167b)                     |
++----------------------------------------+----------------------------------+
+| .. code-block:: XML                    | .. code-block:: XML              |
+|                                        |                                  |
+|   <svg>                                |   <svg>                          |
+|     <path stroke="red"                 |     <path stroke="red"           |
+|           transform="translate(10 20)" |           d="M 20 20 L 40 60"/>  |
+|           d="M 10 0 L 30 40"/>         |   </svg>                         |
+|   </svg>                               |                                  |
++----------------------------------------+----------------------------------+
+| |before-apply-transform-to-paths|      | |after-apply-transform-to-paths| |
++----------------------------------------+----------------------------------+
+
+.. |before-apply-transform-to-paths| image:: https://razrfalcon.github.io/svgcleaner/images/before/apply-transform-to-paths.svg
+.. |after-apply-transform-to-paths| image:: https://razrfalcon.github.io/svgcleaner/images/after/apply-transform-to-paths.svg
+
+
 Use compact notation for paths
 ------------------------------
 

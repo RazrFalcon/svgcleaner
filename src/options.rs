@@ -62,6 +62,7 @@ pub struct Options {
     pub paths_to_relative: bool,
     pub remove_unused_segments: bool,
     pub convert_segments: bool,
+    pub apply_transform_to_paths: bool,
 }
 
 // should all be `false`
@@ -101,6 +102,7 @@ impl Default for Options {
             paths_to_relative: false,
             remove_unused_segments: false,
             convert_segments: false,
+            apply_transform_to_paths: false,
         }
     }
 }

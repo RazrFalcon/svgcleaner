@@ -361,15 +361,16 @@ fn run_test(data: &Data, svg_path: &Path, cache: &TestCache) -> bool {
 
 fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     let res = Command::new(exe_path)
-                .arg(in_path)
-                .arg(out_path)
-                .arg("--copy-on-error=true")
-                .arg("--quiet=true")
+                .arg("--copy-on-error")
+                .arg("--quiet")
                 .arg("--remove-gradient-attributes=true")
                 .arg("--join-arcto-flags=true")
+                .arg("--apply-transform-to-paths=true")
                 .arg("--indent=2")
                 .arg("--remove-unreferenced-ids=false")
                 .arg("--trim-ids=false")
+                .arg(in_path)
+                .arg(out_path)
                 .output();
 
     match res {
@@ -381,7 +382,7 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
             }
 
             if !o.stdout.is_empty() {
-                println!("stdout must be empty: {}", str::from_utf8(&o.stdout).unwrap());
+                println!("stdout must be empty: {}", str::from_utf8(&o.stdout).unwrap().trim());
                 return false;
             }
 

@@ -82,6 +82,7 @@ pub enum Key {
     PathsToRelative,
     RemoveUnusedSegments,
     ConvertSegments,
+    ApplyTransformToPaths,
     TrimPaths,
     JoinArcToFlags,
     RemoveDuplCmdInPaths,
@@ -148,6 +149,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "paths-to-relative",
     "remove-unused-segments",
     "convert-segments",
+    "apply-transform-to-paths",
     "trim-paths",
     "join-arcto-flags",
     "remove-dupl-cmd-in-paths",
@@ -249,6 +251,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::PathsToRelative, "true"))
         .arg(gen_flag!(Key::RemoveUnusedSegments, "true"))
         .arg(gen_flag!(Key::ConvertSegments, "true"))
+        .arg(gen_flag!(Key::ApplyTransformToPaths, "false"))
         .arg(gen_flag!(Key::TrimPaths, "true"))
         .arg(gen_flag!(Key::JoinArcToFlags, "false"))
         .arg(gen_flag!(Key::RemoveDuplCmdInPaths, "true"))
@@ -330,6 +333,10 @@ pub fn check_values(args: &ArgMatches) -> bool {
     }
 
     if !check_value(args, Key::PathsToRelative, Key::ConvertSegments) {
+        return false;
+    }
+
+    if !check_value(args, Key::PathsToRelative, Key::ApplyTransformToPaths) {
         return false;
     }
 
@@ -493,6 +500,7 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
     flags.resolve(&mut opt.paths_to_relative, Key::PathsToRelative);
     flags.resolve(&mut opt.remove_unused_segments, Key::RemoveUnusedSegments);
     flags.resolve(&mut opt.convert_segments, Key::ConvertSegments);
+    flags.resolve(&mut opt.apply_transform_to_paths, Key::ApplyTransformToPaths);
 
     opt
 }
@@ -562,6 +570,20 @@ mod tests {
             "svgcleaner",
             "--paths-to-relative=false",
             "--convert-segments=true",
+            "in.svg",
+            "out.svg",
+        ]).unwrap();
+
+        assert!(!check_values(&args));
+    }
+
+    #[test]
+    fn cli_4() {
+        let app = prepare_app();
+        let args = app.get_matches_from_safe(&[
+            "svgcleaner",
+            "--paths-to-relative=false",
+            "--apply-transform-to-paths=true",
             "in.svg",
             "out.svg",
         ]).unwrap();

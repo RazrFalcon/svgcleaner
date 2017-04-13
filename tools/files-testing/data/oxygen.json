@@ -37,16 +37,8 @@
             "valid_ae": 1941
         },
         {
-            "name": "actions/small/48x48/view-bank-account.svg",
-            "valid_ae": 1661
-        },
-        {
             "name": "actions/small/48x48/view-loan.svg",
             "valid_ae": 1925
-        },
-        {
-            "name": "actions/small/48x48/view-bank-account-checking.svg",
-            "valid_ae": 1536
         },
         {
             "name": "devices/small/16x16/camera-photo.svg",
@@ -130,7 +122,7 @@
         },
         {
             "name": "status/user-busy.svg",
-            "valid_ae": 1083
+            "valid_ae": 1345
         },
         {
             "name": "status/user-away-extended.svg",
@@ -139,14 +131,6 @@
         {
             "name": "status/user-invisible.svg",
             "valid_ae": 1091
-        },
-        {
-            "name": "status/user-offline.svg",
-            "valid_ae": 1083
-        },
-        {
-            "name": "status/user-online.svg",
-            "valid_ae": 1221
         },
         {
             "name": "categories/applications-toys.svg",
@@ -187,18 +171,6 @@
         {
             "name": "actions/small/22x22/download-later.svg",
             "valid_ae": 1336
-        },
-        {
-            "name": "actions/small/22x22/edit-image-face-recognize.svg",
-            "valid_ae": 1162
-        },
-        {
-            "name": "actions/small/22x22/edit-image-face-add.svg",
-            "valid_ae": 1152
-        },
-        {
-            "name": "actions/small/22x22/edit-image-face-detect.svg",
-            "valid_ae": 887
         },
         {
             "name": "actions/small/22x22/view-calendar-time-spent.svg",
@@ -544,6 +516,154 @@
         {
             "name": "mimetypes/small/48x48/image-svg+xml-compressed.svg",
             "valid_ae": 170179
+        },
+        {
+            "name": "status/user-offline.svg",
+            "valid_ae": 1345
+        },
+        {
+            "name": "status/user-online.svg",
+            "valid_ae": 1483
+        },
+        {
+            "name": "categories/small/22x22/preferences-desktop-personal.svg",
+            "valid_ae": 570
+        },
+        {
+            "name": "actions/small/22x22/edit-image-face-recognize.svg",
+            "valid_ae": 1235
+        },
+        {
+            "name": "actions/small/48x48/view-bank-account.svg",
+            "valid_ae": 1662
+        },
+        {
+            "name": "actions/small/48x48/view-bank-account-checking.svg",
+            "valid_ae": 1537
+        },
+        {
+            "name": "actions/edit-bomb.svg",
+            "valid_ae": 1366
+        },
+        {
+            "name": "devices/secure-card.svg",
+            "valid_ae": 420
+        },
+        {
+            "name": "devices/small/32x32/secure-card.svg",
+            "valid_ae": 677
+        },
+        {
+            "name": "devices/small/48x48/secure-card.svg",
+            "valid_ae": 611
+        },
+        {
+            "name": "emotes/face-uncertain.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/face-surprise.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/face-wink.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/face-smile-big.svg",
+            "valid_ae": 13393
+        },
+        {
+            "name": "emotes/face-sad.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/face-plain.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/small/16x16/face-uncertain.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/small/16x16/face-smile-big.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/small/16x16/face-sad.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/small/16x16/face-kiss.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/small/16x16/face-angel.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/small/16x16/face-raspberry.svg",
+            "valid_ae": 13187
+        },
+        {
+            "name": "emotes/small/16x16/face-laugh.svg",
+            "valid_ae": 13452
+        },
+        {
+            "name": "emotes/small/22x22/face-uncertain.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/small/22x22/face-smile-big.svg",
+            "valid_ae": 13833
+        },
+        {
+            "name": "emotes/small/22x22/face-sad.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/small/22x22/face-kiss.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/small/22x22/face-angel.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/small/22x22/face-raspberry.svg",
+            "valid_ae": 13356
+        },
+        {
+            "name": "emotes/small/22x22/face-laugh.svg",
+            "valid_ae": 13510
+        },
+        {
+            "name": "emotes/face-smile.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/face-kiss.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/face-angel.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/face-embarrassed.svg",
+            "valid_ae": 14450
+        },
+        {
+            "name": "emotes/face-raspberry.svg",
+            "valid_ae": 13921
+        },
+        {
+            "name": "emotes/face-laugh.svg",
+            "valid_ae": 12892
+        },
+        {
+            "name": "mimetypes/small/16x16/text-x-hex.svg",
+            "valid_ae": 901
         }
     ],
     "ignore": [

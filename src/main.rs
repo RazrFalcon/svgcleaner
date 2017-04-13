@@ -78,8 +78,8 @@ fn main() {
     let on_err = || {
         // copy original file to destination
         // only when both files are specified
-        let in_file  = if let InputFrom::File(s) = input { Some(s) } else { None };
-        let out_file = if let InputFrom::File(s) = input { Some(s) } else { None };
+        let in_file  = if let InputFrom::File(s) = input  { Some(s) } else { None };
+        let out_file = if let OutputTo::File(s)  = output { Some(s) } else { None };
 
         if     in_file.is_some()
             && out_file.is_some()

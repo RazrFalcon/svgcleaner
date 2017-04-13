@@ -22,10 +22,13 @@
 
 use svgdom::{Document, AttributeValue};
 use svgdom::types::path::Path;
+use svgdom::types::Transform;
 
 use task::short::{EId, AId};
+use task::apply_transforms::utils as ts_utils;
 use options::Options;
 
+mod apply_transform;
 mod conv_segments;
 mod rm_unused;
 
@@ -37,14 +40,34 @@ pub fn process_paths(doc: &Document, options: &Options) {
         let has_marker = node.has_attributes(&[AId::Marker, AId::MarkerStart,
                                                AId::MarkerMid, AId::MarkerEnd]);
 
+        let mut ts = None;
+        if options.apply_transform_to_paths {
+            if node.has_attribute(AId::Transform) {
+                let tsl = ts_utils::get_ts(&node);
+
+                if    ts_utils::is_valid_transform(&tsl)
+                   && ts_utils::is_valid_attrs(&node) {
+                    ts = Some(tsl);
+
+                    node.remove_attribute(AId::Transform);
+
+                    if tsl.has_scale() {
+                        // we must update 'stroke-width' if transform had scale part in it
+                        let (sx, _) = tsl.get_scale();
+                        ::task::utils::recalc_stroke_width(&node, sx);
+                    }
+                }
+            }
+        }
+
         let mut attrs = node.attributes_mut();
         if let Some(&mut AttributeValue::Path(ref mut path)) = attrs.get_value_mut(AId::D) {
-            process_path(path, has_marker, options);
+            process_path(path, has_marker, ts, options);
         }
     }
 }
 
-fn process_path(path: &mut Path, has_marker: bool, options: &Options) {
+fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, options: &Options) {
     path.conv_to_absolute();
 
     if options.convert_segments {
@@ -53,6 +76,10 @@ fn process_path(path: &mut Path, has_marker: bool, options: &Options) {
 
     if options.remove_unused_segments && !has_marker {
         rm_unused::remove_unused_segments(path);
+    }
+
+    if let Some(ref ts) = ts {
+        apply_transform::apply_transform(path, ts);
     }
 
     path.conv_to_relative();

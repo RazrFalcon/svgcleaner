@@ -96,8 +96,6 @@ All stats were collected using the latest release version.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/performance_chart_W3C_SVG_11_TestSuite.svg)
 
-***
-
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.8.1/docs/images/performance_chart_oxygen.svg)
 
 ### Other

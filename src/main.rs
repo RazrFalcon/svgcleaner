@@ -26,8 +26,7 @@ use std::fs;
 use std::path::Path;
 use std::io::{Write, stderr};
 
-use svgcleaner::cli;
-use svgcleaner::cli::{Key, KEYS};
+use svgcleaner::cli::{self, InputFrom, OutputTo, Key, KEYS};
 use svgcleaner::cleaner;
 
 macro_rules! try_msg {
@@ -60,26 +59,37 @@ fn main() {
     let write_opt = cli::gen_write_options(&args);
     let cleaning_opt = cli::gen_cleaning_options(&args);
 
-    let in_file = args.value_of("in-file").unwrap();
-    let out_file = args.value_of("out-file");
-    let stdout_enabled = args.is_present(KEYS[Key::Stdout]);
+    let input = cli::input(&args);
+    let output = cli::output(&args);
 
-    if !Path::new(in_file).exists() {
-        writeln!(stderr(), "Error: Input file does not exist.").unwrap();
-        return;
+    if let InputFrom::File(path) = input {
+        if !Path::new(path).exists() {
+            writeln!(stderr(), "Error: Input file does not exist.").unwrap();
+            return;
+        }
     }
 
-    // load file
-    let raw = try_msg!(cleaner::load_file(in_file));
+    // load data
+    let raw = match input {
+        InputFrom::Stdin => try_msg!(cleaner::load_stdin()),
+        InputFrom::File(path) => try_msg!(cleaner::load_file(path)),
+    };
 
     let on_err = || {
         // copy original file to destination
-        if out_file.is_some() && args.is_present(KEYS[Key::CopyOnError]) {
+        // only when both files are specified
+        let in_file  = if let InputFrom::File(s) = input { Some(s) } else { None };
+        let out_file = if let InputFrom::File(s) = input { Some(s) } else { None };
+
+        if     in_file.is_some()
+            && out_file.is_some()
+            && args.is_present(KEYS[Key::CopyOnError])
+        {
+            let inf = in_file.unwrap();
+            let outf = out_file.unwrap();
             // copy a file only when paths are different
-            if let Some(out_file) = out_file {
-                if in_file != out_file {
-                    try_msg!(fs::copy(in_file, out_file));
-                }
+            if inf != outf {
+                try_msg!(fs::copy(inf, outf));
             }
         }
 
@@ -139,19 +149,13 @@ fn main() {
     }
 
     // save buffer
-    if stdout_enabled {
-        try_msg!(cleaner::write_stdout(&buf[..]));
+    match output {
+        OutputTo::Stdout => try_msg!(cleaner::write_stdout(&buf[..])),
+        OutputTo::File(path) => try_msg!(cleaner::save_file(&buf[..], path)),
     }
 
-    if let Some(out_file) = out_file {
-        try_msg!(cleaner::save_file(&buf[..], out_file));
-    }
-
-    // unwrap is safe, because 'save_file' will fail on write error,
-    // so file is totally exist
-    if !stdout_enabled && out_file.is_some() && !args.is_present(KEYS[Key::Quiet]) {
-        let out_size = fs::File::open(out_file.unwrap()).unwrap().metadata().unwrap().len() as f64;
-        let ratio = 100.0 - out_size / (raw.len() as f64) * 100.0;
-        println!("Your image is {:.2}% smaller now.", ratio);
+    if !args.is_present(KEYS[Key::Quiet]) {
+        let ratio = 100.0 - (buf.len() as f64) / (raw.len() as f64) * 100.0;
+        writeln!(stderr(), "Your image is {:.2}% smaller now.", ratio).unwrap();
     }
 }

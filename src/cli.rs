@@ -30,6 +30,18 @@ use svgdom::{ParseOptions, WriteOptions, WriteOptionsPaths, Indent};
 
 use options::{Options, StyleJoinMode};
 
+#[derive(Debug,Clone,Copy,PartialEq)]
+pub enum InputFrom<'a> {
+    Stdin,
+    File(&'a str),
+}
+
+#[derive(Debug,Clone,Copy,PartialEq)]
+pub enum OutputTo<'a> {
+    Stdout,
+    File(&'a str),
+}
+
 #[derive(Clone,Copy)]
 pub enum Key {
     RemoveComments,
@@ -258,7 +270,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
 }
 
 fn is_svg(val: String) -> Result<(), String> {
-    if val.ends_with(".svg") || val.ends_with(".SVG") {
+    if val.ends_with(".svg") || val.ends_with(".SVG") || val == "-" {
         Ok(())
     } else {
         Err(String::from("The file format must be SVG."))
@@ -485,6 +497,32 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
     opt
 }
 
+pub fn input<'a>(args: &'a ArgMatches) -> InputFrom<'a> {
+    let in_file = args.value_of("in-file").unwrap();
+    let out_file = args.value_of("out-file");
+
+    if in_file == "-" && args.is_present(KEYS[Key::Stdout]) {
+        InputFrom::Stdin
+    } else if let Some("-") = out_file {
+        InputFrom::Stdin
+    } else {
+        InputFrom::File(in_file)
+    }
+}
+
+pub fn output<'a>(args: &'a ArgMatches) -> OutputTo<'a> {
+    let in_file = args.value_of("in-file").unwrap();
+    let out_file = args.value_of("out-file");
+
+    if args.is_present(KEYS[Key::Stdout]) {
+        OutputTo::Stdout
+    } else if let Some("-") = out_file {
+        OutputTo::File(in_file)
+    } else {
+        OutputTo::File(out_file.unwrap())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -606,5 +644,57 @@ mod tests {
         assert_eq!(cleaning_opt.remove_unused_defs, true);
         assert_eq!(cleaning_opt.convert_shapes, false);
         assert_eq!(cleaning_opt.remove_gradient_attributes, false);
+    }
+
+    #[test]
+    fn no_std() {
+        let app = prepare_app();
+        let args = app.get_matches_from_safe(&[
+            "svgcleaner",
+            "in.svg",
+            "out.svg",
+        ]).unwrap();
+
+        assert_eq!(input(&args), InputFrom::File("in.svg"));
+        assert_eq!(output(&args), OutputTo::File("out.svg"));
+    }
+
+    #[test]
+    fn std_1() {
+        let app = prepare_app();
+        let args = app.get_matches_from_safe(&[
+            "svgcleaner",
+            "-c",
+            "-",
+        ]).unwrap();
+
+        assert_eq!(input(&args), InputFrom::Stdin);
+        assert_eq!(output(&args), OutputTo::Stdout);
+    }
+
+    #[test]
+    fn std_2() {
+        let app = prepare_app();
+        let args = app.get_matches_from_safe(&[
+            "svgcleaner",
+            "-c",
+            "in.svg",
+        ]).unwrap();
+
+        assert_eq!(input(&args), InputFrom::File("in.svg"));
+        assert_eq!(output(&args), OutputTo::Stdout);
+    }
+
+    #[test]
+    fn std_3() {
+        let app = prepare_app();
+        let args = app.get_matches_from_safe(&[
+            "svgcleaner",
+            "out.svg",
+            "-",
+        ]).unwrap();
+
+        assert_eq!(input(&args), InputFrom::Stdin);
+        assert_eq!(output(&args), OutputTo::File("out.svg"));
     }
 }

@@ -3,12 +3,22 @@ svgcleaner could help you to clean up your SVG files from the unnecessary data.
 A complete documentation can be found here: https://github.com/RazrFalcon/svgcleaner/blob/master/docs/svgcleaner.rst
 
 USAGE:
-    svgcleaner [OPTIONS] <in-file> <out-file>
+    svgcleaner [FLAGS] [OPTIONS] <in-file> <out-file>
 
     <FLAG> can contain values: true, false, yes, no, y, n
 
-EXAMPLE:
+EXAMPLES:
+    clean a file with default options:
+    svgcleaner in.svg out.svg
+
+    clean a file with custom options:
     svgcleaner --indent=2 --paths-coordinates-precision=5 --join-arcto-flags=yes in.svg out.svg
+
+    clean a file without default options:
+    svgcleaner --no-defaults --remove-comments=yes in.svg out.svg
+
+    clean a stream using UNIX pipes:
+    cat in.svg | svgcleaner -c - > out.svg
 
 FLAGS:
     -h, --help                              Print help information

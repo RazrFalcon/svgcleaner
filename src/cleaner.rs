@@ -21,8 +21,7 @@
 ****************************************************************************/
 
 use std::fs;
-use std::io::{Read, Write};
-use std::io;
+use std::io::{self, Read, Write};
 
 use svgdom;
 use svgdom::{Document, ParseOptions, WriteOptions, WriteBuffer, ElementId};
@@ -30,6 +29,16 @@ use svgdom::{Document, ParseOptions, WriteOptions, WriteBuffer, ElementId};
 use options::Options;
 use task::*;
 use error;
+
+pub fn load_stdin() -> Result<String, io::Error> {
+    let mut s = String::new();
+    let stdin = io::stdin();
+    let mut handle = stdin.lock();
+
+    handle.read_to_string(&mut s)?;
+
+    Ok(s)
+}
 
 pub fn load_file(path: &str) -> Result<String, io::Error> {
     let mut file = fs::File::open(path)?;
@@ -203,8 +212,9 @@ pub fn write_buffer(doc: &Document, opt: &WriteOptions, buf: &mut Vec<u8>) {
     doc.write_buf_opt(opt, buf);
 }
 
-pub fn write_stdout(data: &[u8]) -> Result<usize, io::Error> {
-    io::stdout().write(&data)
+pub fn write_stdout(data: &[u8]) -> Result<(), io::Error> {
+    io::stdout().write(&data)?;
+    Ok(())
 }
 
 pub fn save_file(data: &[u8], path: &str) -> Result<(), io::Error> {

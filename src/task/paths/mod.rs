@@ -97,7 +97,7 @@ fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, option
 mod utils {
     use svgdom::types::path::{Path};
 
-    // TODO: replace with macro
+    // TODO: replace with a macro
     pub fn resolve_x(path: &Path, start: usize) -> f64 {
         // VerticalLineTo does not have `x` coordinate, so we have to find it in previous segments
         let mut i = start;
@@ -112,7 +112,7 @@ mod utils {
             i -= 1;
         }
 
-        // First segment must be MoveTo, so we will always have an `x`.
+        // first segment must be MoveTo, so we will always have an `x`
         unreachable!();
     }
 
@@ -130,7 +130,7 @@ mod utils {
             i -= 1;
         }
 
-        // First segment must be MoveTo, so we will always have an `y`.
+        // first segment must be MoveTo, so we will always have an `y`
         unreachable!();
     }
 

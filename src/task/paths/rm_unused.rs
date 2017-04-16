@@ -33,21 +33,30 @@ pub fn remove_unused_segments(path: &mut Path) {
     while is_changed {
         is_changed = false;
 
+        // a path with one segment is useless
         if path.d.len() == 1 {
             path.d.clear();
             break;
         }
 
+        // order is important
         remove_mm(path, &mut is_changed);
         remove_zz(path, &mut is_changed);
         remove_mz(path, &mut is_changed);
         process_lz(path, &mut is_changed);
+        remove_equal(path, &mut is_changed);
+        remove_zero_lenght(path, &mut is_changed);
     }
 }
+
+// TODO: move loop's to trait or macro or function
 
 fn remove_mm(path: &mut Path, is_changed: &mut bool) {
     // Remove continuous MoveTo segments since they are pointless.
     // We only interested in last one.
+    //
+    // This doesn't impact implicit LineTo commands,
+    // because they already converted by the svgdom.
     let mut i = 1;
     while i < path.d.len() {
         let curr_cmd = path.d[i].cmd();
@@ -65,7 +74,7 @@ fn remove_mm(path: &mut Path, is_changed: &mut bool) {
 }
 
 fn remove_zz(path: &mut Path, is_changed: &mut bool) {
-    // Remove continuous ClosePath segments since they are pointless.
+    // remove continuous ClosePath segments since they are pointless
     let mut i = 1;
     while i < path.d.len() {
         let curr_cmd = path.d[i].cmd();
@@ -83,7 +92,7 @@ fn remove_zz(path: &mut Path, is_changed: &mut bool) {
 }
 
 fn remove_mz(path: &mut Path, is_changed: &mut bool) {
-    // Remove `M Z` pairs. Since this are null paths.
+    // remove `M Z` pairs since this are null paths
     let mut i = 1;
     while i < path.d.len() {
         let curr_cmd = path.d[i].cmd();
@@ -100,6 +109,54 @@ fn remove_mz(path: &mut Path, is_changed: &mut bool) {
                     i = 0;
                 }
             }
+        }
+
+        i += 1;
+    }
+}
+
+fn remove_equal(path: &mut Path, is_changed: &mut bool) {
+    // if current segment is the same as previous - remove it
+    let mut i = 1;
+    while i < path.d.len() {
+        let prev = path.d[i - 1];
+        let curr = path.d[i];
+
+        if prev == curr {
+            path.d.remove(i);
+            i -= 1;
+            *is_changed = true;
+        }
+
+        i += 1;
+    }
+}
+
+fn remove_zero_lenght(path: &mut Path, is_changed: &mut bool) {
+    // if segment moved to the same position as current - remove it
+    let mut i = 1;
+    while i < path.d.len() {
+        let curr = path.d[i];
+        let (px, py) = utils::resolve_xy(path, i - 1);
+
+        let is_equal = match curr.cmd() {
+            Command::HorizontalLineTo => {
+                curr.x().unwrap().fuzzy_eq(&px)
+            }
+            Command::VerticalLineTo => {
+                curr.y().unwrap().fuzzy_eq(&py)
+            }
+            Command::LineTo => {
+                curr.x().unwrap().fuzzy_eq(&px) && curr.y().unwrap().fuzzy_eq(&py)
+            }
+            // curves can't be removed
+            _ => false,
+        };
+
+        if is_equal {
+            path.d.remove(i);
+            i -= 1;
+            *is_changed = true;
         }
 
         i += 1;
@@ -144,7 +201,7 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
             if is_line_based(prev_cmd) {
                 let (x, y) = utils::resolve_xy(path, prev_i);
                 if mx.fuzzy_eq(&x) && my.fuzzy_eq(&y) {
-                    // replace line-based segment with ClosePath.
+                    // replace line-based segment with ClosePath
                     path.d[prev_i] = Segment::new_close_path();
                     *is_changed = true;
                     continue;
@@ -152,7 +209,7 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
             }
         }
 
-        // Remember last MoveTo.
+        // remember last MoveTo
         if curr_cmd == Command::MoveTo {
             mx = path.d[i].x().unwrap();
             my = path.d[i].y().unwrap();
@@ -190,42 +247,81 @@ mod tests {
         )
     }
 
-    test!(rm_dulp_moveto_1, "m 10 10 m 20 20 l 10 20",
-                            "M 30 30 L 40 50");
+    test!(rm_dulp_moveto_1,
+        "m 10 10 m 20 20 l 10 20",
+        "M 30 30 L 40 50");
 
-    test!(rm_dulp_moveto_2, "m 10 10 20 20 l 10 20",
-                            "M 10 10 L 30 30 L 40 50");
+    test!(rm_dulp_moveto_2,
+        "m 10 10 20 20 l 10 20",
+        "M 10 10 L 30 30 L 40 50");
 
-    test!(rm_dulp_moveto_3, "M 10 10 M 10 10 M 10 10 M 10 10 L 15 20",
-                            "M 10 10 L 15 20");
-
-
-    test!(rm_single_1, "M 10 10", "");
-
-
-    test!(rm_mz_1, "M 10 10 Z", "");
-
-    test!(rm_mz_2, "M 10 10 Z M 10 10 Z M 10 10 Z", "");
-
-    test!(rm_mz_3, "M 10 10 L 15 20 M 10 20 Z M 10 20 L 15 30",
-                   "M 10 10 L 15 20 M 10 20 L 15 30");
+    test!(rm_dulp_moveto_3,
+        "M 10 10 M 10 10 M 10 10 M 10 10 L 15 20",
+        "M 10 10 L 15 20");
 
 
-    test!(rm_z_1, "M 10 10 Z Z Z", "");
+    test!(rm_single_1,
+        "M 10 10",
+        "");
 
-    test!(rm_z_2, "M 10 10 L 15 20 Z Z Z M 10 20 L 20 30",
-                  "M 10 10 L 15 20 Z M 10 20 L 20 30");
+
+    test!(rm_mz_1,
+        "M 10 10 Z",
+        "");
+
+    test!(rm_mz_2,
+        "M 10 10 Z M 10 10 Z M 10 10 Z",
+        "");
+
+    test!(rm_mz_3,
+        "M 10 10 L 15 20 M 10 20 Z M 10 20 L 15 30",
+        "M 10 10 L 15 20 M 10 20 L 15 30");
 
 
-    test!(rm_lz_1, "M 10 10 L 50 50 L 10 10 Z",
-                   "M 10 10 L 50 50 Z");
+    test!(rm_z_1,
+        "M 10 10 Z Z Z",
+        "");
 
-    test!(rm_lz_2, "M 10 10 L 50 50 L 10 10",
-                   "M 10 10 L 50 50 Z");
+    test!(rm_z_2,
+        "M 10 10 L 15 20 Z Z Z M 10 20 L 20 30",
+        "M 10 10 L 15 20 Z M 10 20 L 20 30");
 
-    test!(rm_lz_3, "M 10 10 L 50 50 L 10 10 M 50 50 L 60 60",
-                   "M 10 10 L 50 50 Z M 50 50 L 60 60");
+    test!(rm_zero_lenght_1,
+        "M 10 10 L 10 20 L 10 20 L 10 20 Z",
+        "M 10 10 L 10 20 Z");
 
-    test!(rm_lz_4, "M 10 10 L 50 50 L 10 10 M 50 50 L 50 50",
-                   "M 10 10 L 50 50 Z");
+    test!(rm_zero_lenght_2,
+        "M 10 10 L 10 10",
+        "");
+
+    // only H, V, L segments should be removed
+    test!(keep_zero_lenght_1,
+        "M 10 10 C 20 20 30 30 10 10",
+        "M 10 10 C 20 20 30 30 10 10");
+
+
+    test!(rm_equal_1,
+        "M 10 10 C 20 20 30 30 10 10 C 20 20 30 30 10 10",
+        "M 10 10 C 20 20 30 30 10 10");
+
+    test!(rm_equal_2,
+        "M 10 10 L 20 20 L 20 20 L 20 20",
+        "M 10 10 L 20 20");
+
+
+    test!(rm_lz_1,
+        "M 10 10 L 50 50 L 10 10 Z",
+        "M 10 10 L 50 50 Z");
+
+    test!(rm_lz_2,
+        "M 10 10 L 50 50 L 10 10",
+        "M 10 10 L 50 50 Z");
+
+    test!(rm_lz_3,
+        "M 10 10 L 50 50 L 10 10 M 50 50 L 60 60",
+        "M 10 10 L 50 50 Z M 50 50 L 60 60");
+
+    test!(rm_lz_4,
+        "M 10 10 L 50 50 L 10 10 M 50 50 L 50 50",
+        "M 10 10 L 50 50 Z");
 }

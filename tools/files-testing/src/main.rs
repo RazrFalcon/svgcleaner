@@ -101,7 +101,7 @@ fn main() {
         return;
     }
 
-    let svgcleaner_path = Path::new("../../target/release/svgcleaner");
+    let svgcleaner_path = Path::new("../../target/debug/svgcleaner");
     if !svgcleaner_path.exists() {
         println!("Error: {:?} not found.", svgcleaner_path);
         return;
@@ -363,12 +363,12 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     let res = Command::new(exe_path)
                 .arg("--copy-on-error")
                 .arg("--quiet")
-                .arg("--remove-gradient-attributes=true")
-                .arg("--join-arcto-flags=true")
-                .arg("--apply-transform-to-paths=true")
+                .arg("--remove-gradient-attributes=yes")
+                .arg("--join-arcto-flags=yes")
+                .arg("--apply-transform-to-paths=yes")
                 .arg("--indent=2")
-                .arg("--remove-unreferenced-ids=false")
-                .arg("--trim-ids=false")
+                .arg("--remove-unreferenced-ids=no")
+                .arg("--trim-ids=no")
                 .arg(in_path)
                 .arg(out_path)
                 .output();

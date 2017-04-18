@@ -34,8 +34,9 @@ mod rm_unused;
 
 pub fn process_paths(doc: &Document, options: &Options) {
     for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::Path)) {
-        // We can't process paths with marker, because if we remove all segments
-        // it will break rendering.
+        // we can't process paths with marker, because if we remove all segments
+        // it will break rendering
+        //
         // TODO: do not remove first segment if node has marker
         let has_marker = node.has_attributes(&[AId::Marker, AId::MarkerStart,
                                                AId::MarkerMid, AId::MarkerEnd]);
@@ -54,7 +55,7 @@ pub fn process_paths(doc: &Document, options: &Options) {
                     if tsl.has_scale() {
                         // we must update 'stroke-width' if transform had scale part in it
                         let (sx, _) = tsl.get_scale();
-                        ::task::utils::recalc_stroke_width(&node, sx);
+                        ::task::utils::recalc_stroke(&node, sx);
                     }
                 }
             }

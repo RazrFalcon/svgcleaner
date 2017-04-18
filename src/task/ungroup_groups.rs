@@ -21,16 +21,20 @@
 ****************************************************************************/
 
 use super::short::{EId, AId};
+use task::apply_transforms;
+use options::Options;
 
 use svgdom::{Document, Node, AttributeValue};
 
-pub fn ungroup_groups(doc: &Document) {
+pub fn ungroup_groups(doc: &Document, options: &Options) {
     let mut groups = Vec::with_capacity(16);
 
     // doc must contain 'svg' node, so we can safely unwrap
     let svg = doc.svg_element().unwrap();
     loop {
-        _ungroup_groups(&svg, &mut groups);
+        apply_transforms::prepare_transforms(&doc, &options);
+
+        _ungroup_groups(&svg, &mut groups, options);
 
         if groups.is_empty() {
             break;
@@ -45,15 +49,14 @@ pub fn ungroup_groups(doc: &Document) {
 
 // Fill 'groups' vec with 'g' elements that should be removed.
 // This method is recursive.
-fn _ungroup_groups(root: &Node, groups: &mut Vec<Node>) {
-    // We can't ungoup groups if they have one of the listed attribute.
+fn _ungroup_groups(parent: &Node, groups: &mut Vec<Node>, options: &Options) {
+    // We can't ungroup groups if they have one of the listed attribute.
     // Checkout 'painting-marker-02-f.svg' in 'W3C_SVG_11_TestSuite' for details.
     let invalid_attrs = [AId::Mask, AId::ClipPath, AId::Filter];
 
     // TODO: we should not ungroup groups with non-inheritable attributes.
-    // TODO: ungroup groups with 'transform' attribute when all/most of children has it too
 
-    for node in root.children() {
+    for node in parent.children() {
         if node.is_tag_name(EId::G) {
             if !node.has_children() && !node.has_attribute(AId::Filter) {
                 // Empty group without filter attribute.
@@ -77,7 +80,7 @@ fn _ungroup_groups(root: &Node, groups: &mut Vec<Node>) {
             // so if we ungroup this group we will actually enable clipping.
             // Which will lead to broken image.
             // TODO: remove such groups completely
-            if node.parent().unwrap().is_tag_name(EId::ClipPath) {
+            if parent.is_tag_name(EId::ClipPath) {
                 continue;
             }
 
@@ -93,8 +96,9 @@ fn _ungroup_groups(root: &Node, groups: &mut Vec<Node>) {
 
             // process group with many children
 
-            // do not ungroup group which have 'switch' element as direct parent
-            if node.parent().unwrap().is_tag_name(EId::Switch) {
+            // do not ungroup group which have 'switch' element as direct parent,
+            // because it will break a 'switch'
+            if parent.is_tag_name(EId::Switch) {
                 continue;
             }
 
@@ -103,10 +107,26 @@ fn _ungroup_groups(root: &Node, groups: &mut Vec<Node>) {
                 groups.push(node.clone());
                 continue;
             }
+
+            // if group has only a transform attribute
+            // and if all children elements contain transform
+            // and none of the children is `use`
+            //
+            // example: oxygen/edit-find-mail.svg
+            if node.has_attribute(AId::Transform) && node.attributes().len() == 1 {
+                let is_ok = node.children().all(|n| {
+                    n.has_attribute(AId::Transform) && !n.is_tag_name(EId::Use)
+                });
+
+                if is_ok {
+                    groups.push(node.clone());
+                    continue;
+                }
+            }
         }
 
         if node.has_children() {
-            _ungroup_groups(&node, groups);
+            _ungroup_groups(&node, groups, options);
         }
     }
 }
@@ -171,6 +191,7 @@ mod tests {
     use super::*;
     use svgdom::{Document, WriteToString};
     use task::{group_defs, remove_empty_defs, rm_unused_defs};
+    use options::Options;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -181,8 +202,13 @@ mod tests {
                 // prepare defs
                 group_defs(&doc);
 
+                let mut options = Options::default();
+                options.apply_transform_to_shapes = true;
+                options.paths_to_relative = true;
+                options.apply_transform_to_paths = true;
+
                 // actual test
-                ungroup_groups(&doc);
+                ungroup_groups(&doc, &options);
 
                 // We must check that we moved linked elements correctly.
                 // If we not, than referenced elements will be removed. Which is wrong.
@@ -337,12 +363,22 @@ mod tests {
 </svg>
 ");
 
-    test_eq!(skip_ungroup_5,
+    test!(skip_ungroup_5,
 "<svg>
     <defs>
         <clipPath id='cp1'>
             <g transform='translate(5)'>
                 <rect/>
+            </g>
+        </clipPath>
+    </defs>
+    <rect clip-path='url(#cp1)'/>
+</svg>",
+"<svg>
+    <defs>
+        <clipPath id='cp1'>
+            <g>
+                <rect transform='translate(5)'/>
             </g>
         </clipPath>
     </defs>
@@ -359,6 +395,15 @@ mod tests {
             <rect/>
         </g>
     </switch>
+</svg>
+");
+
+    test_eq!(skip_ungroup_7,
+"<svg>
+    <g transform='translate(10 20)'>
+        <rect transform='translate(10 20)'/>
+        <use transform='translate(10 20)'/>
+    </g>
 </svg>
 ");
 
@@ -465,10 +510,46 @@ mod tests {
     </g>
 </svg>",
 "<svg>
+    <rect transform='translate(30 50)'/>
+    <rect transform='translate(10 20)'/>
+</svg>
+");
+
+    // ungroup group with transform when all children also has a transform
+    // but only when group has only one attribute: transform
+    test!(ungroup_with_transform_5,
+"<svg>
     <g transform='translate(10 20)'>
-        <rect transform='translate(20 30)'/>
+        <rect transform='translate(10 20)'/>
+        <rect transform='translate(10 20)'/>
+    </g>
+    <g fill='#ff0000' transform='translate(10 20)'>
+        <rect transform='translate(10 20)'/>
+        <rect transform='translate(10 20)'/>
+    </g>
+</svg>",
+"<svg>
+    <rect transform='translate(20 40)'/>
+    <rect transform='translate(20 40)'/>
+    <g fill='#ff0000'>
+        <rect transform='translate(20 40)'/>
+        <rect transform='translate(20 40)'/>
+    </g>
+</svg>
+");
+
+    // ungroup because transform will be applied to rect
+    // only when `Options::apply_transform_to_shapes` is enabled
+    test!(ungroup_with_transform_6,
+"<svg>
+    <g transform='translate(10 20)'>
+        <rect/>
         <rect/>
     </g>
+</svg>",
+"<svg>
+    <rect transform='translate(10 20)'/>
+    <rect transform='translate(10 20)'/>
 </svg>
 ");
 }

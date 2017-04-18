@@ -328,8 +328,8 @@ fn clean_with_svgcleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool 
     let res = Command::new(exe_path)
                 .arg(in_path)
                 .arg(out_path)
-                .arg("--copy-on-error=true")
-                .arg("--quiet=true")
+                .arg("--copy-on-error")
+                .arg("--quiet")
                 .output();
 
     match res {

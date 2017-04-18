@@ -12,12 +12,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - stdin and stdout support.
 - `--no-defaults`.
 - `--apply-transform-to-paths`.
+- Better groups with transforms ungrouping.
 
 ### Changed
 - `<FLAG>` argument type accepts `true`, `false`, `yes`, `no`, `y`, `n` now.
 - Flags `--multipass`, `--copy-on-error` and `--quiet` doesn't accepts value now.
 - `--indent` accepts only `none`, `0`, `1`, `2`, `3`, `4`, `tabs` now.
 - `--join-style-attributes` accepts only `no`, `some`, `all` now.
+
+### Fixed
+- Fixed `stroke-dasharray` and `stroke-dashoffset` processing during transformations applying.
+
+### Other
+- Updated to the latest version of the libsvgdom.
 
 ## [0.8.1] - 2017-02-01
 ### Added

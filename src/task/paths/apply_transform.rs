@@ -21,10 +21,13 @@
 ****************************************************************************/
 
 use svgdom::types::path::{Path, SegmentData};
-use svgdom::types::{Transform};
+use svgdom::types::{Transform, FuzzyEq};
 
 pub fn apply_transform(path: &mut Path, ts: &Transform) {
-    let (sx, _) = ts.get_scale();
+    let (sx, sy) = ts.get_scale();
+
+    // only proportional scale is supported
+    debug_assert!(sx.fuzzy_eq(&sy));
 
     for seg in path.d.iter_mut() {
         match *seg.data_mut() {

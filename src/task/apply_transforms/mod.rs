@@ -20,9 +20,11 @@
 **
 ****************************************************************************/
 
+pub use self::preproc::prepare_transforms;
 pub use self::gradients::apply_transform_to_gradients;
 pub use self::shapes::apply_transform_to_shapes;
 
+mod preproc;
 mod gradients;
 mod shapes;
 
@@ -89,10 +91,10 @@ pub mod utils {
     pub fn is_valid_coords(node: &Node) -> bool {
         match node.tag_id().unwrap() {
             EId::Rect => _is_valid_coords(node, &[AId::X, AId::Y]),
-              EId::Circle
-            | EId::Ellipse => _is_valid_coords(node, &[AId::Cx, AId::Cy]),
-              EId::Line
-            | EId::LinearGradient => _is_valid_coords(node, &[AId::X1, AId::Y1, AId::X2, AId::Y2]),
+            EId::Circle |
+            EId::Ellipse => _is_valid_coords(node, &[AId::Cx, AId::Cy]),
+            EId::Line |
+            EId::LinearGradient => _is_valid_coords(node, &[AId::X1, AId::Y1, AId::X2, AId::Y2]),
             EId::RadialGradient => _is_valid_coords(node, &[AId::Cx, AId::Cy, AId::Fx, AId::Fy, AId::R]),
             _ => false,
         }

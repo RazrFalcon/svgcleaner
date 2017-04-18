@@ -182,7 +182,7 @@
         },
         {
             "name": "actions/small/22x22/view-ldap-resource.svg",
-            "valid_ae": 470
+            "valid_ae": 474
         },
         {
             "name": "actions/small/22x22/window-duplicate.svg",
@@ -271,10 +271,6 @@
         {
             "name": "apps/internet-mail.svg",
             "valid_ae": 401
-        },
-        {
-            "name": "apps/kuickshow.svg",
-            "valid_ae": 555
         },
         {
             "name": "emotes/small/22x22/face-glasses.svg",
@@ -418,12 +414,13 @@
             "valid_ae": 412
         },
         {
+            "info": "webkit bug, svgc actually fixed the rendering",
             "name": "categories/preferences-desktop-peripherals.svg",
-            "valid_ae": 2462
+            "valid_ae": 4366
         },
         {
             "name": "devices/input-tablet.svg",
-            "valid_ae": 2695
+            "valid_ae": 4533
         },
         {
             "name": "categories/applications-other.svg",
@@ -664,6 +661,212 @@
         {
             "name": "mimetypes/small/16x16/text-x-hex.svg",
             "valid_ae": 901
+        },
+        {
+            "name": "categories/applications-education-language.svg",
+            "valid_ae": 484
+        },
+        {
+            "name": "actions/small/16x16/view-media-lyrics.svg",
+            "valid_ae": 1152
+        },
+        {
+            "info": "webkit bug",
+            "name": "actions/small/16x16/tools-rip-audio-cd.svg",
+            "valid_ae": 1039
+        },
+        {
+            "info": "webkit bug",
+            "name": "actions/small/16x16/tools-rip-video-cd.svg",
+            "valid_ae": 1039
+        },
+        {
+            "info": "webkit bug",
+            "name": "actions/small/16x16/tools-media-optical-burn.svg",
+            "valid_ae": 1930
+        },
+        {
+            "info": "webkit bug",
+            "name": "actions/small/16x16/tools-media-optical-copy.svg",
+            "valid_ae": 1030
+        },
+        {
+            "info": "webkit bug",
+            "name": "actions/small/16x16/tools-rip-video-dvd.svg",
+            "valid_ae": 1039
+        },
+        {
+            "name": "actions/small/22x22/edit-image-face-add.svg",
+            "valid_ae": 1151
+        },
+        {
+            "info": "webkit bug",
+            "name": "actions/small/22x22/tools-media-optical-copy.svg",
+            "valid_ae": 1228
+        },
+        {
+            "info": "webkit bug",
+            "name": "actions/small/32x32/tools-media-optical-burn.svg",
+            "valid_ae": 1312
+        },
+        {
+            "info": "webkit bug",
+            "name": "actions/small/32x32/tools-media-optical-burn2.svg",
+            "valid_ae": 1312
+        },
+        {
+            "name": "actions/small/48x48/mail-encrypted-full.svg",
+            "valid_ae": 4957
+        },
+        {
+            "name": "actions/small/48x48/mail-encrypted.svg",
+            "valid_ae": 5022
+        },
+        {
+            "name": "actions/small/48x48/mail-message-new-list.svg",
+            "valid_ae": 2772
+        },
+        {
+            "name": "actions/small/48x48/mail-message-new.svg",
+            "valid_ae": 2772
+        },
+        {
+            "info": "webkit bug",
+            "name": "actions/small/48x48/tools-media-optical-burn.svg",
+            "valid_ae": 1305
+        },
+        {
+            "name": "actions/small/48x48/tools-media-optical-copy.svg",
+            "valid_ae": 1134
+        },
+        {
+            "info": "webkit bug",
+            "name": "actions/tools-media-optical-burn.svg",
+            "valid_ae": 1296
+        },
+        {
+            "name": "devices/media-optical-mixed-cd.svg",
+            "valid_ae": 2091
+        },
+        {
+            "name": "devices/small/16x16/media-optical-recordable.svg",
+            "valid_ae": 1078
+        },
+        {
+            "name": "devices/small/16x16/media-optical-mixed-cd.svg",
+            "valid_ae": 1039
+        },
+        {
+            "name": "devices/small/16x16/media-optical-dvd.svg",
+            "valid_ae": 743
+        },
+        {
+            "name": "devices/small/16x16/media-optical-video.svg",
+            "valid_ae": 1039
+        },
+        {
+            "name": "devices/small/16x16/media-optical-data.svg",
+            "valid_ae": 1039
+        },
+        {
+            "name": "devices/small/16x16/media-optical.svg",
+            "valid_ae": 1039
+        },
+        {
+            "name": "devices/small/22x22/media-optical-mixed-cd.svg",
+            "valid_ae": 991
+        },
+        {
+            "name": "devices/small/22x22/media-optical-dvd.svg",
+            "valid_ae": 1039
+        },
+        {
+            "name": "devices/small/22x22/media-optical-video.svg",
+            "valid_ae": 1039
+        },
+        {
+            "name": "devices/small/22x22/media-optical-data.svg",
+            "valid_ae": 1039
+        },
+        {
+            "name": "apps/picmi.svg",
+            "valid_ae": 63120
+        },
+        {
+            "name": "apps/preferences-desktop-locale.svg",
+            "valid_ae": 484
+        },
+        {
+            "name": "apps/kuickshow.svg",
+            "valid_ae": 555
+        },
+        {
+            "name": "mimetypes/hidef/application-x-kcsrc.svg",
+            "valid_ae": 746
+        },
+        {
+            "name": "mimetypes/small/16x16/application-x-compressed-tar.svg",
+            "valid_ae": 989
+        },
+        {
+            "name": "mimetypes/small/16x16/application-x-deb.svg",
+            "valid_ae": 1587
+        },
+        {
+            "name": "mimetypes/small/16x16/application-x-rpm.svg",
+            "valid_ae": 1226
+        },
+        {
+            "name": "mimetypes/small/16x16/application-x-java-archive.svg",
+            "valid_ae": 842
+        },
+        {
+            "name": "mimetypes/small/22x22/text-x-hex.svg",
+            "valid_ae": 633
+        },
+        {
+            "name": "mimetypes/small/22x22/application-x-compressed-tar.svg",
+            "valid_ae": 551
+        },
+        {
+            "name": "mimetypes/small/22x22/application-x-deb.svg",
+            "valid_ae": 1045
+        },
+        {
+            "name": "mimetypes/small/22x22/application-x-rpm.svg",
+            "valid_ae": 656
+        },
+        {
+            "name": "mimetypes/small/22x22/application-x-java-archive.svg",
+            "valid_ae": 485
+        },
+        {
+            "name": "mimetypes/small/64x64/x-media-podcast.svg",
+            "valid_ae": 24635
+        },
+        {
+            "name": "mimetypes/small/64x64/application-x-kcsrc.svg",
+            "valid_ae": 752
+        },
+        {
+            "name": "mimetypes/small/32x32/text-x-hex.svg",
+            "valid_ae": 646
+        },
+        {
+            "name": "mimetypes/small/32x32/application-x-deb.svg",
+            "valid_ae": 505
+        },
+        {
+            "name": "mimetypes/small/32x32/application-x-rpm.svg",
+            "valid_ae": 427
+        },
+        {
+            "name": "mimetypes/small/48x48/application-x-kcsrc.svg",
+            "valid_ae": 677
+        },
+        {
+            "name": "mimetypes/application-x-kcsrc.svg",
+            "valid_ae": 855
         }
     ],
     "ignore": [

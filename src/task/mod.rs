@@ -53,8 +53,7 @@ pub use self::trim_ids::trim_ids;
 pub use self::ungroup_defs::ungroup_defs;
 pub use self::ungroup_groups::ungroup_groups;
 
-#[macro_use]
-mod macros;
+#[macro_use] mod macros;
 mod conv_shapes;
 mod final_fixes;
 mod fix_attrs;

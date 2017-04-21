@@ -122,7 +122,7 @@ fn remove_equal(path: &mut Path, is_changed: &mut bool) {
         let prev = path.d[i - 1];
         let curr = path.d[i];
 
-        if prev == curr {
+        if prev.fuzzy_eq(&curr) {
             path.d.remove(i);
             i -= 1;
             *is_changed = true;

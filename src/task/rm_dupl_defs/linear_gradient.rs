@@ -125,7 +125,7 @@ mod tests {
 </svg>
 ");
 
-    // different default attributes
+    // Different default attributes.
     test!(rm_3,
 "<svg>
     <defs>
@@ -142,7 +142,7 @@ mod tests {
 </svg>
 ");
 
-    // no 'stop' elements
+    // No 'stop' elements.
     test!(rm_4,
 "<svg>
     <defs>

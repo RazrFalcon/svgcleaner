@@ -11,8 +11,6 @@ use libtest::*;
 
 use clap::{Arg, App};
 
-// TODO: make threaded
-
 macro_rules! dir_iter {
     ($input_dir:expr) => (
         WalkDir::new($input_dir).into_iter().filter_entry(|x| is_svg(x)).map(|x| x.unwrap())

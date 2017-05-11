@@ -73,17 +73,17 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
     // Do not remove any attributes before this methods
     // since they uses them.
 
-    // independent task, doesn't impact any other tasks
+    // Independent task, doesn't impact any other tasks..
     if options.remove_title {
         remove_element(doc, ElementId::Title);
     }
 
-    // independent task, doesn't impact any other tasks
+    // Independent task, doesn't impact any other tasks.
     if options.remove_desc {
         remove_element(doc, ElementId::Desc);
     }
 
-    // independent task, doesn't impact any other tasks
+    // Independent task, doesn't impact any other tasks.
     if options.remove_metadata {
         remove_element(doc, ElementId::Metadata);
     }
@@ -92,14 +92,14 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
         remove_unused_defs(doc);
     }
 
-    // impact only `linearGradient` and `radialGradient`
+    // Impact only 'linearGradient' and 'radialGradient'.
     if options.remove_invalid_stops {
         remove_invalid_stops(doc);
     }
 
     if options.apply_transform_to_gradients {
-        // apply transform to gradients before processing to simplify duplicates
-        // detecting and merging
+        // Apply transform to gradients before processing to simplify duplicates
+        // detecting and merging.
         apply_transforms::apply_transform_to_gradients(doc);
     }
 
@@ -120,30 +120,30 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
     }
 
     if options.apply_transform_to_gradients {
-        // do it again, because something may changed after gradients processing
+        // Do it again, because something may changed after gradients processing.
         apply_transforms::apply_transform_to_gradients(doc);
     }
 
-    // run before `apply_transform_to_shapes` and `process_paths`,
-    // because it impact transform processing
+    // Run before 'apply_transform_to_shapes' and 'process_paths',
+    // because it impact transform processing.
     if options.ungroup_groups {
         ungroup_groups(doc, options);
     }
 
-    // run before 'convert_shapes_to_paths'
+    // Run before 'convert_shapes_to_paths'.
     if options.apply_transform_to_shapes {
         apply_transforms::apply_transform_to_shapes(doc);
     }
 
-    // impact only shapes
+    // Impact only shapes.
     if options.convert_shapes {
         convert_shapes_to_paths(doc);
     }
 
-    // NOTE: run before `remove_invisible_elements`, because this method can remove all
+    // NOTE: run before 'remove_invisible_elements', because this method can remove all
     //       segments from the path which makes it invisible.
     if options.paths_to_relative {
-        // we only process path's segments if 'PathsToRelative' is enabled
+        // We only process path's segments if 'PathsToRelative' is enabled.
         paths::process_paths(doc, options);
     }
 
@@ -151,12 +151,12 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
         remove_invisible_elements(doc);
     }
 
-    // impact only `linearGradient` and `radialGradient`
+    // Impact only 'linearGradient' and 'radialGradient'.
     if options.regroup_gradient_stops {
         regroup_gradient_stops(doc);
     }
 
-    // ungroup again
+    // Ungroup again.
     if options.ungroup_groups {
         ungroup_groups(doc, options);
     }
@@ -165,7 +165,7 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
         resolve_use(doc);
     }
 
-    // now we can remove any unneeded attributes
+    // Now we can remove any unneeded attributes.
 
     if options.remove_default_attributes {
         remove_default_attributes(doc);
@@ -187,36 +187,36 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
         remove_unused_coordinates(doc);
     }
 
-    // ungroup again
+    // Ungroup again.
     if options.ungroup_groups {
         ungroup_groups(doc, options);
     }
 
-    // run only after attributes processed, because
-    // there is no point in grouping default/unneeded attributes
+    // Run only after attributes processed, because
+    // there is no point in grouping default/unneeded attributes.
     if options.group_by_style {
         group_by_style(doc);
     }
 
-    // final fixes
-    // list of things that can't break anything
+    // Final fixes.
+    // List of things that can't break anything.
 
-    // independent task, doesn't impact any other tasks
+    // Independent task, doesn't impact any other tasks.
     if options.remove_unreferenced_ids {
         remove_unreferenced_ids(doc);
     }
 
-    // independent task, doesn't impact any other tasks
+    // Independent task, doesn't impact any other tasks.
     if options.trim_ids {
         trim_ids(doc);
     }
 
-    // independent task, doesn't impact any other tasks
+    // Independent task, doesn't impact any other tasks.
     if options.remove_version {
         remove_version(doc);
     }
 
-    // run at last, because it can remove `defs` element which is used by many algorithms
+    // Run at last, because it can remove 'defs' element which is used by many algorithms.
     if options.ungroup_defs {
         ungroup_defs(doc);
     }
@@ -224,7 +224,7 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
     remove_empty_defs(doc);
     fix_xmlns_attribute(doc, options.remove_xmlns_xlink_attribute);
 
-    // NOTE: must be run at last, since it breaks the linking
+    // NOTE: Must be run at last, since it breaks the linking.
     join_style_attributes(doc, options.join_style_attributes, opt);
 
     Ok(())

@@ -32,23 +32,23 @@ pub fn resolve_use(doc: &Document) {
         if let Some(value) = node.attribute_value(AId::XlinkHref) {
             if let AttributeValue::Link(link) = value {
 
-                // resolve elements that linked to elements inside 'defs'
+                // Resolve elements that linked to elements inside 'defs'.
                 let parent = link.parent().unwrap();
                 if !parent.is_tag_name(EId::Defs) {
                     continue;
                 }
 
-                // 'symbol' elements can't be simply replaced
+                // 'symbol' elements can't be simply replaced.
                 if link.is_tag_name(EId::Symbol) {
                     continue;
                 }
 
-                // ignore 'use' elements linked to other 'use' elements
+                // Ignore 'use' elements linked to other 'use' elements.
                 if link.is_tag_name(EId::Use) {
                     continue;
                 }
 
-                // element should be used only once
+                // Element should be used only once.
                 if link.linked_nodes().count() != 1 {
                     continue;
                 }
@@ -59,21 +59,21 @@ pub fn resolve_use(doc: &Document) {
     }
 
     for (node, link) in nodes {
-        // unlink 'use'
+        // Unlink 'use'.
         node.remove_attribute(AId::XlinkHref);
 
         {
             // 'use' element support 'x', 'y' and 'transform' attributes and we should process them
-            // so we apply translate transform to the linked element transform
+            // so we apply translate transform to the linked element transform.
 
             let mut attrs = node.attributes_mut();
 
-            // 'x' or 'y' should be set
+            // 'x' or 'y' should be set.
             if attrs.contains(AId::X) || attrs.contains(AId::Y) {
                 let x = get_value!(attrs, Length, AId::X, Length::zero());
                 let y = get_value!(attrs, Length, AId::Y, Length::zero());
 
-                // we can apply 'x' and 'y' to transform only when they have 'none' units
+                // We can apply 'x' and 'y' to transform only when they have 'none' units.
                 if !(x.unit == Unit::None && y.unit == Unit::None) {
                     continue;
                 }
@@ -87,7 +87,7 @@ pub fn resolve_use(doc: &Document) {
             }
         }
 
-        // copy attributes
+        // Copy attributes.
         for attr in node.attributes().iter() {
             link.set_attribute_object(attr.clone());
         }

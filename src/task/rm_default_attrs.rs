@@ -73,7 +73,7 @@ pub fn remove_default_attributes(doc: &Document) {
                         }
                     }
                 } else if is_default(attr, tag_name) {
-                    // check default values of an non-presentation attributes
+                    // Check default values of an non-presentation attributes.
                     rm_list.push(aid);
                 }
             }
@@ -82,7 +82,7 @@ pub fn remove_default_attributes(doc: &Document) {
         {
             let mut attrs_mut = node.attributes_mut();
             for aid in &rm_list {
-                // we only hide default attributes, because they still can be useful
+                // We only hide default attributes, because they still can be useful.
                 attrs_mut.get_mut(*aid).unwrap().visible = false;
             }
         }
@@ -92,7 +92,7 @@ pub fn remove_default_attributes(doc: &Document) {
 }
 
 fn is_default(attr: &Attribute, tag_name: EId) -> bool {
-    // process only popular and simple attributes
+    // Process only popular and simple attributes.
 
     // TODO: this elements should be processed differently
     match tag_name {
@@ -195,8 +195,8 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
             }
         }
         AId::Slope => {
-            // there are two different 'slope': one for 'font-face'
-            // and one for 'feFunc*'
+            // There are two different 'slope': one for 'font-face'
+            // and one for 'feFunc*'.
             let v = attr.value.as_string().unwrap();
             if tag_name == EId::FontFace && v == "0" {
                 return true;
@@ -259,7 +259,7 @@ mod tests {
 "<svg/>
 ");
 
-    // x, y attributes inside 'text' elements are not Length rather LengthList
+    // x, y attributes inside 'text' elements are not Length rather LengthList.
     test!(rm_len_list,
 "<svg>
     <text x='0'/>

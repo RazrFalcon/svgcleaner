@@ -61,7 +61,7 @@ fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
                 continue;
             }
 
-            // collect linked nodes
+            // Collect linked nodes.
             for ln in node2.linked_nodes() {
                 {
                     let attrs = ln.attributes();
@@ -79,7 +79,7 @@ fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
                 }
             }
 
-            // relink nodes
+            // Relink nodes.
             if !link_attrs.is_empty() {
                 for &(ref ln, ref aid, ref n) in &link_attrs {
                     if *ln.id() != *n.id() {

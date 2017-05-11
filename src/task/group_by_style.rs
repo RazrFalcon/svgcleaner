@@ -54,17 +54,17 @@ impl Table {
 
     /// Removes unneeded rows.
     fn simplify(&mut self) {
-        // table should be already defined/filled
+        // Table should be already defined/filled.
         debug_assert!(!self.d.is_empty());
         debug_assert!(self.d[0].flags.len() >= 3);
 
-        // we group only three or more elements,
-        // so rows with less than 3 flags are useless
+        // We group only three or more elements,
+        // so rows with less than 3 flags are useless.
         self.d.retain(|x| {
             x.count_flags() > 2
         });
 
-        // rows should contain flags that repeats at least 3 times
+        // Rows should contain flags that repeats at least 3 times.
         // |*-*| -> |---|
         // |**-**| -> |-----|
         // |*-*-*-*| -> |-------|
@@ -94,7 +94,7 @@ impl Table {
             }
         }
 
-        // remove again
+        // Remove again.
         self.d.retain(|x| {
             x.count_flags() > 2
         });
@@ -111,7 +111,7 @@ impl Table {
 
     /// Join rows.
     fn join(&mut self) {
-        // replace
+        // Replace:
         // a |-***-|
         // b |-***-|
         //
@@ -219,7 +219,7 @@ impl fmt::Debug for Table {
         for (idx, line) in lines.iter().enumerate() {
             s.push_str(line);
 
-            // indent
+            // Indent.
             for _ in 0..max_len - line.len() {
                 s.push(' ');
             }
@@ -287,7 +287,7 @@ mod table_tests {
     test_all!(rm_3, ["*-**-*"], "empty table");
     test_all!(rm_4, ["-**-**"], "empty table");
 
-    // we use dummy attributes since we care only about flags
+    // We use dummy attributes since we care only about flags.
 
     test_all!(basic_1,
         ["*****"],
@@ -312,7 +312,7 @@ mod table_tests {
          fill=\"red\" |-****|\n\
          fill=\"red\" |-***-|");
 
-    // we care only about longest range, not about number of set flags
+    // We care only about longest range, not about number of set flags.
     test_all!(sort_2,
         ["*****-******", "**********--"],
         "fill=\"red\" |**********--|\n\
@@ -328,10 +328,10 @@ pub fn group_by_style(doc: &Document) {
 fn _group_by_style(parent: &Node) {
     let mut node_list = Vec::with_capacity(16);
 
-    // we can reuse an existing group only if all children are valid
+    // We can reuse an existing group only if all children are valid.
     let mut is_all_children = true;
 
-    // collect nodes
+    // Collect nodes.
     // TODO: currently we ignore non-SVG elements, which is bad
     for node in parent.children().svg() {
         // If 'defs' node occurred - skip it and reset the list.
@@ -345,7 +345,7 @@ fn _group_by_style(parent: &Node) {
             continue;
         }
 
-        // recursive processing
+        // Recursive processing.
         if node.is_tag_name(EId::G) {
             _group_by_style(&node);
         }
@@ -353,7 +353,7 @@ fn _group_by_style(parent: &Node) {
         node_list.push(node);
     }
 
-    // we should have at least 3 nodes, because there is no point in grouping one or two nodes
+    // We should have at least 3 nodes, because there is no point in grouping one or two nodes.
     if node_list.len() < 3 {
         return;
     }
@@ -361,7 +361,7 @@ fn _group_by_style(parent: &Node) {
     let nodes_count = node_list.len();
     let mut table = Table::new();
 
-    // fill table with attributes
+    // Fill table with attributes.
     for node in &node_list {
         let attrs = node.attributes();
 
@@ -371,7 +371,7 @@ fn _group_by_style(parent: &Node) {
             }
 
             if aid == AId::Transform {
-                // we can't modify a transform if node has linked elements
+                // We can't modify a transform if node has linked elements.
 
                 if !super::apply_transforms::utils::is_valid_attrs(node) {
                     continue;
@@ -385,7 +385,7 @@ fn _group_by_style(parent: &Node) {
                 continue;
             }
 
-            // append only unique attributes
+            // Append only unique attributes.
             if !table.d.iter().any(|x| x.attributes[0] == *attr) {
                 table.append(attr, nodes_count);
             }
@@ -396,7 +396,7 @@ fn _group_by_style(parent: &Node) {
         return;
     }
 
-    // set attributes flags inside the table
+    // Set attributes flags inside the table.
     for d in &mut table.d {
         for (idx, node) in node_list.iter().enumerate() {
             let attrs = node.attributes();
@@ -432,7 +432,7 @@ fn _group_by_style(parent: &Node) {
 
         move_nodes(&table.d[0].attributes, &g_node, &node_list, (0, node_list.len()));
 
-        // remove first row
+        // Remove first row.
         table.d.remove(0);
     }
 
@@ -448,10 +448,10 @@ fn _group_by_style(parent: &Node) {
     {
         let d = &table.d[0];
 
-        // get the longest range on nodes
+        // Get the longest range on nodes.
         let (start, end) = d.longest_range();
 
-        // do the same as in previous block
+        // Do the same as in previous block.
         let g_node = parent.document().create_element(EId::G);
         node_list[start].insert_before(&g_node);
 
@@ -487,14 +487,14 @@ fn move_nodes(attributes: &Vec<Attribute>, g_node: &Node, node_list: &Vec<Node>,
     let attr_ids: Vec<AId> = attributes.iter().map(|a| a.id().unwrap()).collect();
 
     for node in node_list.iter().skip(range.0).take(range.1 - range.0 + 1) {
-        // remove attributes from nodes
+        // Remove attributes from nodes.
         node.remove_attributes(&attr_ids);
-        // move them to the 'g' element.
+        // Move them to the 'g' element.
         node.detach();
         g_node.append(node);
     }
 
-    // set moved attributes to the 'g' element
+    // Set moved attributes to the 'g' element.
     for attr in attributes {
         if attr.id().unwrap() == AId::Transform && g_node.has_attribute(AId::Transform) {
             let mut group_ts = *g_node.attribute_value(AId::Transform).unwrap()
@@ -525,7 +525,7 @@ mod tests {
         )
     }
 
-    // group elements with equal style
+    // Group elements with equal style.
     test!(group_1,
 "<svg>
     <rect id='r1' fill='#ff0000'/>
@@ -541,7 +541,7 @@ mod tests {
 </svg>
 ");
 
-    // group elements with equal style to an existing group
+    // Group elements with equal style to an existing group.
     test!(group_2,
 "<svg>
     <g>
@@ -559,7 +559,7 @@ mod tests {
 </svg>
 ");
 
-    // mixed order
+    // Mixed order.
     test!(group_3,
 "<svg>
     <rect id='r1' fill='#ff0000'/>
@@ -579,7 +579,7 @@ mod tests {
 </svg>
 ");
 
-    // find most popular
+    // Find most popular.
     test!(group_4,
 "<svg>
     <rect id='r1' fill='#ff0000' stroke='#00ff00'/>
@@ -595,7 +595,7 @@ mod tests {
 </svg>
 ");
 
-    // do not group 'defs'
+    // Do not group 'defs'.
     test!(group_5,
 "<svg>
     <rect id='r1' fill='#ff0000'/>
@@ -615,8 +615,8 @@ mod tests {
 </svg>
 ");
 
-    // do not group 'defs'
-    // elements must be grouped into a new group
+    // Do not group 'defs'.
+    // Elements must be grouped into a new group.
     test!(group_5_1,
 "<svg>
     <g>
@@ -640,7 +640,7 @@ mod tests {
 </svg>
 ");
 
-    // test IRI
+    // Test IRI.
     test!(group_6,
 "<svg>
     <linearGradient id='lg1'/>
@@ -658,7 +658,7 @@ mod tests {
 </svg>
 ");
 
-    // complex order
+    // Complex order.
     test!(group_7,
 "<svg>
     <rect id='r1' stroke='#00ff00'/>
@@ -686,7 +686,7 @@ mod tests {
 </svg>
 ");
 
-//     // complex order
+//     // Complex order.
 //     test!(group_8,
 // "<svg>
 //     <rect id='r1' fill='#ff0000'/>
@@ -712,7 +712,7 @@ mod tests {
 // </svg>
 // ");
 
-    // two attributes
+    // Two attributes.
     test!(group_9,
 "<svg>
     <rect id='r1' fill='#ff0000' stroke='#00ff00'/>
@@ -728,7 +728,7 @@ mod tests {
 </svg>
 ");
 
-    // choose longest
+    // Choose longest.
     test!(group_10,
 "<svg>
     <rect id='r1' fill='#ff0000'/>
@@ -758,7 +758,7 @@ mod tests {
 </svg>
 ");
 
-    // choose longest range
+    // Choose longest range.
     test!(group_11,
 "<svg>
     <rect id='r1' fill='#ff0000'/>
@@ -784,7 +784,7 @@ mod tests {
 </svg>
 ");
 
-    // test range detection
+    // Test range detection.
     test!(group_12,
 "<svg>
     <rect id='r1'/>
@@ -808,7 +808,7 @@ mod tests {
 </svg>
 ");
 
-    // do not group used elements
+    // Do not group used elements.
     test!(group_13,
 "<svg>
     <rect id='r1' fill='#ff0000'/>
@@ -828,7 +828,7 @@ mod tests {
 </svg>
 ");
 
-    // group transform too
+    // Group transform too.
     test!(group_14,
 "<svg>
     <rect id='r1' transform='scale(10)'/>
@@ -844,7 +844,7 @@ mod tests {
 </svg>
 ");
 
-    // group and merge transform too
+    // Group and merge transform too.
     test!(group_15,
 "<svg>
     <g transform='translate(10)'>

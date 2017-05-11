@@ -75,10 +75,10 @@ fn check_for_conditional_attributes(doc: &Document) -> Result<(), Error> {
         ($aid:expr, $node:expr) => (
             let attrs = $node.attributes();
             if let Some(av) = attrs.get_value($aid) {
-                // libsvgdom doesn't parse this attributes, so they must have String type
+                // libsvgdom doesn't parse this attributes, so they must have String type.
                 let s = av.as_string().unwrap();
                 if !s.is_empty() {
-                    // NOTE: we are only care about non-empty attributes
+                    // NOTE: We are only care about non-empty attributes.
                     return Err(Error::ConditionalProcessingIsNotSupported);
                 }
             }

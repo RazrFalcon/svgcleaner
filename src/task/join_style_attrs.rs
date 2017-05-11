@@ -60,7 +60,7 @@ pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOpt
             }
             style.pop();
 
-            // unwrap can't fail
+            // Unwrap can't fail.
             let style_str = String::from_utf8(style).unwrap();
             attrs.insert(Attribute::new(AId::Style, AttributeValue::String(style_str)));
 
@@ -91,7 +91,7 @@ mod tests {
         join_style_attributes(&doc, StyleJoinMode::None, &wopt);
         assert_eq!(svg_node.attribute(AId::Style), None);
 
-        // we have 6 style attributes so they should be joined
+        // We have 6 style attributes so they should be joined.
         join_style_attributes(&doc, StyleJoinMode::Some, &wopt);
         assert_eq_text!(
             svg_node.attribute(AId::Style).unwrap().value.as_string().unwrap(),
@@ -108,11 +108,11 @@ mod tests {
         let svg_node = doc.svg_element().unwrap();
         let wopt = WriteOptions::default();
 
-        // we have only 2 style attributes so they shouldn't be joined
+        // We have only 2 style attributes so they shouldn't be joined.
         join_style_attributes(&doc, StyleJoinMode::Some, &wopt);
         assert_eq!(svg_node.attribute(AId::Style), None);
 
-        // join anyway
+        // Join anyway.
         join_style_attributes(&doc, StyleJoinMode::All, &wopt);
         assert_eq_text!(
             svg_node.attribute(AId::Style).unwrap().value.as_string().unwrap(),

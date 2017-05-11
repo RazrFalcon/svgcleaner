@@ -46,7 +46,7 @@ fn main() {
     let args = match app.get_matches_safe() {
         Ok(a) => a,
         Err(mut e) => {
-            // change case before printing an error to match svgcleaner's format
+            // Change case before printing an error to match svgcleaner's format.
             if e.message.starts_with("error:") {
                 e.message = e.message.replace("error:", "Error:");
             }
@@ -69,15 +69,15 @@ fn main() {
         }
     }
 
-    // load data
+    // Load data.
     let raw = match input {
         InputFrom::Stdin => try_msg!(cleaner::load_stdin()),
         InputFrom::File(path) => try_msg!(cleaner::load_file(path)),
     };
 
     let on_err = || {
-        // copy original file to destination
-        // only when both files are specified
+        // Copy original file to destination
+        // only when both files are specified.
         let in_file  = if let InputFrom::File(s) = input  { Some(s) } else { None };
         let out_file = if let OutputTo::File(s)  = output { Some(s) } else { None };
 
@@ -87,7 +87,7 @@ fn main() {
         {
             let inf = in_file.unwrap();
             let outf = out_file.unwrap();
-            // copy a file only when paths are different
+            // Copy a file only when paths are different.
             if inf != outf {
                 try_msg!(fs::copy(inf, outf));
             }
@@ -96,7 +96,7 @@ fn main() {
         std::process::exit(0);
     };
 
-    // parse it
+    // Parse it.
     let doc = match cleaner::parse_data(&raw[..], &parse_opt) {
         Ok(d) => d,
         Err(e) => {
@@ -106,16 +106,16 @@ fn main() {
         }
     };
 
-    // allocate a buffer for the output data
+    // Allocate a buffer for the output data.
     let capacity = (raw.len() as f64 * 0.8) as usize;
     let mut buf = Vec::with_capacity(capacity);
     let mut prev_size = 0;
 
     loop {
-        // clear buffer
+        // Clear buffer.
         buf.clear();
 
-        // clean document
+        // Clean document.
         match cleaner::clean_doc(&doc, &cleaning_opt, &write_opt) {
             Ok(_) => {}
             Err(e) => {
@@ -125,15 +125,15 @@ fn main() {
             }
         }
 
-        // write buffer
+        // Write buffer.
         cleaner::write_buffer(&doc, &write_opt, &mut buf);
 
         if !args.is_present(KEYS[Key::Multipass]) {
-            // do not repeat without '--multipass'
+            // Do not repeat without '--multipass'.
             break;
         }
 
-        // if the size is unchaged - exit from the loop
+        // If the size is unchaged - exit from the loop.
         if prev_size == buf.len() {
             break;
         }
@@ -142,14 +142,14 @@ fn main() {
     }
 
     // TODO: make optional
-    // check that cleaned file is smaller
+    // Check that cleaned file is smaller.
     if buf.len() > raw.len() {
         writeln!(stderr(), "Error: Cleaned file is bigger than original.").unwrap();
         on_err();
         return;
     }
 
-    // save buffer
+    // Save buffer.
     match output {
         OutputTo::Stdout => try_msg!(cleaner::write_stdout(&buf[..])),
         OutputTo::File(path) => try_msg!(cleaner::save_file(&buf[..], path)),

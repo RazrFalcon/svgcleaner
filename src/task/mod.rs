@@ -109,16 +109,16 @@ pub mod utils {
     }
 
     fn recalc_stroke_num(node: &Node, aid: AId, scale_factor: f64) {
-        // resolve current value
+        // Resolve current value.
         let value = if let Some(attr) = node.attribute(aid) {
-            // defined in the current node
+            // Defined in the current node.
             attr.value
         } else {
             if let Some(n) = node.parents().find(|n| n.has_attribute(aid)) {
-                // defined in the parent node
+                // Defined in the parent node.
                 n.attribute_value(aid).unwrap()
             } else {
-                // default value
+                // Default value.
                 AttributeValue::default_value(aid).unwrap()
             }
         };
@@ -133,13 +133,13 @@ pub mod utils {
     fn recalc_stroke_dasharray(node: &Node, scale_factor: f64) {
         let aid = AId::StrokeDasharray;
 
-        // resolve current 'stroke-dasharray'
+        // Resolve current 'stroke-dasharray'.
         let value = if let Some(attr) = node.attribute(aid) {
-            // defined in the current node
+            // Defined in the current node.
             Some(attr.value)
         } else {
             if let Some(n) = node.parents().find(|n| n.has_attribute(aid)) {
-                // defined in the parent node
+                // Defined in the parent node.
                 Some(n.attribute_value(aid).unwrap())
             } else {
                 None
@@ -175,7 +175,7 @@ mod tests {
         )
     }
 
-    // from default
+    // From default.
     test!(recalc_stroke_1,
 "<svg>
     <path/>
@@ -185,7 +185,7 @@ mod tests {
 </svg>
 ");
 
-    // from current
+    // From current.
     test!(recalc_stroke_2,
 "<svg>
     <path stroke-width='2'/>
@@ -195,7 +195,7 @@ mod tests {
 </svg>
 ");
 
-    // from parent
+    // From parent.
     test!(recalc_stroke_3,
 "<svg stroke-width='2'>
     <path />

@@ -25,7 +25,7 @@ use super::short::AId;
 use svgdom::Document;
 
 pub fn remove_version(doc: &Document) {
-    // doc must contain 'svg' node, so we can safely unwrap
+    // doc must contain 'svg' node, so we can safely unwrap.
     let svg = doc.svg_element().unwrap();
     svg.remove_attribute(AId::Version);
     svg.remove_attribute(AId::BaseProfile);

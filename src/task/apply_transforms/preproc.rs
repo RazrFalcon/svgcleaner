@@ -41,7 +41,7 @@ pub fn prepare_transforms(doc: &Document, options: &Options) {
     }
 
     if valid_elems.is_empty() {
-        // nothing to do
+        // Nothing to do.
         return;
     }
 
@@ -53,7 +53,7 @@ pub fn prepare_transforms(doc: &Document, options: &Options) {
             continue;
         }
 
-        // check that all children is valid
+        // Check that all children is valid.
         let is_valid = node.children().svg().all(|n| {
             let tag_name = n.tag_id().unwrap();
 
@@ -80,7 +80,7 @@ pub fn prepare_transforms(doc: &Document, options: &Options) {
 fn apply_ts_to_children(node: &Node, ts: Transform) {
     for child in node.children().svg() {
         if child.has_attribute(AId::Transform) {
-            // we should multiply transform matrices
+            // We should multiply transform matrices.
             let mut ts1 = ts;
             let ts2 = utils::get_ts(&child);
             ts1.append(&ts2);
@@ -155,7 +155,7 @@ mod tests {
 </svg>
 ");
 
-    // group should containt only supported children
+    // Group should containt only supported children.
     test_eq!(keep_3,
 "<svg>
     <g transform='scale(10 20)'>
@@ -165,7 +165,7 @@ mod tests {
 </svg>
 ");
 
-    // both transforms should be valid
+    // Both transforms should be valid.
     test_eq!(keep_4,
 "<svg>
     <g transform='scale(10)'>

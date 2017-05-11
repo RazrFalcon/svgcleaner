@@ -25,20 +25,20 @@ use super::short::EId;
 use svgdom::{Document, Node, ElementType, AttributeType, AttributeValue};
 
 pub fn group_defs(doc: &Document) {
-    // doc must contain 'svg' node, so we can safely unwrap
+    // doc must contain 'svg' node, so we can safely unwrap.
     let svg = doc.svg_element().unwrap();
 
     let defs = match doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0) {
         Some(n) => n,
         None => {
-            // create 'defs' node if it didn't exist already
+            // Create 'defs' node if it didn't exist already.
             let defs = doc.create_element(EId::Defs);
             svg.prepend(&defs);
             defs
         }
     };
 
-    // move all referenced elements to the main 'defs'
+    // Move all referenced elements to the main 'defs'.
     {
         let mut nodes = Vec::new();
 
@@ -59,7 +59,7 @@ pub fn group_defs(doc: &Document) {
         }
     }
 
-    // ungroup all existing 'defs', except main
+    // Ungroup all existing 'defs', except main.
     {
         let mut nodes = Vec::new();
         for node in doc.descendants().svg() {
@@ -76,7 +76,7 @@ pub fn group_defs(doc: &Document) {
         }
     }
 
-    // remove empty 'defs', except main
+    // Remove empty 'defs', except main.
     {
         let mut nodes = Vec::new();
         for node in doc.descendants().svg() {
@@ -86,7 +86,7 @@ pub fn group_defs(doc: &Document) {
         }
 
         for n in nodes {
-            // unneeded defs already ungrouped and must be empty
+            // Unneeded defs already ungrouped and must be empty.
             debug_assert!(!n.has_children());
             n.remove();
         }
@@ -114,7 +114,7 @@ fn resolve_attrs(node: &Node) {
                         match attr.value {
                               AttributeValue::Link(ref link)
                             | AttributeValue::FuncLink(ref link) => {
-                                // if it's fail - it's already a huge problem, so unwrap is harmless
+                                // If it's fail - it's already a huge problem, so unwrap is harmless.
                                 child.set_link_attribute(aid, link.clone()).unwrap();
                             }
                             _ => child.set_attribute_object(attr.clone()),
@@ -140,7 +140,7 @@ mod tests {
         )
     }
 
-    // add 'defs' to 'svg' node, not to first node
+    // Add 'defs' to 'svg' node, not to first node.
     test!(create_defs_1,
 "<!--comment--><svg/>",
 "<!--comment-->
@@ -180,7 +180,7 @@ mod tests {
 </svg>
 ");
 
-    // complex, recursive
+    // Complex. Recursive.
     test!(move_defs_2,
 "<svg>
     <defs id='a'>
@@ -211,7 +211,7 @@ mod tests {
 </svg>
 ");
 
-        // we should ungroup any nodes from 'defs'
+    // We should ungroup any nodes from 'defs'.
     test!(move_defs_3,
 "<svg>
     <defs id='a'>
@@ -229,7 +229,7 @@ mod tests {
 </svg>
 ");
 
-    // ungroupping should only work for direct 'defs' nodes
+    // Ungroupping should only work for direct 'defs' nodes.
     test!(move_defs_4,
 "<svg>
     <defs id='a'>

@@ -160,7 +160,7 @@ You can get prebuilt packages [here](https://github.com/RazrFalcon/svgcleaner-gu
 
 ## Building
 
-You need the latest stable [Rust](https://www.rust-lang.org/) compiler to build.
+Dependency: [Rust](https://www.rust-lang.org/) >= 1.13
 
 ```bash
 cargo build --release

@@ -29,7 +29,7 @@ use svgdom::{Document, Node, AttributeValue};
 pub fn ungroup_groups(doc: &Document, options: &Options) {
     let mut groups = Vec::with_capacity(16);
 
-    // doc must contain 'svg' node, so we can safely unwrap
+    // doc must contain 'svg' node, so we can safely unwrap.
     let svg = doc.svg_element().unwrap();
     loop {
         apply_transforms::prepare_transforms(&doc, &options);
@@ -65,12 +65,12 @@ fn _ungroup_groups(parent: &Node, groups: &mut Vec<Node>, options: &Options) {
                 continue;
             }
 
-            // group shouldn't be used
+            // Group shouldn't be used.
             if node.is_used() {
                 continue;
             }
 
-            // group shouldn't contain some attributes
+            // Group shouldn't contain some attributes.
             if node.has_attributes(&invalid_attrs) {
                 continue;
             }
@@ -88,29 +88,29 @@ fn _ungroup_groups(parent: &Node, groups: &mut Vec<Node>, options: &Options) {
                 let child = node.first_child().unwrap();
                 // TODO: why child shouldn't be used?
                 if !child.is_used() {
-                    // group with only one child and neither group or child is used
+                    // Group with only one child and neither group or child is used.
                     groups.push(node.clone());
                     continue;
                 }
             }
 
-            // process group with many children
+            // Process group with many children.
 
-            // do not ungroup group which have 'switch' element as direct parent,
-            // because it will break a 'switch'
+            // Do not ungroup group which have 'switch' element as direct parent,
+            // because it will break a 'switch'.
             if parent.is_tag_name(EId::Switch) {
                 continue;
             }
 
             if node.attributes().is_empty() {
-                // group without any attributes
+                // Group without any attributes.
                 groups.push(node.clone());
                 continue;
             }
 
-            // if group has only a transform attribute
+            // If group has only a transform attribute
             // and if all children elements contain transform
-            // and none of the children is `use`
+            // and none of the children is 'use'.
             //
             // example: oxygen/edit-find-mail.svg
             if node.has_attribute(AId::Transform) && node.attributes().len() == 1 {
@@ -136,8 +136,8 @@ fn ungroup_group(g: &Node) {
         for child in g.children() {
             if aid == AId::Opacity {
                 if child.has_attribute(aid) {
-                    // we can't just replace 'opacity' attribute,
-                    // we should multiply it
+                    // We can't just replace 'opacity' attribute,
+                    // we should multiply it.
                     let op1: f64 = *attr.value.as_number().unwrap();
                     let op2: f64 = *child.attribute_value(aid).unwrap()
                                          .as_number().unwrap();
@@ -148,7 +148,7 @@ fn ungroup_group(g: &Node) {
 
             if aid == AId::Transform {
                 if child.has_attribute(aid) {
-                    // we should multiply transform matrices
+                    // We should multiply transform matrices.
                     let mut t1 = *attr.value.as_transform().unwrap();
 
                     let a2 = child.attribute_value(aid).unwrap();
@@ -161,8 +161,8 @@ fn ungroup_group(g: &Node) {
             }
 
             if aid == AId::Display {
-                // display attribute has a priority during rendering, so we must
-                // copy it even if a child has it already
+                // Display attribute has a priority during rendering, so we must
+                // copy it even if a child has it already.
                 child.set_attribute(aid, attr.value.clone());
                 continue;
             }
@@ -170,7 +170,7 @@ fn ungroup_group(g: &Node) {
             if !child.has_attribute(aid) {
                 match attr.value {
                     AttributeValue::Link(ref iri) | AttributeValue::FuncLink(ref iri) => {
-                        // if it's fail - it's already a huge problem, so unwrap is harmless
+                        // If it's fail - it's already a huge problem, so unwrap is harmless.
                         child.set_link_attribute(aid, iri.clone()).unwrap();
                     }
                     _ => child.set_attribute(aid, attr.value.clone()),
@@ -199,7 +199,7 @@ mod tests {
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
 
-                // prepare defs
+                // Prepare defs.
                 group_defs(&doc);
 
                 let mut options = Options::default();
@@ -207,14 +207,14 @@ mod tests {
                 options.paths_to_relative = true;
                 options.apply_transform_to_paths = true;
 
-                // actual test
+                // Actual test.
                 ungroup_groups(&doc, &options);
 
                 // We must check that we moved linked elements correctly.
                 // If we not, than referenced elements will be removed. Which is wrong.
                 rm_unused_defs::remove_unused_defs(&doc);
 
-                // removes `defs` element
+                // Removes 'defs' element.
                 remove_empty_defs(&doc);
 
                 let mut opt = write_opt_for_tests!();
@@ -268,7 +268,7 @@ mod tests {
 </svg>
 ");
 
-    // keep order
+    // Keep order.
     test!(ungroup_3,
 "<svg>
     <g>
@@ -515,8 +515,8 @@ mod tests {
 </svg>
 ");
 
-    // ungroup group with transform when all children also has a transform
-    // but only when group has only one attribute: transform
+    // Ungroup group with transform when all children also has a transform
+    // but only when group has only one attribute: transform.
     test!(ungroup_with_transform_5,
 "<svg>
     <g transform='translate(10 20)'>
@@ -538,8 +538,8 @@ mod tests {
 </svg>
 ");
 
-    // ungroup because transform will be applied to rect
-    // only when `Options::apply_transform_to_shapes` is enabled
+    // Ungroup because transform will be applied to rect
+    // only when 'Options::apply_transform_to_shapes' is enabled.
     test!(ungroup_with_transform_6,
 "<svg>
     <g transform='translate(10 20)'>

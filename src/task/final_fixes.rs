@@ -30,7 +30,7 @@ pub fn remove_empty_defs(doc: &Document) {
     // We don't remove all empty 'defs' elements, since it was already done by group_defs().
     // We only remove first 'defs', which is probably was created by us.
 
-    // doc must contain 'svg' node, so we can safely unwrap
+    // doc must contain 'svg' node, so we can safely unwrap.
     let svg = doc.svg_element().unwrap();
     for child in svg.children() {
         if child.is_tag_name(EId::Defs) && !child.has_children() {
@@ -41,7 +41,7 @@ pub fn remove_empty_defs(doc: &Document) {
 }
 
 pub fn fix_xmlns_attribute(doc: &Document, rm_unused: bool) {
-    // doc must contain 'svg' node, so we can safely unwrap
+    // doc must contain 'svg' node, so we can safely unwrap.
     let svg = doc.svg_element().unwrap();
 
     let mut has_links = false;
@@ -58,10 +58,10 @@ pub fn fix_xmlns_attribute(doc: &Document, rm_unused: bool) {
     }
 
     if !has_links && rm_unused && svg.has_attribute(AId::XmlnsXlink) {
-        // remove if no links are used
+        // Remove if no links are used.
         svg.remove_attribute(AId::XmlnsXlink);
     } else if has_links && !svg.has_attribute(AId::XmlnsXlink) {
-        // set if needed
+        // Set if needed.
         svg.set_attribute(AId::XmlnsXlink, "http://www.w3.org/1999/xlink");
     }
 }

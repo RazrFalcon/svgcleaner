@@ -27,7 +27,7 @@ use svgdom::{Document, Node, Attributes};
 use svgdom::types::Transform;
 
 pub fn apply_transform_to_shapes(doc: &Document) {
-    // apply transform to shapes
+    // Apply transform to shapes.
     let iter = doc.descendants().svg().filter(|n| n.has_attribute(AId::Transform));
     for node in iter {
         match node.tag_id().unwrap() {
@@ -58,7 +58,7 @@ fn process<F>(node: &Node, func: F)
     }
 
     if ts.has_scale() {
-        // we must update 'stroke-width' if transform had scale part in it
+        // We must update 'stroke-width' if transform had scale part in it.
         let (sx, _) = ts.get_scale();
         ::task::utils::recalc_stroke(node, sx);
     }
@@ -191,7 +191,7 @@ mod tests {
 </svg>
 ");
 
-    // ignore shapes with invalid coordinates units
+    // Ignore shapes with invalid coordinates units.
     test_eq!(keep_1,
 "<svg>
     <rect height='10' transform='scale(2)' width='10' x='10in' y='10'/>
@@ -199,8 +199,7 @@ mod tests {
 "
 );
 
-    // ignore groups processing with invalid transform types
-    // and attributes
+    // Ignore groups processing with invalid transform types and attributes.
     test_eq!(keep_2,
 "<svg>
     <g transform='scale(2 3)'>

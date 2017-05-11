@@ -65,7 +65,7 @@ pub struct Options {
     pub apply_transform_to_paths: bool,
 }
 
-// should all be `false`
+// Should all be 'false'.
 impl Default for Options {
     fn default() -> Options {
         Options {

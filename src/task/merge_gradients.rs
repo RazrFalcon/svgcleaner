@@ -96,7 +96,7 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
             // but since all attribute already been resolved by resolve_attributes(),
             // we only need to make them visible.
 
-            // do not process all attributes - only important
+            // Do not process all attributes - only important.
             let aid_list = if node.is_tag_name(EId::LinearGradient) {
                 &LG_ATTRIBUTES[..]
             } else {
@@ -108,8 +108,8 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
 
             for aid in aid_list {
                 if let Some(attr) = link_attrs.get(*aid) {
-                    // if an attribute of the removed gradient is invisible,
-                    // then that means it was a default and we don't need it
+                    // If an attribute of the removed gradient is invisible,
+                    // then that means it was a default and we don't need it.
                     if !attr.visible {
                         continue;
                     }
@@ -145,7 +145,7 @@ mod tests {
         )
     }
 
-    // there is nothing to merge - just remove it
+    // There is nothing to merge - just remove it.
     test!(merge_1,
 "<svg>
     <linearGradient id='lg1'/>
@@ -156,8 +156,8 @@ mod tests {
 </svg>
 ");
 
-    // move 'stop' elements
-    // order is important
+    // Move 'stop' elements.
+    // Order is important.
     test!(merge_2,
 "<svg>
     <linearGradient id='lg1'>
@@ -174,7 +174,7 @@ mod tests {
 </svg>
 ");
 
-    // move attributes
+    // Move attributes.
     test!(merge_3,
 "<svg>
     <linearGradient id='lg1' x1='5' x2='5'>
@@ -191,7 +191,7 @@ mod tests {
 </svg>
 ");
 
-    // recursive
+    // Recursive.
     test!(merge_4,
 "<svg>
     <linearGradient id='lg1' x1='5' x2='5'>
@@ -209,7 +209,7 @@ mod tests {
 </svg>
 ");
 
-    // same as above, but in different order
+    // Same as above, but in different order.
     test!(merge_5,
 "<svg>
     <linearGradient x1='10' xlink:href='#lg2'/>
@@ -227,7 +227,7 @@ mod tests {
 </svg>
 ");
 
-    // move only element-specific attributes
+    // Move only element-specific attributes.
     test!(merge_6,
 "<svg>
     <linearGradient id='lg1' x1='5' x2='5'/>
@@ -238,7 +238,7 @@ mod tests {
 </svg>
 ");
 
-    // skip existing stop's
+    // Skip existing stop's.
     test!(merge_7,
 "<svg>
     <linearGradient id='lg1'>

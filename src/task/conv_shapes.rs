@@ -34,7 +34,7 @@ use svgdom::types::path;
 /// We should run it before path processing.
 pub fn convert_shapes_to_paths(doc: &Document) {
     for node in doc.descendants().svg() {
-        // descendants() iterates only over svg elements, which all have a tag name
+        // descendants() iterates only over svg elements, which all have a tag name.
         match node.tag_id().unwrap() {
             EId::Line => convert_line(&node),
             EId::Rect => convert_rect(&node),
@@ -86,8 +86,8 @@ fn convert_rect(node: &Node) {
         let rx = get_value!(attrs, Length, AId::Rx, Length::zero());
         let ry = get_value!(attrs, Length, AId::Ry, Length::zero());
 
-        // we converting only simple rects, not rounded,
-        // because their path will be longer
+        // We converting only simple rects, not rounded,
+        // because their path will be longer.
         if rx.num.fuzzy_ne(&0.0) || ry.num.fuzzy_ne(&0.0) {
             return;
         }
@@ -161,7 +161,7 @@ fn points_to_path(node: &Node) -> Option<path::Path> {
         return None;
     };
 
-    // points with an odd count of coordinates must be fixed in fix_attrs::fix_poly
+    // Points with an odd count of coordinates must be fixed in fix_attrs::fix_poly.
     debug_assert!(points.len() % 2 == 0);
 
     let mut i = 0;
@@ -208,7 +208,7 @@ mod tests {
 </svg>
 ");
 
-    // ignore, because of non-px unit
+    // Ignore, because of non-px unit.
     test!(conv_line_3,
 "<svg>
     <line x2='30pt'/>
@@ -235,7 +235,7 @@ mod tests {
     <path d='M 0 0 H 30 V 40 H 0 Z'/>
 </svg>
 ");
-    // ignore invalid rects
+    // Ignore invalid rects.
     test!(conv_rect_3,
 "<svg>
     <rect width='30' height='30' rx='1'/>

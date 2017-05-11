@@ -180,7 +180,7 @@ macro_rules! gen_flag {
 pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     debug_assert!(KEYS.0.len() - 1 == Key::Stdout as usize);
 
-    // NOTE: We use custom help output, because `clap` doesn't support
+    // NOTE: We use custom help output, because 'clap' doesn't support
     //       args grouping.
 
     App::new("svgcleaner")
@@ -306,11 +306,11 @@ fn get_flag(args: &ArgMatches, key: Key) -> bool {
     match args.value_of(KEYS[key]).unwrap() {
         "true" | "yes" | "y" => true,
         "false" | "no" | "n" => false,
-        _ => unreachable!(), // unreachable because we already validated values at is_flag()
+        _ => unreachable!(), // Unreachable because we already validated values at is_flag().
     }
 }
 
-// I don't know how to check it using `clap`, so here is manual checks.
+// I don't know how to check it using 'clap', so here is manual checks.
 pub fn check_values(args: &ArgMatches) -> bool {
 
     fn check_value(args: &ArgMatches, flag: Key, dep: Key) -> bool {
@@ -370,15 +370,15 @@ impl<'a> Flags<'a> {
 
     fn _resolve(&self, key: Key) -> Option<bool> {
         if self.is_no_defaults {
-            // if `--no-defaults` flag is set, check that
-            // provided flag is actually set by user and not default
+            // If '--no-defaults' flag is set, check that
+            // provided flag is actually set by user and not default.
             //
-            // note that `is_present` will always return `true`,
-            // because all the flags has a default value
+            // Note that 'is_present' will always return 'true',
+            // because all the flags has a default value.
             if self.args.occurrences_of(KEYS[key]) != 0 {
                 Some(get_flag(self.args, key))
             } else {
-                // if flag is not set - keep value unchanged
+                // If flag is not set - keep value unchanged.
                 None
             }
         } else {
@@ -388,7 +388,7 @@ impl<'a> Flags<'a> {
 }
 
 pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
-    // initial options should be opposite to default ones
+    // Initial options should be opposite to default ones.
     let mut opt = ParseOptions {
         parse_comments: true,
         parse_declarations: true,
@@ -410,7 +410,7 @@ pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
 }
 
 pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
-    // initial options should be opposite to default ones
+    // Initial options should be opposite to default ones.
     let mut opt = WriteOptions {
         indent: Indent::Spaces(4),
         use_single_quote: false,
@@ -449,7 +449,7 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
         "3"     => Indent::Spaces(3),
         "4"     => Indent::Spaces(4),
         "tabs"  => Indent::Tabs,
-        _ => unreachable!(), // clap will validate the input
+        _ => unreachable!(), // clap will validate the input.
     };
 
     opt
@@ -458,7 +458,7 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
 pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
     let flags = Flags::new(args);
 
-    // all cleaning options are disabled by default
+    // All cleaning options are disabled by default.
     let mut opt = Options::default();
 
     flags.resolve(&mut opt.remove_unused_defs, Key::RemoveUnusedDefs);
@@ -494,7 +494,7 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
         "no"    => StyleJoinMode::None,
         "some"  => StyleJoinMode::Some,
         "all"   => StyleJoinMode::All,
-        _ => unreachable!(), // clap will validate the input
+        _ => unreachable!(), // clap will validate the input.
     };
 
     flags.resolve(&mut opt.paths_to_relative, Key::PathsToRelative);

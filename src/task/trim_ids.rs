@@ -62,7 +62,7 @@ impl Num {
     fn shift(&mut self, pos: usize, head: &usize) {
         let n = self.d[pos];
 
-        // id cannot start with digit, so first value should never overcome 51
+        // Id cannot start with digit, so first value should never overcome 51.
         if n == MAX_NUM_CHAR || (n == 51 && &pos == head) {
             self.d[pos] = 0;
 
@@ -76,7 +76,7 @@ impl Num {
         }
     }
 
-    // can panic if number is bigger than around 100000000
+    // Can panic if number is bigger than around 100000000.
     fn plus_one(&mut self) {
         let mut head = NUM_SIZE-1;
         for i in (0..5).rev() {
@@ -132,7 +132,7 @@ mod tests {
         assert_eq!(num.to_string(), "Z");
 
         // id cannot start with digit,
-        // so after 'Z' we'll get 'aa' and not '0'
+        // so after 'Z' we'll get 'aa' and not '0'.
         num.plus_one();
         assert_eq!(num.to_string(), "aa");
 

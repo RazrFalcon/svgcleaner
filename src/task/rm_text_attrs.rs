@@ -54,7 +54,7 @@ pub fn remove_text_attributes(doc: &Document) {
     _remove_text_attributes(&doc.root());
     remove_xml_space(doc);
 
-    // check doc for text nodes
+    // Check doc for text nodes.
     let has_text = doc.svg_element().unwrap()
                       .descendants().any(|n| n.node_type() == NodeType::Text);
 
@@ -70,13 +70,13 @@ pub fn remove_text_attributes(doc: &Document) {
     }
 }
 
-/// Returns `true` if all children do not have any data than depend on text attributes.
+/// Returns 'true' if all children do not have any data than depend on text attributes.
 fn _remove_text_attributes(parent: &Node) -> bool {
-    // process tree recursively
+    // Process the tree recursively.
 
     // NOTE: not sure that it removes everything, at least it does not break anything.
 
-    // shorthand for no_text_data
+    // Shorthand for no_text_data.
     let mut no_td = true;
     for node in parent.children() {
         // The 'line-height' property has no effect on text layout in SVG.
@@ -93,7 +93,7 @@ fn _remove_text_attributes(parent: &Node) -> bool {
         }
 
         if node.has_children() {
-            // go deeper
+            // Go deeper.
             let can_rm = _remove_text_attributes(&node);
             if can_rm {
                 if !node.is_tag_name(EId::FontFace) {
@@ -103,9 +103,9 @@ fn _remove_text_attributes(parent: &Node) -> bool {
                 no_td = false;
             }
         } else {
-            // local version of the 'no_td'
+            // Local version of the 'no_td'.
 
-            // only this parameters affect parent elements
+            // Only this parameters affect parent elements.
             let _no_td = !(   node.descendants().any(|n| n.node_type() == NodeType::Text)
                            || node.is_tag_name(EId::Tref)
                            || has_em_ex_attributes(&node));
@@ -126,7 +126,7 @@ fn _remove_text_attributes(parent: &Node) -> bool {
 }
 
 fn has_em_ex_attributes(node: &Node) -> bool {
-    // an 'em' and an 'ex' units are depend on current font
+    // An 'em' and an 'ex' units are depend on current font.
 
     // NOTE: actually, em/ex can be set in not parsed attributes, which will be ignored,
     //       but it's probably near to impossible
@@ -146,8 +146,8 @@ fn has_em_ex_attributes(node: &Node) -> bool {
 
 fn is_linked_text(node: &Node) -> bool {
     if node.is_tag_name(EId::Use) {
-        // we use 'attributes()' method instead of 'attribute()',
-        // because 'xlink:href' can contain base64 data, which will be expensive to copy
+        // We use 'attributes()' method instead of 'attribute()',
+        // because 'xlink:href' can contain base64 data, which will be expensive to copy.
         let attrs = node.attributes();
         if let Some(value) = attrs.get_value(AId::XlinkHref) {
             if let AttributeValue::Link(ref link) = *value {
@@ -263,8 +263,8 @@ mod tests {
 </svg>
 ");
 
-    // we can remove text attributes from the 'font-face' element
-    // only when there is no text in a whole doc
+    // We can remove text attributes from the 'font-face' element
+    // only when there is no text in a whole doc.
     test!(rm_text_2,
 "<svg>
     <font-face font-family='Verdana'/>
@@ -331,7 +331,7 @@ mod tests {
 </svg>
 ");
 
-    // keep font attributes on font-face, since it's global
+    // Keep font attributes on font-face, since it's global.
     test_eq!(keep_text_2,
 "<svg>
     <font-face font-family='Verdana'/>
@@ -376,7 +376,7 @@ mod tests {
 </svg>
 ");
 
-    // do not take first node, take first element
+    // Do not take first node, take first element.
     test_eq!(keep_text_6,
 "<!-- Comment -->
 <svg>

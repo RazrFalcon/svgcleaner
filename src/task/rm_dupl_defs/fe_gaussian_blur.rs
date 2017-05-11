@@ -43,33 +43,33 @@ pub fn remove_dupl_fe_gaussian_blur(doc: &Document) {
     let mut nodes = Vec::new();
 
     for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::Filter)) {
-        // we support only filters with one child
+        // We support only filters with one child.
         if node.children().count() != 1 {
             continue;
         }
 
-        // filter should not be linked
+        // Filter should not be linked.
         if node.has_attribute(AId::XlinkHref) {
             continue;
         }
 
-        // check that child is 'feGaussianBlur'
+        // Check that child is 'feGaussianBlur'.
         let child = node.first_child().unwrap();
         if !child.is_tag_name(EId::FeGaussianBlur) {
             continue;
         }
 
-        // child should not be used
+        // Child should not be used.
         if child.is_used() {
             continue;
         }
 
-        // we don't support this attributes
+        // We don't support this attributes.
         if child.has_attributes(&[AId::In, AId::Result]) {
             continue;
         }
 
-        // add to list
+        // Add to the list.
         nodes.push(node.clone());
     }
 
@@ -165,7 +165,7 @@ mod tests {
 </svg>
 ");
 
-    // keep when attrs is different
+    // Keep when attrs is different.
     test_eq!(keep_1,
 "<svg>
     <filter id='f1' height='10' width='10' x='50' y='5'>

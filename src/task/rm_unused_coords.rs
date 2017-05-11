@@ -46,7 +46,7 @@ pub fn remove_unused_coordinates(doc: &Document) {
                     }
                 }
                 EId::Rect => {
-                    // if 'rx' equals to 'ry', than we can remove 'ry'
+                    // If 'rx' equals to 'ry', than we can remove 'ry'.
                     // https://www.w3.org/TR/SVG/shapes.html#RectElementRYAttribute
                     if attrs.contains(AId::Rx) {
                         if attrs.get_value(AId::Rx) == attrs.get_value(AId::Ry) {
@@ -57,11 +57,11 @@ pub fn remove_unused_coordinates(doc: &Document) {
                 EId::RadialGradient => {
                     // https://www.w3.org/TR/SVG/pservers.html#RadialGradientElementFXAttribute
 
-                    // we don't check parent attributes, since we already resolved them
-                    // in resolve_attrs::radial_gradients
+                    // We don't check parent attributes, since we already resolved them
+                    // in resolve_attrs::radial_gradients.
 
-                    // process only 'radialGradient' which is not linked
-                    // to the other 'radialGradient'
+                    // Process only 'radialGradient' which is not linked
+                    // to the other 'radialGradient'.
                     if attrs.contains(AId::XlinkHref) {
                         if let Some(v) = attrs.get_value(AId::XlinkHref) {
                             if v.as_link().unwrap().is_tag_name(EId::RadialGradient) {
@@ -76,8 +76,8 @@ pub fn remove_unused_coordinates(doc: &Document) {
                         ($f:expr, $c:expr) => (
                             if attrs.contains($f) && attrs.contains($c) {
                                 if attrs.get_value($f).unwrap() == attrs.get_value($c).unwrap() {
-                                    // we can remove 'fx'/'fy' only if this element is not used
-                                    // by any radialGradient
+                                    // We can remove 'fx'/'fy' only if this element is not used
+                                    // by any 'radialGradient'.
                                     let c = node.linked_nodes()
                                                 .filter(|n| n.is_tag_name(EId::RadialGradient))
                                                 .count();
@@ -89,9 +89,9 @@ pub fn remove_unused_coordinates(doc: &Document) {
                             })
                     }
 
-                    // if 'fx' equals to 'cx', than we can remove 'fx'
+                    // If 'fx' equals to 'cx', than we can remove 'fx'.
                     rm_f!(AId::Fx, AId::Cx);
-                    // if 'fy' equals to 'cy', than we can remove 'fy'
+                    // If 'fy' equals to 'cy', than we can remove 'fy'.
                     rm_f!(AId::Fy, AId::Cy);
                 }
                 _ => {}
@@ -101,7 +101,7 @@ pub fn remove_unused_coordinates(doc: &Document) {
         {
             let mut attrs_mut = node.attributes_mut();
             for aid in &rm_list {
-                // we do not remove unused attributes, just hiding them
+                // We do not remove unused attributes, just hiding them.
                 attrs_mut.get_mut(*aid).unwrap().visible = false;
             }
         }

@@ -28,18 +28,18 @@ use svgdom::types::FuzzyEq;
 use super::utils;
 
 pub fn remove_unused_segments(path: &mut Path) {
-    // repeat until we have any changes
+    // Repeat until we have any changes.
     let mut is_changed = true;
     while is_changed {
         is_changed = false;
 
-        // a path with one segment is useless
+        // Path with one segment is useless.
         if path.d.len() == 1 {
             path.d.clear();
             break;
         }
 
-        // order is important
+        // Order is important.
         remove_mm(path, &mut is_changed);
         remove_zz(path, &mut is_changed);
         remove_mz(path, &mut is_changed);
@@ -74,7 +74,7 @@ fn remove_mm(path: &mut Path, is_changed: &mut bool) {
 }
 
 fn remove_zz(path: &mut Path, is_changed: &mut bool) {
-    // remove continuous ClosePath segments since they are pointless
+    // Remove continuous ClosePath segments since they are pointless.
     let mut i = 1;
     while i < path.d.len() {
         let curr_cmd = path.d[i].cmd();
@@ -92,7 +92,7 @@ fn remove_zz(path: &mut Path, is_changed: &mut bool) {
 }
 
 fn remove_mz(path: &mut Path, is_changed: &mut bool) {
-    // remove `M Z` pairs since this are null paths
+    // Remove 'M Z' pairs since this are null paths.
     let mut i = 1;
     while i < path.d.len() {
         let curr_cmd = path.d[i].cmd();
@@ -116,7 +116,7 @@ fn remove_mz(path: &mut Path, is_changed: &mut bool) {
 }
 
 fn remove_equal(path: &mut Path, is_changed: &mut bool) {
-    // if current segment is the same as previous - remove it
+    // If current segment is the same as previous - remove it.
     let mut i = 1;
     while i < path.d.len() {
         let prev = path.d[i - 1];
@@ -133,7 +133,7 @@ fn remove_equal(path: &mut Path, is_changed: &mut bool) {
 }
 
 fn remove_zero_lenght(path: &mut Path, is_changed: &mut bool) {
-    // if segment moved to the same position as current - remove it
+    // If segment moved to the same position as current - remove it.
     let mut i = 1;
     while i < path.d.len() {
         let curr = path.d[i];
@@ -183,7 +183,7 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
             if is_line_based(prev_cmd) {
                 let (x, y) = utils::resolve_xy(path, prev_i);
                 if mx.fuzzy_eq(&x) && my.fuzzy_eq(&y) {
-                    // remove this line-based segment
+                    // Remove this line-based segment.
                     path.d.remove(prev_i);
                     i -= 1;
                     *is_changed = true;
@@ -201,7 +201,7 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
             if is_line_based(prev_cmd) {
                 let (x, y) = utils::resolve_xy(path, prev_i);
                 if mx.fuzzy_eq(&x) && my.fuzzy_eq(&y) {
-                    // replace line-based segment with ClosePath
+                    // Replace line-based segment with ClosePath.
                     path.d[prev_i] = Segment::new_close_path();
                     *is_changed = true;
                     continue;
@@ -209,7 +209,7 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
             }
         }
 
-        // remember last MoveTo
+        // Remember last MoveTo.
         if curr_cmd == Command::MoveTo {
             mx = path.d[i].x().unwrap();
             my = path.d[i].y().unwrap();
@@ -294,7 +294,7 @@ mod tests {
         "M 10 10 L 10 10",
         "");
 
-    // only H, V, L segments should be removed
+    // Only H, V, L segments should be removed.
     test!(keep_zero_lenght_1,
         "M 10 10 C 20 20 30 30 10 10",
         "M 10 10 C 20 20 30 30 10 10");

@@ -28,7 +28,7 @@ use svgdom::types::{FuzzyEq, FuzzyOrd};
 use super::utils;
 
 pub fn convert_segments(path: &mut Path) {
-    // repeat until we have any changes
+    // Repeat until we have any changes.
     let mut is_changed = true;
     while is_changed {
         is_changed = false;
@@ -60,9 +60,9 @@ fn _convert_segments(path: &mut Path, is_changed: &mut bool) {
             }
             SegmentData::CurveTo { x1, y1, x2, y2, x, y } => {
                 let is_vlineto = || {
-                    // if prev_x, x1, x2 and x are equal - this CurveTo is VerticalLineTo
-                    // y1 must be equal or greater than prev_y
-                    // y2 must be equal or less than y
+                    // If prev_x, x1, x2 and x are equal than this CurveTo is VerticalLineTo.
+                    // y1 must be equal or greater than prev_y.
+                    // y2 must be equal or less than y.
 
                        prev_x.fuzzy_eq(&x)
                     && x1.fuzzy_eq(&x2)
@@ -72,9 +72,9 @@ fn _convert_segments(path: &mut Path, is_changed: &mut bool) {
                 };
 
                 let is_hlineto = || {
-                    // if prev_y, y1, y2 and y are equal - this CurveTo is HorizontalLineTo
-                    // x1 must be equal or greater than prev_x
-                    // x2 must be equal or less than x
+                    // If prev_y, y1, y2 and y are equal - this CurveTo is HorizontalLineTo.
+                    // x1 must be equal or greater than prev_x.
+                    // x2 must be equal or less than x.
 
                        prev_y.fuzzy_eq(&y)
                     && y1.fuzzy_eq(&y2)
@@ -125,7 +125,7 @@ fn _convert_segments(path: &mut Path, is_changed: &mut bool) {
 
 fn is_point_on_line(x1: f64, y1: f64, x2: f64, y2: f64, x: f64, y: f64) -> bool
 {
-    // check that point is actually on line
+    // Check that point is actually on line.
     let is_on_line = || {
         let a = (y2 - y1) / (x2 - x1);
         let b = y1 - a * x1;
@@ -137,9 +137,9 @@ fn is_point_on_line(x1: f64, y1: f64, x2: f64, y2: f64, x: f64, y: f64) -> bool
         return false;
     }
 
-    // check that point is between end points
+    // Check that point is between end points.
     if x1.fuzzy_eq(&x2) {
-        // process vertical line
+        // Process vertical line.
         let o1 = y.fuzzy_cmp(&y1);
         let o2 = y.fuzzy_cmp(&y2);
         if    (o1 != Ordering::Less    && o2 != Ordering::Greater)
@@ -189,20 +189,20 @@ mod tests {
     test!(conv_cs_2, "M 10 10 C 10 10 10 20 30 40 C 20 35 40 50 60 70 C 80 90 10 20 30 40",
                      "M 10 10 S 10 20 30 40 C 20 35 40 50 60 70 S 10 20 30 40");
 
-    // convert CurveTo to VerticalLineTo when control points are on the same vertical line
+    // Convert CurveTo to VerticalLineTo when control points are on the same vertical line.
     test!(conv_cv_1, "M 10 10 C 10 15 10 20 10 40",
                      "M 10 10 V 40");
 
-    // ignore converting, because Y1 is outsize the curve
+    // Ignore converting, because Y1 is outsize the curve.
     test!(conv_cv_2, "M 10 10 C 10 5 10 20 10 40",
                      "M 10 10 C 10 5 10 20 10 40");
 
-    // convert CurveTo to VerticalLineTo when control points
-    // are at the start and at the end of the curve
+    // Convert CurveTo to VerticalLineTo when control points
+    // are at the start and at the end of the curve.
     test!(conv_cv_3, "M 10 10 C 10 10 10 40 10 40",
                      "M 10 10 V 40");
 
-    // same for H
+    // Same for H.
     test!(conv_ch_1, "M 10 10 C 15 10 25 10 40 10",
                      "M 10 10 H 40");
 

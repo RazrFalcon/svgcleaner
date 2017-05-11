@@ -26,7 +26,7 @@ use svgdom::types::{Transform, FuzzyEq};
 pub fn apply_transform(path: &mut Path, ts: &Transform) {
     let (sx, sy) = ts.get_scale();
 
-    // only proportional scale is supported
+    // Only proportional scale is supported.
     debug_assert!(sx.fuzzy_eq(&sy));
 
     for seg in path.d.iter_mut() {

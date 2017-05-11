@@ -25,10 +25,10 @@ use super::short::EId;
 use svgdom::{Document, Node};
 
 pub fn remove_unused_defs(doc: &Document) {
-    // unwrap is safe, because 'defs' already had been created in 'group_defs'
+    // Unwrap is safe, because 'defs' already had been created in 'group_defs'.
     let defs = doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0).unwrap();
 
-    // repeat until no unused nodes left
+    // Repeat until no unused nodes left.
     while remove_unused_defs_impl(&defs) { }
 }
 
@@ -41,8 +41,8 @@ fn remove_unused_defs_impl(defs: &Node) -> bool {
 
     for node in defs.children() {
         if !node.is_used() && !is_font_node(&node) {
-            // nodes outside defs we have to move to main 'defs' node, not to parent,
-            // because otherwise they became renderable
+            // Nodes outside defs we have to move to main 'defs' node, not to parent,
+            // because otherwise they became renderable.
             ungroup_children(&node, &mut mv_nodes, &mut rm_nodes);
         }
     }
@@ -71,8 +71,8 @@ fn is_font_node(node: &Node) -> bool {
 
 fn ungroup_children(node: &Node, mv_nodes: &mut Vec<Node>, rm_nodes: &mut Vec<Node>) {
     if node.has_children() {
-        // element can be unused, but elements in it can be,
-        // so we need to move them to parent element before removing
+        // Element can be unused, but elements in it can be,
+        // so we need to move them to parent element before removing.
         for c in node.children() {
             mv_nodes.push(c.clone());
         }

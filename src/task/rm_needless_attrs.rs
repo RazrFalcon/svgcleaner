@@ -38,11 +38,11 @@ pub fn remove_needless_attributes(doc: &Document) {
             _ => {}
         }
 
-        // we can remove any 'color' attributes since they
-        // already resolved in 'resolve_inherit', which makes them pointless
+        // We can remove any 'color' attributes since they
+        // already resolved in 'resolve_inherit', which makes them pointless.
         node.remove_attribute(AId::Color);
 
-        // `enable-background` is only applicable to container elements.
+        // 'enable-background' is only applicable to container elements.
         // https://www.w3.org/TR/SVG/filters.html#EnableBackgroundProperty
         if !node.is_container() && node.has_attribute(AId::EnableBackground) {
             node.remove_attribute(AId::EnableBackground);
@@ -70,7 +70,7 @@ fn process_clip_path(node: &Node) {
 }
 
 fn process_rect(node: &Node) {
-    // remove all non-rect attributes
+    // Remove all non-rect attributes.
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
         || a.has_id(AId::X)
@@ -83,7 +83,7 @@ fn process_rect(node: &Node) {
 }
 
 fn process_circle(node: &Node) {
-    // remove all non-circle attributes
+    // Remove all non-circle attributes.
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
         || a.has_id(AId::Cx)
@@ -93,7 +93,7 @@ fn process_circle(node: &Node) {
 }
 
 fn process_ellipse(node: &Node) {
-    // remove all non-ellipse attributes
+    // Remove all non-ellipse attributes.
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
         || a.has_id(AId::Cx)
@@ -104,7 +104,7 @@ fn process_ellipse(node: &Node) {
 }
 
 fn process_line(node: &Node) {
-    // remove all non-line attributes
+    // Remove all non-line attributes.
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
         || a.has_id(AId::X1)
@@ -115,7 +115,7 @@ fn process_line(node: &Node) {
 }
 
 fn process_poly(node: &Node) {
-    // remove all non-polyline/polygon attributes
+    // Remove all non-polyline/polygon attributes.
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
         || a.has_id(AId::Points)
@@ -123,7 +123,7 @@ fn process_poly(node: &Node) {
 }
 
 fn is_basic_shapes_attr(a: &Attribute) -> bool {
-    // list of common basic shapes attributes
+    // List of common basic shapes attributes.
     // https://www.w3.org/TR/SVG/shapes.html#RectElement
 
        a.is_conditional_processing()
@@ -138,7 +138,7 @@ fn is_basic_shapes_attr(a: &Attribute) -> bool {
 
 fn process_fill(node: &Node) {
     if !node.has_children() {
-        // if 'fill' is disabled we can remove fill-based attributes
+        // If 'fill' is disabled we can remove fill-based attributes.
         if let Some(v) = node.attribute_value(AId::Fill) {
             if v == AttributeValue::PredefValue(ValueId::None) {
                 node.remove_attribute(AId::FillRule);
@@ -146,7 +146,7 @@ fn process_fill(node: &Node) {
             }
         }
 
-        // if 'fill' is invisible we can disable fill completely
+        // If 'fill' is invisible we can disable fill completely.
         if let Some(v) = node.attribute_value(AId::FillOpacity) {
             if v == AttributeValue::Number(0.0) {
                 node.set_attribute(AId::Fill, ValueId::None);
@@ -169,12 +169,12 @@ static STROKE_ATTRIBUTES: &'static [AId] = &[
 
 fn process_stroke(node: &Node) {
     fn is_invisible(node: &Node) -> bool {
-        // skip nodes with marker, because it doesn't count opacity and stroke-width
+        // Skip nodes with marker, because it doesn't count opacity and stroke-width.
         if node.has_attributes(&[AId::Marker, AId::MarkerStart, AId::MarkerMid, AId::MarkerEnd]) {
             return false;
         }
 
-        // the stroke will not be drawn if stoke-width is 0
+        // The stroke will not be drawn if stoke-width is 0.
         if let Some(v) = node.attribute_value(AId::StrokeWidth) {
             if let AttributeValue::Length(l) = v {
                 if l.num == 0.0 {
@@ -183,7 +183,7 @@ fn process_stroke(node: &Node) {
             }
         }
 
-        // the stroke will not be drawn if stoke-opacity is 0
+        // The stroke will not be drawn if stoke-opacity is 0.
         if let Some(v) = node.attribute_value(AId::StrokeOpacity) {
             if let AttributeValue::Number(num) = v {
                 if num == 0.0 {
@@ -197,12 +197,12 @@ fn process_stroke(node: &Node) {
 
     if !node.has_children() {
         if is_invisible(node) {
-            // remove all stroke-based attributes if stroke is invisible
+            // Remove all stroke-based attributes if stroke is invisible.
             node.remove_attribute(AId::Stroke);
             node.remove_attributes(STROKE_ATTRIBUTES);
 
-            // if the parent element defines stroke - we must mark current element
-            // with 'none' stroke
+            // If the parent element defines stroke - we must mark current element
+            // with 'none' stroke.
             if let Some(n) = node.parents().find(|n| n.has_attribute(AId::Stroke)) {
                 let value = n.attribute_value(AId::Stroke).unwrap();
                 if value != AttributeValue::PredefValue(ValueId::None) {
@@ -212,12 +212,12 @@ fn process_stroke(node: &Node) {
         } else {
             if let Some(v) = node.attribute_value(AId::Stroke) {
                 if v == AttributeValue::PredefValue(ValueId::None) {
-                    // remove all stroke-based attributes, except 'stroke' itself,
-                    // if the stroke is 'none'
+                    // Remove all stroke-based attributes, except 'stroke' itself,
+                    // if the stroke is 'none'.
                     node.remove_attributes(STROKE_ATTRIBUTES);
 
-                    // if the parent element doesn't define 'stroke' - we can remove it
-                    // from the current element
+                    // If the parent element doesn't define 'stroke' - we can remove it
+                    // from the current element.
                     if node.parents().find(|n| n.has_attribute(AId::Stroke)).is_none() {
                         node.remove_attribute(AId::Stroke);
                     }

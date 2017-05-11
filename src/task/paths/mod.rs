@@ -34,8 +34,8 @@ mod rm_unused;
 
 pub fn process_paths(doc: &Document, options: &Options) {
     for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::Path)) {
-        // we can't process paths with marker, because if we remove all segments
-        // it will break rendering
+        // We can't process paths with marker, because if we remove all segments
+        // it will break rendering.
         //
         // TODO: do not remove first segment if node has marker
         let has_marker = node.has_attributes(&[AId::Marker, AId::MarkerStart,
@@ -53,7 +53,7 @@ pub fn process_paths(doc: &Document, options: &Options) {
                     node.remove_attribute(AId::Transform);
 
                     if tsl.has_scale() {
-                        // we must update 'stroke-width' if transform had scale part in it
+                        // We must update 'stroke-width' if transform had scale part in it.
                         let (sx, _) = tsl.get_scale();
                         ::task::utils::recalc_stroke(&node, sx);
                     }
@@ -100,7 +100,7 @@ mod utils {
 
     // TODO: replace with a macro
     pub fn resolve_x(path: &Path, start: usize) -> f64 {
-        // VerticalLineTo does not have `x` coordinate, so we have to find it in previous segments
+        // VerticalLineTo does not have 'x' coordinate, so we have to find it in previous segments.
         let mut i = start;
         loop {
             if let Some(x) = path.d[i].x() {
@@ -113,12 +113,12 @@ mod utils {
             i -= 1;
         }
 
-        // first segment must be MoveTo, so we will always have an `x`
+        // First segment must be MoveTo, so we will always have an 'x'.
         unreachable!();
     }
 
     pub fn resolve_y(path: &Path, start: usize) -> f64 {
-        // HorizontalLineTo does not have `x` coordinate, so we have to find it in previous segments
+        // HorizontalLineTo does not have 'x' coordinate, so we have to find it in previous segments.
         let mut i = start;
         loop {
             if let Some(y) = path.d[i].y() {
@@ -131,7 +131,7 @@ mod utils {
             i -= 1;
         }
 
-        // first segment must be MoveTo, so we will always have an `y`
+        // First segment must be MoveTo, so we will always have an 'y'.
         unreachable!();
     }
 

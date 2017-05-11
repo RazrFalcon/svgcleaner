@@ -41,7 +41,7 @@ pub fn remove_invalid_stops(doc: &Document) {
                 if     attrs1.get_value(AId::Offset) == attrs2.get_value(AId::Offset)
                     && attrs1.get_value(AId::StopColor) == attrs2.get_value(AId::StopColor)
                     && attrs1.get_value(AId::StopOpacity) == attrs2.get_value(AId::StopOpacity) {
-                    // if nothing changed - we can remove this `stop`
+                    // If nothing changed - we can remove this 'stop'.
                     nodes.push(child.clone());
                 }
             }

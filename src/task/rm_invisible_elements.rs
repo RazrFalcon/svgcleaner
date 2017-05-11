@@ -54,7 +54,7 @@ fn process_clip_paths(doc: &Document, is_any_removed: &mut bool) {
     let mut nodes = Vec::with_capacity(16);
     let mut clip_paths = Vec::with_capacity(16);
 
-    // remove all invalid children
+    // Remove all invalid children.
     for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::ClipPath)) {
         for child in node.children() {
             if !is_valid_clip_path_elem(&child) {
@@ -117,11 +117,11 @@ fn process_paths(doc: &Document, is_any_removed: &mut bool) {
                         return true;
                     }
                 }
-                // invalid value type
+                // Invalid value type.
                 _ => return true,
             }
         } else {
-            // not set
+            // Not set.
             return true;
         }
 
@@ -149,9 +149,9 @@ fn process_display_attribute(doc: &Document, is_any_removed: &mut bool) {
 
 fn _process_display_attribute(parent: &Node, nodes: &mut Vec<Node>, is_any_removed: &mut bool) {
     for node in parent.children().svg() {
-        // if elements has attribute 'display:none' and this element is not used - we can remove it
+        // If elements has attribute 'display:none' and this element is not used - we can remove it.
         if node.has_attribute_with_value(AId::Display, ValueId::None) && !node.is_used() {
-            // all children must be unused to
+            // All children must be unused to.
             if !node.descendants().svg().any(|n| n.is_used()) {
                 // TODO: ungroup used elements and remove unused
                 nodes.push(node.clone());
@@ -162,7 +162,7 @@ fn _process_display_attribute(parent: &Node, nodes: &mut Vec<Node>, is_any_remov
     }
 }
 
-// remove 'filter' elements without children
+// Remove 'filter' elements without children.
 fn process_empty_filter(doc: &Document, is_any_removed: &mut bool) {
     let nodes: Vec<Node> = doc.descendants().svg()
                               .filter(|n| n.is_tag_name(EId::Filter) && !n.has_children())
@@ -182,7 +182,7 @@ fn process_empty_filter(doc: &Document, is_any_removed: &mut bool) {
     }
 }
 
-// remove feColorMatrix with default values
+// Remove feColorMatrix with default values.
 fn process_fe_color_matrix(doc: &Document) {
     fn is_default_matrix(node: &Node) -> bool {
         if !node.is_tag_name(EId::Filter) {
@@ -207,7 +207,7 @@ fn process_fe_color_matrix(doc: &Document) {
             if t == "matrix" {
                 if let Some(&AttributeValue::String(ref values)) = attrs.get_value(AId::Values) {
                     if values == "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" {
-                        // we remove the whole 'filter' elements
+                        // We remove the whole 'filter' elements.
                         return true;
                     }
                 }
@@ -220,7 +220,7 @@ fn process_fe_color_matrix(doc: &Document) {
     doc.drain(is_default_matrix);
 }
 
-// 'use' element without 'xlink:href' attribute is pointless
+// 'use' element without 'xlink:href' attribute is pointless.
 fn process_use(doc: &Document, is_any_removed: &mut bool) {
     let c = doc.drain(|n| n.is_tag_name(EId::Use) && !n.has_attribute(AId::XlinkHref));
     if c != 0 { *is_any_removed = true; }
@@ -230,7 +230,7 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
     let mut nodes = Vec::with_capacity(16);
 
     {
-        // gradient without children and link to other gradient is pointless
+        // Gradient without children and link to other gradient is pointless.
         let iter = doc.descendants().svg()
                       .filter(|n| n.is_gradient())
                       .filter(|n| !n.has_children() && !n.has_attribute(AId::XlinkHref));
@@ -257,12 +257,12 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
 
         for n in iter {
             let stop = n.children().nth(0).unwrap();
-            // unwrap is safe, because we already resolved all 'stop' attributes
+            // Unwrap is safe, because we already resolved all 'stop' attributes.
             let color = *stop.attribute_value(AId::StopColor).unwrap().as_color().unwrap();
             let opacity = *stop.attribute_value(AId::StopOpacity).unwrap().as_number().unwrap();
 
-            // replace links with colors, but not in gradients,
-            // because it will lead to 'xlink:href=#ffffff', which is wrong
+            // Replace links with colors, but not in gradients,
+            // because it will lead to 'xlink:href=#ffffff', which is wrong.
             for link in n.linked_nodes()
                          .filter(|n| !n.is_gradient())
                          .collect::<Vec<Node>>() {
@@ -307,7 +307,7 @@ fn find_link_attribute(node: &Node, link: &Node) -> Option<AId> {
     None
 }
 
-// remove rect's with zero size
+// Remove rect's with zero size.
 fn process_rect(doc: &Document, is_any_removed: &mut bool) {
     fn is_invisible(node: &Node) -> bool {
         if !node.is_tag_name(EId::Rect) {
@@ -335,11 +335,11 @@ mod tests {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
-                // we must prepare defs, because `remove_invisible_elements`
-                // invokes `remove_unused_defs`
+                // We must prepare defs, because 'remove_invisible_elements'
+                // invokes 'remove_unused_defs'.
                 group_defs(&doc);
                 remove_invisible_elements(&doc);
-                // removes `defs` element
+                // Removes 'defs' element.
                 remove_empty_defs(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }

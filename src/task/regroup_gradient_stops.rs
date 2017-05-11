@@ -63,7 +63,7 @@ pub fn regroup_gradient_stops(doc: &Document) {
                 c.detach();
                 new_lg.append(&c);
             }
-            // if it's fail - it's already a huge problem, so unwrap is harmless
+            // If it's fail - it's already a huge problem, so unwrap is harmless.
             node1.set_link_attribute(AId::XlinkHref, new_lg.clone()).unwrap();
 
             node1.insert_before(&new_lg);
@@ -73,7 +73,7 @@ pub fn regroup_gradient_stops(doc: &Document) {
                     let c = jn.children().nth(0).unwrap();
                     c.remove();
                 }
-                // if it's fail - it's already a huge problem, so unwrap is harmless
+                // If it's fail - it's already a huge problem, so unwrap is harmless.
                 jn.set_link_attribute(AId::XlinkHref, new_lg.clone()).unwrap();
             }
 
@@ -84,7 +84,7 @@ pub fn regroup_gradient_stops(doc: &Document) {
     }
 
     if is_changed {
-        // we must resolve attributes for gradients created above
+        // We must resolve attributes for gradients created above.
         postproc::resolve_linear_gradient_attributes(doc);
     }
 }

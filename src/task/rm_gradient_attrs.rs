@@ -35,30 +35,30 @@ fn process_units(doc: &Document) {
     group_to_parent(doc);
 }
 
-// if a gradient has the same 'gradientUnits' value as a parent
-// we can remove such attribute
+// If a gradient has the same 'gradientUnits' value as a parent
+// we can remove such attribute.
 fn rm_equal(doc: &Document) {
     let mut order = Vec::new();
     for node in doc.descendants().svg().filter(|n|    n.is_gradient()
                                                    && n.has_attribute(AId::XlinkHref)) {
         let c = node.linked_nodes().filter(|n| n.is_gradient()).count();
-        // the gradient element and count of gradient elements than uses it
+        // The gradient element and count of gradient elements than uses it.
         order.push((node.clone(), c));
     }
 
     let mut sub_order = Vec::new();
 
-    // process gradients from less used to most used
+    // Process gradients from less used to most used.
     while !order.is_empty() {
         for &(ref node, count) in &order {
             if count == 0 {
-                // collect gradients that doesn't used by any other gradients
-                // usage depend on the 'count' value and not on the real usage
+                // Collect gradients that doesn't used by any other gradients
+                // usage depend on the 'count' value and not on the real usage.
                 sub_order.push(node.clone());
 
                 if let Some(av) = node.attribute_value(AId::XlinkHref) {
                     if let AttributeValue::Link(link) = av {
-                        // if current units is equal to parent units we can remove them
+                        // If current units is equal to parent units we can remove them.
                         if node.attribute_value(AId::GradientUnits)
                                 == link.attribute_value(AId::GradientUnits) {
                             make_attr_invisible(node, AId::GradientUnits);
@@ -68,10 +68,10 @@ fn rm_equal(doc: &Document) {
             }
         }
 
-        // remove unused gradients
+        // Remove unused gradients.
         order.retain(|&(_, c)| c > 0);
 
-        // decrease usage count of processed gradients
+        // Decrease usage count of processed gradients.
         for n in &sub_order {
             if let Some(av) = n.attribute_value(AId::XlinkHref) {
                 if let AttributeValue::Link(link) = av {
@@ -88,8 +88,8 @@ fn rm_equal(doc: &Document) {
     }
 }
 
-// if several gradients linked to the same gradient
-// we can move their 'gradientUnits' to the parent
+// If several gradients linked to the same gradient
+// we can move their 'gradientUnits' to the parent.
 fn group_to_parent(doc: &Document) {
     let nodes: Vec<Node> = doc.descendants().svg()
                               .filter(|n| n.is_gradient())
@@ -105,8 +105,8 @@ fn group_to_parent(doc: &Document) {
                         .count();
 
         if count == total_count {
-            // if all linked gradients has the 'objectBoundingBox' value - move
-            // it to the parent and remove from linked
+            // If all linked gradients has the 'objectBoundingBox' value - move
+            // it to the parent and remove from linked.
 
             node.set_attribute(AId::GradientUnits, ValueId::ObjectBoundingBox);
 
@@ -114,8 +114,8 @@ fn group_to_parent(doc: &Document) {
                 make_attr_invisible(&n.clone(), AId::GradientUnits);
             }
         } else if count == 0 {
-            // if all linked gradients has the 'userSpaceOnUse' value - move
-            // it to the parent and remove from linked
+            // If all linked gradients has the 'userSpaceOnUse' value - move
+            // it to the parent and remove from linked.
 
             node.set_attribute(AId::GradientUnits, ValueId::UserSpaceOnUse);
 
@@ -123,8 +123,8 @@ fn group_to_parent(doc: &Document) {
                 make_attr_invisible(&n.clone(), AId::GradientUnits);
             }
         } else if count >= (total_count as f32 / 2.0).round() as usize {
-            // if most linked gradients has the 'objectBoundingBox' value - move
-            // it to the parent and remove from linked
+            // If most linked gradients has the 'objectBoundingBox' value - move
+            // it to the parent and remove from linked.
 
             node.set_attribute(AId::GradientUnits, ValueId::ObjectBoundingBox);
 
@@ -138,8 +138,8 @@ fn group_to_parent(doc: &Document) {
                 }
             }
         } else {
-            // if most linked gradients has the 'userSpaceOnUse' value - move
-            // it to the parent and remove from linked
+            // If most linked gradients has the 'userSpaceOnUse' value - move
+            // it to the parent and remove from linked.
 
             node.set_attribute(AId::GradientUnits, ValueId::UserSpaceOnUse);
 

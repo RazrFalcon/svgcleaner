@@ -245,6 +245,7 @@ fn is_text_contains_spaces(text_node: &Node) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use super::remove_xml_space;
     use svgdom::{Document, WriteToString};
 
     macro_rules! test {

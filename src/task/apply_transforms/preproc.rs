@@ -94,6 +94,7 @@ fn apply_ts_to_children(node: &Node, ts: Transform) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use options::Options;
     use svgdom::{Document, WriteToString};
 
     macro_rules! test {

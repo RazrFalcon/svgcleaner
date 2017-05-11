@@ -74,7 +74,9 @@ pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOpt
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document};
+    use task::short::AId;
+    use svgdom::{Document, WriteOptions};
+    use options::StyleJoinMode;
 
     #[test]
     fn join_styles_1() {

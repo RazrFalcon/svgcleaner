@@ -289,7 +289,7 @@ fn is_precision(val: String) -> Result<(), String> {
     if n >= 1 && n <= 12 {
         Ok(())
     } else {
-        Err(String::from("Invalid precision value."))
+        Err(String::from("Precision should be in range 1..12."))
     }
 }
 

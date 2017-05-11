@@ -52,6 +52,7 @@ static TEXT_ATTRIBUTES: &'static [AId] = &[
 
 pub fn remove_text_attributes(doc: &Document) {
     _remove_text_attributes(&doc.root());
+    remove_xml_space(doc);
 
     // check doc for text nodes
     let has_text = doc.svg_element().unwrap()
@@ -70,14 +71,19 @@ pub fn remove_text_attributes(doc: &Document) {
 }
 
 /// Returns `true` if all children do not have any data than depend on text attributes.
-fn _remove_text_attributes(root: &Node) -> bool {
+fn _remove_text_attributes(parent: &Node) -> bool {
     // process tree recursively
 
     // NOTE: not sure that it removes everything, at least it does not break anything.
 
     // shorthand for no_text_data
     let mut no_td = true;
-    for node in root.children() {
+    for node in parent.children() {
+        // The 'line-height' property has no effect on text layout in SVG.
+        //
+        // https://www.w3.org/TR/SVG/text.html#FontProperty
+        node.remove_attribute(AId::LineHeight);
+
         if !node.is_svg_element() {
             if node.node_type() == NodeType::Text {
                 no_td = false;
@@ -150,6 +156,90 @@ fn is_linked_text(node: &Node) -> bool {
         }
     }
     false
+}
+
+// Remove xml:space=preserve.
+//
+// Details: https://www.w3.org/TR/SVG/text.html#WhiteSpace
+fn remove_xml_space(doc: &Document) {
+    _remove_xml_space(&doc.root());
+}
+
+fn _remove_xml_space(parent: &Node) {
+    // Processes the tree recursively.
+
+    for node in parent.children() {
+        // Check that node has attribute xml:space=preserve.
+        //
+        // xml:space=default will be removed by remove_default_attributes.
+        let mut has_preserve = false;
+        if let Some(AttributeValue::String(s)) = node.attribute_value(AId::XmlSpace) {
+            if s == "preserve" {
+                has_preserve = true;
+            }
+        }
+
+        if !has_preserve {
+            // Go deeper.
+            _remove_xml_space(&node);
+            continue;
+        }
+
+        if node.has_children() {
+            let mut has_spaces = false;
+            for child in node.descendants() {
+                if child.node_type() == NodeType::Text {
+                    if is_text_contains_spaces(&child) {
+                        has_spaces = true;
+                        break;
+                    }
+                }
+            }
+
+            if !has_spaces {
+                node.remove_attribute(AId::XmlSpace);
+            }
+
+            // Go deeper.
+            _remove_xml_space(&node);
+        } else {
+            // If element doesn't have children than xml:space is useless
+            // and we ca remove it.
+            node.remove_attribute(AId::XmlSpace);
+        }
+    }
+}
+
+fn is_text_contains_spaces(text_node: &Node) -> bool {
+    debug_assert!(text_node.node_type() == NodeType::Text);
+
+    let text = match text_node.text() {
+        Some(s) => s,
+        None => return false,
+    };
+
+    if text.is_empty() {
+        return false
+    }
+
+    // 'trim' will remove leading and trailing spaces,
+    // so it text is changed we had one and we can process such text.
+    let trimmed = text.trim();
+    if trimmed != *text {
+        return true;
+    }
+
+    // Check that text contains pair of spaces.
+    let mut has_spaces = false;
+    let iter = trimmed.chars().zip(trimmed.chars().skip(1));
+    for (c1, c2) in iter {
+        if c1.is_whitespace() && c2.is_whitespace() {
+            has_spaces = true;
+            break;
+        }
+    }
+
+    has_spaces
 }
 
 #[cfg(test)]
@@ -304,6 +394,47 @@ mod tests {
         </g>
         <rect width='10'/>
     </g>
+</svg>
+");
+
+    macro_rules! test_space {
+        ($name:ident, $in_text:expr, $out_text:expr) => (
+            base_test!($name, remove_xml_space, $in_text, $out_text);
+        )
+    }
+
+    macro_rules! test_space_eq {
+        ($name:ident, $in_text:expr) => (
+            test_space!($name, $in_text, $in_text);
+        )
+    }
+
+    test_space!(space_preserve_1,
+"<svg>
+    <text xml:space='preserve'/>
+    <text xml:space='preserve'></text>
+    <text xml:space='preserve'>Text</text>
+    <text xml:space='preserve'>Text Text</text>
+</svg>",
+"<svg>
+    <text/>
+    <text/>
+    <text>
+        Text
+    </text>
+    <text>
+        Text Text
+    </text>
+</svg>
+");
+
+    test_space_eq!(space_preserve_keep_1,
+"<svg>
+    <text xml:space='preserve'> Text</text>
+    <text xml:space='preserve'>Text </text>
+    <text xml:space='preserve'> Text </text>
+    <text xml:space='preserve'>Text  Text</text>
+    <text xml:space='preserve'>Text\n\tText</text>
 </svg>
 ");
 }

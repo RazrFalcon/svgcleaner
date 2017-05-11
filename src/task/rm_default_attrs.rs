@@ -25,6 +25,8 @@ use super::short::{EId, AId, Unit};
 use svgdom::{Document, Attribute, AttributeType, AttributeValue, ValueId};
 use svgdom::types::Length;
 
+// TODO: xml:space
+
 pub fn remove_default_attributes(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);
 
@@ -99,7 +101,9 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
         _ => {}
     }
 
+    // TODO: all attributes must be non-inheritable
     // TODO: theoretically, we can have any Unit. Investigate it.
+    // TODO: use fuzzy_eq
 
     match attr.id().unwrap() {
         AId::X | AId::Y => {
@@ -150,6 +154,7 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
                 _ => {}
             }
         }
+        // TODO: this
         // temporary disabled since many render applications do not support this
         // AId::Rx | AId::Ry => {
         //     if tag_name == EId::Rect {

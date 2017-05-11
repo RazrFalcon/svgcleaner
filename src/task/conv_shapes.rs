@@ -23,7 +23,7 @@
 use super::short::{EId, AId, Unit};
 
 use svgdom::{Document, Node, Attribute, AttributeValue};
-use svgdom::types::Length;
+use svgdom::types::{Length, FuzzyEq};
 use svgdom::types::path;
 
 // TODO: convert thin rect to line-to path
@@ -86,9 +86,9 @@ fn convert_rect(node: &Node) {
         let rx = get_value!(attrs, Length, AId::Rx, Length::zero());
         let ry = get_value!(attrs, Length, AId::Ry, Length::zero());
 
-        // we converts only simple rects, not rounded,
+        // we converting only simple rects, not rounded,
         // because their path will be longer
-        if rx.num != 0.0 || ry.num != 0.0 {
+        if rx.num.fuzzy_ne(&0.0) || ry.num.fuzzy_ne(&0.0) {
             return;
         }
 
@@ -96,7 +96,7 @@ fn convert_rect(node: &Node) {
         let h = get_value!(attrs, Length, AId::Height, Length::zero());
 
         // If values equals to zero than the rect is invisible. Skip it.
-        if w.num == 0.0 || h.num == 0.0 {
+        if w.num.fuzzy_eq(&0.0) || h.num.fuzzy_eq(&0.0) {
             return;
         }
 

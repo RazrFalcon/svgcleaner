@@ -6,13 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- Some algorithms are moved to the `svgdom` crate.
 - XML nodes can be indented with tabs now. Using `--indent=tabs`.
 - Presentational attributes joining can be forced with `--join-style-attributes=all` now.
 - stdin and stdout support.
 - `--no-defaults`.
 - `--apply-transform-to-paths`.
 - Better groups with transforms ungrouping.
+- `--remove-text-attributes` removes `line-height` and `xml:space` now.
+- Some algorithms are moved to the `svgdom` crate.
 
 ### Changed
 - `<FLAG>` argument type accepts `true`, `false`, `yes`, `no`, `y`, `n` now.

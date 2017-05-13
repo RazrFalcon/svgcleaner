@@ -82,7 +82,7 @@ mod ungroup_groups;
 pub mod apply_transforms;
 pub mod paths;
 
-/// Shorthand names for modules.
+// Shorthand names for modules.
 mod short {
     pub use svgdom::types::LengthUnit as Unit;
     pub use svgdom::ElementId as EId;
@@ -148,7 +148,7 @@ pub mod utils {
 
         if let Some(value) = value {
             if let AttributeValue::LengthList(mut list) = value {
-                for n in list.iter_mut() {
+                for n in &mut list {
                     n.num *= scale_factor
                 }
                 node.set_attribute(aid, list);

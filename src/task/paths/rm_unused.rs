@@ -46,9 +46,14 @@ pub fn remove_unused_segments(path: &mut Path) {
         process_lz(path, &mut is_changed);
         if remove_equal(path) { is_changed = true; }
         remove_zero_lenght(path, &mut is_changed);
+
+        if path.d.is_empty() {
+            break;
+        }
     }
 }
 
+#[derive(Clone,Copy)]
 enum DrainMode {
     Single,
     Both,
@@ -105,7 +110,7 @@ fn remove_zz(path: &mut Path) -> bool {
     })
 }
 
-// Remove 'M Z' pairs since this are null paths.
+// Remove 'M Z' pairs since this are null subpaths.
 fn remove_mz(path: &mut Path) -> bool {
     drain_by_pair(path, DrainMode::Both, |prev, curr| {
         prev.cmd() == Command::MoveTo && curr.cmd() == Command::ClosePath
@@ -115,7 +120,7 @@ fn remove_mz(path: &mut Path) -> bool {
 // If current segment is the same as previous - remove it.
 fn remove_equal(path: &mut Path) -> bool {
     drain_by_pair(path, DrainMode::Single, |prev, curr| {
-        prev.fuzzy_eq(&curr)
+        prev.fuzzy_eq(curr)
     })
 }
 

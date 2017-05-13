@@ -32,7 +32,7 @@ pub fn ungroup_groups(doc: &Document, options: &Options) {
     // doc must contain 'svg' node, so we can safely unwrap.
     let svg = doc.svg_element().unwrap();
     loop {
-        apply_transforms::prepare_transforms(&doc, &options);
+        apply_transforms::prepare_transforms(doc, options);
 
         _ungroup_groups(&svg, &mut groups, options);
 

@@ -22,16 +22,16 @@
 
 use super::short::{EId, AId, Unit};
 
-use svgdom::{Document, Node, Attribute, AttributeValue};
+use svgdom::{Document, Node, AttributeValue};
 use svgdom::types::{Length, FuzzyEq};
 use svgdom::types::path;
 
 // TODO: convert thin rect to line-to path
 // view-calendar-list.svg
 
-/// We should run it after removing invalid or invisible nodes.
-///
-/// We should run it before path processing.
+// We should run it after removing invalid or invisible nodes.
+//
+// We should run it before path processing.
 pub fn convert_shapes_to_paths(doc: &Document) {
     for node in doc.descendants().svg() {
         // descendants() iterates only over svg elements, which all have a tag name.
@@ -48,30 +48,28 @@ pub fn convert_shapes_to_paths(doc: &Document) {
 fn convert_line(node: &Node) {
     debug_assert!(node.is_tag_name(EId::Line));
 
-    // TODO: rewrite as rect
-    {
-        let mut attrs = node.attributes_mut();
+    let path = {
+        let attrs = node.attributes();
 
-        let mut path = path::Builder::new();
-        {
-            let x1 = get_value!(attrs, Length, AId::X1, Length::zero());
-            let y1 = get_value!(attrs, Length, AId::Y1, Length::zero());
-            let x2 = get_value!(attrs, Length, AId::X2, Length::zero());
-            let y2 = get_value!(attrs, Length, AId::Y2, Length::zero());
+        let x1 = get_value!(attrs, Length, AId::X1, Length::zero());
+        let y1 = get_value!(attrs, Length, AId::Y1, Length::zero());
+        let x2 = get_value!(attrs, Length, AId::X2, Length::zero());
+        let y2 = get_value!(attrs, Length, AId::Y2, Length::zero());
 
-            // We can't convert line with non-pixel coordinates.
-            // Unit will newer be Px, since we disable it globally via ParseOptions.
-            if !(x1.unit == Unit::None && y1.unit == Unit::None &&
-                 x2.unit == Unit::None && y2.unit == Unit::None) {
-                return;
-            }
-
-            path = path.move_to(x1.num, y1.num).line_to(x2.num, y2.num);
+        // We can't convert line with non-pixel coordinates.
+        // Unit will newer be Px, since we disable it globally via ParseOptions.
+        if !(x1.unit == Unit::None && y1.unit == Unit::None &&
+             x2.unit == Unit::None && y2.unit == Unit::None) {
+            return;
         }
 
-        attrs.insert(Attribute::new(AId::D, path.finalize()));
-    }
+        path::Builder::new()
+            .move_to(x1.num, y1.num)
+            .line_to(x2.num, y2.num)
+            .finalize()
+    };
 
+    node.set_attribute(AId::D, path);
     node.set_tag_name(EId::Path);
     node.remove_attributes(&[AId::X1, AId::Y1, AId::X2, AId::Y2]);
 }
@@ -79,8 +77,7 @@ fn convert_line(node: &Node) {
 fn convert_rect(node: &Node) {
     debug_assert!(node.is_tag_name(EId::Rect));
 
-    let path;
-    {
+    let path = {
         let attrs = node.attributes();
 
         let rx = get_value!(attrs, Length, AId::Rx, Length::zero());
@@ -108,14 +105,14 @@ fn convert_rect(node: &Node) {
             return;
         }
 
-        path = path::Builder::new()
+        path::Builder::new()
             .move_to(x.num, y.num)
             .hline_to(x.num + w.num)
             .vline_to(y.num + h.num)
             .hline_to(x.num)
             .close_path()
-            .finalize();
-    }
+            .finalize()
+    };
 
     node.set_attribute(AId::D, path);
     node.set_tag_name(EId::Path);

@@ -25,8 +25,8 @@ use super::short::EId;
 use svgdom::Document;
 use svgdom::postproc;
 
-/// We don't remove invalid elements, just make them invisible.
-/// Then they can be removed via 'remove_invisible_elements'.
+// We don't remove invalid elements, just make them invisible.
+// Then they can be removed via 'remove_invisible_elements'.
 pub fn fix_invalid_attributes(doc: &Document) {
     for node in doc.descendants().svg() {
         // descendants() iterates only over svg elements, which all have a tag name.

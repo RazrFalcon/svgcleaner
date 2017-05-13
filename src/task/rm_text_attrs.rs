@@ -70,7 +70,7 @@ pub fn remove_text_attributes(doc: &Document) {
     }
 }
 
-/// Returns 'true' if all children do not have any data than depend on text attributes.
+// Returns 'true' if all children do not have any data than depend on text attributes.
 fn _remove_text_attributes(parent: &Node) -> bool {
     // Process the tree recursively.
 

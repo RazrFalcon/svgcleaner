@@ -235,13 +235,13 @@ pub fn write_buffer(doc: &Document, opt: &WriteOptions, buf: &mut Vec<u8>) {
 }
 
 pub fn write_stdout(data: &[u8]) -> Result<(), io::Error> {
-    io::stdout().write(&data)?;
+    io::stdout().write_all(data)?;
     Ok(())
 }
 
 pub fn save_file(data: &[u8], path: &str) -> Result<(), io::Error> {
-    let mut f = fs::File::create(&path)?;
-    f.write_all(&data)?;
+    let mut f = fs::File::create(path)?;
+    f.write_all(data)?;
 
     Ok(())
 }

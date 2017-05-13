@@ -52,7 +52,7 @@ impl Table {
         });
     }
 
-    /// Removes unneeded rows.
+    // Removes unneeded rows.
     fn simplify(&mut self) {
         // Table should be already defined/filled.
         debug_assert!(!self.d.is_empty());
@@ -100,7 +100,7 @@ impl Table {
         });
     }
 
-    /// Sort rows by the longest continuous range of set flags.
+    // Sort rows by the longest continuous range of set flags.
     fn sort(&mut self) {
         self.d.sort_by(|a, b| {
             let ac = a.longest();
@@ -109,7 +109,7 @@ impl Table {
         });
     }
 
-    /// Join rows.
+    // Join rows.
     fn join(&mut self) {
         // Replace:
         // a |-***-|
@@ -134,12 +134,12 @@ impl Table {
 }
 
 impl TableRow {
-    /// Returns an amount of set/true flags.
+    // Returns an amount of set/true flags.
     fn count_flags(&self) -> usize {
         self.flags.iter().filter(|f| **f).count()
     }
 
-    /// Returns a length of the longest continuous range of set flags.
+    // Returns a length of the longest continuous range of set flags.
     fn longest(&self) -> usize {
         let mut max_count = 0;
         let mut count = 0;
@@ -156,11 +156,11 @@ impl TableRow {
         max_count
     }
 
-    /// Returns the longest continuous range of set flags.
-    ///
-    /// # Example
-    ///
-    /// `|-***-*****--|` -> (5, 10)
+    // Returns the longest continuous range of set flags.
+    //
+    // # Example
+    //
+    // `|-***-*****--|` -> (5, 10)
     fn longest_range(&self) -> (usize, usize) {
         let mut list = Vec::new();
 
@@ -192,9 +192,9 @@ impl TableRow {
 }
 
 impl fmt::Debug for Table {
-    /// Prints something like:
-    /// fill="#ff0000"   |*-*|
-    /// stroke="#00ff00" |***|
+    // Prints something like:
+    // fill="#ff0000"   |*-*|
+    // stroke="#00ff00" |***|
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.d.is_empty() {
             return write!(f, "empty table");
@@ -482,7 +482,7 @@ fn _group_by_style(parent: &Node) {
 }
 
 // TODO: use std::ops::Range
-fn move_nodes(attributes: &Vec<Attribute>, g_node: &Node, node_list: &Vec<Node>,
+fn move_nodes(attributes: &[Attribute], g_node: &Node, node_list: &[Node],
               range: (usize, usize)) {
     let attr_ids: Vec<AId> = attributes.iter().map(|a| a.id().unwrap()).collect();
 

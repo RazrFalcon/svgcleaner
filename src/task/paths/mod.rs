@@ -53,6 +53,8 @@ pub fn process_paths(doc: &Document, options: &Options) {
                     node.remove_attribute(AId::Transform);
 
                     if tsl.has_scale() {
+                        // TODO: maybe ignore paths without 'stroke-width'
+
                         // We must update 'stroke-width' if transform had scale part in it.
                         let (sx, _) = tsl.get_scale();
                         ::task::utils::recalc_stroke(&node, sx);
@@ -146,7 +148,14 @@ mod tests {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
-                process_paths(&doc, &Options::default());
+
+                let mut opt = Options::default();
+                opt.paths_to_relative = true;
+                opt.remove_unused_segments = true;
+                opt.convert_segments = true;
+                opt.apply_transform_to_paths = true;
+
+                process_paths(&doc, &opt);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
         )
@@ -166,10 +175,9 @@ mod tests {
     <path d='M 10 20'/>
 </svg>",
 "<svg>
-    <path d='m 10 20'/>
+    <path d=''/>
 </svg>
 ");
-
 
     test!(invalid,
 "<svg>
@@ -182,5 +190,31 @@ mod tests {
 </svg>
 ");
 
-    // TODO: add other tests
+    test!(transform,
+"<svg>
+    <path id='valid' d='M 10 20 L 30 40' transform='translate(10 20)'/>
+    <path id='valid2' d='M 10 20 L 30 40' transform='scale(2)'/>
+    <path id='ignored' d='M 10 20 L 30 40' transform='rotate(30)'/>
+</svg>",
+"<svg>
+    <path id='valid' d='m 20 40 l 20 20'/>
+    <path id='valid2' d='m 20 40 l 40 40' stroke-width='2'/>
+    <path id='ignored' d='m 10 20 l 20 20' transform='rotate(30)'/>
+</svg>
+");
+
+    test!(marker,
+"<svg>
+    <marker id='m'/>
+    <path d='M 10 20 L 30 40' marker='url(#m)'/>
+    <path d='M 10 20' marker='url(#m)'/>
+    <path d='M 10 20'/>
+</svg>",
+"<svg>
+    <marker id='m'/>
+    <path d='m 10 20 l 20 20' marker='url(#m)'/>
+    <path d='m 10 20' marker='url(#m)'/>
+    <path d=''/>
+</svg>
+");
 }

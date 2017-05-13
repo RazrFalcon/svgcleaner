@@ -27,7 +27,7 @@ pub enum StyleJoinMode {
     All,
 }
 
-/// Documentation can be found in: docs/svgcleaner.rst
+// Documentation can be found in: docs/svgcleaner.rst
 pub struct Options {
     pub remove_unused_defs: bool,
     pub convert_shapes: bool,

@@ -22,7 +22,7 @@
 
 use std::cmp::Ordering;
 
-use svgdom::types::path::{Path, Segment, SegmentData};
+use svgdom::types::path::{Path, Segment, SegmentData, Command};
 use svgdom::types::{FuzzyEq, FuzzyOrd};
 
 use super::utils;
@@ -32,32 +32,81 @@ pub fn convert_segments(path: &mut Path) {
     let mut is_changed = true;
     while is_changed {
         is_changed = false;
+        _convert_segments(path, &mut is_changed);
+    }
+}
 
-        if path.d.len() == 1 {
-            path.d.clear();
-            break;
+// Convert HorizontalLineTo and VerticalLineTo segments into LineTo
+// to simplify processing.
+pub fn convert_hv_to_l(path: &mut Path) {
+    let mut i = 1;
+    while i < path.d.len() {
+        let prev_seg = path.d[i - 1];
+        let curr_seg = &mut path.d[i];
+
+        // All segments must be absolute.
+        debug_assert!(prev_seg.absolute);
+        debug_assert!(curr_seg.absolute);
+
+        match *curr_seg.data() {
+            SegmentData::HorizontalLineTo { x } => {
+                *curr_seg = Segment::new_line_to(x, prev_seg.y().unwrap());
+            }
+            SegmentData::VerticalLineTo { y } => {
+                *curr_seg = Segment::new_line_to(prev_seg.x().unwrap(), y);
+            }
+            _ => {}
         }
 
-        _convert_segments(path, &mut is_changed);
+        i += 1;
+    }
+}
+
+// Convert LineTo back to HorizontalLineTo and VerticalLineTo when possible.
+pub fn convert_l_to_hv(path: &mut Path) {
+    let mut prev_x = 0.0;
+    let mut prev_y = 0.0;
+
+    let mut i = 0;
+    while i < path.d.len() {
+        let seg = &mut path.d[i];
+
+        // All segments must be absolute.
+        debug_assert!(seg.absolute);
+
+        // H and V must not be created during processing.
+        debug_assert!(   seg.cmd() != Command::HorizontalLineTo
+                      && seg.cmd() != Command::VerticalLineTo);
+
+        match *seg.data() {
+            SegmentData::LineTo { x, y } => {
+                if prev_x.fuzzy_eq(&x) && prev_y.fuzzy_ne(&y) {
+                    *seg = Segment::new_vline_to(y);
+                } else if prev_x.fuzzy_ne(&x) && prev_y.fuzzy_eq(&y) {
+                    *seg = Segment::new_hline_to(x);
+                }
+
+                prev_x = x;
+                prev_y = y;
+            }
+            SegmentData::ClosePath => {}
+            _ => {
+                prev_x = seg.x().unwrap();
+                prev_y = seg.y().unwrap();
+            }
+        }
+
+        i += 1;
     }
 }
 
 fn _convert_segments(path: &mut Path, is_changed: &mut bool) {
     let mut i = 1;
     while i < path.d.len() {
-        let (prev_x, prev_y) = utils::resolve_xy(path, i - 1);
         let prev_seg = path.d[i - 1];
+        let (prev_x, prev_y) = utils::resolve_xy(path, i - 1);
         let curr_seg = &mut path.d[i];
         match *curr_seg.data() {
-            SegmentData::LineTo { x, y } => {
-                if prev_x.fuzzy_eq(&x) && prev_y.fuzzy_ne(&y) {
-                    *curr_seg = Segment::new_vline_to(y);
-                    *is_changed = true;
-                } else if prev_x.fuzzy_ne(&x) && prev_y.fuzzy_eq(&y) {
-                    *curr_seg = Segment::new_hline_to(x);
-                    *is_changed = true;
-                }
-            }
             SegmentData::CurveTo { x1, y1, x2, y2, x, y } => {
                 let is_vlineto = || {
                     // If prev_x, x1, x2 and x are equal than this CurveTo is VerticalLineTo.
@@ -89,10 +138,10 @@ fn _convert_segments(path: &mut Path, is_changed: &mut bool) {
                 };
 
                 if is_vlineto() {
-                    *curr_seg = Segment::new_vline_to(y);
+                    *curr_seg = Segment::new_line_to(prev_x, y);
                     *is_changed = true;
                 } else if is_hlineto() {
-                    *curr_seg = Segment::new_hline_to(x);
+                    *curr_seg = Segment::new_line_to(x, prev_y);
                     *is_changed = true;
                 } else if is_lineto() {
                     *curr_seg = Segment::new_line_to(x, y);
@@ -114,6 +163,7 @@ fn _convert_segments(path: &mut Path, is_changed: &mut bool) {
                     }
                 }
             }
+            // LineTo will be converted by 'convert_l_to_hv'.
             // TODO: CurveTo -> Quadratic
             // TODO: Quadratic -> SmoothQuadTo
             _ => {}
@@ -123,8 +173,7 @@ fn _convert_segments(path: &mut Path, is_changed: &mut bool) {
     }
 }
 
-fn is_point_on_line(x1: f64, y1: f64, x2: f64, y2: f64, x: f64, y: f64) -> bool
-{
+fn is_point_on_line(x1: f64, y1: f64, x2: f64, y2: f64, x: f64, y: f64) -> bool {
     // Check that point is actually on line.
     let is_on_line = || {
         let a = (y2 - y1) / (x2 - x1);
@@ -180,41 +229,49 @@ mod tests {
         )
     }
 
-    test!(conv_l, "M 10 10 L 15 10 L 15 15",
-                  "M 10 10 H 15 V 15");
-
     test!(conv_cs_1, "M 10 20 C 10 10 25 10 25 20 C 25 30 40 30 40 20",
                      "M 10 20 C 10 10 25 10 25 20 S 40 30 40 20");
 
     test!(conv_cs_2, "M 10 10 C 10 10 10 20 30 40 C 20 35 40 50 60 70 C 80 90 10 20 30 40",
                      "M 10 10 S 10 20 30 40 C 20 35 40 50 60 70 S 10 20 30 40");
 
-    // Convert CurveTo to VerticalLineTo when control points are on the same vertical line.
+    // Convert CurveTo into LineTo when control points are on the same vertical line.
     test!(conv_cv_1, "M 10 10 C 10 15 10 20 10 40",
-                     "M 10 10 V 40");
+                     "M 10 10 L 10 40");
 
     // Ignore converting, because Y1 is outsize the curve.
     test!(conv_cv_2, "M 10 10 C 10 5 10 20 10 40",
                      "M 10 10 C 10 5 10 20 10 40");
 
-    // Convert CurveTo to VerticalLineTo when control points
+    // Convert CurveTo into LineTo when control points
     // are at the start and at the end of the curve.
     test!(conv_cv_3, "M 10 10 C 10 10 10 40 10 40",
-                     "M 10 10 V 40");
+                     "M 10 10 L 10 40");
 
     // Same for H.
     test!(conv_ch_1, "M 10 10 C 15 10 25 10 40 10",
-                     "M 10 10 H 40");
+                     "M 10 10 L 40 10");
 
     test!(conv_ch_2, "M 10 10 C 5 10 50 10 40 10",
                      "M 10 10 C 5 10 50 10 40 10");
 
     test!(conv_ch_3, "M 10 10 C 10 10 40 10 40 10",
-                     "M 10 10 H 40");
+                     "M 10 10 L 40 10");
 
     test!(conv_cl_1, "M 10 118 C 45 83 85 43 120 8",
                      "M 10 118 L 120 8");
 
-    test!(conv_cl_2, "M 10,15 C 10,15 72.5,10 72.5,55 C 72.5,100 135,100 135,55 L 10,55",
-                     "M 10 15 S 72.5 10 72.5 55 S 135 100 135 55 H 10");
+    test!(conv_cl_2, "M 10 15 C 10 15 72.5 10 72.5 55 C 72.5 100 135 100 135 55 L 10 55",
+                     "M 10 15 S 72.5 10 72.5 55 S 135 100 135 55 L 10 55");
+
+    #[test]
+    fn hv_to_l_1() {
+        // Test segments with less then two coordinates: H, V, Z.
+        let text = "M 10 20 H 30 V 40 Z M 10 20 H 30 V 40 Z";
+        let mut path = Path::from_str(text).unwrap();
+        convert_hv_to_l(&mut path);
+        assert_eq_text!(path.to_string(), "M 10 20 L 30 20 L 30 40 Z M 10 20 L 30 20 L 30 40 Z");
+        convert_l_to_hv(&mut path);
+        assert_eq_text!(path.to_string(), text);
+    }
 }

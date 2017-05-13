@@ -40,116 +40,97 @@ pub fn remove_unused_segments(path: &mut Path) {
         }
 
         // Order is important.
-        remove_mm(path, &mut is_changed);
-        remove_zz(path, &mut is_changed);
-        remove_mz(path, &mut is_changed);
+        if remove_mm(path) { is_changed = true; }
+        if remove_zz(path) { is_changed = true; }
+        if remove_mz(path) { is_changed = true; }
         process_lz(path, &mut is_changed);
-        remove_equal(path, &mut is_changed);
+        if remove_equal(path) { is_changed = true; }
         remove_zero_lenght(path, &mut is_changed);
     }
 }
 
-// TODO: move loop's to trait or macro or function
-
-fn remove_mm(path: &mut Path, is_changed: &mut bool) {
-    // Remove continuous MoveTo segments since they are pointless.
-    // We only interested in last one.
-    //
-    // This doesn't impact implicit LineTo commands,
-    // because they already converted by the svgdom.
-    let mut i = 1;
-    while i < path.d.len() {
-        let curr_cmd = path.d[i].cmd();
-        if curr_cmd == Command::MoveTo {
-            let prev_cmd = path.d[i - 1].cmd();
-            if prev_cmd == Command::MoveTo {
-                path.d.remove(i - 1);
-                i -= 1;
-                *is_changed = true;
-            }
-        }
-
-        i += 1;
-    }
+enum DrainMode {
+    Single,
+    Both,
 }
 
-fn remove_zz(path: &mut Path, is_changed: &mut bool) {
-    // Remove continuous ClosePath segments since they are pointless.
-    let mut i = 1;
-    while i < path.d.len() {
-        let curr_cmd = path.d[i].cmd();
-        if curr_cmd == Command::ClosePath {
-            let prev_cmd = path.d[i - 1].cmd();
-            if prev_cmd == Command::ClosePath {
-                path.d.remove(i - 1);
-                i -= 1;
-                *is_changed = true;
-            }
-        }
+// Removes segments by predicate and returns 'true' if any was removed.
+fn drain_by_pair<P>(path: &mut Path, mode: DrainMode, p: P) -> bool
+    where P: Fn(&Segment, &Segment) -> bool
+{
+    let old_len = path.d.len();
 
-        i += 1;
-    }
-}
-
-fn remove_mz(path: &mut Path, is_changed: &mut bool) {
-    // Remove 'M Z' pairs since this are null paths.
-    let mut i = 1;
-    while i < path.d.len() {
-        let curr_cmd = path.d[i].cmd();
-        if curr_cmd == Command::ClosePath {
-            let prev_cmd = path.d[i - 1].cmd();
-            if prev_cmd == Command::MoveTo {
-                path.d.remove(i - 1);
-                path.d.remove(i - 1);
-                *is_changed = true;
-
-                if i > 1 {
-                    i -= 2;
-                } else {
-                    i = 0;
-                }
-            }
-        }
-
-        i += 1;
-    }
-}
-
-fn remove_equal(path: &mut Path, is_changed: &mut bool) {
-    // If current segment is the same as previous - remove it.
     let mut i = 1;
     while i < path.d.len() {
         let prev = path.d[i - 1];
         let curr = path.d[i];
+        if p(&prev, &curr) {
+            let step_back = match mode {
+                DrainMode::Single => {
+                    path.d.remove(i - 1);
+                    1
+                }
+                DrainMode::Both => {
+                    path.d.remove(i - 1);
+                    path.d.remove(i - 1);
 
-        if prev.fuzzy_eq(&curr) {
-            path.d.remove(i);
-            i -= 1;
-            *is_changed = true;
+                    if i > 1 { 2 } else { 0 }
+                }
+            };
+
+            i -= step_back;
         }
 
         i += 1;
     }
+
+    old_len != path.d.len()
 }
 
+// Remove continuous MoveTo segments since they are pointless.
+// We only interested in the last one.
+//
+// This doesn't impact implicit LineTo commands,
+// because they already converted by the svgparser.
+fn remove_mm(path: &mut Path) -> bool {
+    drain_by_pair(path, DrainMode::Single, |prev, curr| {
+        prev.cmd() == Command::MoveTo && curr.cmd() == Command::MoveTo
+    })
+}
+
+// Remove continuous ClosePath segments since they are pointless.
+fn remove_zz(path: &mut Path) -> bool {
+    drain_by_pair(path, DrainMode::Single, |prev, curr| {
+        prev.cmd() == Command::ClosePath && curr.cmd() == Command::ClosePath
+    })
+}
+
+// Remove 'M Z' pairs since this are null paths.
+fn remove_mz(path: &mut Path) -> bool {
+    drain_by_pair(path, DrainMode::Both, |prev, curr| {
+        prev.cmd() == Command::MoveTo && curr.cmd() == Command::ClosePath
+    })
+}
+
+// If current segment is the same as previous - remove it.
+fn remove_equal(path: &mut Path) -> bool {
+    drain_by_pair(path, DrainMode::Single, |prev, curr| {
+        prev.fuzzy_eq(&curr)
+    })
+}
+
+// If segment moved to the same position as current - remove it.
 fn remove_zero_lenght(path: &mut Path, is_changed: &mut bool) {
-    // If segment moved to the same position as current - remove it.
     let mut i = 1;
     while i < path.d.len() {
         let curr = path.d[i];
         let (px, py) = utils::resolve_xy(path, i - 1);
 
         let is_equal = match curr.cmd() {
-            Command::HorizontalLineTo => {
-                curr.x().unwrap().fuzzy_eq(&px)
-            }
-            Command::VerticalLineTo => {
-                curr.y().unwrap().fuzzy_eq(&py)
-            }
             Command::LineTo => {
                 curr.x().unwrap().fuzzy_eq(&px) && curr.y().unwrap().fuzzy_eq(&py)
             }
-            // curves can't be removed
+            // Curves can't be removed.
             _ => false,
         };
 
@@ -179,8 +160,8 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
         // because ClosePath will render the same line by itself.
         if curr_cmd == Command::ClosePath {
             let prev_i = i - 1;
-            let prev_cmd = path.d[prev_i].cmd();
-            if is_line_based(prev_cmd) {
+            let prev = path.d[prev_i];
+            if is_line_based(prev.cmd()) {
                 let (x, y) = utils::resolve_xy(path, prev_i);
                 if mx.fuzzy_eq(&x) && my.fuzzy_eq(&y) {
                     // Remove this line-based segment.
@@ -197,8 +178,8 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
         let is_last = i == path.d.len() - 1 && curr_cmd != Command::ClosePath;
         if curr_cmd == Command::MoveTo || is_last {
             let prev_i = if is_last { i } else { i - 1 };
-            let prev_cmd = path.d[prev_i].cmd();
-            if is_line_based(prev_cmd) {
+            let prev = path.d[prev_i];
+            if is_line_based(prev.cmd()) {
                 let (x, y) = utils::resolve_xy(path, prev_i);
                 if mx.fuzzy_eq(&x) && my.fuzzy_eq(&y) {
                     // Replace line-based segment with ClosePath.
@@ -234,6 +215,7 @@ mod tests {
     use super::*;
     use svgdom::{FromStream};
     use svgdom::types::path::{Path};
+    use task::paths::conv_segments;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -241,6 +223,7 @@ mod tests {
             fn $name() {
                 let mut path = Path::from_str($in_text).unwrap();
                 path.conv_to_absolute();
+                conv_segments::convert_hv_to_l(&mut path);
                 remove_unused_segments(&mut path);
                 assert_eq_text!(path.to_string(), $out_text);
             }

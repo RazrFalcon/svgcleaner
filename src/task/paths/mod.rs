@@ -69,7 +69,13 @@ pub fn process_paths(doc: &Document, options: &Options) {
 }
 
 fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, options: &Options) {
+    if path.d.is_empty() {
+        return;
+    }
+
     path.conv_to_absolute();
+
+    conv_segments::convert_hv_to_l(path);
 
     if options.convert_segments {
         conv_segments::convert_segments(path);
@@ -77,11 +83,17 @@ fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, option
 
     if options.remove_unused_segments && !has_marker {
         rm_unused::remove_unused_segments(path);
+
+        if path.d.is_empty() {
+            return;
+        }
     }
 
     if let Some(ref ts) = ts {
         apply_transform::apply_transform(path, ts);
     }
+
+    conv_segments::convert_l_to_hv(path);
 
     path.conv_to_relative();
 
@@ -96,46 +108,79 @@ fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, option
 }
 
 mod utils {
-    use svgdom::types::path::{Path};
+    use svgdom::types::path::{Path, Segment, Command};
 
-    // TODO: replace with a macro
-    pub fn resolve_x(path: &Path, start: usize) -> f64 {
-        // VerticalLineTo does not have 'x' coordinate, so we have to find it in previous segments.
-        let mut i = start;
-        loop {
-            if let Some(x) = path.d[i].x() {
-                return x;
-            }
-
-            if i == 0 {
-                break;
-            }
-            i -= 1;
-        }
-
-        // First segment must be MoveTo, so we will always have an 'x'.
-        unreachable!();
-    }
-
-    pub fn resolve_y(path: &Path, start: usize) -> f64 {
-        // HorizontalLineTo does not have 'x' coordinate, so we have to find it in previous segments.
-        let mut i = start;
-        loop {
-            if let Some(y) = path.d[i].y() {
-                return y;
-            }
-
-            if i == 0 {
-                break;
-            }
-            i -= 1;
-        }
-
-        // First segment must be MoveTo, so we will always have an 'y'.
-        unreachable!();
-    }
-
+    // HorizontalLineTo, VerticalLineTo and ClosePath does not have 'x'/'y' coordinates,
+    // so we have to find them in previous segments.
     pub fn resolve_xy(path: &Path, start: usize) -> (f64, f64) {
-        (resolve_x(path, start), resolve_y(path, start))
+        let mut i = start;
+        loop {
+            let seg: &Segment = &path.d[i];
+
+            // H and V should be already converted into L,
+            // so we check only for Z.
+            if seg.cmd() != Command::ClosePath {
+                return (seg.x().unwrap(), seg.y().unwrap());
+            }
+
+            if i == 0 {
+                break;
+            }
+
+            i -= 1;
+        }
+
+        // First segment must be MoveTo, so we will always have an 'x' and 'y'.
+        unreachable!();
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use options::Options;
+    use svgdom::{Document, WriteToString};
+
+    macro_rules! test {
+        ($name:ident, $in_text:expr, $out_text:expr) => (
+            #[test]
+            fn $name() {
+                let doc = Document::from_str($in_text).unwrap();
+                process_paths(&doc, &Options::default());
+                assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
+            }
+        )
+    }
+
+    test!(empty,
+"<svg>
+    <path d=''/>
+</svg>",
+"<svg>
+    <path d=''/>
+</svg>
+");
+
+    test!(single,
+"<svg>
+    <path d='M 10 20'/>
+</svg>",
+"<svg>
+    <path d='m 10 20'/>
+</svg>
+");
+
+
+    test!(invalid,
+"<svg>
+    <path d='M'/>
+    <path d='M 10'/>
+</svg>",
+"<svg>
+    <path d=''/>
+    <path d=''/>
+</svg>
+");
+
+    // TODO: add other tests
 }

@@ -141,12 +141,13 @@ fn main() {
         prev_size = buf.len();
     }
 
-    // TODO: make optional
     // Check that cleaned file is smaller.
-    if buf.len() > raw.len() {
-        writeln!(stderr(), "Error: Cleaned file is bigger than original.").unwrap();
-        on_err();
-        return;
+    if !args.is_present(KEYS[Key::AllowBiggerFile]) {
+        if buf.len() > raw.len() {
+            writeln!(stderr(), "Error: Cleaned file is bigger than original.").unwrap();
+            on_err();
+            return;
+        }
     }
 
     // Save buffer.

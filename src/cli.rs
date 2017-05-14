@@ -95,6 +95,7 @@ pub enum Key {
 
     NoDefaults,
     Multipass,
+    AllowBiggerFile,
     CopyOnError,
     Quiet,
     Stdout,
@@ -162,6 +163,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
 
     "no-defaults",
     "multipass",
+    "allow-bigger-file",
     "copy-on-error",
     "quiet",
     "stdout",
@@ -201,6 +203,8 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
             .long(KEYS[Key::NoDefaults]))
         .arg(Arg::with_name(KEYS[Key::Multipass])
             .long(KEYS[Key::Multipass]))
+        .arg(Arg::with_name(KEYS[Key::AllowBiggerFile])
+            .long(KEYS[Key::AllowBiggerFile]))
         .arg(Arg::with_name(KEYS[Key::CopyOnError])
             .long(KEYS[Key::CopyOnError]))
         .arg(Arg::with_name(KEYS[Key::Quiet])

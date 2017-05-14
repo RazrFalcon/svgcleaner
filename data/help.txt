@@ -26,6 +26,7 @@ FLAGS:
     -c, --stdout                            Print result to the standard output
         --no-defaults                       Reset default flags to 'no'
         --multipass                         Clean a file multiple times
+        --allow-bigger-file                 Allow bigger file
         --copy-on-error                     Copy an original file to the destination on error
         --quiet                             Show only warnings and errors
 

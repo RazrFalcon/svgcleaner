@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - stdin and stdout support.
 - `--no-defaults`.
 - `--apply-transform-to-paths`.
+- `--allow-bigger-file`.
 - Better groups with transforms ungrouping.
 - `--remove-text-attributes` removes `line-height` and `xml:space` now.
 - Some algorithms are moved to the `svgdom` crate.

@@ -63,6 +63,11 @@ pub struct Options {
     pub remove_unused_segments: bool,
     pub convert_segments: bool,
     pub apply_transform_to_paths: bool,
+
+    // 1..12
+    pub coordinates_precision: u8,
+    // 1..12
+    pub transform_precision: u8,
 }
 
 // Should all be 'false'.
@@ -103,6 +108,9 @@ impl Default for Options {
             remove_unused_segments: false,
             convert_segments: false,
             apply_transform_to_paths: false,
+
+            coordinates_precision: 6,
+            transform_precision: 8,
         }
     }
 }

@@ -528,7 +528,7 @@
         },
         {
             "name": "actions/small/22x22/edit-image-face-recognize.svg",
-            "valid_ae": 1235
+            "valid_ae": 1398
         },
         {
             "name": "actions/small/48x48/view-bank-account.svg",
@@ -697,7 +697,7 @@
         },
         {
             "name": "actions/small/22x22/edit-image-face-add.svg",
-            "valid_ae": 1151
+            "valid_ae": 1152
         },
         {
             "info": "webkit bug",
@@ -716,11 +716,11 @@
         },
         {
             "name": "actions/small/48x48/mail-encrypted-full.svg",
-            "valid_ae": 4957
+            "valid_ae": 4958
         },
         {
             "name": "actions/small/48x48/mail-encrypted.svg",
-            "valid_ae": 5022
+            "valid_ae": 5023
         },
         {
             "name": "actions/small/48x48/mail-message-new-list.svg",
@@ -798,7 +798,7 @@
         },
         {
             "name": "apps/kuickshow.svg",
-            "valid_ae": 555
+            "valid_ae": 569
         },
         {
             "name": "mimetypes/hidef/application-x-kcsrc.svg",
@@ -867,6 +867,14 @@
         {
             "name": "mimetypes/application-x-kcsrc.svg",
             "valid_ae": 855
+        },
+        {
+            "name": "actions/small/22x22/edit-image-face-detect.svg",
+            "valid_ae": 887
+        },
+        {
+            "name": "devices/small/22x22/multimedia-player-apple-ipod.svg",
+            "valid_ae": 690
         }
     ],
     "ignore": [

@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--no-defaults`.
 - `--apply-transform-to-paths`.
 - `--allow-bigger-file`.
+- `--coordinates-precision`.
+- `--transform-precision`.
 - Better groups with transforms ungrouping.
 - `--remove-text-attributes` removes `line-height` and `xml:space` now.
 - Some algorithms are moved to the `svgdom` crate.

@@ -73,6 +73,8 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
     // Do not remove any attributes before this methods
     // since they uses them.
 
+    round_coordinates(doc, options);
+
     // Independent task, doesn't impact any other tasks..
     if options.remove_title {
         remove_element(doc, ElementId::Title);

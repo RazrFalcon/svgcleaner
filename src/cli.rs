@@ -90,6 +90,8 @@ pub enum Key {
 
     TrimColors,
     SimplifyTransforms,
+    CoordinatesPrecision,
+    TransformPrecision,
     PathsCoordinatesPrecision,
     Indent,
 
@@ -158,6 +160,8 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
 
     "trim-colors",
     "simplify-transforms",
+    "coordinates-precision",
+    "transform-precision",
     "paths-coordinates-precision",
     "indent",
 
@@ -264,6 +268,16 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         // output
         .arg(gen_flag!(Key::TrimColors, "true"))
         .arg(gen_flag!(Key::SimplifyTransforms, "true"))
+        .arg(Arg::with_name(KEYS[Key::CoordinatesPrecision])
+            .long(KEYS[Key::CoordinatesPrecision])
+            .value_name("NUM")
+            .validator(is_precision)
+            .default_value("6"))
+        .arg(Arg::with_name(KEYS[Key::TransformPrecision])
+            .long(KEYS[Key::TransformPrecision])
+            .value_name("NUM")
+            .validator(is_precision)
+            .default_value("8"))
         .arg(Arg::with_name(KEYS[Key::PathsCoordinatesPrecision])
             .long(KEYS[Key::PathsCoordinatesPrecision])
             .value_name("NUM")
@@ -505,6 +519,9 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
     flags.resolve(&mut opt.remove_unused_segments, Key::RemoveUnusedSegments);
     flags.resolve(&mut opt.convert_segments, Key::ConvertSegments);
     flags.resolve(&mut opt.apply_transform_to_paths, Key::ApplyTransformToPaths);
+
+    opt.coordinates_precision = value_t!(args, KEYS[Key::CoordinatesPrecision], u8).unwrap();
+    opt.transform_precision   = value_t!(args, KEYS[Key::TransformPrecision], u8).unwrap();
 
     opt
 }

@@ -45,6 +45,8 @@ use-implicit-cmds.rst
 -- Output
 trim-colors.rst
 simplify-transforms.rst
+coordinates-precision.rst
+transform-precision.rst
 paths-coordinates-precision.rst
 indent.rst
 -- Other

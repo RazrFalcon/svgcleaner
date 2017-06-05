@@ -200,8 +200,6 @@ fn collect_stats(data: &Data, input_dir: &str, cleaner: Cleaner) -> TotalStats {
         }
 
         idx += 1;
-
-        // break;
     }
 
     total_stats
@@ -253,6 +251,7 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     let orig_png_path_str = orig_png_path.to_str().unwrap();
     if !orig_png_path.exists() {
         if !render_svg(&data.render_path.unwrap(), svg_path_str, orig_png_path_str) {
+            fs::remove_file(&new_svg_path).unwrap();
             return stats;
         }
     }
@@ -267,6 +266,7 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     let new_png_path_str = new_png_path.to_str().unwrap();
     if !render_svg(&data.render_path.unwrap(), new_svg_path_str, new_png_path_str) {
         fs::remove_file(&new_svg_path).unwrap();
+        fs::remove_file(&orig_png_path).unwrap();
         return stats;
     }
 

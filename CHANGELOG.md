@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [0.9.0] - 2017-06-05
 ### Added
 - XML nodes can be indented with tabs now. Using `--indent=tabs`.
 - Presentational attributes joining can be forced with `--join-style-attributes=all` now.
@@ -13,8 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--apply-transform-to-paths`.
 - `--allow-bigger-file`.
 - `--coordinates-precision`.
-- `--transforms-precision`.
 - `--properties-precision`.
+- `--transforms-precision`.
 - Better groups with transforms ungrouping.
 - `--remove-text-attributes` removes `line-height` and `xml:space` now.
 - Some algorithms are moved to the `svgdom` crate.
@@ -223,7 +225,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First public release with Perl backend and Qt GUI.
 
-[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.7.0...v0.7.1

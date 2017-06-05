@@ -25,7 +25,6 @@ use std::io::{Write, stderr};
 
 use clap::{Arg, App, ArgMatches};
 
-use svgdom::types;
 use svgdom::{ParseOptions, WriteOptions, WriteOptionsPaths, Indent};
 
 use options::{Options, StyleJoinMode};
@@ -440,7 +439,6 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
             join_arc_to_flags: false,
             remove_duplicated_commands: false,
             use_implicit_lineto_commands: false,
-            coordinates_precision: types::DEFAULT_PRECISION,
         },
         simplify_transform_matrices: false,
     };
@@ -451,9 +449,6 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     flags.resolve(&mut opt.paths.remove_duplicated_commands, Key::RemoveDuplCmdInPaths);
     flags.resolve(&mut opt.paths.join_arc_to_flags, Key::JoinArcToFlags);
     flags.resolve(&mut opt.paths.use_implicit_lineto_commands, Key::UseImplicitCommands);
-
-    let paths_precision = value_t!(args, KEYS[Key::PathsCoordinatesPrecision], u8).unwrap();
-    opt.paths.coordinates_precision = paths_precision;
 
     flags.resolve(&mut opt.simplify_transform_matrices, Key::SimplifyTransforms);
 
@@ -521,6 +516,8 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
     flags.resolve(&mut opt.apply_transform_to_paths, Key::ApplyTransformToPaths);
 
     opt.coordinates_precision = value_t!(args, KEYS[Key::CoordinatesPrecision], u8).unwrap();
+    opt.paths_coordinates_precision
+        = value_t!(args, KEYS[Key::PathsCoordinatesPrecision], u8).unwrap();
     opt.transform_precision   = value_t!(args, KEYS[Key::TransformPrecision], u8).unwrap();
 
     opt

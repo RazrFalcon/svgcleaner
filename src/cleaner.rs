@@ -69,11 +69,12 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
     fix_invalid_attributes(doc);
     group_defs(doc);
 
+    // Round numbers before everything else.
+    round_numbers(doc, options);
+
     // Manipulate with tree structure.
     // Do not remove any attributes before this methods
     // since they uses them.
-
-    round_coordinates(doc, options);
 
     // Independent task, doesn't impact any other tasks..
     if options.remove_title {

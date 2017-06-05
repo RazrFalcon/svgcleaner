@@ -52,7 +52,7 @@ pub use self::rm_version::remove_version;
 pub use self::trim_ids::trim_ids;
 pub use self::ungroup_defs::ungroup_defs;
 pub use self::ungroup_groups::ungroup_groups;
-pub use self::round_coords::round_coordinates;
+pub use self::round_numbers::round_numbers;
 
 #[macro_use] mod macros;
 mod conv_shapes;
@@ -80,7 +80,7 @@ mod rm_version;
 mod trim_ids;
 mod ungroup_defs;
 mod ungroup_groups;
-mod round_coords;
+mod round_numbers;
 pub mod apply_transforms;
 pub mod paths;
 

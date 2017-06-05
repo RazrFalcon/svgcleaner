@@ -3,7 +3,7 @@ name = "svgcleaner"
 version = "0.8.1"
 dependencies = [
  "clap 2.24.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "svgdom 0.4.0 (git+https://github.com/RazrFalcon/libsvgdom.git)",
+ "svgdom 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -63,8 +63,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "svgdom"
-version = "0.4.0"
-source = "git+https://github.com/RazrFalcon/libsvgdom.git#acd628d82590409af68427b767df97b0e351a8a3"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "float-cmp 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "simplecss 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -103,7 +103,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum phf_shared 0.7.21 (registry+https://github.com/rust-lang/crates.io-index)" = "07e24b0ca9643bdecd0632f2b3da6b1b89bbb0030e0b992afc1113b23a7bc2f2"
 "checksum simplecss 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "135685097a85a64067df36e28a243e94a94f76d829087ce0be34eeb014260c0e"
 "checksum siphasher 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "0df90a788073e8d0235a67e50441d47db7c8ad9debd91cbf43736a2a92d36537"
-"checksum svgdom 0.4.0 (git+https://github.com/RazrFalcon/libsvgdom.git)" = "<none>"
+"checksum svgdom 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "4dbc67fe18b0eb3f73952edbe861c67b45eca395821eb900b2faf96f1a2a84f4"
 "checksum svgparser 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "117fc6cf1dfa7c578ba334c8c799ccca4e69457d243792a2b9c4b51cc190a377"
 "checksum unicode-segmentation 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "18127285758f0e2c6cf325bb3f3d138a12fee27de4f23e146cd6a179f26c2cf3"
 "checksum unicode-width 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "bf3a113775714a22dcb774d8ea3655c53a32debae63a063acc00a91cc586245f"

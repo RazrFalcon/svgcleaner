@@ -90,6 +90,7 @@ pub enum Key {
     TrimColors,
     SimplifyTransforms,
     CoordinatesPrecision,
+    PropertiesPrecision,
     TransformPrecision,
     PathsCoordinatesPrecision,
     Indent,
@@ -160,6 +161,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "trim-colors",
     "simplify-transforms",
     "coordinates-precision",
+    "properties-precision",
     "transform-precision",
     "paths-coordinates-precision",
     "indent",
@@ -179,6 +181,16 @@ macro_rules! gen_flag {
             .value_name("FLAG")
             .default_value($flag)
             .validator(is_flag)
+    )
+}
+
+macro_rules! gen_precision {
+    ($key:expr, $def_value:expr) => (
+        Arg::with_name(KEYS[$key])
+            .long(KEYS[$key])
+            .value_name("NUM")
+            .validator(is_precision)
+            .default_value($def_value)
     )
 }
 
@@ -267,21 +279,10 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         // output
         .arg(gen_flag!(Key::TrimColors, "true"))
         .arg(gen_flag!(Key::SimplifyTransforms, "true"))
-        .arg(Arg::with_name(KEYS[Key::CoordinatesPrecision])
-            .long(KEYS[Key::CoordinatesPrecision])
-            .value_name("NUM")
-            .validator(is_precision)
-            .default_value("6"))
-        .arg(Arg::with_name(KEYS[Key::TransformPrecision])
-            .long(KEYS[Key::TransformPrecision])
-            .value_name("NUM")
-            .validator(is_precision)
-            .default_value("8"))
-        .arg(Arg::with_name(KEYS[Key::PathsCoordinatesPrecision])
-            .long(KEYS[Key::PathsCoordinatesPrecision])
-            .value_name("NUM")
-            .validator(is_precision)
-            .default_value("8"))
+        .arg(gen_precision!(Key::CoordinatesPrecision, "6"))
+        .arg(gen_precision!(Key::PropertiesPrecision, "6"))
+        .arg(gen_precision!(Key::TransformPrecision, "8"))
+        .arg(gen_precision!(Key::PathsCoordinatesPrecision, "8"))
         .arg(Arg::with_name(KEYS[Key::Indent])
             .long(KEYS[Key::Indent])
             .value_name("INDENT")
@@ -516,6 +517,7 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
     flags.resolve(&mut opt.apply_transform_to_paths, Key::ApplyTransformToPaths);
 
     opt.coordinates_precision = value_t!(args, KEYS[Key::CoordinatesPrecision], u8).unwrap();
+    opt.properties_precision = value_t!(args, KEYS[Key::PropertiesPrecision], u8).unwrap();
     opt.paths_coordinates_precision
         = value_t!(args, KEYS[Key::PathsCoordinatesPrecision], u8).unwrap();
     opt.transform_precision   = value_t!(args, KEYS[Key::TransformPrecision], u8).unwrap();

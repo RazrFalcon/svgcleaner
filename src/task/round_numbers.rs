@@ -29,6 +29,8 @@ use options::Options;
 
 pub fn round_numbers(doc: &Document, options: &Options) {
     let coord_precision = options.coordinates_precision as usize;
+    let prop_precision = options.properties_precision as usize;
+    let paths_precision = options.paths_coordinates_precision as usize;
     let ts_precision = options.transform_precision as usize;
 
     for node in doc.descendants().svg() {
@@ -44,14 +46,41 @@ pub fn round_numbers(doc: &Document, options: &Options) {
                 AId::Rx | AId::Ry |
                 AId::Cx | AId::Cy |
                 AId::Fx | AId::Fy |
-                AId::Width | AId::Height => {
+                AId::Width | AId::Height |
+                AId::StrokeDasharray => {
                     match attr.value {
                         AttributeValue::Length(ref mut v) => {
                             round_number(&mut v.num, coord_precision);
                         }
+                        AttributeValue::LengthList(ref mut list) => {
+                            for n in list.iter_mut() {
+                                round_number(&mut n.num, coord_precision);
+                            }
+                        }
                         _ => {}
                     }
                 }
+
+                AId::StrokeDashoffset |
+                AId::StrokeMiterlimit |
+                AId::StrokeWidth |
+                AId::Opacity |
+                AId::FillOpacity |
+                AId::FloodOpacity |
+                AId::StrokeOpacity |
+                AId::StopOpacity |
+                AId::FontSize => {
+                    match attr.value {
+                        AttributeValue::Number(ref mut num) => {
+                            round_number(num, prop_precision);
+                        }
+                        AttributeValue::Length(ref mut v) => {
+                            round_number(&mut v.num, prop_precision);
+                        }
+                        _ => {}
+                    }
+                }
+
                 AId::Transform |
                 AId::GradientTransform |
                 AId::PatternTransform => {
@@ -67,14 +96,28 @@ pub fn round_numbers(doc: &Document, options: &Options) {
                         _ => {}
                     }
                 }
+
                 AId::D => {
                     match attr.value {
                         AttributeValue::Path(ref mut p) => {
-                            round_path(p, options.paths_coordinates_precision as usize);
+                            round_path(p, paths_precision);
                         }
                         _ => {}
                     }
                 }
+
+                AId::ViewBox |
+                AId::Points => {
+                    match attr.value {
+                        AttributeValue::NumberList(ref mut list) => {
+                            for n in list.iter_mut() {
+                                round_number(n, paths_precision);
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+
                 _ => {}
             }
         }

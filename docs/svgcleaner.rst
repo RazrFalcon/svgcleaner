@@ -1385,6 +1385,39 @@ CLI argument: ``--simplify-transforms``
 .. |after-simplify-transforms| image:: https://razrfalcon.github.io/svgcleaner/images/after/simplify-transforms.svg
 
 
+Set coordinates numeric precision
+---------------------------------
+
+Reduce the numeric precision of the specific coordinate attributes.
+
+This includes: x, y, dx, dy, x1, y1, x2, y2, r, rx, ry, cx, cy, fx, fy, width, height,
+and translate part of transforms.
+
+Range: 1..12
+
+Default: 6
+
+Set properties numeric precision
+--------------------------------
+
+Reduce the numeric precision of the specific properties attributes.
+
+This includes: stroke-dashoffset, stroke-miterlimit, stroke-width, opacity, fill-opacity,
+flood-opacity, stroke-opacity, stop-opacity, font-size.
+
+Range: 1..12
+
+Default: 6
+
+Set transforms values numeric precision
+---------------------------------------
+
+Set numeric precision of the a, b, c, d values of transforms.
+
+Range: 1..12
+
+Default: 8
+
 Set path's coordinates numeric precision
 ----------------------------------------
 

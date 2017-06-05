@@ -71,7 +71,7 @@ pub struct Options {
     // 1..12
     pub paths_coordinates_precision: u8,
     // 1..12
-    pub transform_precision: u8,
+    pub transforms_precision: u8,
 }
 
 // Should all be 'false'.
@@ -116,7 +116,7 @@ impl Default for Options {
             coordinates_precision: 6,
             properties_precision: 6,
             paths_coordinates_precision: 8,
-            transform_precision: 8,
+            transforms_precision: 8,
         }
     }
 }

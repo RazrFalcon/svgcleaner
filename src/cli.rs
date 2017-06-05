@@ -91,7 +91,7 @@ pub enum Key {
     SimplifyTransforms,
     CoordinatesPrecision,
     PropertiesPrecision,
-    TransformPrecision,
+    TransformsPrecision,
     PathsCoordinatesPrecision,
     Indent,
 
@@ -162,7 +162,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "simplify-transforms",
     "coordinates-precision",
     "properties-precision",
-    "transform-precision",
+    "transforms-precision",
     "paths-coordinates-precision",
     "indent",
 
@@ -281,7 +281,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::SimplifyTransforms, "true"))
         .arg(gen_precision!(Key::CoordinatesPrecision, "6"))
         .arg(gen_precision!(Key::PropertiesPrecision, "6"))
-        .arg(gen_precision!(Key::TransformPrecision, "8"))
+        .arg(gen_precision!(Key::TransformsPrecision, "8"))
         .arg(gen_precision!(Key::PathsCoordinatesPrecision, "8"))
         .arg(Arg::with_name(KEYS[Key::Indent])
             .long(KEYS[Key::Indent])
@@ -520,7 +520,7 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
     opt.properties_precision = value_t!(args, KEYS[Key::PropertiesPrecision], u8).unwrap();
     opt.paths_coordinates_precision
         = value_t!(args, KEYS[Key::PathsCoordinatesPrecision], u8).unwrap();
-    opt.transform_precision   = value_t!(args, KEYS[Key::TransformPrecision], u8).unwrap();
+    opt.transforms_precision   = value_t!(args, KEYS[Key::TransformsPrecision], u8).unwrap();
 
     opt
 }

@@ -31,7 +31,7 @@ pub fn round_numbers(doc: &Document, options: &Options) {
     let coord_precision = options.coordinates_precision as usize;
     let prop_precision = options.properties_precision as usize;
     let paths_precision = options.paths_coordinates_precision as usize;
-    let ts_precision = options.transform_precision as usize;
+    let ts_precision = options.transforms_precision as usize;
 
     for node in doc.descendants().svg() {
         let mut attrs = node.attributes_mut();

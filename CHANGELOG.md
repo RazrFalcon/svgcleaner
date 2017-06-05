@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--apply-transform-to-paths`.
 - `--allow-bigger-file`.
 - `--coordinates-precision`.
-- `--transform-precision`.
+- `--transforms-precision`.
 - `--properties-precision`.
 - Better groups with transforms ungrouping.
 - `--remove-text-attributes` removes `line-height` and `xml:space` now.

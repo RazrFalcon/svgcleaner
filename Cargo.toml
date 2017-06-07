@@ -11,7 +11,7 @@ readme = "README.md"
 categories = ["multimedia::images"]
 
 [badges]
-travis-ci = { repository = "https://github.com/RazrFalcon/svgcleaner" }
+travis-ci = { repository = "RazrFalcon/svgcleaner" }
 
 [lib]
 name = "svgcleaner"

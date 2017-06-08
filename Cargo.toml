@@ -25,11 +25,11 @@ path = "src/main.rs"
 
 [dependencies.svgdom]
 # latest
-# git = "https://github.com/RazrFalcon/libsvgdom.git"
+git = "https://github.com/RazrFalcon/libsvgdom.git"
 # local copy
 # path = "../svgdom"
 # from crates
-version = "0.5"
+# version = "0.5"
 
 [dependencies.clap]
 version = "2"
@@ -42,6 +42,6 @@ cli-parsing = ["clap"]
 
 # makes it 5-10% faster, but very slow to compile
 # use only for main releases
-[profile.release]
-opt-level = 3
-lto = true
+# [profile.release]
+# opt-level = 3
+# lto = true

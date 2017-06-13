@@ -22,6 +22,7 @@
 
 use std::fmt;
 use std::cmp;
+use std::ops::Range;
 
 use super::short::{EId, AId};
 
@@ -162,7 +163,7 @@ impl TableRow {
     // # Example
     //
     // `|-***-*****--|` -> (5, 10)
-    fn longest_range(&self) -> (usize, usize) {
+    fn longest_range(&self) -> Range<usize> {
         let mut list = Vec::new();
 
         let mut start = None;
@@ -176,19 +177,19 @@ impl TableRow {
                 end = idx;
             } else {
                 if let Some(s) = start {
-                    list.push((s, end));
+                    list.push(s..end);
                     start = None;
                     end = 0;
                 }
             }
         }
         if let Some(s) = start {
-            list.push((s, end));
+            list.push(s..end);
         }
 
-        list.sort_by(|a, b| (b.1 - b.0).cmp(&(a.1 - a.0)));
+        list.sort_by(|a, b| b.len().cmp(&a.len()));
 
-        list[0]
+        list[0].clone()
     }
 }
 
@@ -467,7 +468,7 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
             g_node
         };
 
-        move_nodes(&table.d[0].attributes, &g_node, &node_list, (0, node_list.len()));
+        move_nodes(&table.d[0].attributes, &g_node, &node_list, 0..node_list.len());
 
         // Remove first row.
         table.d.remove(0);
@@ -486,13 +487,13 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
         let d = &table.d[0];
 
         // Get the longest range on nodes.
-        let (start, end) = d.longest_range();
+        let range = d.longest_range();
 
         // Do the same as in previous block.
         let g_node = parent.document().create_element(EId::G);
-        node_list[start].insert_before(&g_node);
+        node_list[range.start].insert_before(&g_node);
 
-        move_nodes(&d.attributes, &g_node, &node_list, (start, end));
+        move_nodes(&d.attributes, &g_node, &node_list, range);
     }
 
     // TODO: process rows with multiple ranges, aka
@@ -518,12 +519,10 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
     // </g>
 }
 
-// TODO: use std::ops::Range
-fn move_nodes(attributes: &[Attribute], g_node: &Node, node_list: &[Node],
-              range: (usize, usize)) {
+fn move_nodes(attributes: &[Attribute], g_node: &Node, node_list: &[Node], range: Range<usize>) {
     let attr_ids: Vec<AId> = attributes.iter().map(|a| a.id().unwrap()).collect();
 
-    for node in node_list.iter().skip(range.0).take(range.1 - range.0 + 1) {
+    for node in node_list.iter().skip(range.start).take(range.end - range.start + 1) {
         // Remove attributes from nodes.
         node.remove_attributes(&attr_ids);
         // Move them to the 'g' element.

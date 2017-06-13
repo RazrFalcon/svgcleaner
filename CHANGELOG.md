@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - `--group-by-style` can group two nodes now.
+- `--group-by-style` can group into `svg` now.
 
 ## [0.9.0] - 2017-06-05
 ### Added

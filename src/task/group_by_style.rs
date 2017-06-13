@@ -321,8 +321,6 @@ mod table_tests {
          fill=\"red\" |*****-******|");
 }
 
-// TODO: use 'svg' instead of 'g' when possible
-
 pub fn group_by_style(doc: &Document, opt: &WriteOptions) {
     _group_by_style(&doc.svg_element().unwrap(), opt);
 }
@@ -390,8 +388,14 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
     // So we join groups with 2 children only when a parent element is already a group
     // or when indent is zero on none.
     let min_nodes_count = {
-        let is_small_indent = opt.indent == Indent::None || opt.indent == Indent::Spaces(0);
-        if parent.is_tag_name(EId::G) || is_small_indent { 2 } else { 3 }
+        let is_small_indent =    opt.indent == Indent::None
+                              || opt.indent == Indent::Spaces(0);
+
+        let is_small =    parent.is_tag_name(EId::Svg)
+                       || parent.is_tag_name(EId::G)
+                       || is_small_indent;
+
+        if is_small { 2 } else { 3 }
     };
     if node_list.len() < min_nodes_count {
         return;
@@ -460,7 +464,8 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
     if table.d[0].count_flags() == nodes_count {
         // If parent node is 'g' - use it,
         // it not - create new one.
-        let g_node = if parent.is_tag_name(EId::G) && is_all_children {
+        let is_valid_parent = parent.is_tag_name(EId::Svg) || parent.is_tag_name(EId::G);
+        let g_node = if is_valid_parent && is_all_children {
             parent.clone()
         } else {
             let g_node = parent.document().create_element(EId::G);
@@ -568,12 +573,10 @@ mod tests {
     <rect id='r2' fill='#ff0000'/>
     <rect id='r3' fill='#ff0000'/>
 </svg>",
-"<svg>
-    <g fill='#ff0000'>
-        <rect id='r1'/>
-        <rect id='r2'/>
-        <rect id='r3'/>
-    </g>
+"<svg fill='#ff0000'>
+    <rect id='r1'/>
+    <rect id='r2'/>
+    <rect id='r3'/>
 </svg>
 ");
 
@@ -622,12 +625,10 @@ mod tests {
     <rect id='r2' stroke='#00ff00'/>
     <rect id='r3' fill='#ff0000' stroke='#00ff00'/>
 </svg>",
-"<svg>
-    <g stroke='#00ff00'>
-        <rect id='r1' fill='#ff0000'/>
-        <rect id='r2'/>
-        <rect id='r3' fill='#ff0000'/>
-    </g>
+"<svg stroke='#00ff00'>
+    <rect id='r1' fill='#ff0000'/>
+    <rect id='r2'/>
+    <rect id='r3' fill='#ff0000'/>
 </svg>
 ");
 
@@ -706,19 +707,17 @@ mod tests {
     <rect id='r7' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r8' stroke='#00ff00'/>
 </svg>",
-"<svg>
-    <g stroke='#00ff00'>
-        <rect id='r1'/>
-        <g fill='#ff0000'>
-            <rect id='r2'/>
-            <rect id='r3'/>
-            <rect id='r4'/>
-            <rect id='r5'/>
-            <rect id='r6'/>
-            <rect id='r7'/>
-        </g>
-        <rect id='r8'/>
+"<svg stroke='#00ff00'>
+    <rect id='r1'/>
+    <g fill='#ff0000'>
+        <rect id='r2'/>
+        <rect id='r3'/>
+        <rect id='r4'/>
+        <rect id='r5'/>
+        <rect id='r6'/>
+        <rect id='r7'/>
     </g>
+    <rect id='r8'/>
 </svg>
 ");
 
@@ -755,12 +754,10 @@ mod tests {
     <rect id='r2' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r3' fill='#ff0000' stroke='#00ff00'/>
 </svg>",
-"<svg>
-    <g fill='#ff0000' stroke='#00ff00'>
-        <rect id='r1'/>
-        <rect id='r2'/>
-        <rect id='r3'/>
-    </g>
+"<svg fill='#ff0000' stroke='#00ff00'>
+    <rect id='r1'/>
+    <rect id='r2'/>
+    <rect id='r3'/>
 </svg>
 ");
 
@@ -871,12 +868,10 @@ mod tests {
     <rect id='r2' transform='scale(10)'/>
     <rect id='r3' transform='scale(10)'/>
 </svg>",
-"<svg>
-    <g transform='scale(10)'>
-        <rect id='r1'/>
-        <rect id='r2'/>
-        <rect id='r3'/>
-    </g>
+"<svg transform='scale(10)'>
+    <rect id='r1'/>
+    <rect id='r2'/>
+    <rect id='r3'/>
 </svg>
 ");
 

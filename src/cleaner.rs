@@ -198,7 +198,7 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
     // Run only after attributes processed, because
     // there is no point in grouping default/unneeded attributes.
     if options.group_by_style {
-        group_by_style(doc);
+        group_by_style(doc, opt);
     }
 
     // Final fixes.

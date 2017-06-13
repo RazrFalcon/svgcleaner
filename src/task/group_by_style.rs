@@ -25,7 +25,7 @@ use std::cmp;
 
 use super::short::{EId, AId};
 
-use svgdom::{Document, Node, Attribute, AttributeType};
+use svgdom::{Document, Node, Attribute, AttributeType, WriteOptions, Indent};
 
 // TODO: optimize, since Table is basically Vec<(Vec,Vec)>, which is not very efficient
 struct Table {
@@ -53,18 +53,19 @@ impl Table {
     }
 
     // Removes unneeded rows.
-    fn simplify(&mut self) {
+    fn simplify(&mut self, min_nodes_count: usize) {
         // Table should be already defined/filled.
         debug_assert!(!self.d.is_empty());
-        debug_assert!(self.d[0].flags.len() >= 3);
+        debug_assert!(min_nodes_count == 2 || min_nodes_count == 3);
+        debug_assert!(self.d[0].flags.len() >= min_nodes_count);
 
-        // We group only three or more elements,
-        // so rows with less than 3 flags are useless.
+        // We group only N or more elements,
+        // so rows with less than N flags are useless.
         self.d.retain(|x| {
-            x.count_flags() > 2
+            x.count_flags() >= min_nodes_count
         });
 
-        // Rows should contain flags that repeats at least 3 times.
+        // Rows should contain flags that repeats at least N times.
         // |*-*| -> |---|
         // |**-**| -> |-----|
         // |*-*-*-*| -> |-------|
@@ -96,7 +97,7 @@ impl Table {
 
         // Remove again.
         self.d.retain(|x| {
-            x.count_flags() > 2
+            x.count_flags() >= min_nodes_count
         });
     }
 
@@ -267,7 +268,7 @@ mod table_tests {
                     });
                 )*
 
-                table_in.simplify();
+                table_in.simplify(3);
 
                 if table_in.d.is_empty() {
                     assert_eq!(format!("{:?}", table_in), $result_text);
@@ -321,11 +322,11 @@ mod table_tests {
 
 // TODO: use 'svg' instead of 'g' when possible
 
-pub fn group_by_style(doc: &Document) {
-    _group_by_style(&doc.svg_element().unwrap());
+pub fn group_by_style(doc: &Document, opt: &WriteOptions) {
+    _group_by_style(&doc.svg_element().unwrap(), opt);
 }
 
-fn _group_by_style(parent: &Node) {
+fn _group_by_style(parent: &Node, opt: &WriteOptions) {
     let mut node_list = Vec::with_capacity(16);
 
     // We can reuse an existing group only if all children are valid.
@@ -347,14 +348,51 @@ fn _group_by_style(parent: &Node) {
 
         // Recursive processing.
         if node.is_tag_name(EId::G) {
-            _group_by_style(&node);
+            _group_by_style(&node, opt);
         }
 
         node_list.push(node);
     }
 
-    // We should have at least 3 nodes, because there is no point in grouping one or two nodes.
-    if node_list.len() < 3 {
+
+    // Grouping of 3 and more children are always efficient.
+    //
+    // 57B
+    // <rect fill='red'/>
+    // <rect fill='red'/>
+    // <rect fill='red'/>
+    //
+    // 56B
+    // <g>
+    //     <rect/>
+    //     <rect/>
+    //     <rect/>
+    // </g>
+    //
+    // And with smaller indent even more efficient.
+    //
+    // But the grouping of 2 children only efficient with zero or none indent.
+    //
+    // 38B
+    // <rect fill='red'/>
+    // <rect fill='red'/>
+    //
+    // 36B
+    // <g fill='red'>
+    // <rect/>
+    // <rect/>
+    // </g>
+    //
+    // 33B
+    // <g fill='red'><rect/><rect/></g>
+    //
+    // So we join groups with 2 children only when a parent element is already a group
+    // or when indent is zero on none.
+    let min_nodes_count = {
+        let is_small_indent = opt.indent == Indent::None || opt.indent == Indent::Spaces(0);
+        if parent.is_tag_name(EId::G) || is_small_indent { 2 } else { 3 }
+    };
+    if node_list.len() < min_nodes_count {
         return;
     }
 
@@ -371,14 +409,13 @@ fn _group_by_style(parent: &Node) {
             }
 
             if aid == AId::Transform {
-                // We can't modify a transform if node has linked elements.
+                // We can't group a transform if a node or the parent has linked elements.
 
                 if !super::apply_transforms::utils::is_valid_attrs(node) {
                     continue;
                 }
 
-                if    parent.has_attribute(AId::Transform)
-                   && !super::apply_transforms::utils::is_valid_attrs(parent) {
+                if !super::apply_transforms::utils::is_valid_attrs(parent) {
                     continue;
                 }
             } else if !attr.is_inheritable() {
@@ -406,7 +443,7 @@ fn _group_by_style(parent: &Node) {
         }
     }
 
-    table.simplify();
+    table.simplify(min_nodes_count);
 
     // 'simplify' can remove rows, so:
     if table.d.is_empty() {
@@ -519,7 +556,7 @@ mod tests {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
-                group_by_style(&doc);
+                group_by_style(&doc, &WriteOptions::default());
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
         )
@@ -858,6 +895,22 @@ mod tests {
         <rect id='r1'/>
         <rect id='r2'/>
         <rect id='r3'/>
+    </g>
+</svg>
+");
+
+    // Group into existing group.
+    test!(group_16,
+"<svg>
+    <g>
+        <rect fill='#ff0000'/>
+        <rect fill='#ff0000'/>
+    </g>
+</svg>",
+"<svg>
+    <g fill='#ff0000'>
+        <rect/>
+        <rect/>
     </g>
 </svg>
 ");

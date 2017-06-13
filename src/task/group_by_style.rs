@@ -371,14 +371,13 @@ fn _group_by_style(parent: &Node) {
             }
 
             if aid == AId::Transform {
-                // We can't modify a transform if node has linked elements.
+                // We can't group a transform if node or parent has invalid linked elements.
 
                 if !super::apply_transforms::utils::is_valid_attrs(node) {
                     continue;
                 }
 
-                if    parent.has_attribute(AId::Transform)
-                   && !super::apply_transforms::utils::is_valid_attrs(parent) {
+                if !super::apply_transforms::utils::is_valid_attrs(parent) {
                     continue;
                 }
             } else if !attr.is_inheritable() {

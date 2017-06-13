@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- `transform` grouping in `--group-by-style`.
 
 ## [0.9.0] - 2017-06-05
 ### Added
@@ -28,7 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--join-style-attributes` accepts only `no`, `some`, `all` now.
 
 ### Fixed
-- Fixed `stroke-dasharray` and `stroke-dashoffset` processing during transformations applying.
+- `stroke-dasharray` and `stroke-dashoffset` processing during transformations applying.
 
 ### Other
 - Updated to the latest version of the libsvgdom.

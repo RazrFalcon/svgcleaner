@@ -201,13 +201,9 @@ mod tests {
 </svg>",
 "<svg>
     <defs>
-        <text id='hello'>
-            Hello
-        </text>
+        <text id='hello'>Hello</text>
     </defs>
-    <text>
-        <tref xlink:href='#hello'/>
-    </text>
+    <text><tref xlink:href='#hello'/></text>
 </svg>
 ");
 

@@ -173,6 +173,7 @@ fn _remove_xml_space(parent: &Node) {
         //
         // xml:space=default will be removed by remove_default_attributes.
         let mut has_preserve = false;
+        // TODO: attribute_value() returns a copy of the string, which is slow
         if let Some(AttributeValue::String(s)) = node.attribute_value(AId::XmlSpace) {
             if s == "preserve" {
                 has_preserve = true;
@@ -213,10 +214,7 @@ fn _remove_xml_space(parent: &Node) {
 fn is_text_contains_spaces(text_node: &Node) -> bool {
     debug_assert!(text_node.node_type() == NodeType::Text);
 
-    let text = match text_node.text() {
-        Some(s) => s,
-        None => return false,
-    };
+    let text = text_node.text();
 
     if text.is_empty() {
         return false
@@ -287,9 +285,7 @@ mod tests {
 </svg>",
 "<svg>
     <g font-family='Verdana'>
-        <text text-anchor='middle'>
-            text
-        </text>
+        <text text-anchor='middle'>text</text>
     </g>
     <g>
         <rect/>
@@ -324,9 +320,7 @@ mod tests {
 </svg>",
 "<svg font='Verdana'>
     <g word-spacing='normal'>
-        <text text-anchor='middle'>
-            text
-        </text>
+        <text text-anchor='middle'>text</text>
     </g>
 </svg>
 ");
@@ -335,22 +329,16 @@ mod tests {
     test_eq!(keep_text_2,
 "<svg>
     <font-face font-family='Verdana'/>
-    <text>
-        text
-    </text>
+    <text>text</text>
 </svg>
 ");
 
     test_eq!(keep_text_3,
 "<svg>
     <defs>
-        <text id='hello'>
-            Hello
-        </text>
+        <text id='hello'>Hello</text>
     </defs>
-    <text font-family='Verdana'>
-        <tref xlink:href='#hello'/>
-    </text>
+    <text font-family='Verdana'><tref xlink:href='#hello'/></text>
 </svg>
 ");
 
@@ -368,9 +356,7 @@ mod tests {
     test_eq!(keep_text_5,
 "<svg>
     <defs>
-        <text id='text'>
-            Text
-        </text>
+        <text id='text'>Text</text>
     </defs>
     <use font-size='50' xlink:href='#text'/>
 </svg>
@@ -380,9 +366,7 @@ mod tests {
     test_eq!(keep_text_6,
 "<!-- Comment -->
 <svg>
-    <text font-size='16'>
-        text
-    </text>
+    <text font-size='16'>text</text>
 </svg>
 ");
 
@@ -420,12 +404,8 @@ mod tests {
 "<svg>
     <text/>
     <text/>
-    <text>
-        Text
-    </text>
-    <text>
-        Text Text
-    </text>
+    <text>Text</text>
+    <text>Text Text</text>
 </svg>
 ");
 
@@ -435,7 +415,6 @@ mod tests {
     <text xml:space='preserve'>Text </text>
     <text xml:space='preserve'> Text </text>
     <text xml:space='preserve'>Text  Text</text>
-    <text xml:space='preserve'>Text\n\tText</text>
 </svg>
 ");
 }

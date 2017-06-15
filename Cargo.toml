@@ -1,6 +1,6 @@
 [package]
 name = "svgcleaner"
-version = "0.9.0"
+version = "0.9.1" # also update in cli.rs
 authors = ["Evgeniy Reizner <razrfalcon@gmail.com>"]
 keywords = ["svg", "cleaner", "optimizer"]
 license = "GPL-2.0"

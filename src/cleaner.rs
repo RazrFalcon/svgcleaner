@@ -65,7 +65,7 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
     // Prepare our document.
     // This methods is not optional.
     utils::resolve_gradient_attributes(doc)?;
-    svgdom::postproc::resolve_inherit(doc)?;
+    svgdom::postproc::resolve_inherit(doc);
     fix_invalid_attributes(doc);
     group_defs(doc);
 

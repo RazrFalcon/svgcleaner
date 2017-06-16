@@ -57,10 +57,8 @@ impl fmt::Debug for Error {
 impl From<svgdom::Error> for Error {
     fn from(value: svgdom::Error) -> Error {
         match value {
-            svgdom::Error::UnresolvedAttribute(name) =>
-                Error::UnresolvedAttribute(name),
             svgdom::Error::MissingAttribute(tag_name, attr_name) =>
-                Error::MissingAttribute(tag_name, attr_name),
+                    Error::MissingAttribute(tag_name, attr_name),
             _ => unreachable!(),
         }
     }

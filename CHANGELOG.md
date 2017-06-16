@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--group-by-style` can group two nodes now.
 - `--group-by-style` can group into `svg` now.
 
+### Fixed
+- `transform` grouping in `--group-by-style`.
+
 ## [0.9.0] - 2017-06-05
 ### Added
 - XML nodes can be indented with tabs now. Using `--indent=tabs`.
@@ -31,7 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--join-style-attributes` accepts only `no`, `some`, `all` now.
 
 ### Fixed
-- Fixed `stroke-dasharray` and `stroke-dashoffset` processing during transformations applying.
+- `stroke-dasharray` and `stroke-dashoffset` processing during transformations applying.
 
 ### Other
 - Updated to the latest version of the libsvgdom.

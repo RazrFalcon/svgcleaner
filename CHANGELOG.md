@@ -5,8 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [0.9.0] - 2017-06-18
 ### Fixed
 - `transform` grouping in `--group-by-style`.
+
+### Other
+- Includes [svgdom 0.6.0](https://github.com/RazrFalcon/libsvgdom/blob/master/CHANGELOG.md#060---2017-06-18) fixes.
+- Includes [svgparser 0.4.1](https://github.com/RazrFalcon/libsvgparser/blob/master/CHANGELOG.md#041---2017-06-15) fixes.
 
 ## [0.9.0] - 2017-06-05
 ### Added

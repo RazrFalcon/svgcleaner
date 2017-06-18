@@ -25,11 +25,11 @@ path = "src/main.rs"
 
 [dependencies.svgdom]
 # latest
-git = "https://github.com/RazrFalcon/libsvgdom.git"
+# git = "https://github.com/RazrFalcon/libsvgdom.git"
 # local copy
 # path = "../svgdom"
 # from crates
-# version = "0.5"
+version = "0.6"
 
 [dependencies.clap]
 version = "2"

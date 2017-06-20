@@ -3,7 +3,7 @@ name = "svgcleaner"
 version = "0.10.0"
 dependencies = [
  "clap 2.24.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "svgdom 0.6.0 (git+https://github.com/RazrFalcon/libsvgdom.git)",
+ "svgdom 0.7.0 (git+https://github.com/RazrFalcon/libsvgdom.git?branch=devel)",
 ]
 
 [[package]]
@@ -63,8 +63,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "svgdom"
-version = "0.6.0"
-source = "git+https://github.com/RazrFalcon/libsvgdom.git#2b0f1613ee609812545d110513bd98cd8da49c65"
+version = "0.7.0"
+source = "git+https://github.com/RazrFalcon/libsvgdom.git?branch=devel#0bc0bff59bfa240ff8d6a499d84c425f254faffa"
 dependencies = [
  "float-cmp 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "simplecss 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -103,7 +103,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum phf_shared 0.7.21 (registry+https://github.com/rust-lang/crates.io-index)" = "07e24b0ca9643bdecd0632f2b3da6b1b89bbb0030e0b992afc1113b23a7bc2f2"
 "checksum simplecss 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "135685097a85a64067df36e28a243e94a94f76d829087ce0be34eeb014260c0e"
 "checksum siphasher 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "0df90a788073e8d0235a67e50441d47db7c8ad9debd91cbf43736a2a92d36537"
-"checksum svgdom 0.6.0 (git+https://github.com/RazrFalcon/libsvgdom.git)" = "<none>"
+"checksum svgdom 0.7.0 (git+https://github.com/RazrFalcon/libsvgdom.git?branch=devel)" = "<none>"
 "checksum svgparser 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "b88bfad561af9e7887b91f588ca4a5f12bdf1b92bdf430a3d9f9143e46f2d26b"
 "checksum unicode-segmentation 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "a8083c594e02b8ae1654ae26f0ade5158b119bd88ad0e8227a5d8fcd72407946"
 "checksum unicode-width 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "bf3a113775714a22dcb774d8ea3655c53a32debae63a063acc00a91cc586245f"

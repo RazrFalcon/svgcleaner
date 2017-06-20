@@ -69,7 +69,7 @@ fn convert_line(node: &Node) {
             .finalize()
     };
 
-    node.set_attribute(AId::D, path);
+    node.set_attribute((AId::D, path));
     node.set_tag_name(EId::Path);
     node.remove_attributes(&[AId::X1, AId::Y1, AId::X2, AId::Y2]);
 }
@@ -114,7 +114,7 @@ fn convert_rect(node: &Node) {
             .finalize()
     };
 
-    node.set_attribute(AId::D, path);
+    node.set_attribute((AId::D, path));
     node.set_tag_name(EId::Path);
     node.remove_attributes(&[AId::X, AId::Y, AId::Rx, AId::Ry, AId::Width, AId::Height]);
 }
@@ -128,7 +128,7 @@ fn convert_polyline(node: &Node) {
     };
 
     node.set_tag_name(EId::Path);
-    node.set_attribute(AId::D, path);
+    node.set_attribute((AId::D, path));
     node.remove_attribute(AId::Points);
 }
 
@@ -143,7 +143,7 @@ fn convert_polygon(node: &Node) {
     path.d.push(path::Segment::new_close_path());
 
     node.set_tag_name(EId::Path);
-    node.set_attribute(AId::D, path);
+    node.set_attribute((AId::D, path));
     node.remove_attribute(AId::Points);
 }
 

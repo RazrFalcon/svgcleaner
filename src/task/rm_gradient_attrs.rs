@@ -56,11 +56,12 @@ fn rm_equal(doc: &Document) {
                 // usage depend on the 'count' value and not on the real usage.
                 sub_order.push(node.clone());
 
-                if let Some(av) = node.attribute_value(AId::XlinkHref) {
-                    if let AttributeValue::Link(link) = av {
+                let av = node.attributes().get_value(AId::XlinkHref).cloned();
+                if let Some(av) = av {
+                    if let AttributeValue::Link(ref link) = av {
                         // If current units is equal to parent units we can remove them.
-                        if node.attribute_value(AId::GradientUnits)
-                                == link.attribute_value(AId::GradientUnits) {
+                        if node.attributes().get_value(AId::GradientUnits)
+                                == link.attributes().get_value(AId::GradientUnits) {
                             make_attr_invisible(node, AId::GradientUnits);
                         }
                     }
@@ -73,10 +74,10 @@ fn rm_equal(doc: &Document) {
 
         // Decrease usage count of processed gradients.
         for n in &sub_order {
-            if let Some(av) = n.attribute_value(AId::XlinkHref) {
-                if let AttributeValue::Link(link) = av {
+            if let Some(av) = n.attributes().get_value(AId::XlinkHref) {
+                if let AttributeValue::Link(ref link) = *av {
                     for &mut (ref node, ref mut count) in &mut order {
-                        if *node == link {
+                        if node == link {
                             *count -= 1;
                         }
                     }
@@ -100,15 +101,17 @@ fn group_to_parent(doc: &Document) {
     for node in &nodes {
         let total_count = node.linked_nodes().count();
         let count = node.linked_nodes()
-                        .filter(|n| n.has_attribute_with_value(AId::GradientUnits,
-                                                               ValueId::ObjectBoundingBox))
+                        .filter(|n| {
+                            n.attributes().get_value(AId::GradientUnits) ==
+                                Some(&AttributeValue::PredefValue(ValueId::ObjectBoundingBox))
+                        })
                         .count();
 
         if count == total_count {
             // If all linked gradients has the 'objectBoundingBox' value - move
             // it to the parent and remove from linked.
 
-            node.set_attribute(AId::GradientUnits, ValueId::ObjectBoundingBox);
+            node.set_attribute((AId::GradientUnits, ValueId::ObjectBoundingBox));
 
             for n in node.linked_nodes() {
                 make_attr_invisible(&n.clone(), AId::GradientUnits);
@@ -117,7 +120,7 @@ fn group_to_parent(doc: &Document) {
             // If all linked gradients has the 'userSpaceOnUse' value - move
             // it to the parent and remove from linked.
 
-            node.set_attribute(AId::GradientUnits, ValueId::UserSpaceOnUse);
+            node.set_attribute((AId::GradientUnits, ValueId::UserSpaceOnUse));
 
             for n in node.linked_nodes() {
                 make_attr_invisible(&n.clone(), AId::GradientUnits);
@@ -126,14 +129,15 @@ fn group_to_parent(doc: &Document) {
             // If most linked gradients has the 'objectBoundingBox' value - move
             // it to the parent and remove from linked.
 
-            node.set_attribute(AId::GradientUnits, ValueId::ObjectBoundingBox);
+            node.set_attribute((AId::GradientUnits, ValueId::ObjectBoundingBox));
 
             for n in node.linked_nodes() {
-                if let Some(v) = n.attribute_value(AId::GradientUnits) {
-                    if v == AttributeValue::PredefValue(ValueId::ObjectBoundingBox) {
+                let av = n.attributes().get_value(AId::GradientUnits).cloned();
+                if let Some(av) = av {
+                    if av == AttributeValue::PredefValue(ValueId::ObjectBoundingBox) {
                         make_attr_invisible(&n.clone(), AId::GradientUnits);
                     } else {
-                        n.clone().set_attribute(AId::GradientUnits, ValueId::UserSpaceOnUse);
+                        n.clone().set_attribute((AId::GradientUnits, ValueId::UserSpaceOnUse));
                     }
                 }
             }
@@ -141,21 +145,23 @@ fn group_to_parent(doc: &Document) {
             // If most linked gradients has the 'userSpaceOnUse' value - move
             // it to the parent and remove from linked.
 
-            node.set_attribute(AId::GradientUnits, ValueId::UserSpaceOnUse);
+            node.set_attribute((AId::GradientUnits, ValueId::UserSpaceOnUse));
 
             for n in node.linked_nodes() {
-                if let Some(v) = n.attribute_value(AId::GradientUnits) {
-                    if v == AttributeValue::PredefValue(ValueId::UserSpaceOnUse) {
+                let av = n.attributes().get_value(AId::GradientUnits).cloned();
+                if let Some(av) = av {
+                    if av == AttributeValue::PredefValue(ValueId::UserSpaceOnUse) {
                         make_attr_invisible(&n.clone(), AId::GradientUnits);
                     } else {
-                        n.clone().set_attribute(AId::GradientUnits, ValueId::ObjectBoundingBox);
+                        n.clone().set_attribute((AId::GradientUnits, ValueId::ObjectBoundingBox));
                     }
                 }
             }
         }
 
-        if let Some(v) = node.attribute_value(AId::GradientUnits) {
-            if v == AttributeValue::PredefValue(ValueId::ObjectBoundingBox) {
+        let av = node.attributes().get_value(AId::GradientUnits).cloned();
+        if let Some(av) = av {
+            if av == AttributeValue::PredefValue(ValueId::ObjectBoundingBox) {
                 make_attr_invisible(node, AId::GradientUnits);
             }
         }

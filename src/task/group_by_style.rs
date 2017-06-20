@@ -26,7 +26,7 @@ use std::ops::Range;
 
 use super::short::{EId, AId};
 
-use svgdom::{Document, Node, Attribute, AttributeType, WriteOptions, Indent};
+use svgdom::{Document, Node, Attribute, AttributeValue, AttributeType, WriteOptions, Indent};
 
 // TODO: optimize, since Table is basically Vec<(Vec,Vec)>, which is not very efficient
 struct Table {
@@ -538,14 +538,15 @@ fn move_nodes(attributes: &[Attribute], g_node: &Node, node_list: &[Node], range
     // Set moved attributes to the 'g' element.
     for attr in attributes {
         if attr.id().unwrap() == AId::Transform && g_node.has_attribute(AId::Transform) {
-            let mut group_ts = *g_node.attribute_value(AId::Transform).unwrap()
-                                      .as_transform().unwrap();
             let child_ts = attr.value.as_transform().unwrap();
 
-            group_ts.append(child_ts);
-            g_node.set_attribute(AId::Transform, group_ts);
+            let mut attrs = g_node.attributes_mut();
+            let av = attrs.get_value_mut(AId::Transform);
+            if let Some(&mut AttributeValue::Transform(ref mut ts)) = av {
+                ts.append(child_ts);
+            }
         } else {
-            g_node.set_attribute_object(attr.clone());
+            g_node.set_attribute(attr.clone());
         }
     }
 }

@@ -96,9 +96,9 @@ fn is_valid_clip_path_elem(node: &Node) -> bool {
     }
 
     if node.is_tag_name(EId::Use) {
-        if let Some(av) = node.attribute_value(AId::XlinkHref) {
-            if let AttributeValue::Link(link) = av {
-                return is_valid_shape(&link);
+        if let Some(av) = node.attributes().get_value(AId::XlinkHref) {
+            if let AttributeValue::Link(ref link) = *av {
+                return is_valid_shape(link);
             }
         }
     }
@@ -150,7 +150,8 @@ fn process_display_attribute(doc: &Document, is_any_removed: &mut bool) {
 fn _process_display_attribute(parent: &Node, nodes: &mut Vec<Node>, is_any_removed: &mut bool) {
     for node in parent.children().svg() {
         // If elements has attribute 'display:none' and this element is not used - we can remove it.
-        if node.has_attribute_with_value(AId::Display, ValueId::None) && !node.is_used() {
+        let val = AttributeValue::PredefValue(ValueId::None);
+        if node.attributes().get_value(AId::Display) == Some(&val) && !node.is_used() {
             // All children must be unused to.
             if !node.descendants().svg().any(|n| n.is_used()) {
                 // TODO: ungroup used elements and remove unused
@@ -238,7 +239,7 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
         for n in iter {
             for link in n.linked_nodes().collect::<Vec<Node>>() {
                 while let Some(aid) = find_link_attribute(&link, &n) {
-                    link.set_attribute(aid, ValueId::None);
+                    link.set_attribute((aid, ValueId::None));
                 }
             }
             nodes.push(n.clone());
@@ -258,8 +259,10 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
         for n in iter {
             let stop = n.children().nth(0).unwrap();
             // Unwrap is safe, because we already resolved all 'stop' attributes.
-            let color = *stop.attribute_value(AId::StopColor).unwrap().as_color().unwrap();
-            let opacity = *stop.attribute_value(AId::StopOpacity).unwrap().as_number().unwrap();
+            let color = *stop.attributes().get_value(AId::StopColor).unwrap()
+                             .as_color().unwrap();
+            let opacity = *stop.attributes().get_value(AId::StopOpacity).unwrap()
+                               .as_number().unwrap();
 
             // Replace links with colors, but not in gradients,
             // because it will lead to 'xlink:href=#ffffff', which is wrong.
@@ -267,11 +270,11 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
                          .filter(|n| !n.is_gradient())
                          .collect::<Vec<Node>>() {
                 while let Some(aid) = find_link_attribute(&link, &n) {
-                    link.set_attribute(aid, color);
+                    link.set_attribute((aid, color));
                     if opacity.fuzzy_ne(&1.0) {
                         match aid {
-                            AId::Fill => link.set_attribute(AId::FillOpacity, opacity),
-                            AId::Stroke => link.set_attribute(AId::StrokeOpacity, opacity),
+                            AId::Fill => link.set_attribute((AId::FillOpacity, opacity)),
+                            AId::Stroke => link.set_attribute((AId::StrokeOpacity, opacity)),
                             _ => {}
                         }
                     }

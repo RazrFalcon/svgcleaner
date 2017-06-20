@@ -89,12 +89,12 @@ mod tests {
         let wopt = WriteOptions::default();
 
         join_style_attributes(&doc, StyleJoinMode::None, &wopt);
-        assert_eq!(svg_node.attribute(AId::Style), None);
+        assert_eq!(svg_node.attributes().get(AId::Style), None);
 
         // We have 6 style attributes so they should be joined.
         join_style_attributes(&doc, StyleJoinMode::Some, &wopt);
         assert_eq_text!(
-            svg_node.attribute(AId::Style).unwrap().value.as_string().unwrap(),
+            svg_node.attributes().get(AId::Style).unwrap().value.as_string().unwrap(),
             "fill:#000000;stroke:#ff0000;stroke-width:1;opacity:1;fill-opacity:1;stroke-opacity:1"
         );
     }
@@ -110,12 +110,12 @@ mod tests {
 
         // We have only 2 style attributes so they shouldn't be joined.
         join_style_attributes(&doc, StyleJoinMode::Some, &wopt);
-        assert_eq!(svg_node.attribute(AId::Style), None);
+        assert_eq!(svg_node.attributes().get(AId::Style), None);
 
         // Join anyway.
         join_style_attributes(&doc, StyleJoinMode::All, &wopt);
         assert_eq_text!(
-            svg_node.attribute(AId::Style).unwrap().value.as_string().unwrap(),
+            svg_node.attributes().get(AId::Style).unwrap().value.as_string().unwrap(),
             "fill:#000000;stroke:#ff0000"
         );
     }

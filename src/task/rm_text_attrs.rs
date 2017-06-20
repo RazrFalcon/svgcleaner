@@ -173,8 +173,7 @@ fn _remove_xml_space(parent: &Node) {
         //
         // xml:space=default will be removed by remove_default_attributes.
         let mut has_preserve = false;
-        // TODO: attribute_value() returns a copy of the string, which is slow
-        if let Some(AttributeValue::String(s)) = node.attribute_value(AId::XmlSpace) {
+        if let Some(&AttributeValue::String(ref s)) = node.attributes().get_value(AId::XmlSpace) {
             if s == "preserve" {
                 has_preserve = true;
             }

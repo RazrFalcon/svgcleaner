@@ -84,9 +84,9 @@ fn apply_ts_to_children(node: &Node, ts: Transform) {
             let mut ts1 = ts;
             let ts2 = utils::get_ts(&child);
             ts1.append(&ts2);
-            child.set_attribute(AId::Transform, ts1);
+            child.set_attribute((AId::Transform, ts1));
         } else {
-            child.set_attribute(AId::Transform, ts);
+            child.set_attribute((AId::Transform, ts));
         }
     }
 }

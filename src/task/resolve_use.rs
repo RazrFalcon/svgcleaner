@@ -29,8 +29,8 @@ pub fn resolve_use(doc: &Document) {
     let mut nodes = Vec::new();
 
     for node in doc.descendants().filter(|n| n.is_tag_name(EId::Use)) {
-        if let Some(value) = node.attribute_value(AId::XlinkHref) {
-            if let AttributeValue::Link(link) = value {
+        if let Some(value) = node.attributes().get_value(AId::XlinkHref) {
+            if let AttributeValue::Link(ref link) = *value {
 
                 // Resolve elements that linked to elements inside 'defs'.
                 let parent = link.parent().unwrap();
@@ -89,7 +89,7 @@ pub fn resolve_use(doc: &Document) {
 
         // Copy attributes.
         for attr in node.attributes().iter() {
-            link.set_attribute_object(attr.clone());
+            link.set_attribute(attr.clone());
         }
 
         // TODO: maybe just change the tag name

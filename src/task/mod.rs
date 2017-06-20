@@ -112,13 +112,13 @@ pub mod utils {
 
     fn recalc_stroke_num(node: &Node, aid: AId, scale_factor: f64) {
         // Resolve current value.
-        let value = if let Some(attr) = node.attribute(aid) {
+        let value = if let Some(attr) = node.attributes().get(aid).cloned() {
             // Defined in the current node.
             attr.value
         } else {
             if let Some(n) = node.parents().find(|n| n.has_attribute(aid)) {
                 // Defined in the parent node.
-                n.attribute_value(aid).unwrap()
+                n.attributes().get_value(aid).cloned().unwrap()
             } else {
                 // Default value.
                 AttributeValue::default_value(aid).unwrap()
@@ -128,7 +128,7 @@ pub mod utils {
         let mut len = *value.as_length().unwrap();
         if len.num.fuzzy_ne(&0.0) {
             len.num *= scale_factor;
-            node.set_attribute(aid, len);
+            node.set_attribute((aid, len));
         }
     }
 
@@ -136,13 +136,13 @@ pub mod utils {
         let aid = AId::StrokeDasharray;
 
         // Resolve current 'stroke-dasharray'.
-        let value = if let Some(attr) = node.attribute(aid) {
+        let value = if let Some(attr) = node.attributes().get(aid).cloned() {
             // Defined in the current node.
             Some(attr.value)
         } else {
             if let Some(n) = node.parents().find(|n| n.has_attribute(aid)) {
                 // Defined in the parent node.
-                Some(n.attribute_value(aid).unwrap())
+                Some(n.attributes().get_value(aid).cloned().unwrap())
             } else {
                 None
             }
@@ -153,7 +153,7 @@ pub mod utils {
                 for n in &mut list {
                     n.num *= scale_factor
                 }
-                node.set_attribute(aid, list);
+                node.set_attribute((aid, list));
             }
         }
     }

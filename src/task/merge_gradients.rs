@@ -66,10 +66,10 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
     for node in iter {
         let linked_node;
 
-        if let Some(av) = node.attribute_value(AId::XlinkHref) {
-            if let AttributeValue::Link(link) = av {
+        if let Some(av) = node.attributes().get_value(AId::XlinkHref) {
+            if let &AttributeValue::Link(ref link) = av {
                 if link.uses_count() == 1 && !link.has_attribute(AId::XlinkHref) {
-                    linked_node = link;
+                    linked_node = link.clone();
                 } else {
                     continue;
                 }

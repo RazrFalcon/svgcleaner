@@ -881,6 +881,30 @@
         {
             "info": "magic bug",
             "name": "devices/phone.svg"
+        },
+        {
+            "info": "qtwebkit crashes",
+            "name": "actions/small/32x32/view-financial-payment-mode.svg"
+        },
+        {
+            "info": "qtwebkit crashes",
+            "name": "actions/small/48x48/bookmarks-organize.svg"
+        },
+        {
+            "info": "qtwebkit crashes",
+            "name": "mimetypes/hidef/unknown.svg"
+        },
+        {
+            "info": "qtwebkit crashes",
+            "name": "mimetypes/small/22x22/unknown.svg"
+        },
+        {
+            "info": "qtwebkit crashes",
+            "name": "mimetypes/small/64x64/unknown.svg"
+        },
+        {
+            "info": "qtwebkit crashes",
+            "name": "mimetypes/small/32x32/unknown.svg"
         }
     ],
     "min_valid_ae": 400

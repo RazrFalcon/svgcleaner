@@ -22,7 +22,7 @@
 
 use super::short::EId;
 
-use svgdom::{Document, Node, ElementType, AttributeType, AttributeValue};
+use svgdom::{Document, Node, ElementType, AttributeType};
 
 pub fn group_defs(doc: &Document) {
     // doc must contain 'svg' node, so we can safely unwrap.
@@ -111,14 +111,7 @@ fn resolve_attrs(node: &Node) {
                             continue;
                         }
 
-                        match attr.value {
-                              AttributeValue::Link(ref link)
-                            | AttributeValue::FuncLink(ref link) => {
-                                // If it's fail - it's already a huge problem, so unwrap is harmless.
-                                child.set_link_attribute(aid, link.clone()).unwrap();
-                            }
-                            _ => child.set_attribute_object(attr.clone()),
-                        }
+                        child.set_attribute(attr.clone());
                     }
                 }
 

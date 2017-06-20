@@ -139,6 +139,6 @@ pub mod utils {
     }
 
     pub fn get_ts(node: &Node) -> Transform {
-        *node.attribute_value(AId::Transform).unwrap().as_transform().unwrap()
+        *node.attributes().get_value(AId::Transform).unwrap().as_transform().unwrap()
     }
 }

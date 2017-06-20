@@ -62,7 +62,7 @@ pub fn fix_xmlns_attribute(doc: &Document, rm_unused: bool) {
         svg.remove_attribute(AId::XmlnsXlink);
     } else if has_links && !svg.has_attribute(AId::XmlnsXlink) {
         // Set if needed.
-        svg.set_attribute(AId::XmlnsXlink, "http://www.w3.org/1999/xlink");
+        svg.set_attribute((AId::XmlnsXlink, "http://www.w3.org/1999/xlink"));
     }
 }
 

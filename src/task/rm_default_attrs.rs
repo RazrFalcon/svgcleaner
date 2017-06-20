@@ -40,9 +40,10 @@ pub fn remove_default_attributes(doc: &Document) {
                 if attr.is_presentation() {
                     if attr.check_is_default() {
                         if let Some(n) = node.parents().find(|n| n.has_attribute(aid)) {
-                            let a = n.attribute(aid).unwrap();
-                            if !a.visible {
-                                rm_list.push(aid);
+                            if let Some(a) = n.attributes().get(aid) {
+                                if !a.visible {
+                                    rm_list.push(aid);
+                                }
                             }
                         } else {
                             rm_list.push(aid);

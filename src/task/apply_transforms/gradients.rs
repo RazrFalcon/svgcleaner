@@ -23,7 +23,7 @@
 use task::short::{EId, AId};
 use super::utils;
 
-use svgdom::{Document, ElementType};
+use svgdom::{Document, ElementType, AttributeValue};
 
 pub fn apply_transform_to_gradients(doc: &Document) {
     let iter = doc.descendants().svg()
@@ -44,19 +44,19 @@ pub fn apply_transform_to_gradients(doc: &Document) {
             }
         }
 
-        if node.has_attribute(AId::XlinkHref) {
-            // We can apply a transform to gradients which linked to other gradients
-            // only when linked gradient doesn't have a transform.
-            // After applying the transform - we will remove it, but if linked gradient
-            // has a transform - it will be inherited. So we will get double transform.
-            // Which will lead to an error.
-            let link = node.attribute_value(AId::XlinkHref).unwrap().as_link().unwrap().clone();
+        // We can apply a transform to gradients which linked to other gradients
+        // only when linked gradient doesn't have a transform.
+        // After applying the transform - we will remove it, but if linked gradient
+        // has a transform - it will be inherited. So we will get double transform.
+        // Which will lead to an error.
+        if let Some(&AttributeValue::Link(ref link)) = node.attributes().get_value(AId::XlinkHref) {
             if link.has_attribute(AId::GradientTransform) {
                 continue;
             }
         }
 
-        let ts = *node.attribute_value(AId::GradientTransform).unwrap().as_transform().unwrap();
+        let ts = *node.attributes().get_value(AId::GradientTransform).unwrap()
+                      .as_transform().unwrap();
 
         if !utils::is_valid_transform(&ts) {
             continue;

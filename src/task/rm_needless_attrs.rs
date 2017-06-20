@@ -139,17 +139,19 @@ fn is_basic_shapes_attr(a: &Attribute) -> bool {
 fn process_fill(node: &Node) {
     if !node.has_children() {
         // If 'fill' is disabled we can remove fill-based attributes.
-        if let Some(v) = node.attribute_value(AId::Fill) {
-            if v == AttributeValue::PredefValue(ValueId::None) {
+        let av = node.attributes().get_value(AId::Fill).cloned();
+        if let Some(av) = av {
+            if av == AttributeValue::PredefValue(ValueId::None) {
                 node.remove_attribute(AId::FillRule);
                 node.remove_attribute(AId::FillOpacity);
             }
         }
 
         // If 'fill' is invisible we can disable fill completely.
-        if let Some(v) = node.attribute_value(AId::FillOpacity) {
-            if v == AttributeValue::Number(0.0) {
-                node.set_attribute(AId::Fill, ValueId::None);
+        let av = node.attributes().get_value(AId::FillOpacity).cloned();
+        if let Some(av) = av {
+            if av == AttributeValue::Number(0.0) {
+                node.set_attribute((AId::Fill, ValueId::None));
                 node.remove_attribute(AId::FillRule);
                 node.remove_attribute(AId::FillOpacity);
             }
@@ -175,8 +177,8 @@ fn process_stroke(node: &Node) {
         }
 
         // The stroke will not be drawn if stoke-width is 0.
-        if let Some(v) = node.attribute_value(AId::StrokeWidth) {
-            if let AttributeValue::Length(l) = v {
+        if let Some(v) = node.attributes().get_value(AId::StrokeWidth) {
+            if let AttributeValue::Length(l) = *v {
                 if l.num == 0.0 {
                     return true;
                 }
@@ -184,8 +186,8 @@ fn process_stroke(node: &Node) {
         }
 
         // The stroke will not be drawn if stoke-opacity is 0.
-        if let Some(v) = node.attribute_value(AId::StrokeOpacity) {
-            if let AttributeValue::Number(num) = v {
+        if let Some(v) = node.attributes().get_value(AId::StrokeOpacity) {
+            if let AttributeValue::Number(num) = *v {
                 if num == 0.0 {
                     return true;
                 }
@@ -204,14 +206,15 @@ fn process_stroke(node: &Node) {
             // If the parent element defines stroke - we must mark current element
             // with 'none' stroke.
             if let Some(n) = node.parents().find(|n| n.has_attribute(AId::Stroke)) {
-                let value = n.attribute_value(AId::Stroke).unwrap();
+                let value = n.attributes().get_value(AId::Stroke).cloned().unwrap();
                 if value != AttributeValue::PredefValue(ValueId::None) {
-                    node.set_attribute(AId::Stroke, ValueId::None);
+                    node.set_attribute((AId::Stroke, ValueId::None));
                 }
             }
         } else {
-            if let Some(v) = node.attribute_value(AId::Stroke) {
-                if v == AttributeValue::PredefValue(ValueId::None) {
+            let av = node.attributes().get_value(AId::Stroke).cloned();
+            if let Some(av) = av {
+                if av == AttributeValue::PredefValue(ValueId::None) {
                     // Remove all stroke-based attributes, except 'stroke' itself,
                     // if the stroke is 'none'.
                     node.remove_attributes(STROKE_ATTRIBUTES);

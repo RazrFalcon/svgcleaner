@@ -83,7 +83,7 @@ fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
             if !link_attrs.is_empty() {
                 for &(ref ln, ref aid, ref n) in &link_attrs {
                     if *ln.id() != *n.id() {
-                        ln.set_link_attribute(*aid, n.clone()).unwrap();
+                        ln.set_attribute((*aid, n.clone()));
                     }
                 }
                 link_attrs.clear();

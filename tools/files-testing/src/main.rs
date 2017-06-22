@@ -101,7 +101,7 @@ fn main() {
         return;
     }
 
-    let svgcleaner_path = Path::new("../../target/release/svgcleaner");
+    let svgcleaner_path = Path::new("../../target/debug/svgcleaner");
     if !svgcleaner_path.exists() {
         println!("Error: {:?} not found.", svgcleaner_path);
         return;

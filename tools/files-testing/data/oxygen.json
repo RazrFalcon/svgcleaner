@@ -905,6 +905,10 @@
         {
             "info": "qtwebkit crashes",
             "name": "mimetypes/small/32x32/unknown.svg"
+        },
+        {
+            "info": "qtwebkit crashes",
+            "name": "mimetypes/small/48x48/unknown.svg"
         }
     ],
     "min_valid_ae": 400

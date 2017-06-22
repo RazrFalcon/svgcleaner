@@ -60,12 +60,20 @@ fn process_clip_path(node: &Node) {
             continue;
         }
 
-        // We can remove any fill and stroke based attrbiutes
+        // We can remove any fill and stroke based attributes
         // since they does not impact rendering.
         // https://www.w3.org/TR/SVG/masking.html#EstablishingANewClippingPath
-        child.attributes_mut().retain(|a| {
-            !(a.is_fill() || a.is_stroke() || a.has_id(AId::Opacity))
-        });
+
+        let mut ids = Vec::new();
+        for (id, attr) in child.attributes().iter_svg() {
+            if attr.is_fill() || attr.is_stroke() || attr.has_id(AId::Opacity) {
+                ids.push(id);
+            }
+        }
+
+        for id in &ids {
+            child.remove_attribute(*id);
+        }
     }
 }
 

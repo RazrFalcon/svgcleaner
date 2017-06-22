@@ -65,7 +65,9 @@ pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOpt
             attrs.insert(Attribute::new(AId::Style, AttributeValue::String(style_str)));
 
             for id in ids {
-                attrs.remove(id);
+                // Use "private" method, because we breaking linking on purpose.
+                // Default 'remove()' will panic here.
+                attrs.remove_impl(id);
             }
         }
     }

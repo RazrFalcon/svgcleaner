@@ -20,9 +20,12 @@
 **
 ****************************************************************************/
 
-use super::short::{EId, AId};
+use svgdom::{
+    AttributeValue,
+    Document,
+};
 
-use svgdom::Document;
+use task::short::{EId, AId};
 
 pub fn remove_unused_coordinates(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);
@@ -62,11 +65,9 @@ pub fn remove_unused_coordinates(doc: &Document) {
 
                     // Process only 'radialGradient' which is not linked
                     // to the other 'radialGradient'.
-                    if attrs.contains(AId::XlinkHref) {
-                        if let Some(v) = attrs.get_value(AId::XlinkHref) {
-                            if v.as_link().unwrap().is_tag_name(EId::RadialGradient) {
-                                continue;
-                            }
+                    if let Some(&AttributeValue::Link(ref link)) = attrs.get_value(AId::XlinkHref) {
+                        if link.is_tag_name(EId::RadialGradient) {
+                            continue;
                         }
                     }
 

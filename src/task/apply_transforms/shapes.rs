@@ -20,11 +20,15 @@
 **
 ****************************************************************************/
 
+use svgdom::{
+    Attributes,
+    Document,
+    Node,
+};
+use svgdom::types::Transform;
+
 use task::short::{EId, AId};
 use super::utils;
-
-use svgdom::{Document, Node, Attributes};
-use svgdom::types::Transform;
 
 pub fn apply_transform_to_shapes(doc: &Document) {
     // Apply transform to shapes.

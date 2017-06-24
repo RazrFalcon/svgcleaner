@@ -22,8 +22,12 @@
 
 // TODO: split to submodules and suboptions
 
-use svgdom::types::path::{Path, Segment, Command};
 use svgdom::types::FuzzyEq;
+use svgdom::types::path::{
+    Command,
+    Path,
+    Segment,
+};
 
 use super::utils;
 
@@ -218,8 +222,8 @@ fn is_line_based(seg: Command) -> bool
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{FromStream};
-    use svgdom::types::path::{Path};
+    use svgdom::FromStream;
+    use svgdom::types::path::Path;
     use task::paths::conv_segments;
 
     macro_rules! test {

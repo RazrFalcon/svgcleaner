@@ -20,8 +20,14 @@
 **
 ****************************************************************************/
 
-use svgdom::types::path::{Path, SegmentData};
-use svgdom::types::{Transform, FuzzyEq};
+use svgdom::types::{
+    Transform,
+    FuzzyEq,
+};
+use svgdom::types::path::{
+    Path,
+    SegmentData,
+};
 
 pub fn apply_transform(path: &mut Path, ts: &Transform) {
     let (sx, sy) = ts.get_scale();

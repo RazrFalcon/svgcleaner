@@ -20,23 +20,26 @@
 **
 ****************************************************************************/
 
+use svgdom::{
+    Document,
+    Node,
+};
+use svgdom::types::Transform;
+
 use task::short::{EId, AId};
 use super::utils;
-use options::Options;
-
-use svgdom::{Document, Node};
-use svgdom::types::Transform;
+use options::CleaningOptions;
 
 // If group has transform and contains only valid elements
 // we can apply the group's transform to children before applying transform to
 // actual elements.
-pub fn prepare_transforms(doc: &Document, options: &Options) {
+pub fn prepare_transforms(doc: &Document, opt: &CleaningOptions) {
     let mut valid_elems: Vec<EId> = Vec::with_capacity(6);
-    if options.apply_transform_to_shapes {
+    if opt.apply_transform_to_shapes {
         valid_elems.extend_from_slice(&[EId::Rect, EId::Circle, EId::Ellipse, EId::Line]);
     }
 
-    if options.paths_to_relative && options.apply_transform_to_paths {
+    if opt.paths_to_relative && opt.apply_transform_to_paths {
         valid_elems.push(EId::Path);
     }
 
@@ -94,7 +97,7 @@ fn apply_ts_to_children(node: &Node, ts: Transform) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use options::Options;
+    use options::CleaningOptions;
     use svgdom::{Document, WriteToString};
 
     macro_rules! test {
@@ -103,7 +106,7 @@ mod tests {
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
 
-                let mut options = Options::default();
+                let mut options = CleaningOptions::default();
                 options.apply_transform_to_shapes = true;
                 options.paths_to_relative = true;
                 options.apply_transform_to_paths = true;

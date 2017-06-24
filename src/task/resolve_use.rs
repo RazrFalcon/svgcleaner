@@ -20,10 +20,16 @@
 **
 ****************************************************************************/
 
-use super::short::{EId, AId, Unit};
+use svgdom::{
+    AttributeValue,
+    Document,
+};
+use svgdom::types::{
+    Length,
+    Transform,
+};
 
-use svgdom::{Document, AttributeValue};
-use svgdom::types::{Transform, Length};
+use task::short::{EId, AId, Unit};
 
 pub fn resolve_use(doc: &Document) {
     let mut nodes = Vec::new();
@@ -49,7 +55,7 @@ pub fn resolve_use(doc: &Document) {
                 }
 
                 // Element should be used only once.
-                if link.linked_nodes().count() != 1 {
+                if link.uses_count() != 1 {
                     continue;
                 }
 

@@ -20,9 +20,17 @@
 **
 ****************************************************************************/
 
-use super::short::{EId, AId};
+use svgdom::{
+    Attribute,
+    AttributeType,
+    AttributeValue,
+    Document,
+    ElementType,
+    Node,
+    ValueId,
+};
 
-use svgdom::{Document, Node, ElementType, Attribute, AttributeType, AttributeValue, ValueId};
+use task::short::{EId, AId};
 
 // TODO: split to suboptions
 

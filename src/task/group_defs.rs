@@ -20,9 +20,14 @@
 **
 ****************************************************************************/
 
-use super::short::EId;
+use svgdom::{
+    AttributeType,
+    Document,
+    ElementType,
+    Node,
+};
 
-use svgdom::{Document, Node, ElementType, AttributeType};
+use task::short::EId;
 
 pub fn group_defs(doc: &Document) {
     // doc must contain 'svg' node, so we can safely unwrap.

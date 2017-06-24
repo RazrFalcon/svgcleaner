@@ -20,10 +20,17 @@
 **
 ****************************************************************************/
 
-use super::short::{EId, AId};
-
-use svgdom::{Document, Node, ElementType, AttributeValue, ValueId};
+use svgdom::{
+    AttributeValue,
+    Document,
+    ElementType,
+    Node,
+    ValueId,
+};
 use svgdom::types::FuzzyEq;
+
+use task::short::{EId, AId};
+use task::utils;
 
 // TODO: process mask element
 // TODO: process visibility
@@ -62,9 +69,7 @@ fn process_clip_paths(doc: &Document, is_any_removed: &mut bool) {
             }
         }
 
-        while let Some(n) = nodes.pop() {
-            n.remove();
-        }
+        utils::remove_nodes(&mut nodes);
 
         if !node.has_children() {
             clip_paths.push(node.clone());
@@ -109,27 +114,18 @@ fn is_valid_clip_path_elem(node: &Node) -> bool {
 // Paths with empty 'd' attribute are invisible and we can remove them.
 fn process_paths(doc: &Document, is_any_removed: &mut bool) {
     fn is_invisible(node: &Node) -> bool {
-        if node.has_attribute(AId::D) {
-            let attrs = node.attributes();
-            match *attrs.get_value(AId::D).unwrap() {
-                AttributeValue::Path(ref d) => {
-                    if d.d.is_empty() {
-                        return true;
-                    }
-                }
-                // Invalid value type.
-                _ => return true,
-            }
+        if let Some(&AttributeValue::Path(ref d)) = node.attributes().get_value(AId::D) {
+            d.d.is_empty()
         } else {
-            // Not set.
-            return true;
+            // Not set or invalid value type.
+            true
         }
-
-        false
     }
 
     let c = doc.drain(|n| n.is_tag_name(EId::Path) && is_invisible(n));
-    if c != 0 { *is_any_removed = true; }
+    if c != 0 {
+        *is_any_removed = true;
+    }
 }
 
 // Remove elements with 'display:none'.
@@ -142,9 +138,7 @@ fn process_display_attribute(doc: &Document, is_any_removed: &mut bool) {
         *is_any_removed = true;
     }
 
-    for n in nodes {
-        n.remove();
-    }
+    utils::remove_nodes(&mut nodes);
 }
 
 fn _process_display_attribute(parent: &Node, nodes: &mut Vec<Node>, is_any_removed: &mut bool) {
@@ -194,7 +188,7 @@ fn process_fe_color_matrix(doc: &Document) {
             return false;
         }
 
-        let child = node.children().nth(0).unwrap();
+        let child = node.first_child().unwrap();
 
         if !child.is_tag_name(EId::FeColorMatrix) {
             return false;
@@ -224,7 +218,9 @@ fn process_fe_color_matrix(doc: &Document) {
 // 'use' element without 'xlink:href' attribute is pointless.
 fn process_use(doc: &Document, is_any_removed: &mut bool) {
     let c = doc.drain(|n| n.is_tag_name(EId::Use) && !n.has_attribute(AId::XlinkHref));
-    if c != 0 { *is_any_removed = true; }
+    if c != 0 {
+        *is_any_removed = true;
+    }
 }
 
 fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
@@ -257,12 +253,17 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
                       .filter(|n| n.children().count() == 1 && !n.has_attribute(AId::XlinkHref));
 
         for n in iter {
-            let stop = n.children().nth(0).unwrap();
-            // Unwrap is safe, because we already resolved all 'stop' attributes.
-            let color = *stop.attributes().get_value(AId::StopColor).unwrap()
-                             .as_color().unwrap();
-            let opacity = *stop.attributes().get_value(AId::StopOpacity).unwrap()
-                               .as_number().unwrap();
+            let stop = n.first_child().unwrap();
+
+            let color = match stop.attributes().get_value(AId::StopColor) {
+                Some(&AttributeValue::Color(c)) => c,
+                _ => unreachable!("attribute must be resolved"),
+            };
+
+            let opacity = match stop.attributes().get_value(AId::StopOpacity) {
+                Some(&AttributeValue::Number(n)) => n,
+                _ => unreachable!("attribute must be resolved"),
+            };
 
             // Replace links with colors, but not in gradients,
             // because it will lead to 'xlink:href=#ffffff', which is wrong.
@@ -288,9 +289,7 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
         *is_any_removed = true;
     }
 
-    for n in nodes {
-        n.remove();
-    }
+    utils::remove_nodes(&mut nodes);
 }
 
 fn find_link_attribute(node: &Node, link: &Node) -> Option<AId> {
@@ -298,7 +297,8 @@ fn find_link_attribute(node: &Node, link: &Node) -> Option<AId> {
 
     for (aid, attr) in attrs.iter_svg() {
         match attr.value {
-            AttributeValue::Link(ref n) | AttributeValue::FuncLink(ref n) => {
+              AttributeValue::Link(ref n)
+            | AttributeValue::FuncLink(ref n) => {
                 if *n == *link {
                     return Some(aid);
                 }
@@ -310,7 +310,7 @@ fn find_link_attribute(node: &Node, link: &Node) -> Option<AId> {
     None
 }
 
-// Remove rect's with zero size.
+// Remove rects with a zero size.
 fn process_rect(doc: &Document, is_any_removed: &mut bool) {
     fn is_invisible(node: &Node) -> bool {
         if !node.is_tag_name(EId::Rect) {
@@ -319,12 +319,25 @@ fn process_rect(doc: &Document, is_any_removed: &mut bool) {
 
         let attrs = node.attributes();
 
-           attrs.get_value(AId::Width).unwrap().as_length().unwrap().num == 0.0
-        || attrs.get_value(AId::Height).unwrap().as_length().unwrap().num == 0.0
+        if let Some(&AttributeValue::Length(len)) = attrs.get_value(AId::Width) {
+            if len.num.is_fuzzy_zero() {
+                return true;
+            }
+        }
+
+        if let Some(&AttributeValue::Length(len)) = attrs.get_value(AId::Height) {
+            if len.num.is_fuzzy_zero() {
+                return true;
+            }
+        }
+
+        false
     }
 
     let c = doc.drain(is_invisible);
-    if c != 0 { *is_any_removed = true; }
+    if c != 0 {
+        *is_any_removed = true;
+    }
 }
 
 #[cfg(test)]

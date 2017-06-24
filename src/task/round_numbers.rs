@@ -20,18 +20,20 @@
 **
 ****************************************************************************/
 
-use super::short::AId;
-
-use svgdom::{Document, AttributeValue};
+use svgdom::{
+    Document,
+    AttributeValue,
+};
 use svgdom::types::path;
 
-use options::Options;
+use task::short::AId;
+use options::CleaningOptions;
 
-pub fn round_numbers(doc: &Document, options: &Options) {
-    let coord_precision = options.coordinates_precision as usize;
-    let prop_precision = options.properties_precision as usize;
-    let paths_precision = options.paths_coordinates_precision as usize;
-    let ts_precision = options.transforms_precision as usize;
+pub fn round_numbers(doc: &Document, opt: &CleaningOptions) {
+    let coord_precision = opt.coordinates_precision as usize;
+    let prop_precision  = opt.properties_precision as usize;
+    let paths_precision = opt.paths_coordinates_precision as usize;
+    let ts_precision    = opt.transforms_precision as usize;
 
     for node in doc.descendants().svg() {
         let mut attrs = node.attributes_mut();

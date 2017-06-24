@@ -24,9 +24,17 @@ use std::fmt;
 use std::cmp;
 use std::ops::Range;
 
-use super::short::{EId, AId};
+use svgdom::{
+    Attribute,
+    AttributeType,
+    AttributeValue,
+    Document,
+    Indent,
+    Node,
+    WriteOptions,
+};
 
-use svgdom::{Document, Node, Attribute, AttributeValue, AttributeType, WriteOptions, Indent};
+use task::short::{EId, AId};
 
 // TODO: optimize, since Table is basically Vec<(Vec,Vec)>, which is not very efficient
 struct Table {
@@ -314,7 +322,7 @@ mod table_tests {
          fill=\"red\" |-****|\n\
          fill=\"red\" |-***-|");
 
-    // We care only about longest range, not about number of set flags.
+    // We care only about longest range, not about a number of set flags.
     test_all!(sort_2,
         ["*****-******", "**********--"],
         "fill=\"red\" |**********--|\n\
@@ -538,12 +546,12 @@ fn move_nodes(attributes: &[Attribute], g_node: &Node, node_list: &[Node], range
     // Set moved attributes to the 'g' element.
     for attr in attributes {
         if attr.id().unwrap() == AId::Transform && g_node.has_attribute(AId::Transform) {
-            let child_ts = attr.value.as_transform().unwrap();
-
-            let mut attrs = g_node.attributes_mut();
-            let av = attrs.get_value_mut(AId::Transform);
-            if let Some(&mut AttributeValue::Transform(ref mut ts)) = av {
-                ts.append(child_ts);
+            if let AttributeValue::Transform(ref child_ts) = attr.value {
+                let mut attrs = g_node.attributes_mut();
+                let av = attrs.get_value_mut(AId::Transform);
+                if let Some(&mut AttributeValue::Transform(ref mut ts)) = av {
+                    ts.append(child_ts);
+                }
             }
         } else {
             g_node.set_attribute(attr.clone());

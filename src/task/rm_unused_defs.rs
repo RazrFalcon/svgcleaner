@@ -20,9 +20,12 @@
 **
 ****************************************************************************/
 
-use super::short::EId;
+use svgdom::{
+    Document,
+    Node,
+};
 
-use svgdom::{Document, Node};
+use task::short::EId;
 
 pub fn remove_unused_defs(doc: &Document) {
     // Unwrap is safe, because 'defs' already had been created in 'group_defs'.

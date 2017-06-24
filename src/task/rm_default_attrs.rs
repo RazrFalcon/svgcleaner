@@ -20,10 +20,16 @@
 **
 ****************************************************************************/
 
-use super::short::{EId, AId, Unit};
-
-use svgdom::{Document, Attribute, AttributeType, AttributeValue, ValueId};
+use svgdom::{
+    Attribute,
+    AttributeType,
+    AttributeValue,
+    Document,
+    ValueId,
+};
 use svgdom::types::Length;
+
+use task::short::{EId, AId, Unit};
 
 // TODO: xml:space
 
@@ -33,50 +39,46 @@ pub fn remove_default_attributes(doc: &Document) {
     for node in doc.descendants().svg() {
         let tag_name = node.tag_id().unwrap();
 
-        {
-            let attrs = node.attributes();
-
-            for (aid, attr) in attrs.iter_svg() {
-                if attr.is_presentation() {
-                    if attr.check_is_default() {
-                        if let Some(n) = node.parents().find(|n| n.has_attribute(aid)) {
-                            if let Some(a) = n.attributes().get(aid) {
-                                if !a.visible {
-                                    rm_list.push(aid);
-                                }
+        for (aid, attr) in node.attributes().iter_svg() {
+            if attr.is_presentation() {
+                if attr.check_is_default() {
+                    if let Some(n) = node.parents().find(|n| n.has_attribute(aid)) {
+                        if let Some(a) = n.attributes().get(aid) {
+                            if !a.visible {
+                                rm_list.push(aid);
                             }
-                        } else {
-                            rm_list.push(aid);
                         }
-                    } else if aid == AId::Overflow {
-                        // The initial value for 'overflow' as defined in CSS2 is 'visible',
-                        // and this applies also to the root 'svg' element;
-                        // however, for child elements of an SVG document,
-                        // SVG's user agent style sheet overrides this initial value and sets the
-                        // 'overflow' property on elements that establish new viewports
-                        // (e.g., 'svg' elements), 'pattern' elements and 'marker' elements
-                        // to the value 'hidden'.
-                        //
-                        // https://www.w3.org/TR/SVG/masking.html#OverflowProperty
+                    } else {
+                        rm_list.push(aid);
+                    }
+                } else if aid == AId::Overflow {
+                    // The initial value for 'overflow' as defined in CSS2 is 'visible',
+                    // and this applies also to the root 'svg' element;
+                    // however, for child elements of an SVG document,
+                    // SVG's user agent style sheet overrides this initial value and sets the
+                    // 'overflow' property on elements that establish new viewports
+                    // (e.g., 'svg' elements), 'pattern' elements and 'marker' elements
+                    // to the value 'hidden'.
+                    //
+                    // https://www.w3.org/TR/SVG/masking.html#OverflowProperty
 
-                        if node == doc.svg_element().unwrap() {
-                            if let AttributeValue::PredefValue(id) = attr.value {
-                                if id == ValueId::Visible {
-                                    rm_list.push(aid);
-                                }
+                    if node == doc.svg_element().unwrap() {
+                        if let AttributeValue::PredefValue(id) = attr.value {
+                            if id == ValueId::Visible {
+                                rm_list.push(aid);
                             }
-                        } else {
-                            if let AttributeValue::PredefValue(id) = attr.value {
-                                if id == ValueId::Hidden {
-                                    rm_list.push(aid);
-                                }
+                        }
+                    } else {
+                        if let AttributeValue::PredefValue(id) = attr.value {
+                            if id == ValueId::Hidden {
+                                rm_list.push(aid);
                             }
                         }
                     }
-                } else if is_default(attr, tag_name) {
-                    // Check default values of an non-presentation attributes.
-                    rm_list.push(aid);
                 }
+            } else if is_default(attr, tag_name) {
+                // Check default values of an non-presentation attributes.
+                rm_list.push(aid);
             }
         }
 
@@ -105,6 +107,7 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
     // TODO: all attributes must be non-inheritable
     // TODO: theoretically, we can have any Unit. Investigate it.
     // TODO: use fuzzy_eq
+    // TODO: add custom eq method to AttributeValue to simplify cmp
 
     match attr.id().unwrap() {
         AId::X | AId::Y => {
@@ -191,33 +194,40 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
             }
         }
         AId::UnitsPerEm => {
-            if attr.value.as_string().unwrap() == "1000" {
-                return true;
+            if let AttributeValue::String(ref s) = attr.value {
+                if s == "1000" {
+                    return true;
+                }
             }
         }
         AId::Slope => {
             // There are two different 'slope': one for 'font-face'
             // and one for 'feFunc*'.
-            let v = attr.value.as_string().unwrap();
-            if tag_name == EId::FontFace && v == "0" {
-                return true;
-            } else if v == "1" {
-                return true;
+            if let AttributeValue::String(ref s) = attr.value {
+                if tag_name == EId::FontFace && s == "0" {
+                    return true;
+                } else if s == "1" {
+                    return true;
+                }
             }
         }
           AId::ClipPathUnits
         | AId::MaskContentUnits
         | AId::PatternContentUnits
         | AId::PrimitiveUnits => {
-            if *attr.value.as_predef_value().unwrap() == ValueId::UserSpaceOnUse {
-                return true;
+            if let AttributeValue::PredefValue(v) = attr.value {
+                if v == ValueId::UserSpaceOnUse {
+                    return true;
+                }
             }
         }
           AId::MaskUnits
         | AId::PatternUnits
         | AId::FilterUnits => {
-            if *attr.value.as_predef_value().unwrap() == ValueId::ObjectBoundingBox {
-                return true;
+            if let AttributeValue::PredefValue(v) = attr.value {
+                if v == ValueId::ObjectBoundingBox {
+                    return true;
+                }
             }
         }
         _ => {}

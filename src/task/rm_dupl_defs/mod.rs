@@ -20,6 +20,14 @@
 **
 ****************************************************************************/
 
+use svgdom::{
+    AttributeValue,
+    Node,
+};
+use svgdom::types::Transform;
+
+use task::short::AId;
+
 pub use self::linear_gradient::remove_dupl_linear_gradients;
 pub use self::radial_gradient::remove_dupl_radial_gradients;
 pub use self::fe_gaussian_blur::remove_dupl_fe_gaussian_blur;
@@ -27,10 +35,6 @@ pub use self::fe_gaussian_blur::remove_dupl_fe_gaussian_blur;
 mod linear_gradient;
 mod radial_gradient;
 mod fe_gaussian_blur;
-
-use task::short::AId;
-use svgdom::types::{Transform};
-use svgdom::{Node, AttributeValue};
 
 macro_rules! check_attr {
     ($attrs1:expr, $attrs2:expr, $id:expr, $def:expr) => ({
@@ -63,18 +67,16 @@ fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
 
             // Collect linked nodes.
             for ln in node2.linked_nodes() {
-                {
-                    let attrs = ln.attributes();
+                let attrs = ln.attributes();
 
-                    for attr in attrs.iter() {
-                        match attr.value {
-                            AttributeValue::Link(ref n) | AttributeValue::FuncLink(ref n) => {
-                                if *n == node2 {
-                                    link_attrs.push((ln.clone(), attr.id().unwrap(), node1.clone()));
-                                }
+                for attr in attrs.iter() {
+                    match attr.value {
+                        AttributeValue::Link(ref n) | AttributeValue::FuncLink(ref n) => {
+                            if *n == node2 {
+                                link_attrs.push((ln.clone(), attr.id().unwrap(), node1.clone()));
                             }
-                            _ => {}
                         }
+                        _ => {}
                     }
                 }
             }

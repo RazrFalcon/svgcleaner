@@ -20,10 +20,10 @@
 **
 ****************************************************************************/
 
-use super::short::EId;
-
 use svgdom::Document;
 use svgdom::postproc;
+
+use task::short::EId;
 
 pub fn fix_invalid_attributes(doc: &Document) {
     for node in doc.descendants().svg() {

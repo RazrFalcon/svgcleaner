@@ -20,9 +20,14 @@
 **
 ****************************************************************************/
 
-use super::short::{EId, AId, Unit};
+use svgdom::{
+    AttributeValue,
+    Document,
+    Node,
+    NodeType,
+};
 
-use svgdom::{Document, Node, NodeType, AttributeValue};
+use task::short::{EId, AId, Unit};
 
 // It's self defined list of the text attributes. There are no such list in the SVG spec.
 static TEXT_ATTRIBUTES: &'static [AId] = &[

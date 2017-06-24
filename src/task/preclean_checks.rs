@@ -20,10 +20,13 @@
 **
 ****************************************************************************/
 
-use super::short::{EId, AId};
+use svgdom::{
+    AttributeType,
+    AttributeValue,
+    Document,
+};
 
-use svgdom::{Document, AttributeValue, AttributeType};
-
+use task::short::{EId, AId};
 use error::Error;
 
 pub fn preclean_checks(doc: &Document) -> Result<(), Error> {
@@ -42,10 +45,10 @@ fn check_for_unsupported_elements(doc: &Document) -> Result<(), Error> {
                 return Err(Error::ScriptingIsNotSupported);
             }
               EId::Animate
-            | EId::Set
-            | EId::AnimateMotion
             | EId::AnimateColor
-            | EId::AnimateTransform => {
+            | EId::AnimateMotion
+            | EId::AnimateTransform
+            | EId::Set => {
                 return Err(Error::AnimationIsNotSupported);
             }
             _ => {}
@@ -57,9 +60,11 @@ fn check_for_unsupported_elements(doc: &Document) -> Result<(), Error> {
 
 fn check_for_script_attributes(doc: &Document) -> Result<(), Error> {
     for node in doc.descendants().svg() {
-        let attrs = node.attributes();
-        for attr in attrs.iter() {
-            if attr.is_graphical_event() || attr.is_document_event() || attr.is_animation_event() {
+        for attr in node.attributes().iter() {
+            if     attr.is_graphical_event()
+                || attr.is_document_event()
+                || attr.is_animation_event()
+            {
                 return Err(Error::ScriptingIsNotSupported);
             }
         }
@@ -74,9 +79,7 @@ fn check_for_conditional_attributes(doc: &Document) -> Result<(), Error> {
     macro_rules! check_attr {
         ($aid:expr, $node:expr) => (
             let attrs = $node.attributes();
-            if let Some(av) = attrs.get_value($aid) {
-                // libsvgdom doesn't parse this attributes, so they must have String type.
-                let s = av.as_string().unwrap();
+            if let Some(&AttributeValue::String(ref s)) = attrs.get_value($aid) {
                 if !s.is_empty() {
                     // NOTE: We are only care about non-empty attributes.
                     return Err(Error::ConditionalProcessingIsNotSupported);

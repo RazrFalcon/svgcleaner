@@ -21,13 +21,28 @@
 ****************************************************************************/
 
 use std::ops::Index;
-use std::io::{Write, stderr};
+use std::io::{
+    stderr,
+    Write,
+};
 
-use clap::{Arg, App, ArgMatches};
+use clap::{
+    Arg,
+    App,
+    ArgMatches,
+};
 
-use svgdom::{ParseOptions, WriteOptions, WriteOptionsPaths, Indent};
+use svgdom::{
+    ParseOptions,
+    WriteOptions,
+    WriteOptionsPaths,
+    Indent,
+};
 
-use options::{Options, StyleJoinMode};
+use {
+    CleaningOptions,
+    StyleJoinMode,
+};
 
 #[derive(Debug,Clone,Copy,PartialEq)]
 pub enum InputFrom<'a> {
@@ -469,11 +484,11 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     opt
 }
 
-pub fn gen_cleaning_options(args: &ArgMatches) -> Options {
+pub fn gen_cleaning_options(args: &ArgMatches) -> CleaningOptions {
     let flags = Flags::new(args);
 
     // All cleaning options are disabled by default.
-    let mut opt = Options::default();
+    let mut opt = CleaningOptions::default();
 
     flags.resolve(&mut opt.remove_unused_defs, Key::RemoveUnusedDefs);
     flags.resolve(&mut opt.convert_shapes, Key::ConvertShapes);

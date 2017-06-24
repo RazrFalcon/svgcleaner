@@ -20,9 +20,9 @@
 **
 ****************************************************************************/
 
-use super::short::EId;
-
 use svgdom::Document;
+
+use task::short::EId;
 
 // TODO: to mod::utils
 pub fn remove_element(doc: &Document, id: EId) {

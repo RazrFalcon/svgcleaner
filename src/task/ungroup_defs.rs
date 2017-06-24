@@ -20,9 +20,13 @@
 **
 ****************************************************************************/
 
-use task::short::EId;
+use svgdom::{
+    Document,
+    ElementType,
+    Node,
+};
 
-use svgdom::{Document, Node, ElementType};
+use task::short::EId;
 
 pub fn ungroup_defs(doc: &Document) {
     for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::Defs)) {

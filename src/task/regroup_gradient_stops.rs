@@ -20,10 +20,14 @@
 **
 ****************************************************************************/
 
-use task::short::{EId, AId};
+use svgdom::{
+    postproc,
+    Document,
+    ElementType,
+    Node,
+};
 
-use svgdom::{Document, ElementType, Node};
-use svgdom::postproc;
+use task::short::{EId, AId};
 
 pub fn regroup_gradient_stops(doc: &Document) {
     let mut nodes: Vec<Node> = doc.descendants().svg()
@@ -34,6 +38,8 @@ pub fn regroup_gradient_stops(doc: &Document) {
 
     let mut is_changed = false;
     let mut join_nodes = Vec::new();
+
+    // TODO: join with rm_dupl_defs::rm_loop
     let mut i1 = 0;
     while i1 < nodes.len() {
         let node1 = nodes[i1].clone();
@@ -59,7 +65,7 @@ pub fn regroup_gradient_stops(doc: &Document) {
             new_lg.set_id(new_id);
 
             while node1.has_children() {
-                let c = node1.children().nth(0).unwrap();
+                let c = node1.first_child().unwrap();
                 c.detach();
                 new_lg.append(&c);
             }
@@ -69,7 +75,7 @@ pub fn regroup_gradient_stops(doc: &Document) {
 
             for jn in &join_nodes {
                 while jn.has_children() {
-                    let c = jn.children().nth(0).unwrap();
+                    let c = jn.first_child().unwrap();
                     c.remove();
                 }
                 jn.set_attribute((AId::XlinkHref, new_lg.clone()));
@@ -96,6 +102,7 @@ fn gen_id(doc: &Document, prefix: &str) -> String {
         s.push_str(prefix);
         s.push_str(&n.to_string());
 
+        // TODO: very slow
         if !doc.descendants().svg().any(|n| *n.id() == s) {
             break;
         }

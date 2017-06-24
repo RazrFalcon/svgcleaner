@@ -28,7 +28,7 @@ pub enum StyleJoinMode {
 }
 
 // Documentation can be found in: docs/svgcleaner.rst
-pub struct Options {
+pub struct CleaningOptions {
     pub remove_unused_defs: bool,
     pub convert_shapes: bool,
     pub remove_title: bool,
@@ -75,9 +75,9 @@ pub struct Options {
 }
 
 // Should all be 'false'.
-impl Default for Options {
-    fn default() -> Options {
-        Options {
+impl Default for CleaningOptions {
+    fn default() -> CleaningOptions {
+        CleaningOptions {
             remove_unused_defs: false,
             convert_shapes: false,
             remove_title: false,

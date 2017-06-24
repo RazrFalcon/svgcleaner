@@ -20,11 +20,18 @@
 **
 ****************************************************************************/
 
-use super::short::{EId, AId, Unit};
+use svgdom::{
+    AttributeValue,
+    Document,
+    Node,
+};
+use svgdom::types::{
+    path,
+    FuzzyEq,
+    Length,
+};
 
-use svgdom::{Document, Node, AttributeValue};
-use svgdom::types::{Length, FuzzyEq};
-use svgdom::types::path;
+use task::short::{EId, AId, Unit};
 
 // TODO: convert thin rect to line-to path
 // view-calendar-list.svg
@@ -85,7 +92,7 @@ fn convert_rect(node: &Node) {
 
         // We converting only simple rects, not rounded,
         // because their path will be longer.
-        if rx.num.fuzzy_ne(&0.0) || ry.num.fuzzy_ne(&0.0) {
+        if !rx.num.is_fuzzy_zero() || !ry.num.is_fuzzy_zero() {
             return;
         }
 
@@ -93,7 +100,7 @@ fn convert_rect(node: &Node) {
         let h = get_value!(attrs, Length, AId::Height, Length::zero());
 
         // If values equals to zero than the rect is invisible. Skip it.
-        if w.num.fuzzy_eq(&0.0) || h.num.fuzzy_eq(&0.0) {
+        if w.num.is_fuzzy_zero() || h.num.is_fuzzy_zero() {
             return;
         }
 

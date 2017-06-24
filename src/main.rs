@@ -24,9 +24,18 @@ extern crate svgcleaner;
 
 use std::fs;
 use std::path::Path;
-use std::io::{Write, stderr};
+use std::io::{
+    stderr,
+    Write,
+};
 
-use svgcleaner::cli::{self, InputFrom, OutputTo, Key, KEYS};
+use svgcleaner::cli::{
+    self,
+    InputFrom,
+    OutputTo,
+    Key,
+    KEYS,
+};
 use svgcleaner::cleaner;
 
 macro_rules! try_msg {

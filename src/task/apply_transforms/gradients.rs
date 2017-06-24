@@ -20,10 +20,14 @@
 **
 ****************************************************************************/
 
+use svgdom::{
+    AttributeValue,
+    Document,
+    ElementType,
+};
+
 use task::short::{EId, AId};
 use super::utils;
-
-use svgdom::{Document, ElementType, AttributeValue};
 
 pub fn apply_transform_to_gradients(doc: &Document) {
     let iter = doc.descendants().svg()
@@ -55,8 +59,10 @@ pub fn apply_transform_to_gradients(doc: &Document) {
             }
         }
 
-        let ts = *node.attributes().get_value(AId::GradientTransform).unwrap()
-                      .as_transform().unwrap();
+        let ts = match node.attributes().get_value(AId::GradientTransform).cloned() {
+            Some(AttributeValue::Transform(ts)) => ts,
+            _ => unreachable!("attribute must be resolved"),
+        };
 
         if !utils::is_valid_transform(&ts) {
             continue;

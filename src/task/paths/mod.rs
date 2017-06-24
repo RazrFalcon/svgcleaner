@@ -20,19 +20,22 @@
 **
 ****************************************************************************/
 
-use svgdom::{Document, AttributeValue};
-use svgdom::types::path::Path;
+use svgdom::{
+    AttributeValue,
+    Document,
+};
 use svgdom::types::Transform;
+use svgdom::types::path::Path;
 
 use task::short::{EId, AId};
 use task::apply_transforms::utils as ts_utils;
-use options::Options;
+use options::CleaningOptions;
 
 mod apply_transform;
 mod conv_segments;
 mod rm_unused;
 
-pub fn process_paths(doc: &Document, options: &Options) {
+pub fn process_paths(doc: &Document, opt: &CleaningOptions) {
     for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::Path)) {
         // We can't process paths with marker, because if we remove all segments
         // it will break rendering.
@@ -42,7 +45,7 @@ pub fn process_paths(doc: &Document, options: &Options) {
                                                AId::MarkerMid, AId::MarkerEnd]);
 
         let mut ts = None;
-        if options.apply_transform_to_paths {
+        if opt.apply_transform_to_paths {
             if node.has_attribute(AId::Transform) {
                 let tsl = ts_utils::get_ts(&node);
 
@@ -65,12 +68,12 @@ pub fn process_paths(doc: &Document, options: &Options) {
 
         let mut attrs = node.attributes_mut();
         if let Some(&mut AttributeValue::Path(ref mut path)) = attrs.get_value_mut(AId::D) {
-            process_path(path, has_marker, ts, options);
+            process_path(path, has_marker, ts, opt);
         }
     }
 }
 
-fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, options: &Options) {
+fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, opt: &CleaningOptions) {
     if path.d.is_empty() {
         return;
     }
@@ -79,11 +82,11 @@ fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, option
 
     conv_segments::convert_hv_to_l(path);
 
-    if options.convert_segments {
+    if opt.convert_segments {
         conv_segments::convert_segments(path);
     }
 
-    if options.remove_unused_segments && !has_marker {
+    if opt.remove_unused_segments && !has_marker {
         rm_unused::remove_unused_segments(path);
 
         if path.d.is_empty() {
@@ -140,7 +143,7 @@ mod utils {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use options::Options;
+    use options::CleaningOptions;
     use svgdom::{Document, WriteToString};
 
     macro_rules! test {
@@ -149,7 +152,7 @@ mod tests {
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
 
-                let mut opt = Options::default();
+                let mut opt = CleaningOptions::default();
                 opt.paths_to_relative = true;
                 opt.remove_unused_segments = true;
                 opt.convert_segments = true;

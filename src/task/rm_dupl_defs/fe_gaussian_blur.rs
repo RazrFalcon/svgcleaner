@@ -20,9 +20,12 @@
 **
 ****************************************************************************/
 
-use task::short::{EId, AId};
+use svgdom::{
+    Document,
+    Node,
+};
 
-use svgdom::{Document, Node};
+use task::short::{EId, AId};
 
 pub fn remove_dupl_fe_gaussian_blur(doc: &Document) {
     let filter_attrs = [

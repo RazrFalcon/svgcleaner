@@ -21,12 +21,22 @@
 ****************************************************************************/
 
 use std::fs;
-use std::io::{self, Read, Write};
+use std::io::{
+    self,
+    Read,
+    Write,
+};
 
-use svgdom;
-use svgdom::{Document, ParseOptions, WriteOptions, WriteBuffer, ElementId};
+use svgdom::{
+    self,
+    Document,
+    ElementId,
+    ParseOptions,
+    WriteBuffer,
+    WriteOptions,
+};
 
-use options::Options;
+use options::CleaningOptions;
 use task::*;
 use error;
 
@@ -54,7 +64,7 @@ pub fn parse_data(data: &str, opt: &ParseOptions) -> Result<Document, svgdom::Er
     Document::from_str_with_opt(data, opt)
 }
 
-pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
+pub fn clean_doc(doc: &Document, options: &CleaningOptions, opt: &WriteOptions)
                  -> Result<(), error::Error> {
     preclean_checks(doc)?;
 
@@ -143,7 +153,7 @@ pub fn clean_doc(doc: &Document, options: &Options, opt: &WriteOptions)
         convert_shapes_to_paths(doc);
     }
 
-    // NOTE: run before 'remove_invisible_elements', because this method can remove all
+    // NOTE: Run before 'remove_invisible_elements', because this method can remove all
     //       segments from the path which makes it invisible.
     if options.paths_to_relative {
         // We only process path's segments if 'PathsToRelative' is enabled.

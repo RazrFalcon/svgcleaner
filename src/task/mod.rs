@@ -42,19 +42,21 @@ pub use self::resolve_use::resolve_use;
 pub use self::rm_elems::remove_element;
 pub use self::rm_gradient_attrs::remove_gradient_attributes;
 pub use self::rm_invalid_stops::remove_invalid_stops;
-pub use self::rm_invisible_elements::remove_invisible_elements;
+pub use self::rm_invisible_elems::remove_invisible_elements;
 pub use self::rm_needless_attrs::remove_needless_attributes;
 pub use self::rm_text_attrs::remove_text_attributes;
 pub use self::rm_unref_ids::remove_unreferenced_ids;
 pub use self::rm_unused_coords::remove_unused_coordinates;
 pub use self::rm_unused_defs::remove_unused_defs;
 pub use self::rm_version::remove_version;
+pub use self::round_numbers::round_numbers;
 pub use self::trim_ids::trim_ids;
 pub use self::ungroup_defs::ungroup_defs;
 pub use self::ungroup_groups::ungroup_groups;
-pub use self::round_numbers::round_numbers;
 
-#[macro_use] mod macros;
+#[macro_use]
+mod macros;
+
 mod conv_shapes;
 mod final_fixes;
 mod fix_attrs;
@@ -70,24 +72,25 @@ mod rm_dupl_defs;
 mod rm_elems;
 mod rm_gradient_attrs;
 mod rm_invalid_stops;
-mod rm_invisible_elements;
+mod rm_invisible_elems;
 mod rm_needless_attrs;
 mod rm_text_attrs;
 mod rm_unref_ids;
 mod rm_unused_coords;
 mod rm_unused_defs;
 mod rm_version;
+mod round_numbers;
 mod trim_ids;
 mod ungroup_defs;
 mod ungroup_groups;
-mod round_numbers;
+
 pub mod apply_transforms;
 pub mod paths;
 pub mod utils;
 
 // Shorthand names for modules.
 mod short {
-    pub use svgdom::types::LengthUnit as Unit;
     pub use svgdom::ElementId as EId;
     pub use svgdom::AttributeId as AId;
+    pub use svgdom::types::LengthUnit as Unit;
 }

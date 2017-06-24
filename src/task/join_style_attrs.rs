@@ -20,14 +20,18 @@
 **
 ****************************************************************************/
 
-use super::short::AId;
+use svgdom::{
+    AttributeType,
+    Document,
+    WriteBuffer,
+    WriteOptions,
+};
 
-use svgdom::{Document, Attribute, AttributeType, AttributeValue, WriteOptions, WriteBuffer};
-
+use task::short::AId;
 use options::StyleJoinMode;
 
 pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOptions) {
-    // NOTE: must be run at last, since it breaks linking.
+    // NOTE: Must be run at last, since it breaks linking.
 
     if mode == StyleJoinMode::None {
         return;
@@ -62,7 +66,7 @@ pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOpt
 
             // Unwrap can't fail.
             let style_str = String::from_utf8(style).unwrap();
-            attrs.insert(Attribute::new(AId::Style, AttributeValue::String(style_str)));
+            attrs.insert_from(AId::Style, style_str);
 
             for id in ids {
                 // Use "private" method, because we breaking linking on purpose.
@@ -77,7 +81,7 @@ pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOpt
 mod tests {
     use super::*;
     use task::short::AId;
-    use svgdom::{Document, WriteOptions};
+    use svgdom::{Document, WriteOptions, AttributeValue};
     use options::StyleJoinMode;
 
     #[test]
@@ -95,8 +99,14 @@ mod tests {
 
         // We have 6 style attributes so they should be joined.
         join_style_attributes(&doc, StyleJoinMode::Some, &wopt);
+
+        let res = match svg_node.attributes().get_value(AId::Style).cloned() {
+            Some(AttributeValue::String(s)) => s,
+            _ => unreachable!(),
+        };
+
         assert_eq_text!(
-            svg_node.attributes().get(AId::Style).unwrap().value.as_string().unwrap(),
+            res,
             "fill:#000000;stroke:#ff0000;stroke-width:1;opacity:1;fill-opacity:1;stroke-opacity:1"
         );
     }
@@ -116,8 +126,14 @@ mod tests {
 
         // Join anyway.
         join_style_attributes(&doc, StyleJoinMode::All, &wopt);
+
+        let res = match svg_node.attributes().get_value(AId::Style).cloned() {
+            Some(AttributeValue::String(s)) => s,
+            _ => unreachable!(),
+        };
+
         assert_eq_text!(
-            svg_node.attributes().get(AId::Style).unwrap().value.as_string().unwrap(),
+            res,
             "fill:#000000;stroke:#ff0000"
         );
     }

@@ -20,14 +20,20 @@
 **
 ****************************************************************************/
 
+#![deny(unused_import_braces)]
+
 #[cfg(feature = "cli-parsing")]
-#[macro_use] extern crate clap;
+#[macro_use]
+extern crate clap;
 
 extern crate svgdom;
 
-pub use svgdom::{ParseOptions, WriteOptions};
+pub use svgdom::{
+    ParseOptions,
+    WriteOptions
+};
 
-pub use options::Options as CleaningOptions;
+pub use options::*;
 pub use error::Error;
 
 #[cfg(feature = "cli-parsing")]

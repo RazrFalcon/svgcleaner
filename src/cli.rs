@@ -422,7 +422,7 @@ pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
     flags.resolve_inv(&mut opt.parse_declarations, Key::RemoveDeclarations);
     flags.resolve_inv(&mut opt.parse_unknown_elements, Key::RemoveNonsvgElements);
     flags.resolve_inv(&mut opt.parse_unknown_attributes, Key::RemoveNonsvgAttributes);
-    flags.resolve(&mut opt.skip_unresolved_classes, Key::RemoveNonsvgAttributes);
+    flags.resolve(&mut opt.skip_unresolved_classes, Key::RemoveUnresolvedClasses);
 
     opt
 }

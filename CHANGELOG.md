@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- `--remove-unresolved-classes` option had no effect.
 
 ## [0.9.1] - 2017-06-18
 ### Fixed

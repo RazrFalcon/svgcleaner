@@ -83,7 +83,7 @@ Output:
     --simplify-transforms <FLAG>            Simplify transform matrices [default: yes]
     --coordinates-precision <NUM>           Set coordinates numeric precision (1..12) [default: 6]
     --properties-precision <NUM>            Set properties numeric precision (1..12) [default: 6]
-    --transforms-precision <NUM>             Set transform values numeric precision (1..12) [default: 8]
+    --transforms-precision <NUM>            Set transform values numeric precision (1..12) [default: 8]
     --paths-coordinates-precision <NUM>     Set path's coordinates numeric precision (1..12) [default: 8]
     --indent <INDENT>                       Set XML nodes indent [values: none, 0, 1, 2, 3, 4, tabs] [default: none]
 

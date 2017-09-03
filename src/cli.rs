@@ -442,6 +442,7 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     // Initial options should be opposite to default ones.
     let mut opt = WriteOptions {
         indent: Indent::Spaces(4),
+        attributes_indent: Indent::None,
         use_single_quote: false,
         trim_hex_colors: false,
         write_hidden_attributes: false,

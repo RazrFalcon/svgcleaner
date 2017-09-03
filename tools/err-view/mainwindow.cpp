@@ -60,14 +60,33 @@ void MainWindow::on_actionMarkAsValid_triggered()
     auto map = doc.object().toVariantMap();
     auto cae_arr = map.value("custom_ae").toList();
 
-    QVariantMap newItem;
-    newItem.insert("name", m_svgName);
-    newItem.insert("valid_ae", m_validAE.toUInt());
-    if (!ui->lineComment->text().isEmpty()) {
-        newItem.insert("info", ui->lineComment->text());
+    bool exist = false;
+    for (int i = 0; i < cae_arr.size(); ++i) {
+        QVariantMap map = cae_arr.at(i).toMap();
+        if (map["name"] == m_svgName) {
+            map.insert("valid_ae", m_validAE.toUInt());
+
+            if (!ui->lineComment->text().isEmpty()) {
+                map.insert("info", ui->lineComment->text());
+            }
+
+            cae_arr.replace(i, map);
+            exist = true;
+
+            break;
+        }
     }
 
-    cae_arr.append(newItem);
+    if (!exist) {
+        QVariantMap newItem;
+        newItem.insert("name", m_svgName);
+        newItem.insert("valid_ae", m_validAE.toUInt());
+        if (!ui->lineComment->text().isEmpty()) {
+            newItem.insert("info", ui->lineComment->text());
+        }
+
+        cae_arr.append(newItem);
+    }
 
     map.insert("custom_ae", cae_arr);
 

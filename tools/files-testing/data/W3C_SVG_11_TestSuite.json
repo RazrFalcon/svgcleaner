@@ -170,6 +170,14 @@
             "info": "QtWebKit and Chromium doesn't support 'marker' property.",
             "name": "painting-marker-05-f.svg",
             "valid_ae": 6823
+        },
+        {
+            "name": "coords-trans-07-t.svg",
+            "valid_ae": 280
+        },
+        {
+            "name": "fonts-elem-02-t.svg",
+            "valid_ae": 410
         }
     ],
     "ignore": [

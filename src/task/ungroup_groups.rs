@@ -27,108 +27,109 @@ use task::apply_transforms;
 use options::CleaningOptions;
 
 pub fn ungroup_groups(doc: &Document, opt: &CleaningOptions) {
-    let mut groups = Vec::with_capacity(16);
-
     // doc must contain 'svg' node, so we can safely unwrap.
     let svg = doc.svg_element().unwrap();
-    loop {
+    apply_transforms::prepare_transforms(doc, opt);
+
+    while _ungroup_groups(&svg) {
         apply_transforms::prepare_transforms(doc, opt);
-
-        _ungroup_groups(&svg, &mut groups, opt);
-
-        if groups.is_empty() {
-            break;
-        }
-
-        while let Some(g) = groups.pop() {
-            ungroup_group(&g);
-            g.remove();
-        }
     }
 }
 
-// Fill 'groups' vec with 'g' elements that should be removed.
-// This method is recursive.
-fn _ungroup_groups(parent: &Node, groups: &mut Vec<Node>, opt: &CleaningOptions) {
+// Returns `true` when valid `g` occurred.
+//
+// If such `g` found - ungroup it and start again from the root `svg` element.
+fn _ungroup_groups(parent: &Node) -> bool {
+    for node in parent.children() {
+        if node.is_tag_name(EId::G) {
+            if can_ungroup(parent, &node) {
+                ungroup_group(&node);
+                node.remove();
+
+                return true;
+            }
+        }
+
+        if node.has_children() {
+            if _ungroup_groups(&node) {
+                return true;
+            }
+        }
+    }
+
+    false
+}
+
+fn can_ungroup(parent: &Node, g: &Node) -> bool {
     // We can't ungroup groups if they have one of the listed attribute.
     // Checkout 'painting-marker-02-f.svg' in 'W3C_SVG_11_TestSuite' for details.
     let invalid_attrs = [AId::Mask, AId::ClipPath, AId::Filter];
 
     // TODO: we should not ungroup groups with non-inheritable attributes.
 
-    for node in parent.children() {
-        if node.is_tag_name(EId::G) {
-            if !node.has_children() && !node.has_attribute(AId::Filter) {
-                // Empty group without filter attribute.
-                // Checkout 'filters-tile-01-b.svg' in 'W3C_SVG_11_TestSuite' for details.
-                groups.push(node.clone());
-                continue;
-            }
+    if !g.has_children() && !g.has_attribute(AId::Filter) {
+        // Empty group without filter attribute.
+        // Checkout 'filters-tile-01-b.svg' in 'W3C_SVG_11_TestSuite' for details.
+        return true;
+    }
 
-            // Group shouldn't be used.
-            if node.is_used() {
-                continue;
-            }
+    // Group shouldn't be used.
+    if g.is_used() {
+        return false;
+    }
 
-            // Group shouldn't contain some attributes.
-            if node.has_attributes(&invalid_attrs) {
-                continue;
-            }
+    // Group shouldn't contain some attributes.
+    if g.has_attributes(&invalid_attrs) {
+        return false;
+    }
 
-            // The 'clipPath' doesn't support 'g' elements, but some editors still insert them.
-            // Correct render application will skip a 'g' element and all it's children,
-            // so if we ungroup this group we will actually enable clipping.
-            // Which will lead to broken image.
-            // TODO: remove such groups completely
-            if parent.is_tag_name(EId::ClipPath) {
-                continue;
-            }
+    // The 'clipPath' doesn't support 'g' elements, but some editors still insert them.
+    // Correct render application will skip a 'g' element and all it's children,
+    // so if we ungroup this group we will actually enable clipping.
+    // Which will lead to broken image.
+    // TODO: remove such groups completely
+    if parent.is_tag_name(EId::ClipPath) {
+        return false;
+    }
 
-            if node.children().count() == 1 {
-                let child = node.first_child().unwrap();
-                // TODO: why child shouldn't be used?
-                if !child.is_used() {
-                    // Group with only one child and neither group or child is used.
-                    groups.push(node.clone());
-                    continue;
-                }
-            }
-
-            // Process group with many children.
-
-            // Do not ungroup group which have 'switch' element as direct parent,
-            // because it will break a 'switch'.
-            if parent.is_tag_name(EId::Switch) {
-                continue;
-            }
-
-            if node.attributes().is_empty() {
-                // Group without any attributes.
-                groups.push(node.clone());
-                continue;
-            }
-
-            // If group has only a transform attribute
-            // and if all children elements contain transform
-            // and none of the children is 'use'.
-            //
-            // example: oxygen/edit-find-mail.svg
-            if node.has_attribute(AId::Transform) && node.attributes().len() == 1 {
-                let is_ok = node.children().all(|n| {
-                    n.has_attribute(AId::Transform) && !n.is_tag_name(EId::Use)
-                });
-
-                if is_ok {
-                    groups.push(node.clone());
-                    continue;
-                }
-            }
-        }
-
-        if node.has_children() {
-            _ungroup_groups(&node, groups, opt);
+    if g.children().count() == 1 {
+        let child = g.first_child().unwrap();
+        // TODO: why child shouldn't be used?
+        if !child.is_used() {
+            // Group with only one child and neither group or child is used.
+            return true;
         }
     }
+
+    // Process group with many children.
+
+    // Do not ungroup group which have 'switch' element as direct parent,
+    // because it will break a 'switch'.
+    if parent.is_tag_name(EId::Switch) {
+        return false;
+    }
+
+    if g.attributes().is_empty() {
+        // Group without any attributes.
+        return true;
+    }
+
+    // If group has only a transform attribute
+    // and if all children elements contain transform
+    // and none of the children is 'use'.
+    //
+    // example: oxygen/edit-find-mail.svg
+    if g.has_attribute(AId::Transform) && g.attributes().len() == 1 {
+        let is_ok = g.children().all(|n| {
+            n.has_attribute(AId::Transform) && !n.is_tag_name(EId::Use)
+        });
+
+        if is_ok {
+            return true;
+        }
+    }
+
+    false
 }
 
 fn ungroup_group(g: &Node) {
@@ -173,18 +174,12 @@ fn ungroup_group(g: &Node) {
             if aid == AId::Display {
                 // Display attribute has a priority during rendering, so we must
                 // copy it even if a child has it already.
-                child.set_attribute((aid, attr.value.clone()));
+                child.set_attribute(attr.clone());
                 continue;
             }
 
             if !child.has_attribute(aid) {
-                match attr.value {
-                    AttributeValue::Link(ref iri) | AttributeValue::FuncLink(ref iri) => {
-                        // If it's fail - it's already a huge problem, so unwrap is harmless.
-                        child.set_attribute((aid, iri.clone()));
-                    }
-                    _ => child.set_attribute((aid, attr.value.clone())),
-                }
+                child.set_attribute(attr.clone());
             }
         }
     }
@@ -324,6 +319,28 @@ mod tests {
 </svg>
 ");
 
+    test!(ungroup_6,
+"<svg>
+    <switch>
+        <foreignObject/>
+        <g>
+            <g>
+                <g>
+                    <rect/>
+                </g>
+                <g/>
+            </g>
+        </g>
+    </switch>
+</svg>",
+"<svg>
+    <switch>
+        <foreignObject/>
+        <rect/>
+    </switch>
+</svg>
+");
+
     // TODO: implement
 //     test!(ungroup_5,
 // "<svg>
@@ -413,6 +430,15 @@ mod tests {
     <g transform='translate(10 20)'>
         <rect transform='translate(10 20)'/>
         <use transform='translate(10 20)'/>
+    </g>
+</svg>
+");
+
+    test_eq!(skip_ungroup_8,
+"<svg>
+    <g opacity='0.5'>
+        <rect/>
+        <rect/>
     </g>
 </svg>
 ");

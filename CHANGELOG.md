@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - `transform` grouping in `--group-by-style`.
+- Groups ungrouping inside a `switch` element.
 
 ## [0.9.0] - 2017-06-05
 ### Added

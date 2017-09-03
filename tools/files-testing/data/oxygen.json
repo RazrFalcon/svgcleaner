@@ -98,23 +98,23 @@
         },
         {
             "name": "mimetypes/hidef/text-x-po.svg",
-            "valid_ae": 414
+            "valid_ae": 520
         },
         {
             "name": "mimetypes/small/22x22/text-x-po.svg",
-            "valid_ae": 689
+            "valid_ae": 838
         },
         {
             "name": "mimetypes/small/64x64/text-x-po.svg",
-            "valid_ae": 535
+            "valid_ae": 1282
         },
         {
             "name": "mimetypes/small/32x32/text-x-po.svg",
-            "valid_ae": 611
+            "valid_ae": 937
         },
         {
             "name": "mimetypes/small/48x48/text-x-po.svg",
-            "valid_ae": 588
+            "valid_ae": 863
         },
         {
             "name": "status/user-away.svg",
@@ -182,7 +182,7 @@
         },
         {
             "name": "actions/small/22x22/view-ldap-resource.svg",
-            "valid_ae": 474
+            "valid_ae": 509
         },
         {
             "name": "actions/small/22x22/window-duplicate.svg",
@@ -210,7 +210,7 @@
         },
         {
             "name": "actions/small/48x48/edit-image-face-add.svg",
-            "valid_ae": 434
+            "valid_ae": 437
         },
         {
             "name": "actions/small/48x48/text-field.svg",
@@ -242,7 +242,7 @@
         },
         {
             "name": "devices/small/16x16/network-wireless.svg",
-            "valid_ae": 5258
+            "valid_ae": 7727
         },
         {
             "name": "devices/small/16x16/video-display.svg",
@@ -326,11 +326,11 @@
         },
         {
             "name": "actions/small/32x32/help-donate.svg",
-            "valid_ae": 1683
+            "valid_ae": 1782
         },
         {
             "name": "actions/small/48x48/help-donate.svg",
-            "valid_ae": 1799
+            "valid_ae": 1872
         },
         {
             "info": "Only in QtWebKit, because of apply-gradient-transform.",
@@ -379,7 +379,7 @@
         },
         {
             "name": "devices/small/32x32/computer-laptop.svg",
-            "valid_ae": 1051
+            "valid_ae": 1058
         },
         {
             "name": "devices/computer-laptop.svg",
@@ -524,7 +524,7 @@
         },
         {
             "name": "categories/small/22x22/preferences-desktop-personal.svg",
-            "valid_ae": 570
+            "valid_ae": 653
         },
         {
             "name": "actions/small/22x22/edit-image-face-recognize.svg",
@@ -673,27 +673,27 @@
         {
             "info": "webkit bug",
             "name": "actions/small/16x16/tools-rip-audio-cd.svg",
-            "valid_ae": 1039
+            "valid_ae": 1060
         },
         {
             "info": "webkit bug",
             "name": "actions/small/16x16/tools-rip-video-cd.svg",
-            "valid_ae": 1039
+            "valid_ae": 1060
         },
         {
             "info": "webkit bug",
             "name": "actions/small/16x16/tools-media-optical-burn.svg",
-            "valid_ae": 1930
+            "valid_ae": 2088
         },
         {
             "info": "webkit bug",
             "name": "actions/small/16x16/tools-media-optical-copy.svg",
-            "valid_ae": 1030
+            "valid_ae": 1047
         },
         {
             "info": "webkit bug",
             "name": "actions/small/16x16/tools-rip-video-dvd.svg",
-            "valid_ae": 1039
+            "valid_ae": 1060
         },
         {
             "name": "actions/small/22x22/edit-image-face-add.svg",
@@ -702,17 +702,17 @@
         {
             "info": "webkit bug",
             "name": "actions/small/22x22/tools-media-optical-copy.svg",
-            "valid_ae": 1228
+            "valid_ae": 1272
         },
         {
             "info": "webkit bug",
             "name": "actions/small/32x32/tools-media-optical-burn.svg",
-            "valid_ae": 1312
+            "valid_ae": 1439
         },
         {
             "info": "webkit bug",
             "name": "actions/small/32x32/tools-media-optical-burn2.svg",
-            "valid_ae": 1312
+            "valid_ae": 1439
         },
         {
             "name": "actions/small/48x48/mail-encrypted-full.svg",
@@ -733,16 +733,16 @@
         {
             "info": "webkit bug",
             "name": "actions/small/48x48/tools-media-optical-burn.svg",
-            "valid_ae": 1305
+            "valid_ae": 1439
         },
         {
             "name": "actions/small/48x48/tools-media-optical-copy.svg",
-            "valid_ae": 1134
+            "valid_ae": 1175
         },
         {
             "info": "webkit bug",
             "name": "actions/tools-media-optical-burn.svg",
-            "valid_ae": 1296
+            "valid_ae": 1438
         },
         {
             "name": "devices/media-optical-mixed-cd.svg",
@@ -750,43 +750,43 @@
         },
         {
             "name": "devices/small/16x16/media-optical-recordable.svg",
-            "valid_ae": 1078
+            "valid_ae": 1165
         },
         {
             "name": "devices/small/16x16/media-optical-mixed-cd.svg",
-            "valid_ae": 1039
+            "valid_ae": 1060
         },
         {
             "name": "devices/small/16x16/media-optical-dvd.svg",
-            "valid_ae": 743
+            "valid_ae": 787
         },
         {
             "name": "devices/small/16x16/media-optical-video.svg",
-            "valid_ae": 1039
+            "valid_ae": 1060
         },
         {
             "name": "devices/small/16x16/media-optical-data.svg",
-            "valid_ae": 1039
+            "valid_ae": 1060
         },
         {
             "name": "devices/small/16x16/media-optical.svg",
-            "valid_ae": 1039
+            "valid_ae": 1060
         },
         {
             "name": "devices/small/22x22/media-optical-mixed-cd.svg",
-            "valid_ae": 991
+            "valid_ae": 1017
         },
         {
             "name": "devices/small/22x22/media-optical-dvd.svg",
-            "valid_ae": 1039
+            "valid_ae": 1060
         },
         {
             "name": "devices/small/22x22/media-optical-video.svg",
-            "valid_ae": 1039
+            "valid_ae": 1060
         },
         {
             "name": "devices/small/22x22/media-optical-data.svg",
-            "valid_ae": 1039
+            "valid_ae": 1060
         },
         {
             "name": "apps/picmi.svg",
@@ -802,7 +802,7 @@
         },
         {
             "name": "mimetypes/hidef/application-x-kcsrc.svg",
-            "valid_ae": 746
+            "valid_ae": 854
         },
         {
             "name": "mimetypes/small/16x16/application-x-compressed-tar.svg",
@@ -842,11 +842,11 @@
         },
         {
             "name": "mimetypes/small/64x64/x-media-podcast.svg",
-            "valid_ae": 24635
+            "valid_ae": 24995
         },
         {
             "name": "mimetypes/small/64x64/application-x-kcsrc.svg",
-            "valid_ae": 752
+            "valid_ae": 826
         },
         {
             "name": "mimetypes/small/32x32/text-x-hex.svg",
@@ -862,11 +862,11 @@
         },
         {
             "name": "mimetypes/small/48x48/application-x-kcsrc.svg",
-            "valid_ae": 677
+            "valid_ae": 745
         },
         {
             "name": "mimetypes/application-x-kcsrc.svg",
-            "valid_ae": 855
+            "valid_ae": 973
         },
         {
             "name": "actions/small/22x22/edit-image-face-detect.svg",
@@ -875,6 +875,26 @@
         {
             "name": "devices/small/22x22/multimedia-player-apple-ipod.svg",
             "valid_ae": 690
+        },
+        {
+            "name": "categories/small/22x22/applications-accessories.svg",
+            "valid_ae": 649
+        },
+        {
+            "name": "apps/krdc.svg",
+            "valid_ae": 419
+        },
+        {
+            "name": "mimetypes/text-x-po.svg",
+            "valid_ae": 1179
+        },
+        {
+            "name": "mimetypes/small/16x16/text-x-po.svg",
+            "valid_ae": 850
+        },
+        {
+            "name": "mimetypes/application-x-kvtml.svg",
+            "valid_ae": 713
         }
     ],
     "ignore": [

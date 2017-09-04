@@ -350,11 +350,15 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
         }
 
         // Recursive processing.
-        if node.is_tag_name(EId::G) {
+        if node.has_children() {
             _group_by_style(&node, opt);
         }
 
         node_list.push(node);
+    }
+
+    if !parent.is_tag_name(EId::Svg) && !parent.is_tag_name(EId::G) {
+        return;
     }
 
 

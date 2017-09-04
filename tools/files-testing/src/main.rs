@@ -94,7 +94,7 @@ fn main() {
     let orig_pngs = Path::new(m.value_of("workdir").unwrap()).join("orig_pngs");
     let input_dir = m.value_of("input-data").unwrap();
 
-    let svgcleaner_path = Path::new("../../target/debug/svgcleaner");
+    let svgcleaner_path = Path::new("../../target/release/svgcleaner");
     if !svgcleaner_path.exists() {
         println!("Error: {:?} not found.", svgcleaner_path);
         return;

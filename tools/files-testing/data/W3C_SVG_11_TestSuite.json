@@ -5,11 +5,6 @@
             "valid_ae": 380
         },
         {
-            "info": "Looks like a QtWebKit bug since Inkscape and Chromium renders equally.",
-            "name": "fonts-desc-05-t.svg",
-            "valid_ae": 413
-        },
-        {
             "name": "masking-path-10-b.svg",
             "valid_ae": 320
         },
@@ -162,29 +157,121 @@
             "valid_ae": 266
         },
         {
-            "info": "QtWebKit and Chromium doesn't support 'marker' property.",
-            "name": "painting-marker-03-f.svg",
-            "valid_ae": 664
-        },
-        {
-            "info": "QtWebKit and Chromium doesn't support 'marker' property.",
-            "name": "painting-marker-05-f.svg",
-            "valid_ae": 6823
-        },
-        {
             "name": "coords-trans-07-t.svg",
             "valid_ae": 280
         },
         {
             "name": "fonts-elem-02-t.svg",
             "valid_ae": 410
+        },
+        {
+            "info": "svgcleaner bug",
+            "name": "painting-stroke-10-t.svg",
+            "valid_ae": 9062
+        },
+        {
+            "name": "filters-composite-02-b.svg",
+            "valid_ae": 2920
+        },
+        {
+            "name": "filters-color-01-b.svg",
+            "valid_ae": 4878
+        },
+        {
+            "name": "pservers-grad-13-b.svg",
+            "valid_ae": 544
+        },
+        {
+            "info": "svgcleaner bug",
+            "name": "painting-control-04-f.svg",
+            "valid_ae": 16590
+        },
+        {
+            "name": "paths-data-06-t.svg",
+            "valid_ae": 260
+        },
+        {
+            "name": "animate-elem-10-t.svg",
+            "valid_ae": 360
+        },
+        {
+            "name": "painting-marker-02-f.svg",
+            "valid_ae": 696
+        },
+        {
+            "name": "filters-comptran-01-b.svg",
+            "valid_ae": 4644
+        },
+        {
+            "name": "filters-composite-05-f.svg",
+            "valid_ae": 932
+        },
+        {
+            "info": "svgcleaner bug",
+            "name": "paths-data-10-t.svg",
+            "valid_ae": 321
+        },
+        {
+            "name": "animate-elem-17-t.svg",
+            "valid_ae": 320
+        },
+        {
+            "name": "paths-data-07-t.svg",
+            "valid_ae": 260
+        },
+        {
+            "info": "animation diff",
+            "name": "animate-elem-07-t.svg",
+            "valid_ae": 608
+        },
+        {
+            "name": "animate-elem-11-t.svg",
+            "valid_ae": 360
+        },
+        {
+            "name": "animate-elem-41-t.svg",
+            "valid_ae": 811
+        },
+        {
+            "name": "animate-elem-89-t.svg",
+            "valid_ae": 916
+        },
+        {
+            "name": "color-prop-05-t.svg",
+            "valid_ae": 22504
+        },
+        {
+            "name": "pservers-pattern-02-f.svg",
+            "valid_ae": 14057
+        },
+        {
+            "name": "animate-elem-12-t.svg",
+            "valid_ae": 360
+        },
+        {
+            "name": "animate-elem-05-t.svg",
+            "valid_ae": 479
+        },
+        {
+            "name": "animate-elem-06-t.svg",
+            "valid_ae": 576
+        },
+        {
+            "name": "animate-elem-08-t.svg",
+            "valid_ae": 390
+        },
+        {
+            "info": "chrome bug",
+            "name": "painting-marker-03-f.svg",
+            "valid_ae": 654
+        },
+        {
+            "info": "chrome bug",
+            "name": "painting-marker-05-f.svg",
+            "valid_ae": 6346
         }
     ],
     "ignore": [
-        {
-            "info": "some kind of bug, but only reproduceable in QtWebKit",
-            "name": "fonts-desc-01-t.svg"
-        },
         {
             "info": "invalid attribute processing 'fill=\"red !important\"'",
             "name": "styling-pres-01-t.svg"
@@ -238,10 +325,6 @@
             "name": "struct-use-05-b.svg"
         },
         {
-            "info": "some kind of QtWebKit bug, Chromium renders files equally",
-            "name": "masking-path-11-b.svg"
-        },
-        {
             "info": "custom namespaces are not supported",
             "name": "struct-frag-05-t.svg"
         },
@@ -250,16 +333,40 @@
             "name": "text-text-11-t.svg"
         },
         {
-            "info": "QtWebKit can't render it",
-            "name": "svgdom-over-01-f.svg"
-        },
-        {
             "info": "cursor is not supported",
             "name": "interact-cursor-01-f.svg"
         },
         {
-            "info": "some kind of bug, but only reproduceable in QtWebKit",
-            "name": "fonts-desc-02-t.svg"
+            "info": "images with animations always produce different results",
+            "name": "animate-elem-37-t.svg"
+        },
+        {
+            "info": "images with animations always produce different results",
+            "name": "animate-elem-33-t.svg"
+        },
+        {
+            "info": "images with animations always produce different results",
+            "name": "animate-elem-40-t.svg"
+        },
+        {
+            "info": "images with animations always produce different results",
+            "name": "animate-elem-35-t.svg"
+        },
+        {
+            "info": "images with animations always produce different results",
+            "name": "animate-elem-82-t.svg"
+        },
+        {
+            "info": "images with animations always produce different results",
+            "name": "animate-elem-36-t.svg"
+        },
+        {
+            "info": "no viewBox, width or height",
+            "name": "struct-frag-01-t.svg"
+        },
+        {
+            "info": "no viewBox, width or height",
+            "name": "struct-frag-04-t.svg"
         }
     ],
     "min_valid_ae": 200

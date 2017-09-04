@@ -21,8 +21,12 @@ pub fn compare_imgs(work_dir: &str, path1: &str, path2: &str, path_diff: &str) -
                 .output();
     match res {
         Ok(o) => {
-            let s = String::from_utf8_lossy(&o.stderr);
-            // println!("Compare output: {}", s);
+            let mut s = String::from_utf8_lossy(&o.stderr).to_string();
+
+            // ImageMagic bug hotfix
+            s = s.replace(&format!("compare: Ignoring invalid time value `{}' \
+                           @ warning/png.c/MagickPNGWarningHandler/1744.\n", path_diff), "");
+
             let num = s.parse::<u32>();
             match num {
                 Ok(n) => return Some(n),
@@ -86,27 +90,18 @@ pub fn create_dir<P: AsRef<path::Path>>(path: P) {
     }
 }
 
-pub fn render_svg(render: &str, svg_path: &str, png_path: &str) -> bool {
-    // Link with custom QtWebKit and not with one from Qt package.
-    // This flag is harmless if there is no QtWebKit.
-    let res = Command::new(render)
-                .env("LD_LIBRARY_PATH", "/usr/local/lib64")
+pub fn render_svg(svg_path: &str, png_path: &str) -> bool {
+    let res = Command::new("node")
+                .arg("../svgrender/screenshot.js")
                 .arg(svg_path).arg(png_path).arg("512").output();
 
     match res {
         Ok(o) => {
             let s = String::from_utf8_lossy(&o.stderr).into_owned();
+            let s = s.trim();
 
-            // remove unneeded lines
-            let s2 = s.split('\n').filter(|x| {
-                   !x.find("QPainter::restore: Unbalanced save/restore").is_some()
-                && !x.find("QPainter::end: Painter ended with").is_some()
-                && !x.find("libGL error:").is_some()
-                && !x.find("Image of format '' blocked").is_some()
-            }).collect::<Vec<&str>>().join("\n");
-
-            if !s2.is_empty() {
-                println!("Render err:\n{}", s.trim());
+            if !s.is_empty() || !o.status.success() {
+                println!("Render err:\n{}", s);
                 return false;
             } else {
                 return true;

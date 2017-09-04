@@ -36,7 +36,6 @@ struct Config {
 struct Data<'a> {
     work_dir: &'a str,
     svgcleaner: &'a str,
-    render: &'a str,
     err_view: Option<&'a str>,
     input_dir: &'a str,
     orig_pngs_dir: &'a str,
@@ -95,12 +94,6 @@ fn main() {
     let orig_pngs = Path::new(m.value_of("workdir").unwrap()).join("orig_pngs");
     let input_dir = m.value_of("input-data").unwrap();
 
-    let render = Path::new("../svgrender/svgrender");
-    if !render.exists() {
-        println!("Error: {:?} not found.", render);
-        return;
-    }
-
     let svgcleaner_path = Path::new("../../target/debug/svgcleaner");
     if !svgcleaner_path.exists() {
         println!("Error: {:?} not found.", svgcleaner_path);
@@ -110,7 +103,6 @@ fn main() {
     let data = Data {
         work_dir: m.value_of("workdir").unwrap(),
         svgcleaner: svgcleaner_path.to_str().unwrap(),
-        render: render.to_str().unwrap(),
         err_view: err_view,
         input_dir: input_dir,
         orig_pngs_dir: orig_pngs.to_str().unwrap(),
@@ -296,13 +288,13 @@ fn run_test(data: &Data, svg_path: &Path, cache: &TestCache) -> bool {
     let orig_png_path = gen_orig_png_dir(data, Path::new(svg_path)).with_extension("png");
     let orig_png_path_str = orig_png_path.to_str().unwrap();
     if !orig_png_path.exists() {
-        if !render_svg(&data.render, svg_path_str, orig_png_path_str) {
+        if !render_svg(svg_path_str, orig_png_path_str) {
             println!("Rendering of the original image is failed.");
             return false;
         }
     }
 
-    if !render_svg(&data.render, &out_path, &new_png_path) {
+    if !render_svg(&out_path, &new_png_path) {
         println!("Rendering of the cleaned image is failed.");
         return false;
     }

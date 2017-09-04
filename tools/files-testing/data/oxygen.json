@@ -1,224 +1,20 @@
 {
     "custom_ae": [
         {
-            "name": "actions/small/32x32/view-loan-asset.svg",
-            "valid_ae": 3752
-        },
-        {
-            "name": "actions/small/32x32/view-bank-account.svg",
-            "valid_ae": 2080
-        },
-        {
-            "name": "actions/small/32x32/view-loan.svg",
-            "valid_ae": 2035
-        },
-        {
-            "name": "actions/small/32x32/view-bank-account-savings.svg",
-            "valid_ae": 1219
-        },
-        {
             "name": "actions/small/32x32/taxes-finances.svg",
-            "valid_ae": 2446
-        },
-        {
-            "name": "actions/small/32x32/view-investment.svg",
-            "valid_ae": 2079
-        },
-        {
-            "name": "actions/small/32x32/view-bank-account-checking.svg",
-            "valid_ae": 2039
-        },
-        {
-            "name": "actions/small/32x32/view-financial-transfer.svg",
-            "valid_ae": 3906
+            "valid_ae": 5016
         },
         {
             "name": "actions/small/48x48/view-loan-asset.svg",
-            "valid_ae": 1941
+            "valid_ae": 4705
         },
         {
             "name": "actions/small/48x48/view-loan.svg",
-            "valid_ae": 1925
-        },
-        {
-            "name": "devices/small/16x16/camera-photo.svg",
-            "valid_ae": 1379
-        },
-        {
-            "name": "devices/small/22x22/camera-photo.svg",
-            "valid_ae": 757
-        },
-        {
-            "name": "apps/preferences-system-power-management.svg",
-            "valid_ae": 3662
-        },
-        {
-            "name": "apps/tagua.svg",
-            "valid_ae": 1126
-        },
-        {
-            "name": "emotes/small/22x22/face-foot-in-mouth.svg",
-            "valid_ae": 1998
-        },
-        {
-            "name": "emotes/small/22x22/face-surprise.svg",
-            "valid_ae": 1998
-        },
-        {
-            "name": "emotes/small/22x22/face-crying.svg",
-            "valid_ae": 1762
-        },
-        {
-            "name": "emotes/small/22x22/face-wink.svg",
-            "valid_ae": 1997
-        },
-        {
-            "name": "emotes/small/22x22/face-confused.svg",
-            "valid_ae": 2033
-        },
-        {
-            "name": "emotes/small/22x22/face-devilish.svg",
-            "valid_ae": 1806
-        },
-        {
-            "name": "emotes/small/22x22/face-plain.svg",
-            "valid_ae": 1997
-        },
-        {
-            "name": "emotes/small/22x22/face-smile.svg",
-            "valid_ae": 1998
-        },
-        {
-            "name": "emotes/small/22x22/face-embarrassed.svg",
-            "valid_ae": 2012
-        },
-        {
-            "name": "emotes/small/22x22/face-sleep.svg",
-            "valid_ae": 1864
-        },
-        {
-            "name": "mimetypes/hidef/text-x-po.svg",
-            "valid_ae": 520
-        },
-        {
-            "name": "mimetypes/small/22x22/text-x-po.svg",
-            "valid_ae": 838
-        },
-        {
-            "name": "mimetypes/small/64x64/text-x-po.svg",
-            "valid_ae": 1282
-        },
-        {
-            "name": "mimetypes/small/32x32/text-x-po.svg",
-            "valid_ae": 937
-        },
-        {
-            "name": "mimetypes/small/48x48/text-x-po.svg",
-            "valid_ae": 863
-        },
-        {
-            "name": "status/user-away.svg",
-            "valid_ae": 1860
-        },
-        {
-            "name": "status/user-busy.svg",
-            "valid_ae": 1345
-        },
-        {
-            "name": "status/user-away-extended.svg",
-            "valid_ae": 1860
-        },
-        {
-            "name": "status/user-invisible.svg",
-            "valid_ae": 1091
-        },
-        {
-            "name": "categories/applications-toys.svg",
-            "valid_ae": 1153
-        },
-        {
-            "name": "categories/applications-education-preschool.svg",
-            "valid_ae": 1153
-        },
-        {
-            "name": "categories/applications-development-translation.svg",
-            "valid_ae": 422
-        },
-        {
-            "name": "categories/small/22x22/applications-games.svg",
-            "valid_ae": 655
-        },
-        {
-            "name": "categories/small/22x22/applications-education.svg",
-            "valid_ae": 742
-        },
-        {
-            "name": "actions/view-pim-summary.svg",
-            "valid_ae": 435
-        },
-        {
-            "name": "actions/small/16x16/download-later.svg",
-            "valid_ae": 1121
-        },
-        {
-            "name": "actions/small/16x16/view-calendar-time-spent.svg",
-            "valid_ae": 619
-        },
-        {
-            "name": "actions/small/16x16/view-calendar-whatsnext.svg",
-            "valid_ae": 1799
-        },
-        {
-            "name": "actions/small/22x22/download-later.svg",
-            "valid_ae": 1336
-        },
-        {
-            "name": "actions/small/22x22/view-calendar-time-spent.svg",
-            "valid_ae": 518
-        },
-        {
-            "name": "actions/small/22x22/edit-redo.svg",
-            "valid_ae": 2305
-        },
-        {
-            "name": "actions/small/22x22/view-ldap-resource.svg",
-            "valid_ae": 509
-        },
-        {
-            "name": "actions/small/22x22/window-duplicate.svg",
-            "valid_ae": 969
-        },
-        {
-            "name": "actions/small/22x22/edit-image-face-show.svg",
-            "valid_ae": 1138
-        },
-        {
-            "name": "actions/small/22x22/select-rectangular.svg",
-            "valid_ae": 566
-        },
-        {
-            "name": "actions/small/22x22/zoom-draw.svg",
-            "valid_ae": 444
-        },
-        {
-            "name": "actions/small/32x32/download-later.svg",
-            "valid_ae": 1342
-        },
-        {
-            "name": "actions/small/48x48/download-later.svg",
-            "valid_ae": 1359
-        },
-        {
-            "name": "actions/small/48x48/edit-image-face-add.svg",
-            "valid_ae": 437
-        },
-        {
-            "name": "actions/small/48x48/text-field.svg",
-            "valid_ae": 679
+            "valid_ae": 4075
         },
         {
             "name": "actions/small/48x48/view-bank-account-savings.svg",
-            "valid_ae": 1586
+            "valid_ae": 4360
         },
         {
             "name": "actions/small/48x48/taxes-finances.svg",
@@ -226,197 +22,23 @@
         },
         {
             "name": "actions/small/48x48/view-investment.svg",
-            "valid_ae": 2008
-        },
-        {
-            "name": "actions/small/48x48/view-financial-transfer.svg",
-            "valid_ae": 2917
-        },
-        {
-            "name": "actions/small/48x48/milestone.svg",
-            "valid_ae": 597
-        },
-        {
-            "name": "devices/small/16x16/tablet.svg",
-            "valid_ae": 560
+            "valid_ae": 4982
         },
         {
             "name": "devices/small/16x16/network-wireless.svg",
             "valid_ae": 7727
         },
         {
-            "name": "devices/small/16x16/video-display.svg",
-            "valid_ae": 448
-        },
-        {
-            "name": "devices/small/22x22/tablet.svg",
-            "valid_ae": 1163
-        },
-        {
-            "name": "devices/small/22x22/video-display.svg",
-            "valid_ae": 1755
-        },
-        {
-            "name": "devices/small/64x64/tablet.svg",
-            "valid_ae": 649
-        },
-        {
-            "name": "devices/small/32x32/tablet.svg",
-            "valid_ae": 560
-        },
-        {
-            "name": "devices/small/48x48/tablet.svg",
-            "valid_ae": 1300
-        },
-        {
-            "name": "apps/internet-mail.svg",
-            "valid_ae": 401
-        },
-        {
-            "name": "emotes/small/22x22/face-glasses.svg",
-            "valid_ae": 1906
-        },
-        {
-            "name": "mimetypes/small/48x48/application-vnd.sun.xml.calc.svg",
-            "valid_ae": 1552
-        },
-        {
-            "name": "mimetypes/small/48x48/application-x-quattropro.svg",
-            "valid_ae": 1552
-        },
-        {
             "name": "mimetypes/small/48x48/application-vnd.oasis.opendocument.spreadsheet-template.svg",
-            "valid_ae": 1578
-        },
-        {
-            "name": "mimetypes/small/48x48/application-x-gnumeric.svg",
-            "valid_ae": 1552
-        },
-        {
-            "name": "mimetypes/small/48x48/application-vnd.stardivision.calc.svg",
-            "valid_ae": 1552
-        },
-        {
-            "name": "mimetypes/small/48x48/x-office-spreadsheet.svg",
-            "valid_ae": 1552
+            "valid_ae": 4802
         },
         {
             "name": "mimetypes/small/48x48/application-vnd.sun.xml.calc.template.svg",
-            "valid_ae": 1578
-        },
-        {
-            "name": "mimetypes/small/48x48/application-x-applix-spreadsheet.svg",
-            "valid_ae": 1552
+            "valid_ae": 4802
         },
         {
             "name": "mimetypes/small/48x48/application-vnd.ms-excel.svg",
-            "valid_ae": 1300
-        },
-        {
-            "name": "mimetypes/small/48x48/application-vnd.oasis.opendocument.spreadsheet.svg",
-            "valid_ae": 1552
-        },
-        {
-            "name": "mimetypes/small/48x48/text-csv.svg",
-            "valid_ae": 1552
-        },
-        {
-            "name": "mimetypes/small/48x48/application-x-siag.svg",
-            "valid_ae": 1552
-        },
-        {
-            "name": "actions/small/32x32/help-donate.svg",
-            "valid_ae": 1782
-        },
-        {
-            "name": "actions/small/48x48/help-donate.svg",
-            "valid_ae": 1872
-        },
-        {
-            "info": "Only in QtWebKit, because of apply-gradient-transform.",
-            "name": "mimetypes/small/22x22/application-xhtml+xml.svg",
-            "valid_ae": 1362
-        },
-        {
-            "info": "Only in QtWebKit, because of apply-gradient-transform.",
-            "name": "mimetypes/small/22x22/text-csharp.svg",
-            "valid_ae": 415
-        },
-        {
-            "info": "Only in QtWebKit, because of apply-gradient-transform.",
-            "name": "mimetypes/small/22x22/text-x-c++src.svg",
-            "valid_ae": 403
-        },
-        {
-            "info": "Only in QtWebKit, because of apply-gradient-transform.",
-            "name": "mimetypes/small/22x22/text-xml.svg",
-            "valid_ae": 1362
-        },
-        {
-            "info": "Only in QtWebKit, because of apply-gradient-transform.",
-            "name": "mimetypes/small/22x22/text-x-csharp.svg",
-            "valid_ae": 415
-        },
-        {
-            "name": "mimetypes/small/48x48/application-x-php.svg",
-            "valid_ae": 1070
-        },
-        {
-            "name": "mimetypes/hidef/text-x-adasrc.svg",
-            "valid_ae": 2283
-        },
-        {
-            "name": "mimetypes/small/64x64/text-x-adasrc.svg",
-            "valid_ae": 2280
-        },
-        {
-            "name": "mimetypes/text-x-adasrc.svg",
-            "valid_ae": 2280
-        },
-        {
-            "name": "devices/small/64x64/computer-laptop.svg",
-            "valid_ae": 887
-        },
-        {
-            "name": "devices/small/32x32/computer-laptop.svg",
-            "valid_ae": 1058
-        },
-        {
-            "name": "devices/computer-laptop.svg",
-            "valid_ae": 873
-        },
-        {
-            "name": "devices/small/16x16/computer-laptop.svg",
-            "valid_ae": 638
-        },
-        {
-            "name": "actions/small/16x16/view-pim-mail.svg",
-            "valid_ae": 941
-        },
-        {
-            "name": "actions/small/22x22/view-pim-mail.svg",
-            "valid_ae": 887
-        },
-        {
-            "name": "places/mail-folder-sent.svg",
-            "valid_ae": 509
-        },
-        {
-            "name": "places/small/32x32/mail-message.svg",
-            "valid_ae": 412
-        },
-        {
-            "name": "actions/small/22x22/view-calendar-journal.svg",
-            "valid_ae": 949
-        },
-        {
-            "name": "actions/small/32x32/mail-mark-unread.svg",
-            "valid_ae": 412
-        },
-        {
-            "info": "webkit bug, svgc actually fixed the rendering",
-            "name": "categories/preferences-desktop-peripherals.svg",
-            "valid_ae": 4366
+            "valid_ae": 5209
         },
         {
             "name": "devices/input-tablet.svg",
@@ -515,44 +137,8 @@
             "valid_ae": 170179
         },
         {
-            "name": "status/user-offline.svg",
-            "valid_ae": 1345
-        },
-        {
-            "name": "status/user-online.svg",
-            "valid_ae": 1483
-        },
-        {
-            "name": "categories/small/22x22/preferences-desktop-personal.svg",
-            "valid_ae": 653
-        },
-        {
-            "name": "actions/small/22x22/edit-image-face-recognize.svg",
-            "valid_ae": 1398
-        },
-        {
             "name": "actions/small/48x48/view-bank-account.svg",
-            "valid_ae": 1662
-        },
-        {
-            "name": "actions/small/48x48/view-bank-account-checking.svg",
-            "valid_ae": 1537
-        },
-        {
-            "name": "actions/edit-bomb.svg",
-            "valid_ae": 1366
-        },
-        {
-            "name": "devices/secure-card.svg",
-            "valid_ae": 420
-        },
-        {
-            "name": "devices/small/32x32/secure-card.svg",
-            "valid_ae": 677
-        },
-        {
-            "name": "devices/small/48x48/secure-card.svg",
-            "valid_ae": 611
+            "valid_ae": 5412
         },
         {
             "name": "emotes/face-uncertain.svg",
@@ -659,62 +245,6 @@
             "valid_ae": 12892
         },
         {
-            "name": "mimetypes/small/16x16/text-x-hex.svg",
-            "valid_ae": 901
-        },
-        {
-            "name": "categories/applications-education-language.svg",
-            "valid_ae": 484
-        },
-        {
-            "name": "actions/small/16x16/view-media-lyrics.svg",
-            "valid_ae": 1152
-        },
-        {
-            "info": "webkit bug",
-            "name": "actions/small/16x16/tools-rip-audio-cd.svg",
-            "valid_ae": 1060
-        },
-        {
-            "info": "webkit bug",
-            "name": "actions/small/16x16/tools-rip-video-cd.svg",
-            "valid_ae": 1060
-        },
-        {
-            "info": "webkit bug",
-            "name": "actions/small/16x16/tools-media-optical-burn.svg",
-            "valid_ae": 2088
-        },
-        {
-            "info": "webkit bug",
-            "name": "actions/small/16x16/tools-media-optical-copy.svg",
-            "valid_ae": 1047
-        },
-        {
-            "info": "webkit bug",
-            "name": "actions/small/16x16/tools-rip-video-dvd.svg",
-            "valid_ae": 1060
-        },
-        {
-            "name": "actions/small/22x22/edit-image-face-add.svg",
-            "valid_ae": 1152
-        },
-        {
-            "info": "webkit bug",
-            "name": "actions/small/22x22/tools-media-optical-copy.svg",
-            "valid_ae": 1272
-        },
-        {
-            "info": "webkit bug",
-            "name": "actions/small/32x32/tools-media-optical-burn.svg",
-            "valid_ae": 1439
-        },
-        {
-            "info": "webkit bug",
-            "name": "actions/small/32x32/tools-media-optical-burn2.svg",
-            "valid_ae": 1439
-        },
-        {
             "name": "actions/small/48x48/mail-encrypted-full.svg",
             "valid_ae": 4958
         },
@@ -723,213 +253,51 @@
             "valid_ae": 5023
         },
         {
-            "name": "actions/small/48x48/mail-message-new-list.svg",
-            "valid_ae": 2772
-        },
-        {
-            "name": "actions/small/48x48/mail-message-new.svg",
-            "valid_ae": 2772
-        },
-        {
-            "info": "webkit bug",
-            "name": "actions/small/48x48/tools-media-optical-burn.svg",
-            "valid_ae": 1439
-        },
-        {
-            "name": "actions/small/48x48/tools-media-optical-copy.svg",
-            "valid_ae": 1175
-        },
-        {
-            "info": "webkit bug",
-            "name": "actions/tools-media-optical-burn.svg",
-            "valid_ae": 1438
-        },
-        {
-            "name": "devices/media-optical-mixed-cd.svg",
-            "valid_ae": 2091
-        },
-        {
-            "name": "devices/small/16x16/media-optical-recordable.svg",
-            "valid_ae": 1165
-        },
-        {
-            "name": "devices/small/16x16/media-optical-mixed-cd.svg",
-            "valid_ae": 1060
-        },
-        {
-            "name": "devices/small/16x16/media-optical-dvd.svg",
-            "valid_ae": 787
-        },
-        {
-            "name": "devices/small/16x16/media-optical-video.svg",
-            "valid_ae": 1060
-        },
-        {
-            "name": "devices/small/16x16/media-optical-data.svg",
-            "valid_ae": 1060
-        },
-        {
-            "name": "devices/small/16x16/media-optical.svg",
-            "valid_ae": 1060
-        },
-        {
-            "name": "devices/small/22x22/media-optical-mixed-cd.svg",
-            "valid_ae": 1017
-        },
-        {
-            "name": "devices/small/22x22/media-optical-dvd.svg",
-            "valid_ae": 1060
-        },
-        {
-            "name": "devices/small/22x22/media-optical-video.svg",
-            "valid_ae": 1060
-        },
-        {
-            "name": "devices/small/22x22/media-optical-data.svg",
-            "valid_ae": 1060
-        },
-        {
             "name": "apps/picmi.svg",
             "valid_ae": 63120
-        },
-        {
-            "name": "apps/preferences-desktop-locale.svg",
-            "valid_ae": 484
-        },
-        {
-            "name": "apps/kuickshow.svg",
-            "valid_ae": 569
-        },
-        {
-            "name": "mimetypes/hidef/application-x-kcsrc.svg",
-            "valid_ae": 854
-        },
-        {
-            "name": "mimetypes/small/16x16/application-x-compressed-tar.svg",
-            "valid_ae": 989
-        },
-        {
-            "name": "mimetypes/small/16x16/application-x-deb.svg",
-            "valid_ae": 1587
-        },
-        {
-            "name": "mimetypes/small/16x16/application-x-rpm.svg",
-            "valid_ae": 1226
-        },
-        {
-            "name": "mimetypes/small/16x16/application-x-java-archive.svg",
-            "valid_ae": 842
-        },
-        {
-            "name": "mimetypes/small/22x22/text-x-hex.svg",
-            "valid_ae": 633
-        },
-        {
-            "name": "mimetypes/small/22x22/application-x-compressed-tar.svg",
-            "valid_ae": 551
-        },
-        {
-            "name": "mimetypes/small/22x22/application-x-deb.svg",
-            "valid_ae": 1045
-        },
-        {
-            "name": "mimetypes/small/22x22/application-x-rpm.svg",
-            "valid_ae": 656
-        },
-        {
-            "name": "mimetypes/small/22x22/application-x-java-archive.svg",
-            "valid_ae": 485
         },
         {
             "name": "mimetypes/small/64x64/x-media-podcast.svg",
             "valid_ae": 24995
         },
         {
-            "name": "mimetypes/small/64x64/application-x-kcsrc.svg",
-            "valid_ae": 826
+            "name": "actions/games-config-board.svg",
+            "valid_ae": 7674
         },
         {
-            "name": "mimetypes/small/32x32/text-x-hex.svg",
-            "valid_ae": 646
+            "name": "actions/small/22x22/view-calendar-month.svg",
+            "valid_ae": 4106
         },
         {
-            "name": "mimetypes/small/32x32/application-x-deb.svg",
-            "valid_ae": 505
+            "name": "actions/small/48x48/view-financial-payment-mode.svg",
+            "valid_ae": 4032
         },
         {
-            "name": "mimetypes/small/32x32/application-x-rpm.svg",
-            "valid_ae": 427
+            "name": "mimetypes/text-x-katefilelist.svg",
+            "valid_ae": 7727
         },
         {
-            "name": "mimetypes/small/48x48/application-x-kcsrc.svg",
-            "valid_ae": 745
+            "name": "mimetypes/text-x-copying.svg",
+            "valid_ae": 5956
         },
         {
-            "name": "mimetypes/application-x-kcsrc.svg",
-            "valid_ae": 973
-        },
-        {
-            "name": "actions/small/22x22/edit-image-face-detect.svg",
-            "valid_ae": 887
-        },
-        {
-            "name": "devices/small/22x22/multimedia-player-apple-ipod.svg",
-            "valid_ae": 690
-        },
-        {
-            "name": "categories/small/22x22/applications-accessories.svg",
-            "valid_ae": 649
-        },
-        {
-            "name": "apps/krdc.svg",
-            "valid_ae": 419
-        },
-        {
-            "name": "mimetypes/text-x-po.svg",
-            "valid_ae": 1179
-        },
-        {
-            "name": "mimetypes/small/16x16/text-x-po.svg",
-            "valid_ae": 850
+            "name": "mimetypes/application-rtf.svg",
+            "valid_ae": 5789
         },
         {
             "name": "mimetypes/application-x-kvtml.svg",
-            "valid_ae": 713
+            "valid_ae": 11505
+        },
+        {
+            "name": "mimetypes/text-enriched.svg",
+            "valid_ae": 5789
         }
     ],
     "ignore": [
         {
             "info": "magic bug",
             "name": "devices/phone.svg"
-        },
-        {
-            "info": "qtwebkit crashes",
-            "name": "actions/small/32x32/view-financial-payment-mode.svg"
-        },
-        {
-            "info": "qtwebkit crashes",
-            "name": "actions/small/48x48/bookmarks-organize.svg"
-        },
-        {
-            "info": "qtwebkit crashes",
-            "name": "mimetypes/hidef/unknown.svg"
-        },
-        {
-            "info": "qtwebkit crashes",
-            "name": "mimetypes/small/22x22/unknown.svg"
-        },
-        {
-            "info": "qtwebkit crashes",
-            "name": "mimetypes/small/64x64/unknown.svg"
-        },
-        {
-            "info": "qtwebkit crashes",
-            "name": "mimetypes/small/32x32/unknown.svg"
-        },
-        {
-            "info": "qtwebkit crashes",
-            "name": "mimetypes/small/48x48/unknown.svg"
         }
     ],
-    "min_valid_ae": 400
+    "min_valid_ae": 4000
 }

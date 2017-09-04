@@ -29,29 +29,29 @@ use options::CleaningOptions;
 pub fn ungroup_groups(doc: &Document, opt: &CleaningOptions) {
     // doc must contain 'svg' node, so we can safely unwrap.
     let svg = doc.svg_element().unwrap();
-    apply_transforms::prepare_transforms(doc, opt);
+    apply_transforms::prepare_transforms(&svg, true, opt);
 
-    while _ungroup_groups(&svg) {
-        apply_transforms::prepare_transforms(doc, opt);
-    }
+    while _ungroup_groups(&svg, opt) {}
 }
 
 // Returns `true` when valid `g` occurred.
 //
 // If such `g` found - ungroup it and start again from the root `svg` element.
-fn _ungroup_groups(parent: &Node) -> bool {
+fn _ungroup_groups(parent: &Node, opt: &CleaningOptions) -> bool {
     for node in parent.children() {
         if node.is_tag_name(EId::G) {
             if can_ungroup(parent, &node) {
                 ungroup_group(&node);
                 node.remove();
 
+                apply_transforms::prepare_transforms(&parent, false, opt);
+
                 return true;
             }
         }
 
         if node.has_children() {
-            if _ungroup_groups(&node) {
+            if _ungroup_groups(&node, opt) {
                 return true;
             }
         }

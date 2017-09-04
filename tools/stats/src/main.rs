@@ -19,11 +19,11 @@ macro_rules! dir_iter {
 
 struct Data<'a> {
     work_dir: &'a str,
-    render_path: Option<&'a str>,
     threshold: u8,
     input_dir: &'a str,
     orig_pngs_dir: &'a str,
     broken_imgs_dir: &'a str,
+    skip_errors_check: bool,
 }
 
 struct TotalStats {
@@ -112,25 +112,13 @@ fn main() {
     let broken_imgs = Path::new(m.value_of("workdir").unwrap()).join("broken_imgs");
     let input_dir = m.value_of("input-data").unwrap();
 
-    let p = Path::new("../svgrender/svgrender");
-    let render;
-    if !m.is_present("skip-errors-check") {
-        if !p.exists() {
-            println!("Error: {:?} not found.", p);
-            return;
-        }
-        render = Some(p.to_str().unwrap());
-    } else {
-        render = None;
-    }
-
     let data = Data {
         work_dir: m.value_of("workdir").unwrap(),
-        render_path: render,
         threshold: value_t!(m, "threshold", u8).unwrap(),
         input_dir: input_dir,
         orig_pngs_dir: orig_pngs.to_str().unwrap(),
         broken_imgs_dir: broken_imgs.to_str().unwrap(),
+        skip_errors_check: m.is_present("skip-errors-check"),
     };
 
     create_dir(&data.work_dir);
@@ -213,8 +201,6 @@ fn gen_orig_png_dir(data: &Data, svg_path: &Path) -> PathBuf {
 fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     let svg_path_str = svg_path.to_str().unwrap();
 
-    let render_imgs = data.render_path.is_some();
-
     let mut stats = FileStats::default();
 
     let new_svg_path;
@@ -239,7 +225,7 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     stats.new_file_size = new_svg_path.metadata().unwrap().len();
     stats.elapsed_time = (end - start) as f64 / 1000000.0;
 
-    if !render_imgs {
+    if data.skip_errors_check {
         stats.is_successful = true;
         stats.is_fully_successful = true;
         fs::remove_file(&new_svg_path).unwrap();
@@ -250,7 +236,7 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
     let orig_png_path = gen_orig_png_dir(data, Path::new(svg_path)).with_extension("png");
     let orig_png_path_str = orig_png_path.to_str().unwrap();
     if !orig_png_path.exists() {
-        if !render_svg(&data.render_path.unwrap(), svg_path_str, orig_png_path_str) {
+        if !render_svg(svg_path_str, orig_png_path_str) {
             fs::remove_file(&new_svg_path).unwrap();
             return stats;
         }
@@ -264,7 +250,7 @@ fn file_stats(data: &Data, svg_path: &Path, cleaner: &Cleaner) -> FileStats {
         new_png_path = Path::new(data.work_dir).join(file_name);
     }
     let new_png_path_str = new_png_path.to_str().unwrap();
-    if !render_svg(&data.render_path.unwrap(), new_svg_path_str, new_png_path_str) {
+    if !render_svg(new_svg_path_str, new_png_path_str) {
         fs::remove_file(&new_svg_path).unwrap();
         fs::remove_file(&orig_png_path).unwrap();
         return stats;

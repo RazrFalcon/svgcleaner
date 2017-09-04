@@ -17,7 +17,6 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use svgdom::{
-    Document,
     Node,
 };
 use svgdom::types::Transform;
@@ -29,7 +28,7 @@ use options::CleaningOptions;
 // If group has transform and contains only valid elements
 // we can apply the group's transform to children before applying transform to
 // actual elements.
-pub fn prepare_transforms(doc: &Document, opt: &CleaningOptions) {
+pub fn prepare_transforms(parent: &Node, recurcive: bool, opt: &CleaningOptions) {
     let mut valid_elems: Vec<EId> = Vec::with_capacity(6);
     if opt.apply_transform_to_shapes {
         valid_elems.extend_from_slice(&[EId::Rect, EId::Circle, EId::Ellipse, EId::Line]);
@@ -44,8 +43,8 @@ pub fn prepare_transforms(doc: &Document, opt: &CleaningOptions) {
         return;
     }
 
-    let iter = doc.descendants().svg().filter(|n|    n.is_tag_name(EId::G)
-                                                  && n.has_attribute(AId::Transform));
+    let iter = parent.descendants().svg().filter(|n|    n.is_tag_name(EId::G)
+                                                     && n.has_attribute(AId::Transform));
 
     for node in iter {
         if !utils::has_valid_transform(&node) || !utils::is_valid_attrs(&node) {
@@ -72,6 +71,10 @@ pub fn prepare_transforms(doc: &Document, opt: &CleaningOptions) {
             let ts = utils::get_ts(&node);
             apply_ts_to_children(&node, ts);
             node.remove_attribute(AId::Transform);
+        }
+
+        if !recurcive {
+            break;
         }
     }
 }
@@ -101,13 +104,14 @@ mod tests {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
+                let svg = doc.svg_element().unwrap();
 
                 let mut options = CleaningOptions::default();
                 options.apply_transform_to_shapes = true;
                 options.paths_to_relative = true;
                 options.apply_transform_to_paths = true;
 
-                prepare_transforms(&doc, &options);
+                prepare_transforms(&svg, true, &options);
 
                 let mut opt = write_opt_for_tests!();
                 opt.simplify_transform_matrices = true;

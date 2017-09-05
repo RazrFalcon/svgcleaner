@@ -29,15 +29,16 @@ pub fn group_defs(doc: &Document) {
     // doc must contain 'svg' node, so we can safely unwrap.
     let svg = doc.svg_element().unwrap();
 
+    // Create 'defs' node if it didn't exist already.
     let defs = match doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0) {
         Some(n) => n,
-        None => {
-            // Create 'defs' node if it didn't exist already.
-            let defs = doc.create_element(EId::Defs);
-            svg.prepend(&defs);
-            defs
-        }
+        None => doc.create_element(EId::Defs),
     };
+
+    // Make 'defs' a first child of the 'svg'.
+    if svg.first_child() != Some(defs.clone()) {
+        svg.prepend(&defs);
+    }
 
     // Move all referenced elements to the main 'defs'.
     {

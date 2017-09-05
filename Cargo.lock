@@ -106,17 +106,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "svgdom"
 version = "0.7.0"
-source = "git+https://github.com/RazrFalcon/libsvgdom.git?branch=devel#da3b38c1315581a409fcc0c4c44cc188c9aacc8e"
+source = "git+https://github.com/RazrFalcon/libsvgdom.git?branch=devel#4c41f3387493eb3339ec71593373fd5cd364c8f0"
 dependencies = [
  "float-cmp 0.2.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "simplecss 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "svgparser 0.4.2 (git+https://github.com/RazrFalcon/libsvgparser.git?branch=devel)",
+ "svgparser 0.5.0 (git+https://github.com/RazrFalcon/libsvgparser.git?branch=devel)",
 ]
 
 [[package]]
 name = "svgparser"
-version = "0.4.2"
-source = "git+https://github.com/RazrFalcon/libsvgparser.git?branch=devel#f70c90b86a3ef3cbfb336c645c7f8ad6f2123476"
+version = "0.5.0"
+source = "git+https://github.com/RazrFalcon/libsvgparser.git?branch=devel#98c106646e2bc9375fa518b68c9a5e3fda84f2cb"
 dependencies = [
  "phf 0.7.21 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -180,7 +180,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum simplecss 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "135685097a85a64067df36e28a243e94a94f76d829087ce0be34eeb014260c0e"
 "checksum siphasher 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "0df90a788073e8d0235a67e50441d47db7c8ad9debd91cbf43736a2a92d36537"
 "checksum svgdom 0.7.0 (git+https://github.com/RazrFalcon/libsvgdom.git?branch=devel)" = "<none>"
-"checksum svgparser 0.4.2 (git+https://github.com/RazrFalcon/libsvgparser.git?branch=devel)" = "<none>"
+"checksum svgparser 0.5.0 (git+https://github.com/RazrFalcon/libsvgparser.git?branch=devel)" = "<none>"
 "checksum term_size 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e2b6b55df3198cc93372e85dd2ed817f0e38ce8cc0f22eb32391bfad9c4bf209"
 "checksum textwrap 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f728584ea33b0ad19318e20557cb0a39097751dbb07171419673502f848c7af6"
 "checksum unicode-segmentation 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "a8083c594e02b8ae1654ae26f0ade5158b119bd88ad0e8227a5d8fcd72407946"

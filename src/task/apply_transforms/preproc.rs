@@ -43,6 +43,8 @@ pub fn prepare_transforms(parent: &Node, recurcive: bool, opt: &CleaningOptions)
         return;
     }
 
+    valid_elems.push(EId::G);
+
     let iter = parent.descendants().svg().filter(|n|    n.is_tag_name(EId::G)
                                                      && n.has_attribute(AId::Transform));
 
@@ -55,7 +57,7 @@ pub fn prepare_transforms(parent: &Node, recurcive: bool, opt: &CleaningOptions)
         let is_valid = node.children().svg().all(|n| {
             let tag_name = n.tag_id().unwrap();
 
-            let is_valid_coords = if tag_name == EId::Path {
+            let is_valid_coords = if tag_name == EId::Path || tag_name == EId::G {
                 true
             } else {
                 utils::is_valid_coords(&n)

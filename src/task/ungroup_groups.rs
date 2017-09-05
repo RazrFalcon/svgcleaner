@@ -588,4 +588,26 @@ mod tests {
     <rect transform='translate(10 20)'/>
 </svg>
 ");
+
+    test!(ungroup_with_transform_7,
+"<svg>
+    <g transform='translate(10 20)'>
+        <rect/>
+        <g fill='#ffffff'>
+            <path/>
+            <path/>
+            <path/>
+        </g>
+    </g>
+</svg>",
+"<svg>
+    <rect transform='translate(10 20)'/>
+    <g fill='#ffffff'>
+        <path transform='translate(10 20)'/>
+        <path transform='translate(10 20)'/>
+        <path transform='translate(10 20)'/>
+    </g>
+</svg>
+");
+
 }

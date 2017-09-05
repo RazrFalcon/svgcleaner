@@ -8,10 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `--group-by-style` can group two nodes now.
 - `--group-by-style` can group into `svg` now.
+- `defs` element is always a first child of an `svg` now.
 
 ### Fixed
 - `transform` grouping in `--group-by-style`.
 - Groups ungrouping inside a `switch` element.
+- Complex groups ungrouping.
 - `--group-by-style` recursive processing.
 
 ## [0.9.0] - 2017-06-05

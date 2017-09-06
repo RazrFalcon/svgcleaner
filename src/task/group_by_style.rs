@@ -179,12 +179,10 @@ impl TableRow {
                 }
 
                 end = idx;
-            } else {
-                if let Some(s) = start {
-                    list.push(s..end);
-                    start = None;
-                    end = 0;
-                }
+            } else if let Some(s) = start {
+                list.push(s..end);
+                start = None;
+                end = 0;
             }
         }
         if let Some(s) = start {
@@ -337,7 +335,7 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
 
     // Collect nodes.
     // TODO: currently we ignore non-SVG elements, which is bad
-    for node in parent.children().svg() {
+    for (_, node) in parent.children().svg() {
         // If 'defs' node occurred - skip it and reset the list.
 
         // Node can't be used, because a 'use' retrieves only element's attributes
@@ -473,7 +471,7 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
         // If parent node is 'g' - use it,
         // it not - create new one.
         let is_valid_parent = parent.is_tag_name(EId::Svg) || parent.is_tag_name(EId::G);
-        let g_node = if is_valid_parent && is_all_children {
+        let mut g_node = if is_valid_parent && is_all_children {
             parent.clone()
         } else {
             let g_node = parent.document().create_element(EId::G);
@@ -481,7 +479,8 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
             g_node
         };
 
-        move_nodes(&table.d[0].attributes, &g_node, &node_list, 0..node_list.len());
+        let len = node_list.len();
+        move_nodes(&table.d[0].attributes, &mut g_node, &mut node_list, 0..len);
 
         // Remove first row.
         table.d.remove(0);
@@ -503,10 +502,10 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
         let range = d.longest_range();
 
         // Do the same as in previous block.
-        let g_node = parent.document().create_element(EId::G);
+        let mut g_node = parent.document().create_element(EId::G);
         node_list[range.start].insert_before(&g_node);
 
-        move_nodes(&d.attributes, &g_node, &node_list, range);
+        move_nodes(&d.attributes, &mut g_node, &mut node_list, range);
     }
 
     // TODO: process rows with multiple ranges, aka
@@ -532,10 +531,10 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
     // </g>
 }
 
-fn move_nodes(attributes: &[Attribute], g_node: &Node, node_list: &[Node], range: Range<usize>) {
+fn move_nodes(attributes: &[Attribute], g_node: &mut Node, node_list: &mut [Node], range: Range<usize>) {
     let attr_ids: Vec<AId> = attributes.iter().map(|a| a.id().unwrap()).collect();
 
-    for node in node_list.iter().skip(range.start).take(range.end - range.start + 1) {
+    for node in node_list.iter_mut().skip(range.start).take(range.end - range.start + 1) {
         // Remove attributes from nodes.
         node.remove_attributes(&attr_ids);
         // Move them to the 'g' element.
@@ -562,7 +561,7 @@ fn move_nodes(attributes: &[Attribute], g_node: &Node, node_list: &[Node], range
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString, WriteOptions};
+    use svgdom::{Document, ToStringWithOptions, WriteOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

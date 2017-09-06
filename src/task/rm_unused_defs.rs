@@ -25,14 +25,14 @@ use task::short::EId;
 
 pub fn remove_unused_defs(doc: &Document) {
     // Unwrap is safe, because 'defs' already had been created in 'group_defs'.
-    let defs = doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0).unwrap();
+    let mut defs = doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0).unwrap();
 
     // Repeat until no unused nodes left.
-    while remove_unused_defs_impl(&defs) { }
+    while remove_unused_defs_impl(&mut defs) { }
 }
 
 // Returns true if tree structure has been changed.
-fn remove_unused_defs_impl(defs: &Node) -> bool {
+fn remove_unused_defs_impl(defs: &mut Node) -> bool {
     // TODO: understand how styles are propagates inside defs
 
     let mut mv_nodes = Vec::new();
@@ -57,7 +57,7 @@ fn remove_unused_defs_impl(defs: &Node) -> bool {
         defs.append(&node);
     }
 
-    for node in rm_nodes {
+    for node in &mut rm_nodes {
         node.remove();
     }
 
@@ -83,7 +83,7 @@ fn ungroup_children(node: &Node, mv_nodes: &mut Vec<Node>, rm_nodes: &mut Vec<No
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -190,7 +190,9 @@ mod tests {
     <defs>
         <foreignObject>
             <svg>
-                <text id='hello'>Hello</text>
+                <text id='hello'>
+                    Hello
+                </text>
             </svg>
         </foreignObject>
     </defs>
@@ -202,7 +204,9 @@ mod tests {
     <defs>
         <text id='hello'>Hello</text>
     </defs>
-    <text><tref xlink:href='#hello'/></text>
+    <text>
+        <tref xlink:href='#hello'/>
+    </text>
 </svg>
 ");
 

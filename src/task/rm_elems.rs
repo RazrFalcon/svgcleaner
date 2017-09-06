@@ -21,21 +21,21 @@ use svgdom::Document;
 use task::short::EId;
 
 // TODO: to mod::utils
-pub fn remove_element(doc: &Document, id: EId) {
+pub fn remove_element(doc: &mut Document, id: EId) {
     doc.drain(|n| n.is_tag_name(id));
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString, ElementId};
+    use svgdom::{Document, ToStringWithOptions, ElementId};
 
     macro_rules! test {
         ($name:ident, $id:expr, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_str($in_text).unwrap();
-                remove_element(&doc, $id);
+                let mut doc = Document::from_str($in_text).unwrap();
+                remove_element(&mut doc, $id);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
         )

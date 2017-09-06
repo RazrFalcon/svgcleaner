@@ -206,7 +206,7 @@ macro_rules! gen_precision {
 }
 
 pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
-    debug_assert!(KEYS.0.len() - 1 == Key::Stdout as usize);
+    debug_assert_eq!(KEYS.0.len() - 1, Key::Stdout as usize);
 
     // NOTE: We use custom help output, because 'clap' doesn't support
     //       args grouping.
@@ -417,14 +417,9 @@ impl<'a> Flags<'a> {
 }
 
 pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
-    // Initial options should be opposite to default ones.
     let mut opt = ParseOptions {
-        parse_comments: true,
-        parse_declarations: true,
-        parse_unknown_elements: true,
-        parse_unknown_attributes: true,
         parse_px_unit: false,
-        skip_unresolved_classes: false,
+        .. ParseOptions::default()
     };
 
     let flags = Flags::new(args);

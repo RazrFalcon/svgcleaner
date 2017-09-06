@@ -78,8 +78,9 @@ pub fn apply_transform(path: &mut Path, ts: &Transform) {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::*;
-    use svgdom::FromStream;
     use svgdom::types::path::Path;
     use svgdom::types::Transform;
 

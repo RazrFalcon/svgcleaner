@@ -25,7 +25,7 @@ use svgdom::{
 use task::short::EId;
 
 pub fn ungroup_defs(doc: &Document) {
-    for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::Defs)) {
+    for mut node in doc.descendants().filter(|n| n.is_tag_name(EId::Defs)) {
         let mut is_valid = true;
         for child in node.children() {
             if !child.is_referenced() {
@@ -35,10 +35,10 @@ pub fn ungroup_defs(doc: &Document) {
         }
 
         if is_valid {
-            let nodes: Vec<Node> = node.children().collect();
-            for n in nodes {
+            let mut nodes: Vec<Node> = node.children().collect();
+            for n in &mut nodes {
                 n.detach();
-                node.insert_before(&n);
+                node.insert_before(n);
             }
 
             node.remove();
@@ -49,7 +49,7 @@ pub fn ungroup_defs(doc: &Document) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

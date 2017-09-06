@@ -358,7 +358,7 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
                 .arg("--remove-gradient-attributes=yes")
                 .arg("--join-arcto-flags=yes")
                 .arg("--apply-transform-to-paths=yes")
-                .arg("--indent=2")
+                .arg("--indent=2") // we use indent to test text nodes saving
                 .arg("--remove-unreferenced-ids=no")
                 .arg("--trim-ids=no")
                 .arg(in_path)
@@ -382,19 +382,19 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
                 // list of "not errors"
                 if    se.find("Error: Scripting is not supported.").is_some()
                    || se.find("Error: Animation is not supported.").is_some()
-                   || se.find("Error: Valid FuncIRI").is_some()
-                   || se.find("Error: Broken FuncIRI").is_some()
-                   || se.find("Error: Unsupported CSS at").is_some()
-                   || se.find("Error: Element crosslink").is_some()
+                   || se.find("Error: valid FuncIRI").is_some()
+                   || se.find("Error: broken FuncIRI").is_some()
+                   || se.find("Error: unsupported CSS at").is_some()
+                   || se.find("Error: element crosslink").is_some()
                    || se.find("Error: Conditional processing").is_some()
                    || se.find("Error: The 'xlink:href' attribute").is_some()
-                   || se.find("Error: Unsupported ENTITY").is_some()
+                   || se.find("Error: unsupported ENTITY").is_some()
                    || se.find("Error: The 'use' element with").is_some()
                    || se.find("Error: The attribute 'offset'").is_some()
-                   || se.find("Error: Document didn't have any nodes").is_some()
-                   || se.find("Error: Invalid color at").is_some()
-                   || se.find("Error: Unsupported token at").is_some()
-                   || se.find("Error: Invalid length at").is_some()
+                   || se.find("Error: document didn't have any nodes").is_some()
+                   || se.find("Error: invalid color at").is_some()
+                   || se.find("Error: Unsupported token at").is_some() // simplecss error
+                   || se.find("Error: invalid length at").is_some()
                    || se.find("Error: Cleaned file is bigger").is_some() {
                     return true;
                 }
@@ -420,11 +420,13 @@ impl TestCache {
         let is_exist = Path::new(path).exists();
         let conn = rusqlite::Connection::open(path).unwrap();
         if !is_exist {
-            conn.execute("CREATE TABLE Files (
-                          ID              INTEGER PRIMARY KEY,
-                          Path            TEXT NOT NULL,
-                          Md5Hash         TEXT NOT NULL
-                          )", &[]).unwrap();
+            conn.execute(
+                "CREATE TABLE Files (
+                 ID              INTEGER PRIMARY KEY,
+                 Path            TEXT NOT NULL,
+                 Md5Hash         TEXT NOT NULL
+                 )",
+            &[]).unwrap();
         }
 
         TestCache {
@@ -445,8 +447,10 @@ impl TestCache {
     }
 
     pub fn append_hash(&self, file_path: &str, md5: &str) {
-        let mut stmt = self.connection.prepare("INSERT INTO Files (Path, Md5Hash) \
-                                                VALUES (?, ?)").unwrap();
+        let mut stmt = self.connection.prepare(
+            "INSERT INTO Files (Path, Md5Hash) \
+             VALUES (?, ?)"
+         ).unwrap();
         stmt.execute(&[&file_path, &md5]).unwrap();
     }
 

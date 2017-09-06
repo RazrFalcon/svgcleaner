@@ -32,8 +32,8 @@ macro_rules! base_test {
     ($name:ident, $functor:expr, $in_text:expr, $out_text:expr) => (
         #[test]
         fn $name() {
-            let doc = Document::from_str($in_text).unwrap();
-            $functor(&doc);
+            let mut doc = Document::from_str($in_text).unwrap();
+            $functor(&mut doc);
             assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
         }
     )

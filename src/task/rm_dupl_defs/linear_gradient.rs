@@ -33,7 +33,7 @@ pub fn remove_dupl_linear_gradients(doc: &Document) {
         AId::SpreadMethod,
     ];
 
-    let mut nodes = doc.descendants().svg()
+    let mut nodes = doc.descendants()
                        .filter(|n| n.is_tag_name(EId::LinearGradient))
                        .collect::<Vec<Node>>();
 
@@ -53,15 +53,15 @@ pub fn remove_dupl_linear_gradients(doc: &Document) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
-    use svgdom;
+    use svgdom::{Document, ToStringWithOptions};
+    use task;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
-                svgdom::postproc::resolve_linear_gradient_attributes(&doc);
+                task::resolve_linear_gradient_attributes(&doc);
                 remove_dupl_linear_gradients(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }

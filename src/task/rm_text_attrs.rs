@@ -63,8 +63,8 @@ pub fn remove_text_attributes(doc: &Document) {
     // only when there is no text in a whole doc.
     // Can't do it inside '_remove_text_attributes'.
     if !has_text {
-        for node in doc.descendants().svg() {
-            if node.is_tag_name(EId::FontFace) {
+        for (id, mut node) in doc.descendants().svg() {
+            if id == EId::FontFace {
                 node.remove_attributes(TEXT_ATTRIBUTES);
             }
         }
@@ -79,7 +79,7 @@ fn _remove_text_attributes(parent: &Node) -> bool {
 
     // Shorthand for no_text_data.
     let mut no_td = true;
-    for node in parent.children() {
+    for mut node in parent.children() {
         // The 'line-height' property has no effect on text layout in SVG.
         //
         // https://www.w3.org/TR/SVG/text.html#FontProperty
@@ -169,7 +169,7 @@ fn remove_xml_space(doc: &Document) {
 fn _remove_xml_space(parent: &Node) {
     // Processes the tree recursively.
 
-    for node in parent.children() {
+    for mut node in parent.children() {
         // Check that node has attribute xml:space=preserve.
         //
         // xml:space=default will be removed by remove_default_attributes.
@@ -212,7 +212,7 @@ fn _remove_xml_space(parent: &Node) {
 }
 
 fn is_text_contains_spaces(text_node: &Node) -> bool {
-    debug_assert!(text_node.node_type() == NodeType::Text);
+    debug_assert_eq!(text_node.node_type(), NodeType::Text);
 
     let text = text_node.text();
 
@@ -244,7 +244,7 @@ fn is_text_contains_spaces(text_node: &Node) -> bool {
 mod tests {
     use super::*;
     use super::remove_xml_space;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -275,9 +275,7 @@ mod tests {
     test!(rm_text_3,
 "<svg>
     <g font-family='Verdana'>
-        <text text-anchor='middle'>
-            text
-        </text>
+        <text text-anchor='middle'>text</text>
     </g>
     <g font-family='Verdana'>
         <rect/>
@@ -333,12 +331,22 @@ mod tests {
 </svg>
 ");
 
-    test_eq!(keep_text_3,
+    test!(keep_text_3,
 "<svg>
     <defs>
         <text id='hello'>Hello</text>
     </defs>
-    <text font-family='Verdana'><tref xlink:href='#hello'/></text>
+    <text font-family='Verdana'>
+        <tref xlink:href='#hello'/>
+    </text>
+</svg>",
+"<svg>
+    <defs>
+        <text id='hello'>Hello</text>
+    </defs>
+    <text font-family='Verdana'>
+        <tref xlink:href='#hello'/>
+    </text>
 </svg>
 ");
 

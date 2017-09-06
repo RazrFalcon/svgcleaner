@@ -217,8 +217,9 @@ fn is_line_based(seg: Command) -> bool
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::*;
-    use svgdom::FromStream;
     use svgdom::types::path::Path;
     use task::paths::conv_segments;
 

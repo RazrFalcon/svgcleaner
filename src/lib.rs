@@ -18,10 +18,18 @@
 
 #![forbid(unsafe_code)]
 
+#![cfg_attr(feature="clippy", feature(plugin))]
+#![cfg_attr(feature="clippy", plugin(clippy))]
+#![cfg_attr(feature="clippy", allow(collapsible_if))]
+#![cfg_attr(feature="clippy", allow(many_single_char_names))]
+#![cfg_attr(feature="clippy", allow(cyclomatic_complexity))]
+
 #[cfg(feature = "cli-parsing")]
 #[macro_use]
 extern crate clap;
 
+#[macro_use]
+extern crate log;
 extern crate svgdom;
 
 pub use svgdom::{

@@ -45,16 +45,16 @@ pub fn prepare_transforms(parent: &Node, recurcive: bool, opt: &CleaningOptions)
 
     valid_elems.push(EId::G);
 
-    let iter = parent.descendants().svg().filter(|n|    n.is_tag_name(EId::G)
-                                                     && n.has_attribute(AId::Transform));
+    let iter = parent.descendants().filter(|n|    n.is_tag_name(EId::G)
+                                               && n.has_attribute(AId::Transform));
 
-    for node in iter {
+    for mut node in iter {
         if !utils::has_valid_transform(&node) || !utils::is_valid_attrs(&node) {
             continue;
         }
 
         // Check that all children is valid.
-        let is_valid = node.children().svg().all(|n| {
+        let is_valid = node.children().all(|n| {
             let tag_name = n.tag_id().unwrap();
 
             let is_valid_coords = if tag_name == EId::Path || tag_name == EId::G {
@@ -82,7 +82,7 @@ pub fn prepare_transforms(parent: &Node, recurcive: bool, opt: &CleaningOptions)
 }
 
 fn apply_ts_to_children(node: &Node, ts: Transform) {
-    for child in node.children().svg() {
+    for (_, mut child) in node.children().svg() {
         if child.has_attribute(AId::Transform) {
             // We should multiply transform matrices.
             let mut ts1 = ts;
@@ -99,7 +99,7 @@ fn apply_ts_to_children(node: &Node, ts: Transform) {
 mod tests {
     use super::*;
     use options::CleaningOptions;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

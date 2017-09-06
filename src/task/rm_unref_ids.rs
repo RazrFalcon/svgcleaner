@@ -19,7 +19,7 @@
 use svgdom::Document;
 
 pub fn remove_unreferenced_ids(doc: &Document) {
-    for node in doc.descendants() {
+    for mut node in doc.descendants() {
         if node.has_id() && !node.is_used() {
             node.set_id(String::new());
         }
@@ -30,7 +30,7 @@ pub fn remove_unreferenced_ids(doc: &Document) {
 mod tests {
     use super::*;
     use svgdom::Document;
-    use svgdom::WriteToString;
+    use svgdom::ToStringWithOptions;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

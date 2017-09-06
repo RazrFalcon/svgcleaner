@@ -28,19 +28,19 @@ use super::utils;
 
 pub fn apply_transform_to_shapes(doc: &Document) {
     // Apply transform to shapes.
-    let iter = doc.descendants().svg().filter(|n| n.has_attribute(AId::Transform));
-    for node in iter {
+    let iter = doc.descendants().filter(|n| n.has_attribute(AId::Transform));
+    for mut node in iter {
         match node.tag_id().unwrap() {
-            EId::Rect => process_rect(&node),
-            EId::Circle => process_circle(&node),
-            EId::Ellipse => process_ellipse(&node),
-            EId::Line => process_line(&node),
+            EId::Rect => process_rect(&mut node),
+            EId::Circle => process_circle(&mut node),
+            EId::Ellipse => process_ellipse(&mut node),
+            EId::Line => process_line(&mut node),
             _ => {}
         }
     }
 }
 
-fn process<F>(node: &Node, func: F)
+fn process<F>(node: &mut Node, func: F)
     where F : Fn(&mut Attributes, &Transform)
 {
     if    !utils::has_valid_transform(node)
@@ -64,7 +64,7 @@ fn process<F>(node: &Node, func: F)
     }
 }
 
-fn process_rect(node: &Node) {
+fn process_rect(node: &mut Node) {
     process(node, |mut attrs, ts| {
         utils::transform_coords(&mut attrs, AId::X, AId::Y, ts);
 
@@ -80,7 +80,7 @@ fn process_rect(node: &Node) {
     });
 }
 
-fn process_circle(node: &Node) {
+fn process_circle(node: &mut Node) {
     process(node, |mut attrs, ts| {
         utils::transform_coords(&mut attrs, AId::Cx, AId::Cy, ts);
 
@@ -91,7 +91,7 @@ fn process_circle(node: &Node) {
     });
 }
 
-fn process_ellipse(node: &Node) {
+fn process_ellipse(node: &mut Node) {
     process(node, |mut attrs, ts| {
         utils::transform_coords(&mut attrs, AId::Cx, AId::Cy, ts);
 
@@ -103,7 +103,7 @@ fn process_ellipse(node: &Node) {
     });
 }
 
-fn process_line(node: &Node) {
+fn process_line(node: &mut Node) {
     process(node, |mut attrs, ts| {
         utils::transform_coords(&mut attrs, AId::X1, AId::Y1, ts);
         utils::transform_coords(&mut attrs, AId::X2, AId::Y2, ts);
@@ -113,15 +113,17 @@ fn process_line(node: &Node) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
-    use task::utils;
+    use svgdom::{Document, ToStringWithOptions};
+    use task;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
-                utils::resolve_gradient_attributes(&doc).unwrap();
+                task::resolve_linear_gradient_attributes(&doc);
+                task::resolve_radial_gradient_attributes(&doc);
+                task::resolve_stop_attributes(&doc).unwrap();
                 apply_transform_to_shapes(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }

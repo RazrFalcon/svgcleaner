@@ -34,7 +34,7 @@ pub fn remove_dupl_radial_gradients(doc: &Document) {
         AId::SpreadMethod,
     ];
 
-    let mut nodes = doc.descendants().svg()
+    let mut nodes = doc.descendants()
                        .filter(|n| n.is_tag_name(EId::RadialGradient))
                        .collect::<Vec<Node>>();
 
@@ -54,15 +54,15 @@ pub fn remove_dupl_radial_gradients(doc: &Document) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
-    use svgdom;
+    use svgdom::{Document, ToStringWithOptions};
+    use task;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
-                svgdom::postproc::resolve_radial_gradient_attributes(&doc);
+                task::resolve_radial_gradient_attributes(&doc);
                 remove_dupl_radial_gradients(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
@@ -182,13 +182,13 @@ mod tests {
 
     test!(rm_8,
 "<svg>
-    <lenearGradient id='lg1'/>
+    <linearGradient id='lg1'/>
     <radialGradient id='rg1' xlink:href='#lg1'/>
     <radialGradient id='rg2' xlink:href='#lg1'/>
 </svg>",
 "<svg>
-    <lenearGradient id='lg1'/>
-    <radialGradient id='rg1'/>
+    <linearGradient id='lg1'/>
+    <radialGradient id='rg1' xlink:href='#lg1'/>
 </svg>
 ");
 }

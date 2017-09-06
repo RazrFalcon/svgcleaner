@@ -38,13 +38,13 @@ pub fn ungroup_groups(doc: &Document, opt: &CleaningOptions) {
 //
 // If such `g` found - ungroup it and start again from the root `svg` element.
 fn _ungroup_groups(parent: &Node, opt: &CleaningOptions) -> bool {
-    for node in parent.children() {
+    for mut node in parent.children() {
         if node.is_tag_name(EId::G) {
             if can_ungroup(parent, &node) {
-                ungroup_group(&node);
+                ungroup_group(&mut node);
                 node.remove();
 
-                apply_transforms::prepare_transforms(&parent, false, opt);
+                apply_transforms::prepare_transforms(parent, false, opt);
 
                 return true;
             }
@@ -132,9 +132,9 @@ fn can_ungroup(parent: &Node, g: &Node) -> bool {
     false
 }
 
-fn ungroup_group(g: &Node) {
+fn ungroup_group(g: &mut Node) {
     for (aid, attr) in g.attributes().iter_svg() {
-        for child in g.children() {
+        for mut child in g.children() {
             if aid == AId::Opacity {
                 if child.has_attribute(aid) {
                     // We can't just replace 'opacity' attribute,
@@ -162,7 +162,7 @@ fn ungroup_group(g: &Node) {
                         let mut attrs = child.attributes_mut();
                         let av = attrs.get_value_mut(AId::Transform);
                         if let Some(&mut AttributeValue::Transform(ref mut ts)) = av {
-                            t1.append(&ts);
+                            t1.append(ts);
                             *ts = t1;
                         }
                     }
@@ -185,7 +185,7 @@ fn ungroup_group(g: &Node) {
     }
 
     while g.has_children() {
-        let c = g.last_child().unwrap();
+        let mut c = g.last_child().unwrap();
         c.detach();
         g.insert_after(&c);
     }
@@ -194,7 +194,7 @@ fn ungroup_group(g: &Node) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
     use task::{group_defs, remove_empty_defs, rm_unused_defs};
     use options::CleaningOptions;
 
@@ -202,10 +202,10 @@ mod tests {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
-                let doc = Document::from_str($in_text).unwrap();
+                let mut doc = Document::from_str($in_text).unwrap();
 
                 // Prepare defs.
-                group_defs(&doc);
+                group_defs(&mut doc);
 
                 let mut options = CleaningOptions::default();
                 options.apply_transform_to_shapes = true;

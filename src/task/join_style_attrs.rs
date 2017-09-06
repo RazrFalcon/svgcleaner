@@ -33,12 +33,11 @@ pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOpt
         return;
     }
 
-    for node in doc.descendants().svg() {
-        let count;
-        {
+    for (_, mut node) in doc.descendants().svg() {
+        let count = {
             let attrs = node.attributes();
-            count = attrs.iter().filter(|a| a.is_presentation() && a.visible).count();
-        }
+            attrs.iter().filter(|a| a.is_presentation() && a.visible).count()
+        };
 
         // 5 - is an amount of attributes when style notation is becoming more efficient than
         // split attributes.

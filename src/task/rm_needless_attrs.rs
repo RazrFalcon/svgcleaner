@@ -31,14 +31,14 @@ use task::short::{EId, AId};
 // TODO: split to suboptions
 
 pub fn remove_needless_attributes(doc: &Document) {
-    for node in doc.descendants().svg() {
-        match node.tag_id().unwrap() {
+    for (id, mut node) in doc.descendants().svg() {
+        match id {
             EId::ClipPath => process_clip_path(&node),
-            EId::Rect => process_rect(&node),
-            EId::Circle => process_circle(&node),
-            EId::Ellipse => process_ellipse(&node),
-            EId::Line => process_line(&node),
-            EId::Polyline | EId::Polygon => process_poly(&node),
+            EId::Rect => process_rect(&mut node),
+            EId::Circle => process_circle(&mut node),
+            EId::Ellipse => process_ellipse(&mut node),
+            EId::Line => process_line(&mut node),
+            EId::Polyline | EId::Polygon => process_poly(&mut node),
             _ => {}
         }
 
@@ -52,14 +52,14 @@ pub fn remove_needless_attributes(doc: &Document) {
             node.remove_attribute(AId::EnableBackground);
         }
 
-        process_fill(&node);
-        process_stroke(&node);
-        process_overflow(&node);
+        process_fill(&mut node);
+        process_stroke(&mut node);
+        process_overflow(&mut node);
     }
 }
 
 fn process_clip_path(node: &Node) {
-    for child in node.children() {
+    for mut child in node.children() {
         if child.is_used() {
             continue;
         }
@@ -81,7 +81,7 @@ fn process_clip_path(node: &Node) {
     }
 }
 
-fn process_rect(node: &Node) {
+fn process_rect(node: &mut Node) {
     // Remove all non-rect attributes.
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
@@ -94,7 +94,7 @@ fn process_rect(node: &Node) {
     });
 }
 
-fn process_circle(node: &Node) {
+fn process_circle(node: &mut Node) {
     // Remove all non-circle attributes.
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
@@ -104,7 +104,7 @@ fn process_circle(node: &Node) {
     });
 }
 
-fn process_ellipse(node: &Node) {
+fn process_ellipse(node: &mut Node) {
     // Remove all non-ellipse attributes.
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
@@ -115,7 +115,7 @@ fn process_ellipse(node: &Node) {
     });
 }
 
-fn process_line(node: &Node) {
+fn process_line(node: &mut Node) {
     // Remove all non-line attributes.
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
@@ -126,7 +126,7 @@ fn process_line(node: &Node) {
     });
 }
 
-fn process_poly(node: &Node) {
+fn process_poly(node: &mut Node) {
     // Remove all non-polyline/polygon attributes.
     node.attributes_mut().retain(|a| {
            is_basic_shapes_attr(a)
@@ -148,7 +148,7 @@ fn is_basic_shapes_attr(a: &Attribute) -> bool {
     || a.has_id(AId::Transform)
 }
 
-fn process_fill(node: &Node) {
+fn process_fill(node: &mut Node) {
     if !node.has_children() {
         // If 'fill' is disabled we can remove fill-based attributes.
         let av = node.attributes().get_value(AId::Fill).cloned();
@@ -181,7 +181,7 @@ static STROKE_ATTRIBUTES: &'static [AId] = &[
     AId::StrokeOpacity,
 ];
 
-fn process_stroke(node: &Node) {
+fn process_stroke(node: &mut Node) {
     fn is_invisible(node: &Node) -> bool {
         // Skip nodes with marker, because it doesn't count opacity and stroke-width.
         if node.has_attributes(&[AId::Marker, AId::MarkerStart, AId::MarkerMid, AId::MarkerEnd]) {
@@ -242,7 +242,7 @@ fn process_stroke(node: &Node) {
     }
 }
 
-fn process_overflow(node: &Node) {
+fn process_overflow(node: &mut Node) {
     // The 'overflow' property applies to elements that establish new viewports,
     // 'pattern' elements and 'marker' elements. For all other elements,
     // the property has no effect.
@@ -264,7 +264,7 @@ fn process_overflow(node: &Node) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

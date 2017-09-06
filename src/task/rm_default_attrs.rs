@@ -32,7 +32,7 @@ use task::short::{EId, AId, Unit};
 pub fn remove_default_attributes(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);
 
-    for node in doc.descendants().svg() {
+    for (_, mut node) in doc.descendants().svg() {
         let tag_name = node.tag_id().unwrap();
 
         for (aid, attr) in node.attributes().iter_svg() {
@@ -64,11 +64,9 @@ pub fn remove_default_attributes(doc: &Document) {
                                 rm_list.push(aid);
                             }
                         }
-                    } else {
-                        if let AttributeValue::PredefValue(id) = attr.value {
-                            if id == ValueId::Hidden {
-                                rm_list.push(aid);
-                            }
+                    } else if let AttributeValue::PredefValue(id) = attr.value {
+                        if id == ValueId::Hidden {
+                            rm_list.push(aid);
                         }
                     }
                 }
@@ -235,7 +233,7 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

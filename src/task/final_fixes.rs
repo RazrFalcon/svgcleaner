@@ -28,7 +28,7 @@ pub fn remove_empty_defs(doc: &Document) {
 
     // doc must contain 'svg' node, so we can safely unwrap.
     let svg = doc.svg_element().unwrap();
-    for child in svg.children() {
+    for mut child in svg.children() {
         if child.is_tag_name(EId::Defs) && !child.has_children() {
             child.remove();
             break;
@@ -38,10 +38,10 @@ pub fn remove_empty_defs(doc: &Document) {
 
 pub fn fix_xmlns_attribute(doc: &Document, rm_unused: bool) {
     // doc must contain 'svg' node, so we can safely unwrap.
-    let svg = doc.svg_element().unwrap();
+    let mut svg = doc.svg_element().unwrap();
 
     let mut has_links = false;
-    for node in doc.descendants().svg() {
+    for (_, node) in doc.descendants().svg() {
         if node.is_used() {
             has_links = true;
             break;
@@ -67,7 +67,7 @@ pub fn fix_xmlns_attribute(doc: &Document, rm_unused: bool) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

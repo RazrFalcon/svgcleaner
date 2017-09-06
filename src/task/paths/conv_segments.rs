@@ -217,8 +217,9 @@ fn is_point_on_line(x1: f64, y1: f64, x2: f64, y2: f64, x: f64, y: f64) -> bool 
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::*;
-    use svgdom::FromStream;
     use svgdom::types::path::Path;
 
     macro_rules! test {

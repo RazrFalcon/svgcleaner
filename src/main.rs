@@ -17,7 +17,10 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 extern crate svgcleaner;
+extern crate log;
+extern crate fern;
 
+use std::fmt;
 use std::fs;
 use std::path::Path;
 use std::io::{
@@ -47,6 +50,12 @@ macro_rules! try_msg {
 }
 
 fn main() {
+    fern::Dispatch::new()
+        .format(log_format)
+        .level(log::LogLevelFilter::Warn)
+        .chain(std::io::stderr())
+        .apply().unwrap();
+
     let app = cli::prepare_app();
     let args = match app.get_matches_safe() {
         Ok(a) => a,
@@ -102,10 +111,10 @@ fn main() {
     };
 
     // Parse it.
-    let doc = match cleaner::parse_data(&raw[..], &parse_opt) {
+    let mut doc = match cleaner::parse_data(&raw[..], &parse_opt) {
         Ok(d) => d,
         Err(e) => {
-            writeln!(stderr(), "Error: {:?}.", e).unwrap();
+            writeln!(stderr(), "Error: {}.", e).unwrap();
             on_err();
             return;
         }
@@ -121,7 +130,7 @@ fn main() {
         buf.clear();
 
         // Clean document.
-        match cleaner::clean_doc(&doc, &cleaning_opt, &write_opt) {
+        match cleaner::clean_doc(&mut doc, &cleaning_opt, &write_opt) {
             Ok(_) => {}
             Err(e) => {
                 writeln!(stderr(), "Error: {:?}.", e).unwrap();
@@ -165,4 +174,22 @@ fn main() {
         let ratio = 100.0 - (buf.len() as f64) / (raw.len() as f64) * 100.0;
         writeln!(stderr(), "Your image is {:.2}% smaller now.", ratio).unwrap();
     }
+}
+
+fn log_format(out: fern::FormatCallback, message: &fmt::Arguments, record: &log::LogRecord) {
+    use log::LogLevel;
+
+    let lvl = match record.level() {
+        LogLevel::Error => "Error",
+        LogLevel::Warn => "Warning",
+        LogLevel::Info => "Info",
+        LogLevel::Debug => "Debug",
+        LogLevel::Trace => "Trace",
+    };
+
+    out.finish(format_args!(
+        "{}: {}",
+        lvl,
+        message
+    ));
 }

@@ -32,7 +32,7 @@ mod conv_segments;
 mod rm_unused;
 
 pub fn process_paths(doc: &Document, opt: &CleaningOptions) {
-    for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::Path)) {
+    for mut node in doc.descendants().filter(|n| n.is_tag_name(EId::Path)) {
         // We can't process paths with marker, because if we remove all segments
         // it will break rendering.
         //
@@ -56,7 +56,7 @@ pub fn process_paths(doc: &Document, opt: &CleaningOptions) {
 
                         // We must update 'stroke-width' if transform had scale part in it.
                         let (sx, _) = tsl.get_scale();
-                        ::task::utils::recalc_stroke(&node, sx);
+                        ::task::utils::recalc_stroke(&mut node, sx);
                     }
                 }
             }
@@ -140,7 +140,7 @@ mod utils {
 mod tests {
     use super::*;
     use options::CleaningOptions;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

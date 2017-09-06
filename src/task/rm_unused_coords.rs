@@ -26,12 +26,12 @@ use task::short::{EId, AId};
 pub fn remove_unused_coordinates(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);
 
-    for node in doc.descendants().svg() {
+    for (id, mut node) in doc.descendants().svg() {
         {
             let attrs = node.attributes();
 
             // TODO: x, y, dx, dy of the 'tspan' element
-            match node.tag_id().unwrap() {
+            match id {
                 EId::Svg => {
                     // 'x' and 'y' attributes of the root 'svg' element are pointless.
                     // https://www.w3.org/TR/SVG/struct.html#SVGElementXAttribute
@@ -110,7 +110,7 @@ pub fn remove_unused_coordinates(doc: &Document) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

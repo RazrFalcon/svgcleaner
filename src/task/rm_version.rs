@@ -22,7 +22,7 @@ use task::short::AId;
 
 pub fn remove_version(doc: &Document) {
     // doc must contain 'svg' node, so we can safely unwrap.
-    let svg = doc.svg_element().unwrap();
+    let mut svg = doc.svg_element().unwrap();
     svg.remove_attribute(AId::Version);
     svg.remove_attribute(AId::BaseProfile);
 }

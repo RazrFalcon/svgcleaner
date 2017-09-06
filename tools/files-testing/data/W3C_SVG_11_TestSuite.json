@@ -242,7 +242,7 @@
         },
         {
             "name": "pservers-pattern-02-f.svg",
-            "valid_ae": 14057
+            "valid_ae": 14059
         },
         {
             "name": "animate-elem-12-t.svg",
@@ -268,7 +268,7 @@
         {
             "info": "chrome bug",
             "name": "painting-marker-05-f.svg",
-            "valid_ae": 6346
+            "valid_ae": 6435
         }
     ],
     "ignore": [

@@ -25,12 +25,12 @@ use svgdom::{
 
 use task::short::EId;
 
-pub fn group_defs(doc: &Document) {
+pub fn group_defs(doc: &mut Document) {
     // doc must contain 'svg' node, so we can safely unwrap.
-    let svg = doc.svg_element().unwrap();
+    let mut svg = doc.svg_element().unwrap();
 
     // Create 'defs' node if it didn't exist already.
-    let defs = match doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0) {
+    let mut defs = match doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0) {
         Some(n) => n,
         None => doc.create_element(EId::Defs),
     };
@@ -44,7 +44,7 @@ pub fn group_defs(doc: &Document) {
     {
         let mut nodes = Vec::new();
 
-        for node in doc.descendants().svg() {
+        for (_, node) in doc.descendants().svg() {
             if node.is_referenced() {
                 if let Some(parent) = node.parent() {
                     if parent != defs {
@@ -54,17 +54,17 @@ pub fn group_defs(doc: &Document) {
             }
         }
 
-        for n in nodes {
-            resolve_attrs(&n);
+        for n in &mut nodes {
+            resolve_attrs(n);
             n.detach();
-            defs.append(&n);
+            defs.append(n);
         }
     }
 
     // Ungroup all existing 'defs', except main.
     {
         let mut nodes = Vec::new();
-        for node in doc.descendants().svg() {
+        for (_, node) in doc.descendants().svg() {
             if node.is_tag_name(EId::Defs) && node != defs {
                 for child in node.children() {
                     nodes.push(child.clone());
@@ -72,22 +72,22 @@ pub fn group_defs(doc: &Document) {
             }
         }
 
-        for n in nodes {
+        for n in &mut nodes {
             n.detach();
-            defs.append(&n);
+            defs.append(n);
         }
     }
 
     // Remove empty 'defs', except main.
     {
         let mut nodes = Vec::new();
-        for node in doc.descendants().svg() {
+        for (_, node) in doc.descendants().svg() {
             if node.is_tag_name(EId::Defs) && node != defs {
                 nodes.push(node.clone());
             }
         }
 
-        for n in nodes {
+        for n in &mut nodes {
             // Unneeded defs already ungrouped and must be empty.
             debug_assert!(!n.has_children());
             n.remove();
@@ -108,7 +108,7 @@ fn resolve_attrs(node: &Node) {
             while let Some(p) = parent.parent() {
                 let attrs = p.attributes();
                 for (aid, attr) in attrs.iter_svg().filter(|&(_, a)| a.is_inheritable()) {
-                    for child in node.children() {
+                    for mut child in node.children() {
                         if child.has_attribute(aid) {
                             continue;
                         }
@@ -127,7 +127,7 @@ fn resolve_attrs(node: &Node) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

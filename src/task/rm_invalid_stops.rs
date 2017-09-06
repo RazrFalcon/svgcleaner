@@ -27,7 +27,7 @@ use task::utils;
 pub fn remove_invalid_stops(doc: &Document) {
     let mut nodes = Vec::new();
 
-    let iter = doc.descendants().svg()
+    let iter = doc.descendants()
                   .filter(|n| n.is_gradient())
                   .filter(|n| n.has_children());
     for node in iter {
@@ -56,8 +56,8 @@ pub fn remove_invalid_stops(doc: &Document) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
-    use task::utils;
+    use svgdom::{Document, ToStringWithOptions};
+    use task;
     use task::fix_attrs;
 
     macro_rules! test {
@@ -65,7 +65,9 @@ mod tests {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
-                utils::resolve_gradient_attributes(&doc).unwrap();
+                task::resolve_linear_gradient_attributes(&doc);
+                task::resolve_radial_gradient_attributes(&doc);
+                task::resolve_stop_attributes(&doc).unwrap();
                 fix_attrs::fix_invalid_attributes(&doc);
                 remove_invalid_stops(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);

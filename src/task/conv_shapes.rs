@@ -36,19 +36,18 @@ use task::short::{EId, AId, Unit};
 //
 // We should run it before path processing.
 pub fn convert_shapes_to_paths(doc: &Document) {
-    for node in doc.descendants().svg() {
-        // descendants() iterates only over svg elements, which all have a tag name.
-        match node.tag_id().unwrap() {
-            EId::Line => convert_line(&node),
-            EId::Rect => convert_rect(&node),
-            EId::Polyline => convert_polyline(&node),
-            EId::Polygon => convert_polygon(&node),
+    for (id, mut node) in doc.descendants().svg() {
+        match id {
+            EId::Line => convert_line(&mut node),
+            EId::Rect => convert_rect(&mut node),
+            EId::Polyline => convert_polyline(&mut node),
+            EId::Polygon => convert_polygon(&mut node),
             _ => {}
         }
     }
 }
 
-fn convert_line(node: &Node) {
+fn convert_line(node: &mut Node) {
     debug_assert!(node.is_tag_name(EId::Line));
 
     let path = {
@@ -77,7 +76,7 @@ fn convert_line(node: &Node) {
     node.remove_attributes(&[AId::X1, AId::Y1, AId::X2, AId::Y2]);
 }
 
-fn convert_rect(node: &Node) {
+fn convert_rect(node: &mut Node) {
     debug_assert!(node.is_tag_name(EId::Rect));
 
     let path = {
@@ -122,7 +121,7 @@ fn convert_rect(node: &Node) {
     node.remove_attributes(&[AId::X, AId::Y, AId::Rx, AId::Ry, AId::Width, AId::Height]);
 }
 
-fn convert_polyline(node: &Node) {
+fn convert_polyline(node: &mut Node) {
     debug_assert!(node.is_tag_name(EId::Polyline));
 
     let path = match points_to_path(node) {
@@ -135,7 +134,7 @@ fn convert_polyline(node: &Node) {
     node.remove_attribute(AId::Points);
 }
 
-fn convert_polygon(node: &Node) {
+fn convert_polygon(node: &mut Node) {
     debug_assert!(node.is_tag_name(EId::Polygon));
 
     let mut path = match points_to_path(node) {
@@ -162,7 +161,7 @@ fn points_to_path(node: &Node) -> Option<path::Path> {
     };
 
     // Points with an odd count of coordinates must be fixed in fix_attrs::fix_poly.
-    debug_assert!(points.len() % 2 == 0);
+    debug_assert_eq!(points.len() % 2, 0);
 
     let mut i = 0;
     while i < points.len() {
@@ -182,7 +181,7 @@ fn points_to_path(node: &Node) -> Option<path::Path> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

@@ -60,7 +60,7 @@ pub fn parse_data(data: &str, opt: &ParseOptions) -> Result<Document, svgdom::Er
     Document::from_str_with_opt(data, opt)
 }
 
-pub fn clean_doc(doc: &Document, options: &CleaningOptions, opt: &WriteOptions)
+pub fn clean_doc(doc: &mut Document, options: &CleaningOptions, opt: &WriteOptions)
                  -> Result<(), error::Error> {
     preclean_checks(doc)?;
 
@@ -70,8 +70,11 @@ pub fn clean_doc(doc: &Document, options: &CleaningOptions, opt: &WriteOptions)
 
     // Prepare our document.
     // This methods is not optional.
-    utils::resolve_gradient_attributes(doc)?;
-    svgdom::postproc::resolve_inherit(doc);
+    resolve_linear_gradient_attributes(doc);
+    resolve_radial_gradient_attributes(doc);
+    resolve_stop_attributes(doc)?;
+
+    resolve_inherit(doc);
     fix_invalid_attributes(doc);
     group_defs(doc);
 

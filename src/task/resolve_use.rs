@@ -60,7 +60,7 @@ pub fn resolve_use(doc: &Document) {
         }
     }
 
-    for (node, link) in nodes {
+    for (mut node, mut link) in nodes {
         // Unlink 'use'.
         node.remove_attribute(AId::XlinkHref);
 
@@ -104,7 +104,7 @@ pub fn resolve_use(doc: &Document) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

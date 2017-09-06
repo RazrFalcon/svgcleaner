@@ -282,7 +282,7 @@
         },
         {
             "name": "mimetypes/application-rtf.svg",
-            "valid_ae": 5789
+            "valid_ae": 5791
         },
         {
             "name": "mimetypes/application-x-kvtml.svg",
@@ -290,7 +290,7 @@
         },
         {
             "name": "mimetypes/text-enriched.svg",
-            "valid_ae": 5789
+            "valid_ae": 5791
         }
     ],
     "ignore": [

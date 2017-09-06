@@ -41,7 +41,7 @@ pub fn remove_dupl_fe_gaussian_blur(doc: &Document) {
 
     let mut nodes = Vec::new();
 
-    for node in doc.descendants().svg().filter(|n| n.is_tag_name(EId::Filter)) {
+    for node in doc.descendants().filter(|n| n.is_tag_name(EId::Filter)) {
         // We support only filters with one child.
         if node.children().count() != 1 {
             continue;
@@ -112,7 +112,7 @@ fn is_attrs_equal(node1: &Node, node2: &Node, attrs: &[AId]) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
+    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

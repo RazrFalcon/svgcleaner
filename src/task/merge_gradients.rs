@@ -62,12 +62,12 @@ pub fn merge_gradients(doc: &Document) {
 }
 
 fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
-    let iter = doc.descendants().svg().filter(|n| n.is_gradient());
-    for node in iter {
+    let iter = doc.descendants().filter(|n| n.is_gradient());
+    for mut node in iter {
         let linked_node;
 
         if let Some(av) = node.attributes().get_value(AId::XlinkHref) {
-            if let &AttributeValue::Link(ref link) = av {
+            if let AttributeValue::Link(ref link) = *av {
                 if link.uses_count() == 1 && !link.has_attribute(AId::XlinkHref) {
                     linked_node = link.clone();
                 } else {
@@ -83,7 +83,7 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
 
         if !node.has_children() {
             // Append 'stop' elements only when we don't have any before.
-            while let Some(child) = linked_node.first_child() {
+            while let Some(mut child) = linked_node.first_child() {
                 child.detach();
                 node.append(&child);
             }
@@ -128,15 +128,17 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, WriteToString};
-    use task::utils;
+    use svgdom::{Document, ToStringWithOptions};
+    use task;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
-                utils::resolve_gradient_attributes(&doc).unwrap();
+                task::resolve_linear_gradient_attributes(&doc);
+                task::resolve_radial_gradient_attributes(&doc);
+                task::resolve_stop_attributes(&doc).unwrap();
                 merge_gradients(&doc);
                 let mut opt = write_opt_for_tests!();
                 opt.simplify_transform_matrices = true;

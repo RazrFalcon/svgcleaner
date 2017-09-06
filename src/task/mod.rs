@@ -17,10 +17,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 pub use self::conv_shapes::convert_shapes_to_paths;
-pub use self::final_fixes::{
-    remove_empty_defs,
-    fix_xmlns_attribute,
-};
+pub use self::final_fixes::*;
 pub use self::fix_attrs::fix_invalid_attributes;
 pub use self::group_by_style::group_by_style;
 pub use self::group_defs::group_defs;
@@ -28,12 +25,10 @@ pub use self::join_style_attrs::join_style_attributes;
 pub use self::merge_gradients::merge_gradients;
 pub use self::preclean_checks::preclean_checks;
 pub use self::rm_default_attrs::remove_default_attributes;
-pub use self::rm_dupl_defs::{
-    remove_dupl_linear_gradients,
-    remove_dupl_radial_gradients,
-    remove_dupl_fe_gaussian_blur,
-};
+pub use self::rm_dupl_defs::*;
 pub use self::regroup_gradient_stops::regroup_gradient_stops;
+pub use self::resolve_inherit::resolve_inherit;
+pub use self::resolve_gradients::*;
 pub use self::resolve_use::resolve_use;
 pub use self::rm_elems::remove_element;
 pub use self::rm_gradient_attrs::remove_gradient_attributes;
@@ -62,6 +57,8 @@ mod join_style_attrs;
 mod merge_gradients;
 mod preclean_checks;
 mod regroup_gradient_stops;
+mod resolve_inherit;
+mod resolve_gradients;
 mod resolve_use;
 mod rm_default_attrs;
 mod rm_dupl_defs;

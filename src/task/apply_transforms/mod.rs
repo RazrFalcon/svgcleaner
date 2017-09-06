@@ -127,8 +127,8 @@ pub mod utils {
         let x = get_value!(attrs, Length, aid_x, Length::zero());
         let y = get_value!(attrs, Length, aid_y, Length::zero());
 
-        debug_assert!(x.unit == Unit::None);
-        debug_assert!(y.unit == Unit::None);
+        debug_assert_eq!(x.unit, Unit::None);
+        debug_assert_eq!(y.unit, Unit::None);
 
         let (nx, ny) = ts.apply(x.num, y.num);
         attrs.insert_from(aid_x, (nx, Unit::None));

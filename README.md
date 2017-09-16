@@ -46,7 +46,7 @@ Usually more than half of an SVG image's data is useless for rendering. For exam
  - [svgo](https://github.com/svg/svgo)
  - [scour](https://github.com/scour-project/scour)
 
-In addition to the obvious advantages of *svgcleaner* — like correctness, cleaning ratio and performance,
+In addition to the main advantages of *svgcleaner* — like correctness, cleaning ratio and performance,
 which are described below — there are some more nuances to be aware of:
 
 1. *svgcleaner* cleans only one SVG file. It doesn't process SVGZ files.
@@ -130,7 +130,6 @@ that will be changed, such as:
 - The `class` attribute will be processed and removed
 - Paths and transformations will be reformatted
 - `currentColor` and `inherit` attributes values will be resolved
-- Referenced elements will be moved to the `defs` element
 - IRI and FuncIRI attributes that reference non-existing objects will be removed
 - If the `offset` attribute value of the `stop` element is represented as percentage - it will be
   converted into a decimal number

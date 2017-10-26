@@ -63,7 +63,7 @@ Correctness
 
 *Less is better.*
 
-.. image:: https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.9.0/docs/images/correctness_chart_W3C_SVG_11_TestSuite.svg
+.. image:: docs/images/correctness_chart_W3C_SVG_11_TestSuite.svg
 
 \* Most of the errors were due to incorrect ``font-face`` processing.
 Without including font-based errors, scores were:
@@ -73,7 +73,7 @@ Without including font-based errors, scores were:
 
 ----------
 
-.. image:: https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.9.0/docs/images/correctness_chart_oxygen.svg
+.. image:: docs/images/correctness_chart_oxygen.svg
 
 \* Errors produced by numeric rounding were ignored.
 
@@ -82,22 +82,22 @@ Cleaning ratio
 
 *More is better.*
 
-.. image:: https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.9.0/docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg
+.. image:: docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg
 
 \* Note that svgo_ and scour_ break most of the files.
 
 ----------
 
-.. image:: https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.9.0/docs/images/ratio_chart_oxygen.svg
+.. image:: docs/images/ratio_chart_oxygen.svg
 
 Cleaning time
 `````````````
 
 *Less is better.*
 
-.. image:: https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.9.0/docs/images/performance_chart_W3C_SVG_11_TestSuite.svg
+.. image:: docs/images/performance_chart_W3C_SVG_11_TestSuite.svg
 
-.. image:: https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.9.0/docs/images/performance_chart_oxygen.svg
+.. image:: docs/images/performance_chart_oxygen.svg
 
 Other
 `````

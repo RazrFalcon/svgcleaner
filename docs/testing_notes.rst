@@ -30,10 +30,10 @@ only because rendering application will treat new data differently.
 There are lots of examples (which is not categorized yet):
 
 - These two paths are the same: ``M 10 -20 A 5.5 0.3 -4 1 1 0 -0.1``, ``M10-20A5.5.3-4 110-.1``.
-  Sadly, most of the applications doesn't support such notation, even throw it's valid by SVG spec.
+  Sadly, most of the applications doesn't support such notation, even tough it's valid by SVG spec.
 - ``clipPath`` element can contain only specific elements, but some applications renders all of them.
   So when *svgcleaner* removes invalid elements - the result image will be rendered differently,
-  even throw it's correct by SVG spec.
+  even tough it's correct by SVG spec.
 - And so on...
 
 And again - such artifacts is not an error.

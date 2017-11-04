@@ -39,7 +39,7 @@ Alternatives
 - scour_
 
 .. _svgo: https://github.com/svg/svgo
-.. _scour: scour
+.. _scour: https://github.com/scour-project/scour
 
 In addition to the main advantages of *svgcleaner* — like correctness, cleaning ratio and performance,
 which are described below — there are some more nuances to be aware of:

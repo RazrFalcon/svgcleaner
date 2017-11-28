@@ -46,7 +46,7 @@ which are described below — there are some more nuances to be aware of:
 
 #. *svgcleaner* cleans only one SVG file. It doesn't process SVGZ files.
    It doesn't process directories. It doesn't do anything else. Just one task*.
-#. *svgcleaner* is strictly lossless. There are no destructive cleaning options.
+#. *svgcleaner* is strictly lossless by default. There are no destructive cleaning options enabled by default.
 #. *svgcleaner* is portable. You can build it into a single executable without any external dependencies.
 
 \* You can get all of these features using the `GUI <https://github.com/RazrFalcon/svgcleaner-gui>`_.

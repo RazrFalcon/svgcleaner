@@ -35,7 +35,10 @@ use svgcleaner::cli::{
     Key,
     KEYS,
 };
-use svgcleaner::cleaner;
+use svgcleaner::{
+    cleaner,
+    ChainedErrorExt,
+};
 
 macro_rules! try_msg {
     ($e:expr) => ({
@@ -78,7 +81,7 @@ fn main() {
 
     if let InputFrom::File(path) = input {
         if !Path::new(path).exists() {
-            writeln!(stderr(), "Error: Input file does not exist.").unwrap();
+            writeln!(stderr(), "Error: input file does not exist.").unwrap();
             return;
         }
     }
@@ -114,7 +117,7 @@ fn main() {
     let mut doc = match cleaner::parse_data(&raw[..], &parse_opt) {
         Ok(d) => d,
         Err(e) => {
-            writeln!(stderr(), "Error: {}.", e).unwrap();
+            writeln!(stderr(), "{}.", e.full_chain()).unwrap();
             on_err();
             return;
         }
@@ -133,7 +136,7 @@ fn main() {
         match cleaner::clean_doc(&mut doc, &cleaning_opt, &write_opt) {
             Ok(_) => {}
             Err(e) => {
-                writeln!(stderr(), "Error: {:?}.", e).unwrap();
+                writeln!(stderr(), "{}.", e.full_chain()).unwrap();
                 on_err();
                 break;
             }
@@ -158,7 +161,7 @@ fn main() {
     // Check that cleaned file is smaller.
     if !args.is_present(KEYS[Key::AllowBiggerFile]) {
         if buf.len() > raw.len() {
-            writeln!(stderr(), "Error: Cleaned file is bigger than original.").unwrap();
+            writeln!(stderr(), "Error: cleaned file is bigger than original.").unwrap();
             on_err();
             return;
         }

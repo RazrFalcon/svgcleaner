@@ -18,8 +18,9 @@ use svgdom::types::{
     LengthUnit,
 };
 
-use {
-    Error,
+use error::{
+    ErrorKind,
+    Result,
 };
 
 /// Resolve attributes of `linearGradient` elements.
@@ -99,7 +100,7 @@ pub fn resolve_radial_gradient_attributes(doc: &Document) {
 ///
 /// Will return `Error::MissingAttribute` if `stop` element,
 /// which is not a first child of a gradient, didn't have an `offset` attribute.
-pub fn resolve_stop_attributes(doc: &Document) -> Result<(), Error> {
+pub fn resolve_stop_attributes(doc: &Document) -> Result<()> {
     for gradient in doc.descendants().filter(|n| n.is_gradient()) {
         for (idx, mut node) in gradient.children().enumerate() {
             let av = node.attributes().get_value(AttributeId::Offset).cloned();
@@ -116,8 +117,8 @@ pub fn resolve_stop_attributes(doc: &Document) -> Result<(), Error> {
                            Fallback to 'offset=0'.");
                     node.set_attribute((AttributeId::Offset, Length::zero()));
                 } else {
-                    return Err(Error::MissingAttribute("stop".to_string(),
-                                                       "offset".to_string()));
+                    return Err(ErrorKind::MissingAttribute("stop".to_string(),
+                                                           "offset".to_string()).into());
                 }
             }
 

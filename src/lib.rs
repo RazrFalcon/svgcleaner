@@ -30,15 +30,21 @@ extern crate clap;
 
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate error_chain;
 extern crate svgdom;
 
 pub use svgdom::{
+    ChainedErrorExt,
     ParseOptions,
-    WriteOptions
+    WriteOptions,
 };
 
 pub use options::*;
-pub use error::Error;
+pub use error::{
+    Error,
+    ErrorKind,
+};
 
 #[cfg(feature = "cli-parsing")]
 pub mod cli;

@@ -23,9 +23,12 @@ use svgdom::{
 };
 
 use task::short::{EId, AId};
-use error::Error;
+use error::{
+    ErrorKind,
+    Result,
+};
 
-pub fn preclean_checks(doc: &Document) -> Result<(), Error> {
+pub fn preclean_checks(doc: &Document) -> Result<()> {
     check_for_unsupported_elements(doc)?;
     check_for_script_attributes(doc)?;
     check_for_conditional_attributes(doc)?;
@@ -34,18 +37,18 @@ pub fn preclean_checks(doc: &Document) -> Result<(), Error> {
     Ok(())
 }
 
-fn check_for_unsupported_elements(doc: &Document) -> Result<(), Error> {
+fn check_for_unsupported_elements(doc: &Document) -> Result<()> {
     for (_, node) in doc.descendants().svg() {
         match node.tag_id().unwrap() {
             EId::Script => {
-                return Err(Error::ScriptingIsNotSupported);
+                return Err(ErrorKind::ScriptingIsNotSupported.into());
             }
               EId::Animate
             | EId::AnimateColor
             | EId::AnimateMotion
             | EId::AnimateTransform
             | EId::Set => {
-                return Err(Error::AnimationIsNotSupported);
+                return Err(ErrorKind::AnimationIsNotSupported.into());
             }
             _ => {}
         }
@@ -54,14 +57,14 @@ fn check_for_unsupported_elements(doc: &Document) -> Result<(), Error> {
     Ok(())
 }
 
-fn check_for_script_attributes(doc: &Document) -> Result<(), Error> {
+fn check_for_script_attributes(doc: &Document) -> Result<()> {
     for (_, node) in doc.descendants().svg() {
         for attr in node.attributes().iter() {
             if     attr.is_graphical_event()
                 || attr.is_document_event()
                 || attr.is_animation_event()
             {
-                return Err(Error::ScriptingIsNotSupported);
+                return Err(ErrorKind::ScriptingIsNotSupported.into());
             }
         }
     }
@@ -69,7 +72,7 @@ fn check_for_script_attributes(doc: &Document) -> Result<(), Error> {
     Ok(())
 }
 
-fn check_for_conditional_attributes(doc: &Document) -> Result<(), Error> {
+fn check_for_conditional_attributes(doc: &Document) -> Result<()> {
     // TODO: what to do with 'requiredExtensions'?
 
     macro_rules! check_attr {
@@ -78,7 +81,7 @@ fn check_for_conditional_attributes(doc: &Document) -> Result<(), Error> {
             if let Some(&AttributeValue::String(ref s)) = attrs.get_value($aid) {
                 if !s.is_empty() {
                     // NOTE: We are only care about non-empty attributes.
-                    return Err(Error::ConditionalProcessingIsNotSupported);
+                    return Err(ErrorKind::ConditionalProcessingIsNotSupported.into());
                 }
             }
         )
@@ -92,7 +95,7 @@ fn check_for_conditional_attributes(doc: &Document) -> Result<(), Error> {
     Ok(())
 }
 
-fn check_for_external_xlink(doc: &Document) -> Result<(), Error> {
+fn check_for_external_xlink(doc: &Document) -> Result<()> {
     for (_, node) in doc.descendants().svg() {
         if !node.has_attribute(AId::XlinkHref) {
             continue;
@@ -108,7 +111,7 @@ fn check_for_external_xlink(doc: &Document) -> Result<(), Error> {
 
         let attrs = node.attributes();
         if let AttributeValue::String(ref s) = *attrs.get_value(AId::XlinkHref).unwrap() {
-            return Err(Error::ExternalHrefIsNotSupported(s.clone()));
+            return Err(ErrorKind::ExternalHrefIsNotSupported(s.clone()).into());
         }
     }
 
@@ -118,15 +121,14 @@ fn check_for_external_xlink(doc: &Document) -> Result<(), Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::Document;
-    use error::Error;
+    use svgdom::{Document, ChainedErrorExt};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $err:expr) => (
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
-                assert_eq!(preclean_checks(&doc).err().unwrap(), $err);
+                assert_eq!(preclean_checks(&doc).unwrap_err().full_chain(), $err);
             }
         )
     }
@@ -142,19 +144,19 @@ mod tests {
     }
 
     test!(test_scripting_1, "<svg><script/></svg>",
-          Error::ScriptingIsNotSupported);
+          "Error: scripting is not supported");
 
     test!(test_scripting_2, "<svg onload=''/>",
-          Error::ScriptingIsNotSupported);
+          "Error: scripting is not supported");
 
     test!(test_animation_1, "<svg><set/></svg>",
-          Error::AnimationIsNotSupported);
+          "Error: animation is not supported");
 
     test!(test_conditions_1, "<svg><switch requiredFeatures='text'/></svg>",
-          Error::ConditionalProcessingIsNotSupported);
+          "Error: conditional processing attributes is not supported");
 
     test!(test_conditions_2, "<svg><switch systemLanguage='en'/></svg>",
-          Error::ConditionalProcessingIsNotSupported);
+          "Error: conditional processing attributes is not supported");
 
     test_ok!(test_conditions_3, "<svg><switch requiredFeatures=''/></svg>");
     test_ok!(test_conditions_4, "<svg><switch systemLanguage=''/></svg>");

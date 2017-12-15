@@ -213,7 +213,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
 
     App::new("svgcleaner")
         .help(include_str!("../data/help.txt"))
-        .version("0.10.0")
+        .version(env!("CARGO_PKG_VERSION"))
         .arg(Arg::with_name("in-file")
             .required(true)
             .index(1)

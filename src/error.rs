@@ -16,46 +16,41 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use std::fmt;
+use svgdom;
 
-// use svgdom;
+error_chain! {
+    types {
+        Error, ErrorKind, ResultExt, Result;
+    }
 
-#[derive(PartialEq)]
-pub enum Error {
-    UnresolvedAttribute(String), // attribute name
-    MissingAttribute(String, String), // tag name, attribute name
-    ScriptingIsNotSupported,
-    AnimationIsNotSupported,
-    ConditionalProcessingIsNotSupported,
-    ExternalHrefIsNotSupported(String), // ref data
-}
+    links {
+        Dom(svgdom::Error, svgdom::ErrorKind) #[doc = "svgdom errors"];
+    }
 
-impl fmt::Debug for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Error::UnresolvedAttribute(ref name) =>
-                write!(f, "Failed to resolved attribute '{}'", name),
-            Error::MissingAttribute(ref tag_name, ref attr_name) =>
-                write!(f, "The attribute '{}' is missing in the '{}' element", attr_name, tag_name),
-            Error::ScriptingIsNotSupported =>
-                write!(f, "Scripting is not supported"),
-            Error::AnimationIsNotSupported =>
-                write!(f, "Animation is not supported"),
-            Error::ConditionalProcessingIsNotSupported =>
-                write!(f, "Conditional processing attributes is not supported"),
-            Error::ExternalHrefIsNotSupported(ref s) =>
-                write!(f, "The 'xlink:href' attribute is referencing an external object '{}', \
-                           which is not supported", s),
+    errors {
+        UnresolvedAttribute(attr_name: String) {
+            display("failed to resolved attribute '{}'", attr_name)
+        }
+
+        MissingAttribute(tag_name: String, attr_name: String) {
+            display("the attribute '{}' is missing in the '{}' element", attr_name, tag_name)
+        }
+
+        ScriptingIsNotSupported {
+            display("scripting is not supported")
+        }
+
+        AnimationIsNotSupported {
+            display("animation is not supported")
+        }
+
+        ConditionalProcessingIsNotSupported {
+            display("conditional processing attributes is not supported")
+        }
+
+        ExternalHrefIsNotSupported(ref_data: String) {
+            display("the 'xlink:href' attribute is referencing an external object '{}', \
+                     which is not supported", ref_data)
         }
     }
 }
-
-// impl From<svgdom::Error> for Error {
-//     fn from(value: svgdom::Error) -> Error {
-//         match value {
-//             svgdom::Error::MissingAttribute(tag_name, attr_name) =>
-//                     Error::MissingAttribute(tag_name, attr_name),
-//             _ => unreachable!(),
-//         }
-//     }
-// }

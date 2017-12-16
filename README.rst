@@ -65,17 +65,9 @@ Correctness
 
 .. image:: docs/images/correctness_chart_W3C_SVG_11_TestSuite.svg
 
-\* Most of the errors were due to incorrect ``font-face`` processing.
-Without including font-based errors, scores were:
-
-- svgo_: 100
-- scour_: 78
-
 ----------
 
 .. image:: docs/images/correctness_chart_oxygen.svg
-
-\* Errors produced by numeric rounding were ignored.
 
 Cleaning ratio
 ``````````````
@@ -84,7 +76,7 @@ Cleaning ratio
 
 .. image:: docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg
 
-\* Note that svgo_ and scour_ break most of the files.
+\* scour_ creates bigger files (-18.78%).
 
 ----------
 
@@ -123,8 +115,6 @@ Collection                 Size Before (MiB)  Size After (MiB)  Ratio (%)
 .. _`Adwaita icons theme`: https://github.com/GNOME/adwaita-icon-theme
 .. _`Faience icon theme`: https://www.archlinux.org/packages/community/any/faience-icon-theme/
 .. _`GCP Icons`: https://cloud.google.com/icons/files/gcp-icons.zip
-
-You can find more tests, with detailed explanations of errors, `here <docs/extended_testing.rst>`_.
 
 Documentation
 -------------

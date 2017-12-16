@@ -5,10 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [0.9.2] - 2017-12-16
 ### Added
 - `--group-by-style` can group two nodes now.
 - `--group-by-style` can group into `svg` now.
-- `defs` element is always a first child of an `svg` now.
+- `defs` element is always the first child of an `svg` now.
 
 ### Fixed
 - Groups ungrouping inside a `switch` element.
@@ -244,7 +246,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First public release with Perl backend and Qt GUI.
 
-[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.2...HEAD
+[0.9.2]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.8.0...v0.8.1

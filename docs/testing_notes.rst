@@ -61,7 +61,7 @@ Testing algorithm looks like this:
 #. Render cleaned image in the same way.
 #. Compare images using imagemagick's ``compare``:
 
-   ``compare -metric AE -fuzz 1% orig.png cleaned.png diff.png``
+   ``compare -metric AE -fuzz 10% orig.png cleaned.png diff.png``
 #. If AE value is bigger than 2% [2]_ of the image size - we have an error.
 
 .. [1] ``svgrender`` is based on QtWebKit fork, which is the best way to render SVG from CLI.
@@ -71,13 +71,13 @@ Testing algorithm looks like this:
 Notes
 =====
 
-- PC: i5-3570k 3.8GHz, Gentoo Linux Stable x86_64.
+- PC: i5-3570k 3.4GHz, Gentoo Linux x86_64.
 - Input files are stored on HDD, cleaned files were saved to the ``tmpfs``.
 - All tests are single-threaded.
 - I know that a performance comparison is not fair since ``svgo`` have to restart ``node.js``
   each time. But I don't know how to prevent it or ignore ``node.js`` starting time.
 - Cleaners options can be found [here](../tools/stats/src/main.rs).
-- Used ``node.js``: ``7.10.0(icu npm snapshot ssl -debug -doc -systemtap -test CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")``.
+- Used ``node.js``: ``9.2.1 (icu npm snapshot ssl -debug -doc -inspector -systemtap -test CPU_FLAGS_X86="sse2" PYTHON_TARGETS="python2_7")``.
 - You can find links to the data sets `here <../tools/files-testing/README.md>`_.
 - You can repeat tests by yourself using `stats <../tools/stats>`_ app.
 

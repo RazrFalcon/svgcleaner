@@ -68,23 +68,15 @@ All stats were collected using the latest release version.
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.9.0/docs/images/correctness_chart_W3C_SVG_11_TestSuite.svg)
 
-\* Most of the errors were due to incorrect `font-face` processing. Without including font-based errors, scores were:
- - `svgo`: 100
- - `scour`: 78
-
 ***
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.9.0/docs/images/correctness_chart_oxygen.svg)
-
-\* Errors produced by numeric rounding were ignored.
 
 ### Cleaning ratio
 
 *More is better.*
 
 ![Alt text](https://cdn.rawgit.com/RazrFalcon/svgcleaner/v0.9.0/docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg)
-
-\* Note that `svgo` and `scour` break most of the files.
 
 ***
 

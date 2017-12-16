@@ -333,32 +333,36 @@ fn clean_with_svgcleaner(exe_path: &str, in_path: &str, out_path: &str) -> bool 
 
 fn clean_with_scour(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     let res = Command::new(exe_path)
-                .arg(in_path)
-                .arg(out_path)
-                .arg("--enable-id-stripping")
-                .arg("--enable-comment-stripping")
-                .arg("--shorten-ids")
-                .arg("--indent=none")
-                .arg("--no-line-breaks")
-                .arg("--strip-xml-prolog")
-                .arg("--remove-descriptive-elements")
-                .arg("--set-precision=8")
-                .arg("--create-groups")
-                .output();
+        .arg(in_path)
+        .arg(out_path)
+        .arg("--enable-id-stripping")
+        .arg("--enable-comment-stripping")
+        .arg("--shorten-ids")
+        .arg("--indent=none")
+        .arg("--no-line-breaks")
+        .arg("--strip-xml-prolog")
+        .arg("--remove-descriptive-elements")
+        .arg("--set-precision=8")
+        .arg("--set-c-precision=8")
+        .arg("--create-groups")
+        .arg("--remove-titles")
+        .arg("--remove-descriptions")
+        .arg("--remove-metadata")
+        .output();
 
     match res {
-        Ok(_) => {
+        Ok(o) => {
             // let so = String::from_utf8_lossy(&o.stdout);
             // if !so.is_empty() {
             //     println!("{}", so);
-            //     // return false;
+            //     return false;
             // }
 
-            // let se = String::from_utf8_lossy(&o.stderr);
-            // if !se.is_empty() {
-            //     println!("{}", se);
-            //     // return false;
-            // }
+            let se = String::from_utf8_lossy(&o.stderr);
+            if !se.is_empty() {
+                println!("{}", se);
+                return false;
+            }
 
             return true;
         }
@@ -371,19 +375,20 @@ fn clean_with_scour(exe_path: &str, in_path: &str, out_path: &str) -> bool {
 
 fn clean_with_svgo(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     let res = Command::new(exe_path)
-                .arg("--quiet")
-                .arg("--precision=8")
-                .arg(in_path)
-                .arg(out_path)
-                .output();
+        .arg("--quiet")
+        .arg("--precision=8")
+        .arg(in_path)
+        .arg("-o")
+        .arg(out_path)
+        .output();
 
     match res {
-        Ok(_) => {
-            // let s = String::from_utf8_lossy(&o.stdout);
-            // if !s.is_empty() {
-            //     println!("{}", s);
-            //     return false;
-            // }
+        Ok(o) => {
+            let s = String::from_utf8_lossy(&o.stderr);
+            if s.contains("Error") {
+                println!("{}", s);
+                return false;
+            }
             return true;
         }
         Err(e) => {

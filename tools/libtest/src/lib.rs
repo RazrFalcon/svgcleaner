@@ -16,7 +16,7 @@ pub fn compare_imgs(work_dir: &str, path1: &str, path2: &str, path_diff: &str) -
     // compare -metric AE -fuzz 1% foo.png foo2.png diff.png
     let res = Command::new("compare").current_dir(work_dir)
                 .arg("-metric").arg("AE")
-                .arg("-fuzz").arg("1%")
+                .arg("-fuzz").arg("10%")
                 .arg(path1).arg(path2).arg(path_diff)
                 .output();
     match res {
@@ -97,11 +97,13 @@ pub fn render_svg(svg_path: &str, png_path: &str) -> bool {
 
     match res {
         Ok(o) => {
-            let s = String::from_utf8_lossy(&o.stderr).into_owned();
-            let s = s.trim();
+            let so = String::from_utf8_lossy(&o.stdout);
+            let so = so.trim();
+            let se = String::from_utf8_lossy(&o.stderr);
+            let se = se.trim();
 
-            if !s.is_empty() || !o.status.success() {
-                println!("Render err:\n{}", s);
+            if !so.is_empty() || !se.is_empty() || !o.status.success() {
+                println!("Render err:\n{}\n{}", so, se);
                 return false;
             } else {
                 return true;

@@ -6,15 +6,15 @@
     },
     "items": [
         {
-            "name": "svgcleaner 0.10.0",
-            "value": 9
+            "name": "svgcleaner 0.9.2",
+            "value": 16
         },
         {
-            "name": "svgo 0.7.2",
-            "value": 687
+            "name": "svgo 1.0.3",
+            "value": 702
         },
         {
-            "name": "scour 0.35",
+            "name": "scour 0.36",
             "value": 2216
         }
     ],

@@ -6,10 +6,9 @@ Render SVG files using Headless Chrome.
 
 - Node.js
 
-```
-cd tools/svgrender/
+## Buid
+
 npm i puppeteer
-```
 
 ## Usage
 

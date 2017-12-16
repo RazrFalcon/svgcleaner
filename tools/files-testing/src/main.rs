@@ -318,13 +318,13 @@ fn run_test(data: &Data, svg_path: &Path, cache: &TestCache) -> bool {
         match data.err_view {
             Some(err_view) => {
                 let res = Command::new(err_view)
-                            .arg(svg_suffix)
-                            .arg(orig_png_path_str)
-                            .arg(&new_png_path)
-                            .arg(&diff_path)
-                            .arg(diff.to_string())
-                            .arg(data.config_path.unwrap())
-                            .status().unwrap();
+                    .arg(svg_suffix)
+                    .arg(orig_png_path_str)
+                    .arg(&new_png_path)
+                    .arg(&diff_path)
+                    .arg(diff.to_string())
+                    .arg(data.config_path.unwrap())
+                    .status().unwrap();
 
                 res.success()
             }
@@ -353,17 +353,17 @@ fn run_test(data: &Data, svg_path: &Path, cache: &TestCache) -> bool {
 
 fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
     let res = Command::new(exe_path)
-                .arg("--copy-on-error")
-                .arg("--quiet")
-                .arg("--remove-gradient-attributes=yes")
-                .arg("--join-arcto-flags=yes")
-                .arg("--apply-transform-to-paths=yes")
-                .arg("--indent=2") // we use indent to test text nodes saving
-                .arg("--remove-unreferenced-ids=no")
-                .arg("--trim-ids=no")
-                .arg(in_path)
-                .arg(out_path)
-                .output();
+        .arg("--copy-on-error")
+        .arg("--quiet")
+        .arg("--remove-gradient-attributes=yes")
+        .arg("--join-arcto-flags=yes")
+        .arg("--apply-transform-to-paths=yes")
+        .arg("--indent=2") // we use indent to test text nodes saving
+        .arg("--remove-unreferenced-ids=no")
+        .arg("--trim-ids=no")
+        .arg(in_path)
+        .arg(out_path)
+        .output();
 
     match res {
         Ok(o) => {

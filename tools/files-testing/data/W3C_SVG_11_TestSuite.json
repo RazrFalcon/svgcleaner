@@ -1,274 +1,68 @@
 {
     "custom_ae": [
         {
-            "name": "struct-svg-03-f.svg",
-            "valid_ae": 380
+            "name": "painting-control-04-f.svg",
+            "valid_ae": 18941
         },
         {
-            "name": "masking-path-10-b.svg",
-            "valid_ae": 320
+            "name": "struct-image-12-b.svg",
+            "valid_ae": 504
         },
         {
-            "name": "text-fonts-203-t.svg",
-            "valid_ae": 1596
+            "name": "painting-marker-03-f.svg",
+            "valid_ae": 752
         },
         {
-            "name": "pservers-grad-23-f.svg",
-            "valid_ae": 426
-        },
-        {
-            "name": "pservers-grad-06-b.svg",
-            "valid_ae": 1101
-        },
-        {
-            "name": "coords-units-03-b.svg",
-            "valid_ae": 226
-        },
-        {
-            "name": "coords-transformattr-02-f.svg",
-            "valid_ae": 267
-        },
-        {
-            "name": "coords-transformattr-05-f.svg",
-            "valid_ae": 355
-        },
-        {
-            "name": "pservers-grad-16-b.svg",
-            "valid_ae": 641
-        },
-        {
-            "name": "pservers-grad-14-b.svg",
-            "valid_ae": 1131
-        },
-        {
-            "name": "pservers-grad-05-b.svg",
-            "valid_ae": 258
-        },
-        {
-            "name": "shapes-rect-04-f.svg",
-            "valid_ae": 213
-        },
-        {
-            "name": "linking-uri-01-b.svg",
-            "valid_ae": 215
-        },
-        {
-            "name": "painting-marker-properties-01-f.svg",
-            "valid_ae": 278
-        },
-        {
-            "name": "pservers-grad-10-b.svg",
-            "valid_ae": 490
-        },
-        {
-            "name": "struct-image-15-f.svg",
-            "valid_ae": 460
-        },
-        {
-            "name": "pservers-grad-12-b.svg",
-            "valid_ae": 980
-        },
-        {
-            "name": "struct-image-08-t.svg",
-            "valid_ae": 510
-        },
-        {
-            "name": "pservers-grad-04-b.svg",
-            "valid_ae": 641
+            "name": "linking-uri-03-t.svg",
+            "valid_ae": 212
         },
         {
             "name": "filters-conv-05-f.svg",
-            "valid_ae": 743
+            "valid_ae": 640
         },
         {
-            "name": "struct-image-09-t.svg",
-            "valid_ae": 343
+            "name": "struct-image-03-t.svg",
+            "valid_ae": 462
         },
         {
-            "name": "pservers-grad-02-b.svg",
-            "valid_ae": 641
+            "name": "filters-conv-04-f.svg",
+            "valid_ae": 301
         },
         {
-            "name": "struct-image-10-t.svg",
-            "valid_ae": 510
-        },
-        {
-            "name": "struct-defs-01-t.svg",
-            "valid_ae": 428
-        },
-        {
-            "name": "styling-inherit-01-b.svg",
-            "valid_ae": 447
-        },
-        {
-            "name": "struct-group-01-t.svg",
-            "valid_ae": 207
-        },
-        {
-            "name": "pservers-grad-09-b.svg",
-            "valid_ae": 726
-        },
-        {
-            "name": "painting-control-01-f.svg",
-            "valid_ae": 807
-        },
-        {
-            "name": "pservers-grad-03-b.svg",
-            "valid_ae": 641
-        },
-        {
-            "name": "linking-uri-02-b.svg",
+            "name": "pservers-pattern-01-b.svg",
             "valid_ae": 215
         },
         {
-            "name": "masking-path-08-b.svg",
-            "valid_ae": 319
+            "name": "text-ws-02-t.svg",
+            "valid_ae": 810
         },
         {
-            "name": "masking-mask-02-f.svg",
-            "valid_ae": 266
-        },
-        {
-            "name": "linking-a-10-f.svg",
-            "valid_ae": 1270
-        },
-        {
-            "name": "struct-image-13-f.svg",
-            "valid_ae": 266
-        },
-        {
-            "name": "struct-cond-overview-03-f.svg",
-            "valid_ae": 558
-        },
-        {
-            "name": "color-prop-01-b.svg",
-            "valid_ae": 384
-        },
-        {
-            "name": "pservers-grad-01-b.svg",
-            "valid_ae": 641
-        },
-        {
-            "name": "pservers-grad-15-b.svg",
-            "valid_ae": 641
-        },
-        {
-            "name": "struct-image-14-f.svg",
-            "valid_ae": 266
-        },
-        {
-            "name": "coords-trans-07-t.svg",
-            "valid_ae": 280
-        },
-        {
-            "name": "fonts-elem-02-t.svg",
-            "valid_ae": 410
-        },
-        {
-            "info": "svgcleaner bug",
-            "name": "painting-stroke-10-t.svg",
-            "valid_ae": 9062
-        },
-        {
-            "name": "filters-composite-02-b.svg",
-            "valid_ae": 2920
-        },
-        {
-            "name": "filters-color-01-b.svg",
-            "valid_ae": 4878
-        },
-        {
-            "name": "pservers-grad-13-b.svg",
-            "valid_ae": 544
-        },
-        {
-            "info": "svgcleaner bug",
-            "name": "painting-control-04-f.svg",
-            "valid_ae": 16590
-        },
-        {
-            "name": "paths-data-06-t.svg",
-            "valid_ae": 260
-        },
-        {
-            "name": "animate-elem-10-t.svg",
-            "valid_ae": 360
-        },
-        {
-            "name": "painting-marker-02-f.svg",
-            "valid_ae": 696
-        },
-        {
-            "name": "filters-comptran-01-b.svg",
-            "valid_ae": 4644
-        },
-        {
-            "name": "filters-composite-05-f.svg",
-            "valid_ae": 932
-        },
-        {
-            "info": "svgcleaner bug",
-            "name": "paths-data-10-t.svg",
-            "valid_ae": 321
-        },
-        {
-            "name": "animate-elem-17-t.svg",
-            "valid_ae": 320
-        },
-        {
-            "name": "paths-data-07-t.svg",
-            "valid_ae": 260
-        },
-        {
-            "info": "animation diff",
-            "name": "animate-elem-07-t.svg",
-            "valid_ae": 608
-        },
-        {
-            "name": "animate-elem-11-t.svg",
-            "valid_ae": 360
-        },
-        {
-            "name": "animate-elem-41-t.svg",
-            "valid_ae": 811
-        },
-        {
-            "name": "animate-elem-89-t.svg",
-            "valid_ae": 916
+            "name": "painting-marker-05-f.svg",
+            "valid_ae": 6365
         },
         {
             "name": "color-prop-05-t.svg",
-            "valid_ae": 22504
+            "valid_ae": 25600
         },
         {
-            "name": "pservers-pattern-02-f.svg",
-            "valid_ae": 14059
+            "name": "masking-path-02-b.svg",
+            "valid_ae": 279
         },
         {
-            "name": "animate-elem-12-t.svg",
-            "valid_ae": 360
+            "name": "painting-stroke-10-t.svg",
+            "valid_ae": 10387
         },
         {
-            "name": "animate-elem-05-t.svg",
-            "valid_ae": 479
+            "name": "text-path-01-b.svg",
+            "valid_ae": 552
         },
         {
-            "name": "animate-elem-06-t.svg",
-            "valid_ae": 576
+            "name": "pservers-grad-13-b.svg",
+            "valid_ae": 2679
         },
         {
-            "name": "animate-elem-08-t.svg",
-            "valid_ae": 390
-        },
-        {
-            "info": "chrome bug",
-            "name": "painting-marker-03-f.svg",
-            "valid_ae": 654
-        },
-        {
-            "info": "chrome bug",
-            "name": "painting-marker-05-f.svg",
-            "valid_ae": 6435
+            "name": "text-ws-01-t.svg",
+            "valid_ae": 746
         }
     ],
     "ignore": [

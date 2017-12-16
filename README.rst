@@ -65,8 +65,6 @@ Correctness
 
 .. image:: docs/images/correctness_chart_W3C_SVG_11_TestSuite.svg
 
-----------
-
 .. image:: docs/images/correctness_chart_oxygen.svg
 
 Cleaning ratio
@@ -77,8 +75,6 @@ Cleaning ratio
 .. image:: docs/images/ratio_chart_W3C_SVG_11_TestSuite.svg
 
 \* scour_ creates bigger files (-18.78%).
-
-----------
 
 .. image:: docs/images/ratio_chart_oxygen.svg
 

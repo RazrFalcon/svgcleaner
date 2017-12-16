@@ -11,11 +11,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `defs` element is always a first child of an `svg` now.
 
 ### Fixed
-- `transform` grouping in `--group-by-style`.
 - Groups ungrouping inside a `switch` element.
 - Complex groups ungrouping.
 - `--group-by-style` recursive processing.
 - Crash if path has an implicit MoveTo after ClosePath.
+- `--remove-unresolved-classes` option had no effect.
+
+## [0.9.1] - 2017-06-18
+### Fixed
+- `transform` grouping in `--group-by-style`.
+
+### Other
+- Includes [svgdom 0.6.0](https://github.com/RazrFalcon/libsvgdom/blob/master/CHANGELOG.md#060---2017-06-18) fixes.
+- Includes [svgparser 0.4.1](https://github.com/RazrFalcon/libsvgparser/blob/master/CHANGELOG.md#041---2017-06-15) fixes.
 
 ## [0.9.0] - 2017-06-05
 ### Added
@@ -232,11 +240,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Same cleaning compression value.
 - Added base cli support (no svgz and folder processing support).
 
-## [0.4.0] - 2012-06-09
+## 0.4.0 - 2012-06-09
 ### Added
 - First public release with Perl backend and Qt GUI.
 
-[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.7.1...v0.8.0
@@ -248,4 +257,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [0.6.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.6...v0.6.1
 [0.6.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.5.1...v0.6
 [0.5.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.5...v0.5.1
-[0.5]: https://github.com/RazrFalcon/svgcleaner/compare/v0.4...v0.5
+[0.5.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.4...v0.5

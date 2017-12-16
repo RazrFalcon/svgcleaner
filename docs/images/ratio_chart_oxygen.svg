@@ -4,11 +4,11 @@
     <text font-family="Arial" font-size="16" font-weight="bold" x="132" y="16">
         Cleaning ratio in Oxygen icon theme
     </text>
-    <text font-family="Arial" font-size="16" x="4" y="58">
-        svgcleaner 0.9.0
+    <text font-family="Arial" font-size="16" x="6" y="58">
+        svgcleaner 0.9.1
     </text>
-    <text font-family="Arial" font-size="16" x="6" y="91">
-        svgcleaner 0.8.1
+    <text font-family="Arial" font-size="16" x="4" y="91">
+        svgcleaner 0.9.0
     </text>
     <text font-family="Arial" font-size="16" x="48" y="124">
         svgo 0.7.2
@@ -40,9 +40,9 @@
     <text fill="#fff" font-family="Arial" font-size="16" x="375" y="58">
         61.25
     </text>
-    <rect fill="#3260cd" height="22" width="286" x="132" y="74"/>
-    <text fill="#fff" font-family="Arial" font-size="16" x="374" y="91">
-        61.12
+    <rect fill="#3260cd" height="22" width="287" x="132" y="74"/>
+    <text fill="#fff" font-family="Arial" font-size="16" x="375" y="91">
+        61.25
     </text>
     <rect fill="#3260cd" height="22" width="250" x="132" y="107"/>
     <text fill="#fff" font-family="Arial" font-size="16" x="338" y="124">

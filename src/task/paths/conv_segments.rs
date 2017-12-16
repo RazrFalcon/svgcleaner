@@ -40,6 +40,35 @@ pub fn convert_segments(path: &mut Path) {
     }
 }
 
+// Adds explicit MoveTo commands after ClosePath.
+//
+// SVG allows skipping the MoveTo segment after ClosePath, which is inconvenient in our case.
+//
+// 'If a "closepath" is followed immediately by any other command,
+// then the next subpath starts at the same initial point as the current subpath.'
+pub fn fix_m(path: &mut Path) {
+    let mut mx = 0.0;
+    let mut my = 0.0;
+    let mut i = 1;
+    while i < path.d.len() {
+        let prev_cmd = path.d[i - 1].cmd();
+        let curr_cmd = path.d[i].cmd();
+
+        if prev_cmd == Command::ClosePath {
+            if curr_cmd != Command::MoveTo {
+                path.d.insert(i, Segment::new_move_to(mx, my));
+            }
+        }
+
+        if let &SegmentData::MoveTo { x, y } = path.d[i].data() {
+            mx = x;
+            my = y;
+        }
+
+        i += 1;
+    }
+}
+
 // Convert HorizontalLineTo and VerticalLineTo segments into LineTo
 // to simplify processing.
 pub fn convert_hv_to_l(path: &mut Path) {

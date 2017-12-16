@@ -76,6 +76,7 @@ fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, opt: &
 
     path.conv_to_absolute();
 
+    conv_segments::fix_m(path);
     conv_segments::convert_hv_to_l(path);
 
     if opt.convert_segments {
@@ -109,14 +110,14 @@ fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, opt: &
 }
 
 mod utils {
-    use svgdom::types::path::{Path, Segment, Command};
+    use svgdom::types::path::{Path, Command};
 
     // HorizontalLineTo, VerticalLineTo and ClosePath does not have 'x'/'y' coordinates,
     // so we have to find them in previous segments.
     pub fn resolve_xy(path: &Path, start: usize) -> (f64, f64) {
         let mut i = start;
         loop {
-            let seg: &Segment = &path.d[i];
+            let seg = &path.d[i];
 
             // H and V should be already converted into L,
             // so we check only for Z.
@@ -131,8 +132,7 @@ mod utils {
             i -= 1;
         }
 
-        // First segment must be MoveTo, so we will always have an 'x' and 'y'.
-        unreachable!();
+        unreachable!("first segment must be MoveTo");
     }
 }
 

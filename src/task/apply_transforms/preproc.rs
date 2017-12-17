@@ -28,7 +28,7 @@ use options::CleaningOptions;
 // If group has transform and contains only valid elements
 // we can apply the group's transform to children before applying transform to
 // actual elements.
-pub fn prepare_transforms(parent: &Node, recurcive: bool, opt: &CleaningOptions) {
+pub fn prepare_transforms(parent: &Node, recursive: bool, opt: &CleaningOptions) {
     let mut valid_elems: Vec<EId> = Vec::with_capacity(6);
     if opt.apply_transform_to_shapes {
         valid_elems.extend_from_slice(&[EId::Rect, EId::Circle, EId::Ellipse, EId::Line]);
@@ -54,16 +54,14 @@ pub fn prepare_transforms(parent: &Node, recurcive: bool, opt: &CleaningOptions)
         }
 
         // Check that all children is valid.
-        let is_valid = node.children().all(|n| {
-            let tag_name = n.tag_id().unwrap();
-
-            let is_valid_coords = if tag_name == EId::Path || tag_name == EId::G {
+        let is_valid = node.children().svg().all(|(id, n)| {
+            let is_valid_coords = if id == EId::Path || id == EId::G {
                 true
             } else {
                 utils::is_valid_coords(&n)
             };
 
-               valid_elems.contains(&tag_name)
+               valid_elems.contains(&id)
             && utils::has_valid_transform(&n)
             && utils::is_valid_attrs(&n)
             && is_valid_coords
@@ -75,7 +73,7 @@ pub fn prepare_transforms(parent: &Node, recurcive: bool, opt: &CleaningOptions)
             node.remove_attribute(AId::Transform);
         }
 
-        if !recurcive {
+        if !recursive {
             break;
         }
     }
@@ -160,7 +158,7 @@ mod tests {
 </svg>
 ");
 
-    // Group should containt only supported children.
+    // Group should contain only supported children.
     test_eq!(keep_3,
 "<svg>
     <g transform='scale(10 20)'>
@@ -176,6 +174,32 @@ mod tests {
     <g transform='scale(10)'>
         <rect transform='scale(10 30)'/>
     </g>
+</svg>
+");
+
+    // Non-SVG child.
+    test!(keep_5,
+"<svg>
+    <g transform='scale(10)'>
+        <rect transform='scale(10 30)'/>
+        <test/>
+    </g>
+    <g transform='scale(10)'>
+        <!-- test -->
+    </g>
+    <g transform='scale(10)'>
+        Text
+    </g>
+</svg>",
+"<svg>
+    <g transform='scale(10)'>
+        <rect transform='scale(10 30)'/>
+        <test/>
+    </g>
+    <g>
+        <!-- test -->
+    </g>
+    <g>Text</g>
 </svg>
 ");
 }

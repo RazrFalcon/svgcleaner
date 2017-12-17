@@ -189,7 +189,7 @@ mod tests {
 </svg>
 ");
 
-    test!(transform,
+    test!(transform_1,
 "<svg>
     <path id='valid' d='M 10 20 L 30 40' transform='translate(10 20)'/>
     <path id='valid2' d='M 10 20 L 30 40' transform='scale(2)'/>
@@ -199,6 +199,22 @@ mod tests {
     <path id='valid' d='m 20 40 l 20 20'/>
     <path id='valid2' d='m 20 40 l 40 40' stroke-width='2'/>
     <path id='ignored' d='m 10 20 l 20 20' transform='rotate(30)'/>
+</svg>
+");
+
+    // Skip transform if style was defined in the parent node
+    test!(transform_2,
+"<svg>
+    <linearGradient id='lg1'/>
+    <g fill='url(#lg1)'>
+        <path id='valid' d='M 10 20 L 30 40' transform='translate(10 20)'/>
+    </g>
+</svg>",
+"<svg>
+    <linearGradient id='lg1'/>
+    <g fill='url(#lg1)'>
+        <path id='valid' d='m 10 20 l 20 20' transform='translate(10 20)'/>
+    </g>
 </svg>
 ");
 

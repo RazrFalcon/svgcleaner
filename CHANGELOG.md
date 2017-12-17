@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Fixed
 - Groups removing with transform and non-SVG child.
+- Transform to path applying when a path has a style defined in a parent element.
 
 ## [0.9.2] - 2017-12-16
 ### Added

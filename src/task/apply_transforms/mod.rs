@@ -69,22 +69,25 @@ pub mod utils {
     // TODO: process 'fill', 'stroke' and 'filter' linked elements only if they
     //       used only by this element.
     pub fn is_valid_attrs(node: &Node) -> bool {
-        let attrs = node.attributes();
-
-        if let Some(&AttributeValue::FuncLink(_)) = attrs.get_value(AId::Fill) {
-            return false;
+        for aid in &[AId::Fill, AId::Stroke, AId::Filter, AId::Mask, AId::ClipPath] {
+            if !is_valid_attr(node, *aid) {
+                return false;
+            }
         }
 
-        if let Some(&AttributeValue::FuncLink(_)) = attrs.get_value(AId::Stroke) {
-            return false;
-        }
+        true
+    }
 
-        if let Some(&AttributeValue::FuncLink(_)) = attrs.get_value(AId::Filter) {
-            return false;
-        }
+    // Checks that first occurred attribute value is not a FuncLink.
+    fn is_valid_attr(node: &Node, aid: AId) -> bool {
+        for parent in node.parents_with_self() {
+            let attrs = parent.attributes();
 
-        if attrs.contains(AId::Mask) || attrs.contains(AId::ClipPath) {
-            return false;
+            match attrs.get_value(aid) {
+                Some(&AttributeValue::FuncLink(_)) => return false,
+                Some(_) => return true,
+                _ => {}
+            }
         }
 
         true

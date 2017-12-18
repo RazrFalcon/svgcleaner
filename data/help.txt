@@ -85,6 +85,7 @@ Output:
     --properties-precision <NUM>            Set properties numeric precision (1..12) [default: 6]
     --transforms-precision <NUM>            Set transform values numeric precision (1..12) [default: 8]
     --paths-coordinates-precision <NUM>     Set path's coordinates numeric precision (1..12) [default: 8]
+    --list-separator <SEPARATOR>            Set number list separator [values: space, comma, comma-space] [default: space]
     --indent <INDENT>                       Set XML nodes indent [values: none, 0, 1, 2, 3, 4, tabs] [default: none]
 
 ARGS:

@@ -29,10 +29,11 @@ use clap::{
 };
 
 use svgdom::{
+    Indent,
+    ListSeparator,
     ParseOptions,
     WriteOptions,
     WriteOptionsPaths,
-    Indent,
 };
 
 use {
@@ -104,6 +105,7 @@ pub enum Key {
     PropertiesPrecision,
     TransformsPrecision,
     PathsCoordinatesPrecision,
+    ListSeparator,
     Indent,
 
     NoDefaults,
@@ -175,6 +177,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "properties-precision",
     "transforms-precision",
     "paths-coordinates-precision",
+    "list-separator",
     "indent",
 
     "no-defaults",
@@ -294,6 +297,11 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_precision!(Key::PropertiesPrecision, "6"))
         .arg(gen_precision!(Key::TransformsPrecision, "8"))
         .arg(gen_precision!(Key::PathsCoordinatesPrecision, "8"))
+        .arg(Arg::with_name(KEYS[Key::ListSeparator])
+            .long(KEYS[Key::ListSeparator])
+            .value_name("SEPARATOR")
+            .possible_values(&["space", "comma", "comma-space"])
+            .default_value("space"))
         .arg(Arg::with_name(KEYS[Key::Indent])
             .long(KEYS[Key::Indent])
             .value_name("INDENT")
@@ -418,8 +426,15 @@ impl<'a> Flags<'a> {
 
 pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
     let mut opt = ParseOptions {
+        parse_comments: true,
+        parse_declarations: true,
+        parse_unknown_elements: true,
+        parse_unknown_attributes: true,
         parse_px_unit: false,
-        .. ParseOptions::default()
+        skip_unresolved_classes: true,
+        skip_invalid_attributes: false,
+        skip_invalid_css: false,
+        skip_paint_fallback: false,
     };
 
     let flags = Flags::new(args);
@@ -449,6 +464,7 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
             use_implicit_lineto_commands: false,
         },
         simplify_transform_matrices: false,
+        list_separator: ListSeparator::Space,
     };
 
     let flags = Flags::new(args);
@@ -461,6 +477,13 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     flags.resolve(&mut opt.simplify_transform_matrices, Key::SimplifyTransforms);
 
     flags.resolve(&mut opt.trim_hex_colors, Key::TrimColors);
+
+    opt.list_separator = match args.value_of(KEYS[Key::ListSeparator]).unwrap() {
+        "space"         => ListSeparator::Space,
+        "comma"         => ListSeparator::Comma,
+        "comma-space"   => ListSeparator::CommaSpace,
+        _ => unreachable!(), // clap will validate the input.
+    };
 
     opt.indent = match args.value_of(KEYS[Key::Indent]).unwrap() {
         "none"  => Indent::None,

@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- `--list-separator`.
+
 ### Fixed
 - Groups removing with transform and non-SVG child.
 - Transform to path applying when a path has a style defined in a parent element.

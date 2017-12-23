@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="100">
+  <path d="M 750 150 L 800 200 L 850 150
+           L 850 250 L 850 350 L 800 300
+           L 750 350 L 750 250 Z"
+        transform="scale(0.1)"
+        fill="green"/>
+</svg>

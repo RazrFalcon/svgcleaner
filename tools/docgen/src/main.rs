@@ -1,4 +1,3 @@
-#[macro_use]
 extern crate clap;
 
 use clap::{Arg, App};
@@ -243,7 +242,7 @@ fn gen_table(lines: &mut Iter<String>, data: &Data) -> String {
 
     fn gen_img_link(path: &str, workdir: &str) -> String {
         let relative = Path::new(path).strip_prefix(workdir).unwrap().to_str().unwrap();
-        format!("https://razrfalcon.github.io/svgcleaner/{}", relative)
+        relative.into()
     }
 
     fn gen_img_ref(path: &str) -> String {

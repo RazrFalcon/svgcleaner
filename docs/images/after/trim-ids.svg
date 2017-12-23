@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="100" id="a">
+  <defs id="b">
+    <linearGradient id="c">
+      <stop id="d" offset="0"
+            stop-color="yellow"/>
+      <stop id="e" offset="1"
+            stop-color="green"/>
+    </linearGradient>
+    <radialGradient id="f"
+                    xlink:href="#c"/>
+  </defs>
+  <circle fill="url(#f)"
+          cx="50" cy="50" r="45"/>
+</svg>

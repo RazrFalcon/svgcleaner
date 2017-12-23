@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="100">
+  <path fill="none" stroke="red"
+        stroke-width="2"
+        d="M 10 15 C 10 15 72.5 10 72.5 55
+           C 72.5 100 135 100 135 55 L 10 55"/>
+</svg>

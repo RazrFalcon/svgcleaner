@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="100">
+  <path id="rect1"
+        d="M 10 10 H 90 V 90 H 10 Z"/>
+  <path id="line1" stroke="red"
+        d="M 10 90 L 90 10"/>
+  <path id="polyline1" stroke="blue"
+        fill="none"
+        d="M 10 10 30 10 30 30
+           50 30 50 50"/>
+  <path id="polygon1" stroke="green"
+        fill="none"
+        d="M 10 10 10 30
+           30 30 30 50 50 50 Z"/>
+</svg>

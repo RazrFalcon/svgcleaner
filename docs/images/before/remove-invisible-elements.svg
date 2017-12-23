@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="100">
+  <linearGradient id="lg1"/>
+  <clipPath id="cp1"/>
+  <circle fill="green"
+          cx="50" cy="50" r="45"/>
+  <circle fill="green" clip-path="url(#cp1)"
+          stroke="url(#lg1)"
+          cx="100" cy="50" r="45"/>
+</svg>

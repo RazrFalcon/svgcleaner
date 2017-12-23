@@ -29,8 +29,8 @@ CLI argument: ``--remove-comments``
 | |before-remove-comments|                          | |after-remove-comments|                       |
 +---------------------------------------------------+-----------------------------------------------+
 
-.. |before-remove-comments| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-comments.svg
-.. |after-remove-comments| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-comments.svg
+.. |before-remove-comments| image:: images/before/remove-comments.svg
+.. |after-remove-comments| image:: images/after/remove-comments.svg
 
 
 Remove XML declarations
@@ -54,8 +54,8 @@ CLI argument: ``--remove-declarations``
 | |before-remove-declarations|                             | |after-remove-declarations| |
 +----------------------------------------------------------+-----------------------------+
 
-.. |before-remove-declarations| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-declarations.svg
-.. |after-remove-declarations| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-declarations.svg
+.. |before-remove-declarations| image:: images/before/remove-declarations.svg
+.. |after-remove-declarations| image:: images/after/remove-declarations.svg
 
 
 Remove non-SVG elements
@@ -81,8 +81,8 @@ CLI argument: ``--remove-nonsvg-elements``
 | |before-remove-nonsvg-elements|                   | |after-remove-nonsvg-elements|                    |
 +---------------------------------------------------+---------------------------------------------------+
 
-.. |before-remove-nonsvg-elements| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-nonsvg-elements.svg
-.. |after-remove-nonsvg-elements| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-nonsvg-elements.svg
+.. |before-remove-nonsvg-elements| image:: images/before/remove-nonsvg-elements.svg
+.. |after-remove-nonsvg-elements| image:: images/after/remove-nonsvg-elements.svg
 
 
 Remove unused referenced elements
@@ -129,8 +129,8 @@ CLI argument: ``--remove-unused-defs``
 | |before-remove-unused-defs|                    | |after-remove-unused-defs|                     |
 +------------------------------------------------+------------------------------------------------+
 
-.. |before-remove-unused-defs| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-unused-defs.svg
-.. |after-remove-unused-defs| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-unused-defs.svg
+.. |before-remove-unused-defs| image:: images/before/remove-unused-defs.svg
+.. |after-remove-unused-defs| image:: images/after/remove-unused-defs.svg
 
 
 Convert basic shapes into paths
@@ -170,8 +170,8 @@ CLI argument: ``--convert-shapes``
 | |before-convert-shapes|                    | |after-convert-shapes|                   |
 +--------------------------------------------+------------------------------------------+
 
-.. |before-convert-shapes| image:: https://razrfalcon.github.io/svgcleaner/images/before/convert-shapes.svg
-.. |after-convert-shapes| image:: https://razrfalcon.github.io/svgcleaner/images/after/convert-shapes.svg
+.. |before-convert-shapes| image:: images/before/convert-shapes.svg
+.. |after-convert-shapes| image:: images/after/convert-shapes.svg
 
 
 Remove ``title`` element
@@ -197,8 +197,8 @@ CLI argument: ``--remove-title``
 | |before-remove-title|                             | |after-remove-title|                              |
 +---------------------------------------------------+---------------------------------------------------+
 
-.. |before-remove-title| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-title.svg
-.. |after-remove-title| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-title.svg
+.. |before-remove-title| image:: images/before/remove-title.svg
+.. |after-remove-title| image:: images/after/remove-title.svg
 
 
 Remove ``desc`` element
@@ -224,8 +224,8 @@ CLI argument: ``--remove-desc``
 | |before-remove-desc|                              | |after-remove-desc|                               |
 +---------------------------------------------------+---------------------------------------------------+
 
-.. |before-remove-desc| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-desc.svg
-.. |after-remove-desc| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-desc.svg
+.. |before-remove-desc| image:: images/before/remove-desc.svg
+.. |after-remove-desc| image:: images/after/remove-desc.svg
 
 
 Remove ``metadata`` element
@@ -262,8 +262,8 @@ CLI argument: ``--remove-metadata``
 | |before-remove-metadata|                                            | |after-remove-metadata|                                         |
 +---------------------------------------------------------------------+-----------------------------------------------------------------+
 
-.. |before-remove-metadata| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-metadata.svg
-.. |after-remove-metadata| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-metadata.svg
+.. |before-remove-metadata| image:: images/before/remove-metadata.svg
+.. |after-remove-metadata| image:: images/after/remove-metadata.svg
 
 
 Remove duplicated ``linearGradient`` elements
@@ -307,8 +307,8 @@ CLI argument: ``--remove-dupl-lineargradient``
 | |before-remove-dupl-lineargradient|       | |after-remove-dupl-lineargradient|    |
 +-------------------------------------------+---------------------------------------+
 
-.. |before-remove-dupl-lineargradient| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-dupl-lineargradient.svg
-.. |after-remove-dupl-lineargradient| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-dupl-lineargradient.svg
+.. |before-remove-dupl-lineargradient| image:: images/before/remove-dupl-lineargradient.svg
+.. |after-remove-dupl-lineargradient| image:: images/after/remove-dupl-lineargradient.svg
 
 
 Remove duplicated ``radialGradient`` elements
@@ -350,8 +350,8 @@ CLI argument: ``--remove-dupl-radialgradient``
 | |before-remove-dupl-radialgradient|       | |after-remove-dupl-radialgradient|    |
 +-------------------------------------------+---------------------------------------+
 
-.. |before-remove-dupl-radialgradient| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-dupl-radialgradient.svg
-.. |after-remove-dupl-radialgradient| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-dupl-radialgradient.svg
+.. |before-remove-dupl-radialgradient| image:: images/before/remove-dupl-radialgradient.svg
+.. |after-remove-dupl-radialgradient| image:: images/after/remove-dupl-radialgradient.svg
 
 
 Remove duplicated ``feGaussianBlur`` elements
@@ -385,8 +385,8 @@ CLI argument: ``--remove-dupl-fegaussianblur``
 | |before-remove-dupl-fegaussianblur|        | |after-remove-dupl-fegaussianblur|         |
 +--------------------------------------------+--------------------------------------------+
 
-.. |before-remove-dupl-fegaussianblur| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-dupl-fegaussianblur.svg
-.. |after-remove-dupl-fegaussianblur| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-dupl-fegaussianblur.svg
+.. |before-remove-dupl-fegaussianblur| image:: images/before/remove-dupl-fegaussianblur.svg
+.. |after-remove-dupl-fegaussianblur| image:: images/after/remove-dupl-fegaussianblur.svg
 
 
 Ungroup groups
@@ -423,8 +423,8 @@ CLI argument: ``--ungroup-groups``
 | |before-ungroup-groups|               | |after-ungroup-groups|            |
 +---------------------------------------+-----------------------------------+
 
-.. |before-ungroup-groups| image:: https://razrfalcon.github.io/svgcleaner/images/before/ungroup-groups.svg
-.. |after-ungroup-groups| image:: https://razrfalcon.github.io/svgcleaner/images/after/ungroup-groups.svg
+.. |before-ungroup-groups| image:: images/before/ungroup-groups.svg
+.. |after-ungroup-groups| image:: images/after/ungroup-groups.svg
 
 
 Ungroup ``defs`` element
@@ -458,8 +458,8 @@ CLI argument: ``--ungroup-defs``
 | |before-ungroup-defs|               | |after-ungroup-defs|                |
 +-------------------------------------+-------------------------------------+
 
-.. |before-ungroup-defs| image:: https://razrfalcon.github.io/svgcleaner/images/before/ungroup-defs.svg
-.. |after-ungroup-defs| image:: https://razrfalcon.github.io/svgcleaner/images/after/ungroup-defs.svg
+.. |before-ungroup-defs| image:: images/before/ungroup-defs.svg
+.. |after-ungroup-defs| image:: images/after/ungroup-defs.svg
 
 
 Group elements by equal styles
@@ -492,8 +492,8 @@ CLI argument: ``--group-by-style``
 | |before-group-by-style|         | |after-group-by-style|           |
 +---------------------------------+----------------------------------+
 
-.. |before-group-by-style| image:: https://razrfalcon.github.io/svgcleaner/images/before/group-by-style.svg
-.. |after-group-by-style| image:: https://razrfalcon.github.io/svgcleaner/images/after/group-by-style.svg
+.. |before-group-by-style| image:: images/before/group-by-style.svg
+.. |after-group-by-style| image:: images/after/group-by-style.svg
 
 
 Merge gradients
@@ -531,8 +531,8 @@ CLI argument: ``--merge-gradients``
 | |before-merge-gradients|                  | |after-merge-gradients|              |
 +-------------------------------------------+--------------------------------------+
 
-.. |before-merge-gradients| image:: https://razrfalcon.github.io/svgcleaner/images/before/merge-gradients.svg
-.. |after-merge-gradients| image:: https://razrfalcon.github.io/svgcleaner/images/after/merge-gradients.svg
+.. |before-merge-gradients| image:: images/before/merge-gradients.svg
+.. |after-merge-gradients| image:: images/after/merge-gradients.svg
 
 
 Regroup gradient ``stop`` elements
@@ -572,8 +572,8 @@ CLI argument: ``--regroup-gradient-stops``
 | |before-regroup-gradient-stops|       | |after-regroup-gradient-stops|                     |
 +---------------------------------------+----------------------------------------------------+
 
-.. |before-regroup-gradient-stops| image:: https://razrfalcon.github.io/svgcleaner/images/before/regroup-gradient-stops.svg
-.. |after-regroup-gradient-stops| image:: https://razrfalcon.github.io/svgcleaner/images/after/regroup-gradient-stops.svg
+.. |before-regroup-gradient-stops| image:: images/before/regroup-gradient-stops.svg
+.. |after-regroup-gradient-stops| image:: images/after/regroup-gradient-stops.svg
 
 
 Remove invalid ``stop`` elements
@@ -606,8 +606,8 @@ CLI argument: ``--remove-invalid-stops``
 | |before-remove-invalid-stops|                    | |after-remove-invalid-stops|                     |
 +--------------------------------------------------+--------------------------------------------------+
 
-.. |before-remove-invalid-stops| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-invalid-stops.svg
-.. |after-remove-invalid-stops| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-invalid-stops.svg
+.. |before-remove-invalid-stops| image:: images/before/remove-invalid-stops.svg
+.. |after-remove-invalid-stops| image:: images/after/remove-invalid-stops.svg
 
 
 Remove invisible elements
@@ -637,8 +637,8 @@ CLI argument: ``--remove-invisible-elements``
 | |before-remove-invisible-elements|             | |after-remove-invisible-elements|    |
 +------------------------------------------------+--------------------------------------+
 
-.. |before-remove-invisible-elements| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-invisible-elements.svg
-.. |after-remove-invisible-elements| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-invisible-elements.svg
+.. |before-remove-invisible-elements| image:: images/before/remove-invisible-elements.svg
+.. |after-remove-invisible-elements| image:: images/after/remove-invisible-elements.svg
 
 
 Resolve ``use`` elements
@@ -665,8 +665,8 @@ CLI argument: ``--resolve-use``
 | |before-resolve-use|               | |after-resolve-use|              |
 +------------------------------------+----------------------------------+
 
-.. |before-resolve-use| image:: https://razrfalcon.github.io/svgcleaner/images/before/resolve-use.svg
-.. |after-resolve-use| image:: https://razrfalcon.github.io/svgcleaner/images/after/resolve-use.svg
+.. |before-resolve-use| image:: images/before/resolve-use.svg
+.. |after-resolve-use| image:: images/after/resolve-use.svg
 
 
 Attributes
@@ -695,8 +695,8 @@ CLI argument: ``--remove-version``
 | |before-remove-version|                  | |after-remove-version|               |
 +------------------------------------------+--------------------------------------+
 
-.. |before-remove-version| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-version.svg
-.. |after-remove-version| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-version.svg
+.. |before-remove-version| image:: images/before/remove-version.svg
+.. |after-remove-version| image:: images/after/remove-version.svg
 
 
 Remove non-SVG attributes
@@ -722,8 +722,8 @@ CLI argument: ``--remove-nonsvg-attributes``
 | |before-remove-nonsvg-attributes|           | |after-remove-nonsvg-attributes|     |
 +---------------------------------------------+--------------------------------------+
 
-.. |before-remove-nonsvg-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-nonsvg-attributes.svg
-.. |after-remove-nonsvg-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-nonsvg-attributes.svg
+.. |before-remove-nonsvg-attributes| image:: images/before/remove-nonsvg-attributes.svg
+.. |after-remove-nonsvg-attributes| image:: images/after/remove-nonsvg-attributes.svg
 
 
 Remove unreferenced ``id`` attributes
@@ -752,8 +752,8 @@ CLI argument: ``--remove-unreferenced-ids``
 | |before-remove-unreferenced-ids|                   | |after-remove-unreferenced-ids|          |
 +----------------------------------------------------+------------------------------------------+
 
-.. |before-remove-unreferenced-ids| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-unreferenced-ids.svg
-.. |after-remove-unreferenced-ids| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-unreferenced-ids.svg
+.. |before-remove-unreferenced-ids| image:: images/before/remove-unreferenced-ids.svg
+.. |after-remove-unreferenced-ids| image:: images/after/remove-unreferenced-ids.svg
 
 
 Trim ``id`` attributes
@@ -791,8 +791,8 @@ CLI argument: ``--trim-ids``
 | |before-trim-ids|                                     | |after-trim-ids|                        |
 +-------------------------------------------------------+-----------------------------------------+
 
-.. |before-trim-ids| image:: https://razrfalcon.github.io/svgcleaner/images/before/trim-ids.svg
-.. |after-trim-ids| image:: https://razrfalcon.github.io/svgcleaner/images/after/trim-ids.svg
+.. |before-trim-ids| image:: images/before/trim-ids.svg
+.. |after-trim-ids| image:: images/after/trim-ids.svg
 
 
 Remove text-related attributes if there is no text
@@ -821,8 +821,8 @@ CLI argument: ``--remove-text-attributes``
 | |before-remove-text-attributes|           | |after-remove-text-attributes|            |
 +-------------------------------------------+-------------------------------------------+
 
-.. |before-remove-text-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-text-attributes.svg
-.. |after-remove-text-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-text-attributes.svg
+.. |before-remove-text-attributes| image:: images/before/remove-text-attributes.svg
+.. |after-remove-text-attributes| image:: images/after/remove-text-attributes.svg
 
 
 Remove unused coordinate attributes
@@ -847,8 +847,8 @@ CLI argument: ``--remove-unused-coordinates``
 | |before-remove-unused-coordinates| | |after-remove-unused-coordinates|  |
 +------------------------------------+------------------------------------+
 
-.. |before-remove-unused-coordinates| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-unused-coordinates.svg
-.. |after-remove-unused-coordinates| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-unused-coordinates.svg
+.. |before-remove-unused-coordinates| image:: images/before/remove-unused-coordinates.svg
+.. |after-remove-unused-coordinates| image:: images/after/remove-unused-coordinates.svg
 
 
 Remove attributes with default values
@@ -879,8 +879,8 @@ CLI argument: ``--remove-default-attributes``
 | |before-remove-default-attributes|       | |after-remove-default-attributes|  |
 +------------------------------------------+------------------------------------+
 
-.. |before-remove-default-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-default-attributes.svg
-.. |after-remove-default-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-default-attributes.svg
+.. |before-remove-default-attributes| image:: images/before/remove-default-attributes.svg
+.. |after-remove-default-attributes| image:: images/after/remove-default-attributes.svg
 
 
 Remove an unused ``xmlns:xlink`` attribute
@@ -903,8 +903,8 @@ CLI argument: ``--remove-xmlns-xlink-attribute``
 | |before-remove-xmlns-xlink-attribute|              | |after-remove-xmlns-xlink-attribute|              |
 +----------------------------------------------------+---------------------------------------------------+
 
-.. |before-remove-xmlns-xlink-attribute| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-xmlns-xlink-attribute.svg
-.. |after-remove-xmlns-xlink-attribute| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-xmlns-xlink-attribute.svg
+.. |before-remove-xmlns-xlink-attribute| image:: images/before/remove-xmlns-xlink-attribute.svg
+.. |after-remove-xmlns-xlink-attribute| image:: images/after/remove-xmlns-xlink-attribute.svg
 
 
 Remove attributes that doesn't belong to this element
@@ -936,8 +936,8 @@ CLI argument: ``--remove-needless-attributes``
 | |before-remove-needless-attributes|          | |after-remove-needless-attributes|             |
 +----------------------------------------------+------------------------------------------------+
 
-.. |before-remove-needless-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-needless-attributes.svg
-.. |after-remove-needless-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-needless-attributes.svg
+.. |before-remove-needless-attributes| image:: images/before/remove-needless-attributes.svg
+.. |after-remove-needless-attributes| image:: images/after/remove-needless-attributes.svg
 
 
 Remove inheritable gradient attributes
@@ -981,8 +981,8 @@ CLI argument: ``--remove-gradient-attributes``
 | |before-remove-gradient-attributes|     | |after-remove-gradient-attributes|      |
 +-----------------------------------------+-----------------------------------------+
 
-.. |before-remove-gradient-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-gradient-attributes.svg
-.. |after-remove-gradient-attributes| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-gradient-attributes.svg
+.. |before-remove-gradient-attributes| image:: images/before/remove-gradient-attributes.svg
+.. |after-remove-gradient-attributes| image:: images/after/remove-gradient-attributes.svg
 
 
 Join presentational attributes
@@ -1034,8 +1034,8 @@ CLI argument: ``--apply-transform-to-gradients``
 | |before-apply-transform-to-gradients|            | |after-apply-transform-to-gradients|         |
 +--------------------------------------------------+----------------------------------------------+
 
-.. |before-apply-transform-to-gradients| image:: https://razrfalcon.github.io/svgcleaner/images/before/apply-transform-to-gradients.svg
-.. |after-apply-transform-to-gradients| image:: https://razrfalcon.github.io/svgcleaner/images/after/apply-transform-to-gradients.svg
+.. |before-apply-transform-to-gradients| image:: images/before/apply-transform-to-gradients.svg
+.. |after-apply-transform-to-gradients| image:: images/after/apply-transform-to-gradients.svg
 
 
 Apply transformations to shapes
@@ -1062,8 +1062,8 @@ CLI argument: ``--apply-transform-to-shapes``
 | |before-apply-transform-to-shapes|                | |after-apply-transform-to-shapes|         |
 +---------------------------------------------------+-------------------------------------------+
 
-.. |before-apply-transform-to-shapes| image:: https://razrfalcon.github.io/svgcleaner/images/before/apply-transform-to-shapes.svg
-.. |after-apply-transform-to-shapes| image:: https://razrfalcon.github.io/svgcleaner/images/after/apply-transform-to-shapes.svg
+.. |before-apply-transform-to-shapes| image:: images/before/apply-transform-to-shapes.svg
+.. |after-apply-transform-to-shapes| image:: images/after/apply-transform-to-shapes.svg
 
 
 Remove unresolved classes from ``class`` attributes
@@ -1096,8 +1096,8 @@ CLI argument: ``--remove-unresolved-classes``
 | |before-remove-unresolved-classes|         | |after-remove-unresolved-classes|    |
 +--------------------------------------------+--------------------------------------+
 
-.. |before-remove-unresolved-classes| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-unresolved-classes.svg
-.. |after-remove-unresolved-classes| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-unresolved-classes.svg
+.. |before-remove-unresolved-classes| image:: images/before/remove-unresolved-classes.svg
+.. |after-remove-unresolved-classes| image:: images/after/remove-unresolved-classes.svg
 
 
 Paths
@@ -1127,8 +1127,8 @@ CLI argument: ``--paths-to-relative``
 | |before-paths-to-relative|                 | |after-paths-to-relative|               |
 +--------------------------------------------+-----------------------------------------+
 
-.. |before-paths-to-relative| image:: https://razrfalcon.github.io/svgcleaner/images/before/paths-to-relative.svg
-.. |after-paths-to-relative| image:: https://razrfalcon.github.io/svgcleaner/images/after/paths-to-relative.svg
+.. |before-paths-to-relative| image:: images/before/paths-to-relative.svg
+.. |after-paths-to-relative| image:: images/after/paths-to-relative.svg
 
 
 Remove unused path segments
@@ -1153,8 +1153,8 @@ CLI argument: ``--remove-unused-segments``
 | |before-remove-unused-segments|                         | |after-remove-unused-segments|              |
 +---------------------------------------------------------+---------------------------------------------+
 
-.. |before-remove-unused-segments| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-unused-segments.svg
-.. |after-remove-unused-segments| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-unused-segments.svg
+.. |before-remove-unused-segments| image:: images/before/remove-unused-segments.svg
+.. |after-remove-unused-segments| image:: images/after/remove-unused-segments.svg
 
 
 Convert path segments into shorter ones
@@ -1190,8 +1190,8 @@ CLI argument: ``--convert-segments``
 | |before-convert-segments|                         | |after-convert-segments|               |
 +---------------------------------------------------+----------------------------------------+
 
-.. |before-convert-segments| image:: https://razrfalcon.github.io/svgcleaner/images/before/convert-segments.svg
-.. |after-convert-segments| image:: https://razrfalcon.github.io/svgcleaner/images/after/convert-segments.svg
+.. |before-convert-segments| image:: images/before/convert-segments.svg
+.. |after-convert-segments| image:: images/after/convert-segments.svg
 
 
 
@@ -1220,8 +1220,8 @@ CLI argument: ``--apply-transform-to-paths``
 | |before-apply-transform-to-paths|      | |after-apply-transform-to-paths| |
 +----------------------------------------+----------------------------------+
 
-.. |before-apply-transform-to-paths| image:: https://razrfalcon.github.io/svgcleaner/images/before/apply-transform-to-paths.svg
-.. |after-apply-transform-to-paths| image:: https://razrfalcon.github.io/svgcleaner/images/after/apply-transform-to-paths.svg
+.. |before-apply-transform-to-paths| image:: images/before/apply-transform-to-paths.svg
+.. |after-apply-transform-to-paths| image:: images/after/apply-transform-to-paths.svg
 
 
 Use compact notation for paths
@@ -1246,8 +1246,8 @@ CLI argument: ``--trim-paths``
 | |before-trim-paths|                         | |after-trim-paths|                                    |
 +---------------------------------------------+-------------------------------------------------------+
 
-.. |before-trim-paths| image:: https://razrfalcon.github.io/svgcleaner/images/before/trim-paths.svg
-.. |after-trim-paths| image:: https://razrfalcon.github.io/svgcleaner/images/after/trim-paths.svg
+.. |before-trim-paths| image:: images/before/trim-paths.svg
+.. |after-trim-paths| image:: images/after/trim-paths.svg
 
 
 Join ArcTo flags
@@ -1275,8 +1275,8 @@ CLI argument: ``--join-arcto-flags``
 | |before-join-arcto-flags|              | |after-join-arcto-flags|             |
 +----------------------------------------+--------------------------------------+
 
-.. |before-join-arcto-flags| image:: https://razrfalcon.github.io/svgcleaner/images/before/join-arcto-flags.svg
-.. |after-join-arcto-flags| image:: https://razrfalcon.github.io/svgcleaner/images/after/join-arcto-flags.svg
+.. |before-join-arcto-flags| image:: images/before/join-arcto-flags.svg
+.. |after-join-arcto-flags| image:: images/after/join-arcto-flags.svg
 
 
 Remove subsequent segments command from paths
@@ -1301,8 +1301,8 @@ CLI argument: ``--remove-dupl-cmd-in-paths``
 | |before-remove-dupl-cmd-in-paths|    | |after-remove-dupl-cmd-in-paths|   |
 +--------------------------------------+------------------------------------+
 
-.. |before-remove-dupl-cmd-in-paths| image:: https://razrfalcon.github.io/svgcleaner/images/before/remove-dupl-cmd-in-paths.svg
-.. |after-remove-dupl-cmd-in-paths| image:: https://razrfalcon.github.io/svgcleaner/images/after/remove-dupl-cmd-in-paths.svg
+.. |before-remove-dupl-cmd-in-paths| image:: images/before/remove-dupl-cmd-in-paths.svg
+.. |after-remove-dupl-cmd-in-paths| image:: images/after/remove-dupl-cmd-in-paths.svg
 
 
 Use implicit LineTo commands
@@ -1327,8 +1327,8 @@ CLI argument: ``--use-implicit-cmds``
 | |before-use-implicit-cmds|               | |after-use-implicit-cmds|            |
 +------------------------------------------+--------------------------------------+
 
-.. |before-use-implicit-cmds| image:: https://razrfalcon.github.io/svgcleaner/images/before/use-implicit-cmds.svg
-.. |after-use-implicit-cmds| image:: https://razrfalcon.github.io/svgcleaner/images/after/use-implicit-cmds.svg
+.. |before-use-implicit-cmds| image:: images/before/use-implicit-cmds.svg
+.. |after-use-implicit-cmds| image:: images/after/use-implicit-cmds.svg
 
 
 Output
@@ -1356,8 +1356,8 @@ CLI argument: ``--trim-colors``
 | |before-trim-colors|                                | |after-trim-colors|                              |
 +-----------------------------------------------------+--------------------------------------------------+
 
-.. |before-trim-colors| image:: https://razrfalcon.github.io/svgcleaner/images/before/trim-colors.svg
-.. |after-trim-colors| image:: https://razrfalcon.github.io/svgcleaner/images/after/trim-colors.svg
+.. |before-trim-colors| image:: images/before/trim-colors.svg
+.. |after-trim-colors| image:: images/after/trim-colors.svg
 
 
 Simplify transform matrices
@@ -1381,8 +1381,8 @@ CLI argument: ``--simplify-transforms``
 | |before-simplify-transforms|                   | |after-simplify-transforms|             |
 +------------------------------------------------+-----------------------------------------+
 
-.. |before-simplify-transforms| image:: https://razrfalcon.github.io/svgcleaner/images/before/simplify-transforms.svg
-.. |after-simplify-transforms| image:: https://razrfalcon.github.io/svgcleaner/images/after/simplify-transforms.svg
+.. |before-simplify-transforms| image:: images/before/simplify-transforms.svg
+.. |after-simplify-transforms| image:: images/after/simplify-transforms.svg
 
 
 Set coordinates numeric precision
@@ -1448,8 +1448,8 @@ CLI argument: ``--paths-coordinates-precision``
 | |before-paths-coordinates-precision|      | |after-paths-coordinates-precision|   |
 +-------------------------------------------+---------------------------------------+
 
-.. |before-paths-coordinates-precision| image:: https://razrfalcon.github.io/svgcleaner/images/before/paths-coordinates-precision.svg
-.. |after-paths-coordinates-precision| image:: https://razrfalcon.github.io/svgcleaner/images/after/paths-coordinates-precision.svg
+.. |before-paths-coordinates-precision| image:: images/before/paths-coordinates-precision.svg
+.. |after-paths-coordinates-precision| image:: images/after/paths-coordinates-precision.svg
 
 
 Sets XML nodes indent
@@ -1480,8 +1480,8 @@ CLI argument: ``--indent``
 | |before-indent|                                     | |after-indent|                                                    |
 +-----------------------------------------------------+-------------------------------------------------------------------+
 
-.. |before-indent| image:: https://razrfalcon.github.io/svgcleaner/images/before/indent.svg
-.. |after-indent| image:: https://razrfalcon.github.io/svgcleaner/images/after/indent.svg
+.. |before-indent| image:: images/before/indent.svg
+.. |after-indent| image:: images/after/indent.svg
 
 
 Other

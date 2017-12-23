@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="100">
+  <defs>
+    <g fill="red">
+      <circle id="circle1" fill="url(#rg1)"
+              cx="50" cy="50" r="50"/>
+      <circle id="circle2" fill="url(#rg2)"
+              cx="50" cy="50" r="50"/>
+    </g>
+    <radialGradient id="rg1">
+      <stop offset="0" stop-color="yellow"/>
+      <stop offset="1" stop-color="green"/>
+    </radialGradient>
+    <radialGradient id="rg2">
+      <stop offset="0" stop-color="red"/>
+      <stop offset="1" stop-color="blue"/>
+    </radialGradient>
+  </defs>
+  <use xlink:href="#circle1"/>
+</svg>

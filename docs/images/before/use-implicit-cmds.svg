@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="100">
+  <path fill="green" stroke="red"
+        stroke-width="2"
+        d="M 10 10 L 50 50 L 120 50"/>
+</svg>

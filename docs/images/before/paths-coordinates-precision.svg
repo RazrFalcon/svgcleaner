@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="100">
+  <path d="M 10.000001 10.000005
+           L 89.99999 10.11111
+           L 89.997777 90.0005
+           L 10.123456789 90 L 10 10 z"
+        fill="none" stroke="red"/>
+</svg>

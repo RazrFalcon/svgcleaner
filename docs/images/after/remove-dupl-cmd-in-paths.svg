@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="100">
+  <path d="M 10 10 L 90 10 90 90
+           10 90 10 10 z"
+        fill="none" stroke="red"
+        stroke-width="2"/>
+</svg>

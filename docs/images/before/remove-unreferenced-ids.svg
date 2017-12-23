@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="100" id="svg1">
+  <circle id="circle1" fill="green"
+          cx="50" cy="50" r="50"/>
+  <circle id="circle2" fill="#023373"
+          cx="100" cy="50" r="50"/>
+  <use id="use1" x="100" xlink:href="#circle1"/>
+</svg>

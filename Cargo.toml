@@ -24,8 +24,8 @@ name = "svgcleaner"
 path = "src/main.rs"
 
 [dependencies]
-log = "0.3"
-fern = "0.4"
+log = "0.4"
+fern = "0.5"
 
 [dependencies.svgdom]
 # latest

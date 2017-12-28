@@ -55,7 +55,7 @@ macro_rules! try_msg {
 fn main() {
     fern::Dispatch::new()
         .format(log_format)
-        .level(log::LogLevelFilter::Warn)
+        .level(log::LevelFilter::Warn)
         .chain(std::io::stderr())
         .apply().unwrap();
 
@@ -179,15 +179,15 @@ fn main() {
     }
 }
 
-fn log_format(out: fern::FormatCallback, message: &fmt::Arguments, record: &log::LogRecord) {
-    use log::LogLevel;
+fn log_format(out: fern::FormatCallback, message: &fmt::Arguments, record: &log::Record) {
+    use log::Level;
 
     let lvl = match record.level() {
-        LogLevel::Error => "Error",
-        LogLevel::Warn => "Warning",
-        LogLevel::Info => "Info",
-        LogLevel::Debug => "Debug",
-        LogLevel::Trace => "Trace",
+        Level::Error => "Error",
+        Level::Warn => "Warning",
+        Level::Info => "Info",
+        Level::Debug => "Debug",
+        Level::Trace => "Trace",
     };
 
     out.finish(format_args!(

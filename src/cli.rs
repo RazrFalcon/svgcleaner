@@ -29,11 +29,8 @@ use clap::{
 };
 
 use svgdom::{
-    Indent,
-    ListSeparator,
     ParseOptions,
     WriteOptions,
-    WriteOptionsPaths,
 };
 
 use {
@@ -449,6 +446,12 @@ pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
 }
 
 pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
+    use svgdom::{
+        Indent,
+        ListSeparator,
+        AttributesOrder,
+    };
+
     // Initial options should be opposite to default ones.
     let mut opt = WriteOptions {
         indent: Indent::Spaces(4),
@@ -457,22 +460,21 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
         trim_hex_colors: false,
         write_hidden_attributes: false,
         remove_leading_zero: true,
-        paths: WriteOptionsPaths {
-            use_compact_notation: false,
-            join_arc_to_flags: false,
-            remove_duplicated_commands: false,
-            use_implicit_lineto_commands: false,
-        },
+        use_compact_path_notation: false,
+        join_arc_to_flags: false,
+        remove_duplicated_path_commands: false,
+        use_implicit_lineto_commands: false,
         simplify_transform_matrices: false,
         list_separator: ListSeparator::Space,
+        attributes_order: AttributesOrder::Alphabetical,
     };
 
     let flags = Flags::new(args);
 
-    flags.resolve(&mut opt.paths.use_compact_notation, Key::TrimPaths);
-    flags.resolve(&mut opt.paths.remove_duplicated_commands, Key::RemoveDuplCmdInPaths);
-    flags.resolve(&mut opt.paths.join_arc_to_flags, Key::JoinArcToFlags);
-    flags.resolve(&mut opt.paths.use_implicit_lineto_commands, Key::UseImplicitCommands);
+    flags.resolve(&mut opt.use_compact_path_notation, Key::TrimPaths);
+    flags.resolve(&mut opt.remove_duplicated_path_commands, Key::RemoveDuplCmdInPaths);
+    flags.resolve(&mut opt.join_arc_to_flags, Key::JoinArcToFlags);
+    flags.resolve(&mut opt.use_implicit_lineto_commands, Key::UseImplicitCommands);
 
     flags.resolve(&mut opt.simplify_transform_matrices, Key::SimplifyTransforms);
 
@@ -657,8 +659,8 @@ mod tests {
         assert_eq!(parse_opt.parse_comments, false);
         assert_eq!(parse_opt.parse_declarations, false);
 
-        assert_eq!(write_opt.paths.use_compact_notation, true);
-        assert_eq!(write_opt.paths.remove_duplicated_commands, true);
+        assert_eq!(write_opt.use_compact_path_notation, true);
+        assert_eq!(write_opt.remove_duplicated_path_commands, true);
 
         assert_eq!(cleaning_opt.remove_unused_defs, true);
         assert_eq!(cleaning_opt.convert_shapes, true);
@@ -682,8 +684,8 @@ mod tests {
         assert_eq!(parse_opt.parse_comments, true);
         assert_eq!(parse_opt.parse_declarations, true);
 
-        assert_eq!(write_opt.paths.use_compact_notation, false);
-        assert_eq!(write_opt.paths.remove_duplicated_commands, false);
+        assert_eq!(write_opt.use_compact_path_notation, false);
+        assert_eq!(write_opt.remove_duplicated_path_commands, false);
 
         assert_eq!(cleaning_opt.remove_unused_defs, false);
         assert_eq!(cleaning_opt.convert_shapes, false);
@@ -710,8 +712,8 @@ mod tests {
         assert_eq!(parse_opt.parse_comments, false);
         assert_eq!(parse_opt.parse_declarations, true);
 
-        assert_eq!(write_opt.paths.use_compact_notation, true);
-        assert_eq!(write_opt.paths.remove_duplicated_commands, false);
+        assert_eq!(write_opt.use_compact_path_notation, true);
+        assert_eq!(write_opt.remove_duplicated_path_commands, false);
 
         assert_eq!(cleaning_opt.remove_unused_defs, true);
         assert_eq!(cleaning_opt.convert_shapes, false);

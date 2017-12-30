@@ -17,10 +17,10 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use svgdom::{
+    path,
     Document,
     AttributeValue,
 };
-use svgdom::types::path;
 
 use task::short::AId;
 use options::CleaningOptions;
@@ -134,7 +134,7 @@ fn round_number(n: &mut f64, precision: usize) {
 }
 
 fn round_path(path: &mut path::Path, precision: usize) {
-    use svgdom::types::path::SegmentData;
+    use svgdom::path::SegmentData;
 
     for seg in &mut path.d {
         match *seg.data_mut() {

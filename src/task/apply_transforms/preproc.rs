@@ -18,8 +18,8 @@
 
 use svgdom::{
     Node,
+    Transform,
 };
-use svgdom::types::Transform;
 
 use task::short::{EId, AId};
 use super::utils;

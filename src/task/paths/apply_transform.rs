@@ -16,11 +16,11 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::types::{
+use svgdom::{
     Transform,
     FuzzyEq,
 };
-use svgdom::types::path::{
+use svgdom::path::{
     Path,
     SegmentData,
 };
@@ -81,8 +81,8 @@ mod tests {
     use std::str::FromStr;
 
     use super::*;
-    use svgdom::types::path::Path;
-    use svgdom::types::Transform;
+    use svgdom::path::Path;
+    use svgdom::Transform;
 
     macro_rules! test {
         ($name:ident, $in_path:expr, $in_ts:expr, $out_text:expr) => (

@@ -19,9 +19,9 @@
 use svgdom::{
     AttributeValue,
     Document,
+    Transform,
 };
-use svgdom::types::Transform;
-use svgdom::types::path::Path;
+use svgdom::path::Path;
 
 use task::short::{EId, AId};
 use task::apply_transforms::utils as ts_utils;
@@ -110,7 +110,7 @@ fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, opt: &
 }
 
 mod utils {
-    use svgdom::types::path::{Path, Command};
+    use svgdom::path::{Path, Command};
 
     // HorizontalLineTo, VerticalLineTo and ClosePath does not have 'x'/'y' coordinates,
     // so we have to find them in previous segments.

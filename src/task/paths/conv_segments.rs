@@ -18,11 +18,11 @@
 
 use std::cmp::Ordering;
 
-use svgdom::types::{
+use svgdom::{
     FuzzyEq,
     FuzzyOrd,
 };
-use svgdom::types::path::{
+use svgdom::path::{
     Command,
     Path,
     Segment,
@@ -249,7 +249,7 @@ mod tests {
     use std::str::FromStr;
 
     use super::*;
-    use svgdom::types::path::Path;
+    use svgdom::path::Path;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

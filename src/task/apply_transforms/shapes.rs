@@ -20,8 +20,8 @@ use svgdom::{
     Attributes,
     Document,
     Node,
+    Transform,
 };
-use svgdom::types::Transform;
 
 use task::short::{EId, AId};
 use super::utils;

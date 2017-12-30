@@ -19,8 +19,8 @@
 use svgdom::{
     AttributeValue,
     Node,
+    Transform,
 };
-use svgdom::types::Transform;
 
 use task::short::AId;
 

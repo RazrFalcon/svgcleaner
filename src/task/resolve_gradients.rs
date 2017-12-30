@@ -4,19 +4,17 @@
 
 use svgdom::{
     Attribute,
-    AttributeId,
     AttributeValue,
+    Color,
     Document,
-    ElementId,
     ElementType,
+    Length,
+    LengthUnit,
     Node,
     ValueId,
 };
-use svgdom::types::{
-    Color,
-    Length,
-    LengthUnit,
-};
+
+use task::short::{EId, AId};
 
 use error::{
     ErrorKind,
@@ -37,15 +35,15 @@ use error::{
 ///
 /// Details: https://www.w3.org/TR/SVG/pservers.html#LinearGradients
 pub fn resolve_linear_gradient_attributes(doc: &Document) {
-    for node in &mut gen_order(doc, ElementId::LinearGradient) {
-        check_attr(node, AttributeId::GradientUnits,
+    for node in &mut gen_order(doc, EId::LinearGradient) {
+        check_attr(node, AId::GradientUnits,
             Some(AttributeValue::from(ValueId::ObjectBoundingBox)));
-        check_attr(node, AttributeId::SpreadMethod, Some(AttributeValue::from(ValueId::Pad)));
-        check_attr(node, AttributeId::X1, Some(AttributeValue::from((0.0, LengthUnit::Percent))));
-        check_attr(node, AttributeId::Y1, Some(AttributeValue::from((0.0, LengthUnit::Percent))));
-        check_attr(node, AttributeId::X2, Some(AttributeValue::from((100.0, LengthUnit::Percent))));
-        check_attr(node, AttributeId::Y2, Some(AttributeValue::from((0.0, LengthUnit::Percent))));
-        check_attr(node, AttributeId::GradientTransform, None);
+        check_attr(node, AId::SpreadMethod, Some(AttributeValue::from(ValueId::Pad)));
+        check_attr(node, AId::X1, Some(AttributeValue::from((0.0, LengthUnit::Percent))));
+        check_attr(node, AId::Y1, Some(AttributeValue::from((0.0, LengthUnit::Percent))));
+        check_attr(node, AId::X2, Some(AttributeValue::from((100.0, LengthUnit::Percent))));
+        check_attr(node, AId::Y2, Some(AttributeValue::from((0.0, LengthUnit::Percent))));
+        check_attr(node, AId::GradientTransform, None);
     }
 }
 
@@ -71,20 +69,20 @@ pub fn resolve_radial_gradient_attributes(doc: &Document) {
     // So we need to resolve nodes in referencing order.
     // From not referenced to referenced.
 
-    for node in &mut gen_order(doc, ElementId::RadialGradient) {
-        check_attr(node, AttributeId::GradientUnits,
+    for node in &mut gen_order(doc, EId::RadialGradient) {
+        check_attr(node, AId::GradientUnits,
             Some(AttributeValue::from(ValueId::ObjectBoundingBox)));
-        check_attr(node, AttributeId::SpreadMethod, Some(AttributeValue::from(ValueId::Pad)));
-        check_attr(node, AttributeId::Cx, Some(AttributeValue::from((50.0, LengthUnit::Percent))));
-        check_attr(node, AttributeId::Cy, Some(AttributeValue::from((50.0, LengthUnit::Percent))));
-        check_attr(node, AttributeId::R,  Some(AttributeValue::from((50.0, LengthUnit::Percent))));
+        check_attr(node, AId::SpreadMethod, Some(AttributeValue::from(ValueId::Pad)));
+        check_attr(node, AId::Cx, Some(AttributeValue::from((50.0, LengthUnit::Percent))));
+        check_attr(node, AId::Cy, Some(AttributeValue::from((50.0, LengthUnit::Percent))));
+        check_attr(node, AId::R,  Some(AttributeValue::from((50.0, LengthUnit::Percent))));
 
-        let cx = node.attributes().get_value(AttributeId::Cx).cloned();
-        let cy = node.attributes().get_value(AttributeId::Cy).cloned();
-        check_attr(node, AttributeId::Fx, cx);
-        check_attr(node, AttributeId::Fy, cy);
+        let cx = node.attributes().get_value(AId::Cx).cloned();
+        let cy = node.attributes().get_value(AId::Cy).cloned();
+        check_attr(node, AId::Fx, cx);
+        check_attr(node, AId::Fy, cy);
 
-        check_attr(node, AttributeId::GradientTransform, None);
+        check_attr(node, AId::GradientTransform, None);
     }
 }
 
@@ -103,33 +101,33 @@ pub fn resolve_radial_gradient_attributes(doc: &Document) {
 pub fn resolve_stop_attributes(doc: &Document) -> Result<()> {
     for gradient in doc.descendants().filter(|n| n.is_gradient()) {
         for (idx, mut node) in gradient.children().enumerate() {
-            let av = node.attributes().get_value(AttributeId::Offset).cloned();
+            let av = node.attributes().get_value(AId::Offset).cloned();
             if let Some(AttributeValue::Length(l)) = av {
                 if l.unit == LengthUnit::Percent {
                     // convert percent into a number
                     let new_l = Length::new_number(l.num / 100.0);
-                    node.set_attribute((AttributeId::Offset, new_l));
+                    node.set_attribute((AId::Offset, new_l));
                 }
             } else {
                 if idx == 0 {
                     // Allow first stop to not have an offset.
                     warn!("The 'stop' element must have an 'offset' attribute. \
                            Fallback to 'offset=0'.");
-                    node.set_attribute((AttributeId::Offset, Length::zero()));
+                    node.set_attribute((AId::Offset, Length::zero()));
                 } else {
                     return Err(ErrorKind::MissingAttribute("stop".to_string(),
                                                            "offset".to_string()).into());
                 }
             }
 
-            if !node.has_attribute(AttributeId::StopColor) {
-                let mut a = Attribute::new(AttributeId::StopColor, Color::new(0, 0, 0));
+            if !node.has_attribute(AId::StopColor) {
+                let mut a = Attribute::new(AId::StopColor, Color::new(0, 0, 0));
                 a.visible = false;
                 node.set_attribute(a);
             }
 
-            if !node.has_attribute(AttributeId::StopOpacity) {
-                let mut a = Attribute::new(AttributeId::StopOpacity, 1.0);
+            if !node.has_attribute(AId::StopOpacity) {
+                let mut a = Attribute::new(AId::StopOpacity, 1.0);
                 a.visible = false;
                 node.set_attribute(a);
             }
@@ -140,7 +138,7 @@ pub fn resolve_stop_attributes(doc: &Document) -> Result<()> {
 }
 
 // TODO: explain algorithm
-fn gen_order(doc: &Document, eid: ElementId) -> Vec<Node> {
+fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
     let nodes = doc.descendants().filter(|n| n.is_tag_name(eid))
                    .collect::<Vec<Node>>();
 
@@ -165,7 +163,7 @@ fn gen_order(doc: &Document, eid: ElementId) -> Vec<Node> {
     order
 }
 
-fn check_attr(node: &mut Node, id: AttributeId, def_value: Option<AttributeValue>) {
+fn check_attr(node: &mut Node, id: AId, def_value: Option<AttributeValue>) {
     if !node.has_attribute(id) {
         if let Some(v) = resolve_attribute(node, id, def_value) {
             let mut a = Attribute::new(id, v);
@@ -175,13 +173,13 @@ fn check_attr(node: &mut Node, id: AttributeId, def_value: Option<AttributeValue
     }
 }
 
-fn resolve_attribute(node: &Node, id: AttributeId, def_value: Option<AttributeValue>)
+fn resolve_attribute(node: &Node, id: AId, def_value: Option<AttributeValue>)
                      -> Option<AttributeValue> {
     if node.has_attribute(id) {
         return node.attributes().get_value(id).cloned();
     }
 
-    match node.attributes().get_value(AttributeId::XlinkHref) {
+    match node.attributes().get_value(AId::XlinkHref) {
         Some(av) => {
             match *av {
                 AttributeValue::Link(ref ref_node) => resolve_attribute(ref_node, id, def_value),

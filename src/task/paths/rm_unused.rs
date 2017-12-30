@@ -18,8 +18,8 @@
 
 // TODO: split to submodules and suboptions
 
-use svgdom::types::FuzzyEq;
-use svgdom::types::path::{
+use svgdom::FuzzyEq;
+use svgdom::path::{
     Command,
     Path,
     Segment,
@@ -220,7 +220,7 @@ mod tests {
     use std::str::FromStr;
 
     use super::*;
-    use svgdom::types::path::Path;
+    use svgdom::path::Path;
     use task::paths::conv_segments;
 
     macro_rules! test {

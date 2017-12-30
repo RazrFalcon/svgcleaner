@@ -21,9 +21,9 @@ use svgdom::{
     AttributeType,
     AttributeValue,
     Document,
+    Length,
     ValueId,
 };
-use svgdom::types::Length;
 
 use task::short::{EId, AId, Unit};
 

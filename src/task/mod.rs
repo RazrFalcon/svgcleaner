@@ -85,5 +85,5 @@ pub mod utils;
 mod short {
     pub use svgdom::ElementId as EId;
     pub use svgdom::AttributeId as AId;
-    pub use svgdom::types::LengthUnit as Unit;
+    pub use svgdom::LengthUnit as Unit;
 }

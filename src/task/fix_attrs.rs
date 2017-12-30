@@ -20,10 +20,8 @@ use svgdom::{
     AttributeValue,
     Document,
     ElementType,
-    Node,
-};
-use svgdom::types::{
     Length,
+    Node,
 };
 
 use task::short::{AId, EId, Unit};

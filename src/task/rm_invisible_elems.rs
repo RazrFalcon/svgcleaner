@@ -20,10 +20,10 @@ use svgdom::{
     AttributeValue,
     Document,
     ElementType,
+    FuzzyEq,
     Node,
     ValueId,
 };
-use svgdom::types::FuzzyEq;
 
 use task::short::{EId, AId};
 use task::utils;

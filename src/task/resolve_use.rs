@@ -19,8 +19,6 @@
 use svgdom::{
     AttributeValue,
     Document,
-};
-use svgdom::types::{
     Length,
     Transform,
 };

@@ -18,9 +18,9 @@
 
 use svgdom::{
     AttributeValue,
+    FuzzyEq,
     Node,
 };
-use svgdom::types::FuzzyEq;
 
 use task::short::AId;
 

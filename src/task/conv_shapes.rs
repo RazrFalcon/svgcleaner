@@ -17,14 +17,12 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use svgdom::{
+    path,
     AttributeValue,
     Document,
-    Node,
-};
-use svgdom::types::{
-    path,
     FuzzyEq,
     Length,
+    Node,
 };
 
 use task::short::{EId, AId, Unit};

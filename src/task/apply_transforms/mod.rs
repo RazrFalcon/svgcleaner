@@ -28,10 +28,8 @@ pub mod utils {
     use svgdom::{
         Attributes,
         AttributeValue,
-        Node,
-    };
-    use svgdom::types::{
         Length,
+        Node,
         Transform,
     };
 

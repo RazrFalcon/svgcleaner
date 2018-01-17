@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - `--list-separator`.
+- The `marker` attribute will be replaced with `marker-start`, `marker-mid`, and `marker-end` attributes
+  for compatibility reasons.
 
 ### Changed
 - Attributes with `inherit` or `currentColor` and without a proper parent is an error now.

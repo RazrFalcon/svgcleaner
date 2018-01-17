@@ -3,7 +3,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 use svgdom::{
-    Attribute,
     AttributeId,
     AttributeValue,
     Document,
@@ -11,11 +10,14 @@ use svgdom::{
     ValueId,
 };
 
+use error::{
+    ErrorKind,
+    Result,
+};
+
 // TODO: split
 /// Resolve `inherit` and `currentColor` attributes.
-///
-/// The function will fallback to a default value when possible.
-pub fn resolve_inherit(doc: &Document) {
+pub fn resolve_inherit(doc: &Document) -> Result<()> {
     let mut vec_inherit = Vec::new();
     let mut vec_curr_color = Vec::new();
 
@@ -41,7 +43,7 @@ pub fn resolve_inherit(doc: &Document) {
         }
 
         for id in &vec_inherit {
-            resolve_impl(&mut node, *id, *id);
+            resolve_impl(&mut node, *id, *id)?;
         }
 
         for id in &vec_curr_color {
@@ -49,27 +51,24 @@ pub fn resolve_inherit(doc: &Document) {
             if let Some(av) = av {
                 node.set_attribute((*id, av.clone()));
             } else {
-                resolve_impl(&mut node, *id, AttributeId::Color);
+                resolve_impl(&mut node, *id, AttributeId::Color)?;
             }
         }
     }
+
+    Ok(())
 }
 
-fn resolve_impl(node: &mut Node, curr_attr: AttributeId, parent_attr: AttributeId) {
+fn resolve_impl(node: &mut Node, curr_attr: AttributeId, parent_attr: AttributeId) -> Result<()> {
     if let Some(n) = node.parents().find(|n| n.has_attribute(parent_attr)) {
         let av = n.attributes().get_value(parent_attr).cloned();
         if let Some(av) = av {
             node.set_attribute((curr_attr, av.clone()));
         }
+
+        Ok(())
     } else {
-        match Attribute::default(curr_attr) {
-            Some(a) => node.set_attribute((curr_attr, a.value)),
-            None => {
-                warn!("Failed to resolve attribute: {}. Removing it.",
-                       node.attributes().get(curr_attr).unwrap());
-                node.remove_attribute(curr_attr);
-            }
-        }
+        Err(ErrorKind::UnresolvedAttribute(curr_attr.to_string()).into())
     }
 }
 
@@ -78,9 +77,26 @@ mod tests {
     use super::*;
     use svgdom::{Document, ToStringWithOptions};
 
+    #[cfg(test)]
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
-            base_test!($name, resolve_inherit, $in_text, $out_text);
+            #[test]
+            fn $name() {
+                let mut doc = Document::from_str($in_text).unwrap();
+                resolve_inherit(&mut doc).unwrap();
+                assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
+            }
+        )
+    }
+
+    #[cfg(test)]
+    macro_rules! test_err {
+        ($name:ident, $in_text:expr) => (
+            #[test]
+            fn $name() {
+                let mut doc = Document::from_str($in_text).unwrap();
+                assert_eq!(resolve_inherit(&mut doc).is_err(), true);
+            }
         )
     }
 
@@ -115,15 +131,6 @@ mod tests {
 </svg>
 ");
 
-    test!(inherit_4,
-"<svg>
-    <rect fill='inherit'/>
-</svg>",
-"<svg>
-    <rect fill='#000000'/>
-</svg>
-");
-
     test!(current_color_1,
 "<svg color='#ff0000'>
     <rect fill='currentColor'/>
@@ -151,19 +158,20 @@ mod tests {
 </svg>
 ");
 
-    test!(default_1,
+    test_err!(unresolvable_1,
+"<svg>
+    <rect fill='inherit'/>
+</svg>"
+);
+
+    test_err!(unresolvable_2,
 "<svg>
     <rect fill='currentColor'/>
     <rect fill='inherit'/>
-</svg>",
-"<svg>
-    <rect fill='#000000'/>
-    <rect fill='#000000'/>
-</svg>
-");
+</svg>"
+);
 
-    test!(unresolved_1,
-"<svg font-family='inherit'/>",
-"<svg/>
-");
+    test_err!(unresolvable_3,
+"<svg font-family='inherit'/>"
+);
 }

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `--list-separator`.
 
+### Changed
+- Attributes with `inherit` or `currentColor` and without a proper parent is an error now.
+
 ### Fixed
 - Groups removing with transform and non-SVG child.
 - Transform to path applying when a path has a style defined in a parent element.

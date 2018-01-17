@@ -60,8 +60,11 @@ pub fn parse_data(data: &str, opt: &ParseOptions) -> Result<Document, svgdom::Er
     Document::from_str_with_opt(data, opt)
 }
 
-pub fn clean_doc(doc: &mut Document, options: &CleaningOptions, opt: &WriteOptions)
-                 -> Result<(), error::Error> {
+pub fn clean_doc(
+    doc: &mut Document,
+    options: &CleaningOptions,
+    opt: &WriteOptions
+) -> Result<(), error::Error> {
     preclean_checks(doc)?;
 
     // NOTE: Order is important.
@@ -74,7 +77,7 @@ pub fn clean_doc(doc: &mut Document, options: &CleaningOptions, opt: &WriteOptio
     resolve_radial_gradient_attributes(doc);
     resolve_stop_attributes(doc)?;
 
-    resolve_inherit(doc);
+    resolve_inherit(doc)?;
     fix_invalid_attributes(doc);
     group_defs(doc);
 

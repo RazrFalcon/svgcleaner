@@ -54,15 +54,15 @@ pub fn fix_m(path: &mut Path) {
         let prev_cmd = path.d[i - 1].cmd();
         let curr_cmd = path.d[i].cmd();
 
+        if let &SegmentData::MoveTo { x, y } = path.d[i - 1].data() {
+            mx = x;
+            my = y;
+        }
+
         if prev_cmd == Command::ClosePath {
             if curr_cmd != Command::MoveTo {
                 path.d.insert(i, Segment::new_move_to(mx, my));
             }
-        }
-
-        if let &SegmentData::MoveTo { x, y } = path.d[i].data() {
-            mx = x;
-            my = y;
         }
 
         i += 1;

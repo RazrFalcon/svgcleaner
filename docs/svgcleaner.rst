@@ -1452,8 +1452,41 @@ CLI argument: ``--paths-coordinates-precision``
 .. |after-paths-coordinates-precision| image:: images/after/paths-coordinates-precision.svg
 
 
-Sets XML nodes indent
----------------------
+Set number list separator
+-------------------------
+
+Set separator for attributes with number list values.
+Like ``stroke-dasharray`` or ``points``.
+
+Possible values:
+
+- space
+- comma
+- comma-space
+
+Default: space
+
+CLI argument: ``--list-separator``
+
++-------------------------------------------------------------+--------------------------------------------------------+
+| Before (174b)                                               | After (169b)                                           |
++-------------------------------------------------------------+--------------------------------------------------------+
+| .. code-block:: XML                                         | .. code-block:: XML                                    |
+|                                                             |                                                        |
+|   <svg>                                                     |   <svg>                                                |
+|     <polygon fill="green" points="10, 10, 10, 30, 30, 30"/> |     <polygon fill="green" points="10 10 10 30 30 30"/> |
+|   </svg>                                                    |   </svg>                                               |
++-------------------------------------------------------------+--------------------------------------------------------+
+| |before-list-separator|                                     | |after-list-separator|                                 |
++-------------------------------------------------------------+--------------------------------------------------------+
+
+.. |before-list-separator| image:: images/before/list-separator.svg
+.. |after-list-separator| image:: images/after/list-separator.svg
+
+
+
+Set XML nodes indent
+--------------------
 
 Set indent for XML nodes.
 

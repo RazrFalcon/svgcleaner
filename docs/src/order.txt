@@ -49,6 +49,7 @@ coordinates-precision.rst
 properties-precision.rst
 transforms-precision.rst
 paths-coordinates-precision.rst
+list-separator.rst
 indent.rst
 -- Other
 no-defaults.rst

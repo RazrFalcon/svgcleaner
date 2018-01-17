@@ -1,5 +1,5 @@
-Sets XML nodes indent
----------------------
+Set XML nodes indent
+--------------------
 
 Set indent for XML nodes.
 

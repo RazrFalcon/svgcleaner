@@ -5,18 +5,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [0.9.3] - 2018-01-17
 ### Added
 - `--list-separator`.
-- The `marker` attribute will be replaced with `marker-start`, `marker-mid`, and `marker-end` attributes
-  for compatibility reasons.
+- The `marker` attribute removing.
 
 ### Changed
-- Attributes with `inherit` or `currentColor` and without a proper parent is an error now.
+- Attributes with `inherit` or `currentColor` values and without a proper parent is an error now.
 
 ### Fixed
 - Groups removing with transform and non-SVG child.
 - Transform to path applying when a path has a style defined in a parent element.
 - Multipass with `--join-style-attributes`.
+- Paths preprocessing.
 
 ## [0.9.2] - 2017-12-16
 ### Added
@@ -258,7 +260,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First public release with Perl backend and Qt GUI.
 
-[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.2...HEAD
+[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.3...HEAD
+[0.9.3]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/RazrFalcon/svgcleaner/compare/v0.8.1...v0.9.0

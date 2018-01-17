@@ -240,7 +240,6 @@ pub fn clean_doc(
     fix_xmlns_attribute(doc, options.remove_xmlns_xlink_attribute);
 
     // NOTE: Must be run at last, since it breaks the linking.
-    // TODO: should be avoided during multipass
     join_style_attributes(doc, options.join_style_attributes, opt);
 
     Ok(())

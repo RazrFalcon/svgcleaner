@@ -22,6 +22,7 @@ extern crate fern;
 
 use std::fmt;
 use std::fs;
+use std::str;
 use std::path::Path;
 use std::io::{
     stderr,
@@ -113,24 +114,24 @@ fn main() {
         std::process::exit(0);
     };
 
-    // Parse it.
-    let mut doc = match cleaner::parse_data(&raw[..], &parse_opt) {
-        Ok(d) => d,
-        Err(e) => {
-            writeln!(stderr(), "{}.", e.full_chain()).unwrap();
-            on_err();
-            return;
-        }
-    };
-
-    // Allocate a buffer for the output data.
-    let capacity = (raw.len() as f64 * 0.8) as usize;
-    let mut buf = Vec::with_capacity(capacity);
+    let input_size = raw.len();
+    let mut buf = raw.into_bytes();
     let mut prev_size = 0;
 
     loop {
-        // Clear buffer.
-        buf.clear();
+        // Parse it.
+        //
+        // 'buf' is either an input data or cleaned data in the multipass mode.
+        //
+        // We can't reuse cleaned doc, because 'join_style_attributes', if enabled, breaks it.
+        let mut doc = match cleaner::parse_data(str::from_utf8(&buf).unwrap(), &parse_opt) {
+            Ok(d) => d,
+            Err(e) => {
+                writeln!(stderr(), "{}.", e.full_chain()).unwrap();
+                on_err();
+                return;
+            }
+        };
 
         // Clean document.
         match cleaner::clean_doc(&mut doc, &cleaning_opt, &write_opt) {
@@ -142,6 +143,12 @@ fn main() {
             }
         }
 
+
+        // Clear buffer.
+        //
+        // We are reusing the same buffer for input and output data.
+        buf.clear();
+
         // Write buffer.
         cleaner::write_buffer(&doc, &write_opt, &mut buf);
 
@@ -150,7 +157,7 @@ fn main() {
             break;
         }
 
-        // If the size is unchaged - exit from the loop.
+        // If size is unchanged - exit from the loop.
         if prev_size == buf.len() {
             break;
         }
@@ -160,7 +167,7 @@ fn main() {
 
     // Check that cleaned file is smaller.
     if !args.is_present(KEYS[Key::AllowBiggerFile]) {
-        if buf.len() > raw.len() {
+        if buf.len() > input_size {
             writeln!(stderr(), "Error: cleaned file is bigger than original.").unwrap();
             on_err();
             return;
@@ -174,7 +181,7 @@ fn main() {
     }
 
     if !args.is_present(KEYS[Key::Quiet]) {
-        let ratio = 100.0 - (buf.len() as f64) / (raw.len() as f64) * 100.0;
+        let ratio = 100.0 - (buf.len() as f64) / (input_size as f64) * 100.0;
         writeln!(stderr(), "Your image is {:.2}% smaller now.", ratio).unwrap();
     }
 }

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Groups removing with transform and non-SVG child.
 - Transform to path applying when a path has a style defined in a parent element.
+- Multipass with `--join-style-attributes`.
 
 ## [0.9.2] - 2017-12-16
 ### Added

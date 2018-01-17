@@ -378,6 +378,7 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
                 return false;
             }
 
+            // TODO: rewrite
             if se.find("Error").is_some() {
                 // list of "not errors"
                 if    se.find("Error: scripting is not supported.").is_some()
@@ -396,6 +397,7 @@ fn clean_svg(exe_path: &str, in_path: &str, out_path: &str) -> bool {
                    || se.find("Error: Unsupported token at").is_some() // simplecss error
                    || se.find("Error: invalid length at").is_some()
                    || se.find("Error: cleaned file is bigger").is_some()
+                   || se.find("Error: failed to resolved attribute").is_some()
                 {
                     return true;
                 }

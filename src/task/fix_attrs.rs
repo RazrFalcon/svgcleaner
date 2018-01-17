@@ -309,60 +309,11 @@ fn rm_negative_len(node: &mut Node, id: AId) {
     }
 }
 
-/// The `marker` attribute is not well supported, so we have to replace it
-/// with `marker-start`, `marker-mid` and `marker-end`.
+// The `marker` attribute should be removed, because it can be defined only in the CSS.
 fn fix_marker(doc: &Document) {
-    let marker_attrs = &[
-        AId::MarkerStart,
-        AId::MarkerMid,
-        AId::MarkerEnd,
-    ];
-
     for mut node in doc.descendants() {
         if node.has_attribute(AId::Marker) {
-            let v = node.attributes().get_value(AId::Marker).unwrap().clone();
-
-            for aid in marker_attrs {
-                node.set_attribute_if_none(*aid, &v);
-            }
-
             node.remove_attribute(AId::Marker);
         }
     }
-}
-
-#[cfg(test)]
-mod test_marker_attrs {
-    use super::*;
-    use svgdom::{Document, ToStringWithOptions};
-
-    macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
-            base_test!($name, fix_invalid_attributes, $in_text, $out_text);
-        )
-    }
-
-    test!(fix_marker_1,
-"<svg>
-    <marker id='m1'/>
-    <path marker='url(#m1)'/>
-</svg>",
-"<svg>
-    <marker id='m1'/>
-    <path marker-end='url(#m1)' marker-mid='url(#m1)' marker-start='url(#m1)'/>
-</svg>
-");
-
-    test!(fix_marker_2,
-"<svg>
-    <marker id='m1'/>
-    <marker id='m2'/>
-    <path marker='url(#m1)' marker-start='url(#m2)'/>
-</svg>",
-"<svg>
-    <marker id='m1'/>
-    <marker id='m2'/>
-    <path marker-end='url(#m1)' marker-mid='url(#m1)' marker-start='url(#m2)'/>
-</svg>
-");
 }

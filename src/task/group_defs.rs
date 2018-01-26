@@ -37,6 +37,7 @@ pub fn group_defs(doc: &mut Document) {
 
     // Make 'defs' a first child of the 'svg'.
     if svg.first_child() != Some(defs.clone()) {
+        defs.detach();
         svg.prepend(&defs);
     }
 
@@ -247,6 +248,17 @@ mod tests {
             <rect/>
         </clipPath>
     </defs>
+</svg>
+");
+
+    test!(move_defs_5,
+"<svg>
+    <rect/>
+    <defs/>
+</svg>",
+"<svg>
+    <defs/>
+    <rect/>
 </svg>
 ");
 

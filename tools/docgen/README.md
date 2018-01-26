@@ -4,7 +4,7 @@ Generate documentation for `svgcleaner`.
 
 ## Usage
 
-Generate `svgcleaner.rst` file:
+Generate `svgcleaner.adoc` file:
 ```
 docgen --docdir=/svgcleaner/docs/
 ```

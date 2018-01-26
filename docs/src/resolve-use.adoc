@@ -1,0 +1,20 @@
+=== Resolve `use` elements
+
+We can replace `use` element with linked element if it used only by this `use`.
+
+////
+<svg>
+  <defs>
+    <circle id='circle1'
+            fill="green" cx="50"
+            cy="50" r="45"/>
+  </defs>
+  <use xlink:href='#circle1'/>
+</svg>
+SPLIT
+<svg>
+  <circle id='circle1'
+          fill="green" cx="50"
+          cy="50" r="45"/>
+</svg>
+////

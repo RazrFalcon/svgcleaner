@@ -115,7 +115,7 @@ Collection                 Size Before (MiB)  Size After (MiB)  Ratio (%)
 Documentation
 -------------
 
-Documentation can be found `here <docs/svgcleaner.rst>`_.
+Documentation can be found `here <docs/svgcleaner.adoc>`_.
 
 Limitations
 -----------
@@ -156,7 +156,7 @@ Change default options:
   svgcleaner --indent=2 --paths-coordinates-precision=5 --join-arcto-flags=yes in.svg out.svg
 
 Use ``--help`` for a list of the cleaning options and see the
-`documentation <docs/svgcleaner.rst>`_ for more details.
+`documentation <docs/svgcleaner.adoc>`_ for more details.
 
 GUI
 ```

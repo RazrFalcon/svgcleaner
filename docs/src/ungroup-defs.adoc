@@ -1,0 +1,32 @@
+=== Ungroup `defs` element
+
+If the `defs` element contains only https://www.w3.org/TR/SVG/struct.html#Head[referenced]
+elements - it can be ungrouped.
+
+*Unsupported by:* QtSvg <= 5.7 (`pattern` with `image` child renders incorrectly)
+
+////
+<svg>
+  <defs>
+    <radialGradient id="rg1">
+      <stop offset="0"
+            stop-color="yellow"/>
+      <stop offset="1"
+            stop-color="green"/>
+    </radialGradient>
+  </defs>
+  <circle fill="url(#rg1)" r="45"
+          cx="50" cy="50"/>
+</svg>
+SPLIT
+<svg>
+  <radialGradient id="rg1">
+    <stop offset="0"
+          stop-color="yellow"/>
+    <stop offset="1"
+          stop-color="green"/>
+  </radialGradient>
+  <circle fill="url(#rg1)" r="45"
+          cx="50" cy="50"/>
+</svg>
+////

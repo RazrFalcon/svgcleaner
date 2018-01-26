@@ -1,0 +1,4 @@
+=== Coordinates precision
+
+Set precision for numeric attributes, such as https://www.w3.org/TR/SVG/types.html#DataTypeLength[<length>],
+https://www.w3.org/TR/SVG/types.html#DataTypeNumber[<number>], https://www.w3.org/TR/SVG/types.html#DataTypeCoordinate[<coordinate>] and basically for all of the numbers is SVG.

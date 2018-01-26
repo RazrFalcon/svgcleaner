@@ -1,5 +1,6 @@
 target
 *.o
 moc_*.cpp
-*.sublime-*
 Cargo.lock
+.idea
+*.iml

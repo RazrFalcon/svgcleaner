@@ -1,6 +1,6 @@
 // svgcleaner could help you to clean up your SVG files
 // from unnecessary data.
-// Copyright (C) 2012-2017 Evgeniy Reizner
+// Copyright (C) 2012-2018 Evgeniy Reizner
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

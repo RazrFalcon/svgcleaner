@@ -29,6 +29,11 @@ pub fn resolve_use(doc: &Document) {
     let mut nodes = Vec::new();
 
     for node in doc.descendants().filter(|n| n.is_tag_name(EId::Use)) {
+        // The 'use' node should not be used by itself.
+        if node.is_used() {
+            continue;
+        }
+
         if let Some(value) = node.attributes().get_value(AId::XlinkHref) {
             if let AttributeValue::Link(ref link) = *value {
 
@@ -93,6 +98,7 @@ pub fn resolve_use(doc: &Document) {
         }
 
         // TODO: maybe just change the tag name
+        link.detach();
         node.insert_after(&link);
 
         node.remove();
@@ -178,6 +184,21 @@ mod tests {
 </svg>
 ");
 
+    test!(resolve_6,
+"<svg>
+    <defs>
+        <path id='path1' d='M 10 20 L 10 20'/>
+        <use id='use2' xlink:href='#path1'/>
+    </defs>
+</svg>",
+"<svg>
+    <defs>
+        <path id='path1' d='M 10 20 L 10 20'/>
+    </defs>
+</svg>
+"
+);
+
     test_eq!(keep_1,
 "<svg>
     <rect id='r1'/>
@@ -193,6 +214,16 @@ mod tests {
         </symbol>
     </defs>
     <use xlink:href='#r1'/>
+</svg>
+");
+
+    test_eq!(keep_3,
+"<svg>
+    <use id='use1' xlink:href='#use2'/>
+    <defs>
+        <path id='path1' d='M 10 20 L 10 20'/>
+        <use id='use2' xlink:href='#path1'/>
+    </defs>
 </svg>
 ");
 }

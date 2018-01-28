@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Fixed
 - Crash during `defs` processing.
+- Crash during `use` resolving.
+- The `--resolve-use` option does not resolve used `use` now.
 
 ## [0.9.3] - 2018-01-17
 ### Added

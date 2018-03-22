@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [0.9.4] - 2018-03-22
 ### Fixed
 - Crash during `defs` processing.
 - Crash during `use` resolving.
@@ -264,7 +266,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First public release with Perl backend and Qt GUI.
 
-[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.3...HEAD
+[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.4...HEAD
+[0.9.4]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.0...v0.9.1

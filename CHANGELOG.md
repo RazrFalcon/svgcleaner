@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- Attributes resolving during the `defs` regrouping.
 
 ## [0.9.4] - 2018-03-22
 ### Fixed

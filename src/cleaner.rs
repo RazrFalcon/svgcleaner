@@ -239,6 +239,8 @@ pub fn clean_doc(
     remove_empty_defs(doc);
     fix_xmlns_attribute(doc, options.remove_xmlns_xlink_attribute);
 
+    remove_default_transform(doc);
+
     // NOTE: Must be run at last, since it breaks the linking.
     join_style_attributes(doc, options.join_style_attributes, opt);
 

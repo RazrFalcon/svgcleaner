@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Removal of the `transform` attribute with a default value.
+
 ### Fixed
 - Attributes resolving during the `defs` regrouping.
 

@@ -1,6 +1,6 @@
 [package]
 name = "svgcleaner"
-version = "0.9.4"
+version = "0.9.5"
 authors = ["Evgeniy Reizner <razrfalcon@gmail.com>"]
 keywords = ["svg", "cleaner", "optimizer"]
 license = "GPL-2.0"

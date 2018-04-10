@@ -35,7 +35,7 @@ fern = "0.5"
 # local copy
 # path = "../svgdom"
 # from crates
-version = "0.10"
+version = "0.10.5"
 
 [dependencies.error-chain]
 version = "0.11"

@@ -344,9 +344,7 @@ mod tests {
     <defs>
         <text id='hello'>Hello</text>
     </defs>
-    <text font-family='Verdana'>
-        <tref xlink:href='#hello'/>
-    </text>
+    <text font-family='Verdana'><tref xlink:href='#hello'/></text>
 </svg>
 ");
 

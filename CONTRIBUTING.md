@@ -24,5 +24,3 @@ you should start there.
 ## Other
 
 - English grammar fixes are extremely welcome.
-
-If you don't have a GitHub account you can send an email to: svgcleanerteam@gmail.com

@@ -348,6 +348,7 @@ fn clean_with_scour(exe_path: &str, in_path: &str, out_path: &str) -> bool {
         .arg("--remove-titles")
         .arg("--remove-descriptions")
         .arg("--remove-metadata")
+        .arg("--disable-embed-rasters")
         .output();
 
     match res {

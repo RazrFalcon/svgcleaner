@@ -22,7 +22,7 @@ use svgdom::{
     Node,
 };
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 pub fn regroup_gradient_stops(doc: &mut Document) {
     let mut nodes: Vec<Node> = doc.descendants()
@@ -110,9 +110,11 @@ fn gen_id(doc: &Document, prefix: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
     use task;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -183,5 +185,4 @@ mod tests {
     <linearGradient id='lg4' x1='100' xlink:href='#lg6'/>
 </svg>
 ");
-
 }

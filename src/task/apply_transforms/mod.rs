@@ -16,8 +16,8 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-pub use self::preproc::prepare_transforms;
 pub use self::gradients::apply_transform_to_gradients;
+pub use self::preproc::prepare_transforms;
 pub use self::shapes::apply_transform_to_shapes;
 
 mod preproc;
@@ -33,7 +33,7 @@ pub mod utils {
         Transform,
     };
 
-    use task::short::{EId, AId, Unit};
+    use task::short::{AId, EId, Unit};
 
     // TODO: remove
     pub fn has_valid_transform(node: &Node) -> bool {

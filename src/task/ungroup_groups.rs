@@ -22,9 +22,9 @@ use svgdom::{
     Node,
 };
 
-use task::short::{EId, AId};
-use task::apply_transforms;
 use options::CleaningOptions;
+use task::apply_transforms;
+use task::short::{AId, EId};
 
 pub fn ungroup_groups(doc: &Document, opt: &CleaningOptions) {
     // doc must contain 'svg' node, so we can safely unwrap.
@@ -193,10 +193,12 @@ fn ungroup_group(g: &mut Node) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
-    use task::{group_defs, remove_empty_defs, rm_unused_defs};
+
     use options::CleaningOptions;
+    use task::{group_defs, remove_empty_defs, rm_unused_defs};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -609,5 +611,4 @@ mod tests {
     </g>
 </svg>
 ");
-
 }

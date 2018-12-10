@@ -50,13 +50,13 @@ pub fn fix_invalid_attributes(doc: &Document) {
 pub fn fix_rect_attributes(node: &mut Node) {
     debug_assert!(node.is_tag_name(EId::Rect));
 
-    fix_len(node, AId::Width,  Length::zero());
+    fix_len(node, AId::Width, Length::zero());
     fix_len(node, AId::Height, Length::zero());
 
     rm_negative_len(node, AId::Rx);
     rm_negative_len(node, AId::Ry);
 
-    // TODO: check that 'rx <= widht/2' and 'ry <= height/2'
+    // TODO: check that 'rx <= width/2' and 'ry <= height/2'
     // Remember: a radius attributes can have different units,
     // so we need can't compare them. Probably we can do this only
     // after converting all units to px, which is optional.
@@ -64,9 +64,10 @@ pub fn fix_rect_attributes(node: &mut Node) {
 
 #[cfg(test)]
 mod test_rect {
+    use svgdom::{Document, ToStringWithOptions};
+
     use super::*;
     use super::EId;
-    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -118,7 +119,6 @@ mod test_rect {
     <rect height='50' width='40'/>
 </svg>
 ");
-
 }
 
 /// Fix `polyline` and `polygon` element attributes.
@@ -158,9 +158,10 @@ pub fn fix_poly_attributes(node: &mut Node) {
 
 #[cfg(test)]
 mod test_poly {
+    use svgdom::{Document, ToStringWithOptions};
+
     use super::*;
     use super::EId;
-    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -191,7 +192,6 @@ mod test_poly {
     <polyline/>
 </svg>
 ");
-
 }
 
 /// Fix `stop` element attributes.
@@ -243,9 +243,11 @@ pub fn fix_stop_attributes(node: &Node) {
 
 #[cfg(test)]
 mod test_stop {
-    use super::*;
-    use svgdom::{Document, ToStringWithOptions, ElementType};
+    use svgdom::{Document, ElementType, ToStringWithOptions};
+
     use task::resolve_stop_attributes;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

@@ -32,9 +32,9 @@ use svgdom::{
     WriteOptions,
 };
 
+use error;
 use options::CleaningOptions;
 use task::*;
-use error;
 
 pub fn load_stdin() -> Result<String, io::Error> {
     let mut s = String::new();
@@ -63,7 +63,7 @@ pub fn parse_data(data: &str, opt: &ParseOptions) -> Result<Document, svgdom::Er
 pub fn clean_doc(
     doc: &mut Document,
     options: &CleaningOptions,
-    opt: &WriteOptions
+    opt: &WriteOptions,
 ) -> Result<(), error::Error> {
     preclean_checks(doc)?;
 

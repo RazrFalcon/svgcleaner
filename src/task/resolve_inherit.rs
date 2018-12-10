@@ -50,7 +50,7 @@ pub fn resolve_inherit(doc: &Document) -> Result<()> {
                         ValueId::CurrentColor => {
                             vec_curr_color.push(aid);
                         }
-                        _ => {},
+                        _ => {}
                     }
                 }
             }
@@ -88,8 +88,9 @@ fn resolve_impl(node: &mut Node, curr_attr: AttributeId, parent_attr: AttributeI
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     #[cfg(test)]
     macro_rules! test {

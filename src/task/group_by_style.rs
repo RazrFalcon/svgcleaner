@@ -16,8 +16,8 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use std::fmt;
 use std::cmp;
+use std::fmt;
 use std::ops::Range;
 
 use svgdom::{
@@ -30,7 +30,7 @@ use svgdom::{
     WriteOptions,
 };
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 // TODO: optimize, since Table is basically Vec<(Vec,Vec)>, which is not very efficient
 struct Table {
@@ -243,6 +243,7 @@ impl fmt::Debug for Table {
 #[cfg(test)]
 mod table_tests {
     use svgdom::{Attribute, AttributeId as AId};
+
     use super::{Table, TableRow};
 
     fn row_from_str(text: &str) -> Vec<bool> {
@@ -394,12 +395,12 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
     // So we join groups with 2 children only when a parent element is already a group
     // or when indent is zero on none.
     let min_nodes_count = {
-        let is_small_indent =    opt.indent == Indent::None
-                              || opt.indent == Indent::Spaces(0);
+        let is_small_indent = opt.indent == Indent::None
+            || opt.indent == Indent::Spaces(0);
 
-        let is_small =    parent.is_tag_name(EId::Svg)
-                       || parent.is_tag_name(EId::G)
-                       || is_small_indent;
+        let is_small = parent.is_tag_name(EId::Svg)
+            || parent.is_tag_name(EId::G)
+            || is_small_indent;
 
         if is_small { 2 } else { 3 }
     };
@@ -560,8 +561,9 @@ fn move_nodes(attributes: &[Attribute], g_node: &mut Node, node_list: &mut [Node
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions, WriteOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -916,5 +918,4 @@ mod tests {
     </g>
 </svg>
 ");
-
 }

@@ -21,7 +21,7 @@ use svgdom::{
     Node,
 };
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 pub fn remove_dupl_radial_gradients(doc: &Document) {
     let attrs = [
@@ -35,8 +35,8 @@ pub fn remove_dupl_radial_gradients(doc: &Document) {
     ];
 
     let mut nodes = doc.descendants()
-                       .filter(|n| n.is_tag_name(EId::RadialGradient))
-                       .collect::<Vec<Node>>();
+        .filter(|n| n.is_tag_name(EId::RadialGradient))
+        .collect::<Vec<Node>>();
 
     super::rm_loop(&mut nodes, |node1, node2| {
         if !super::is_gradient_attrs_equal(node1, node2, &attrs) {
@@ -53,9 +53,11 @@ pub fn remove_dupl_radial_gradients(doc: &Document) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
     use task;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

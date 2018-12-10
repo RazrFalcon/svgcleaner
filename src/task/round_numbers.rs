@@ -17,30 +17,30 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use svgdom::{
-    path,
-    Document,
     AttributeValue,
+    Document,
+    path,
 };
 
-use task::short::AId;
 use options::CleaningOptions;
+use task::short::AId;
 
 pub fn round_numbers(doc: &Document, opt: &CleaningOptions) {
     let coord_precision = opt.coordinates_precision as usize;
-    let prop_precision  = opt.properties_precision as usize;
+    let prop_precision = opt.properties_precision as usize;
     let paths_precision = opt.paths_coordinates_precision as usize;
-    let ts_precision    = opt.transforms_precision as usize;
+    let ts_precision = opt.transforms_precision as usize;
 
     for (_, mut node) in doc.descendants().svg() {
         let mut attrs = node.attributes_mut();
 
         for (aid, ref mut attr) in attrs.iter_svg_mut() {
             match aid {
-                AId::X  | AId::Y |
+                AId::X | AId::Y |
                 AId::Dx | AId::Dy |
                 AId::X1 | AId::Y1 |
                 AId::X2 | AId::Y2 |
-                AId::R  |
+                AId::R |
                 AId::Rx | AId::Ry |
                 AId::Cx | AId::Cy |
                 AId::Fx | AId::Fy |
@@ -114,18 +114,18 @@ pub fn round_numbers(doc: &Document, opt: &CleaningOptions) {
 }
 
 static POW_VEC: &'static [f64] = &[
-                    0.0,
-                   10.0,
-                  100.0,
-                1_000.0,
-               10_000.0,
-              100_000.0,
-            1_000_000.0,
-           10_000_000.0,
-          100_000_000.0,
-        1_000_000_000.0,
-       10_000_000_000.0,
-      100_000_000_000.0,
+    0.0,
+    10.0,
+    100.0,
+    1_000.0,
+    10_000.0,
+    100_000.0,
+    1_000_000.0,
+    10_000_000.0,
+    100_000_000.0,
+    1_000_000_000.0,
+    10_000_000_000.0,
+    100_000_000_000.0,
     1_000_000_000_000.0,
 ];
 
@@ -138,7 +138,7 @@ fn round_path(path: &mut path::Path, precision: usize) {
 
     for seg in &mut path.d {
         match *seg.data_mut() {
-              SegmentData::MoveTo { ref mut x, ref mut y }
+            SegmentData::MoveTo { ref mut x, ref mut y }
             | SegmentData::LineTo { ref mut x, ref mut y }
             | SegmentData::SmoothQuadratic { ref mut x, ref mut y } => {
                 round_number(x, precision);
@@ -153,8 +153,10 @@ fn round_path(path: &mut path::Path, precision: usize) {
                 round_number(y, precision);
             }
 
-            SegmentData::CurveTo { ref mut x1, ref mut y1, ref mut x2, ref mut y2,
-                                   ref mut x, ref mut y } => {
+            SegmentData::CurveTo {
+                ref mut x1, ref mut y1, ref mut x2, ref mut y2,
+                ref mut x, ref mut y
+            } => {
                 round_number(x1, precision);
                 round_number(y1, precision);
                 round_number(x2, precision);
@@ -177,8 +179,10 @@ fn round_path(path: &mut path::Path, precision: usize) {
                 round_number(y, precision);
             }
 
-            SegmentData::EllipticalArc { ref mut rx, ref mut ry, ref mut x_axis_rotation,
-                                         ref mut x, ref mut y, .. } => {
+            SegmentData::EllipticalArc {
+                ref mut rx, ref mut ry, ref mut x_axis_rotation,
+                ref mut x, ref mut y, ..
+            } => {
                 round_number(rx, precision);
                 round_number(ry, precision);
                 round_number(x_axis_rotation, precision);

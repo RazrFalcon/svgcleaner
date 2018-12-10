@@ -23,8 +23,8 @@ use svgdom::{
     WriteOptions,
 };
 
-use task::short::AId;
 use options::StyleJoinMode;
+use task::short::AId;
 
 pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOptions) {
     // NOTE: Must be run at last, since it breaks linking.
@@ -74,10 +74,12 @@ pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOpt
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use task::short::AId;
-    use svgdom::{Document, WriteOptions, AttributeValue};
+    use svgdom::{AttributeValue, Document, WriteOptions};
+
     use options::StyleJoinMode;
+    use task::short::AId;
+
+    use super::*;
 
     #[test]
     fn join_styles_1() {

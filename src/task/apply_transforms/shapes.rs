@@ -23,7 +23,8 @@ use svgdom::{
     Transform,
 };
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
+
 use super::utils;
 
 pub fn apply_transform_to_shapes(doc: &Document) {
@@ -41,11 +42,11 @@ pub fn apply_transform_to_shapes(doc: &Document) {
 }
 
 fn process<F>(node: &mut Node, func: F)
-    where F : Fn(&mut Attributes, &Transform)
+    where F: Fn(&mut Attributes, &Transform)
 {
-    if    !utils::has_valid_transform(node)
-       || !utils::is_valid_attrs(node)
-       || !utils::is_valid_coords(node) {
+    if !utils::has_valid_transform(node)
+        || !utils::is_valid_attrs(node)
+        || !utils::is_valid_coords(node) {
         return;
     }
 
@@ -112,9 +113,11 @@ fn process_line(node: &mut Node) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
     use task;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -214,5 +217,4 @@ mod tests {
 </svg>
 "
 );
-
 }

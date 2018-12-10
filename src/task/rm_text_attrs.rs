@@ -23,7 +23,7 @@ use svgdom::{
     NodeType,
 };
 
-use task::short::{EId, AId, Unit};
+use task::short::{AId, EId, Unit};
 
 // It's self defined list of the text attributes. There are no such list in the SVG spec.
 static TEXT_ATTRIBUTES: &'static [AId] = &[
@@ -57,7 +57,7 @@ pub fn remove_text_attributes(doc: &Document) {
 
     // Check doc for text nodes.
     let has_text = doc.svg_element().unwrap()
-                      .descendants().any(|n| n.node_type() == NodeType::Text);
+        .descendants().any(|n| n.node_type() == NodeType::Text);
 
     // We can remove text attributes from the 'font-face' element
     // only when there is no text in a whole doc.
@@ -107,13 +107,13 @@ fn _remove_text_attributes(parent: &Node) -> bool {
             // Local version of the 'no_td'.
 
             // Only this parameters affect parent elements.
-            let _no_td = !(   node.descendants().any(|n| n.node_type() == NodeType::Text)
-                           || node.is_tag_name(EId::Tref)
-                           || has_em_ex_attributes(&node));
+            let _no_td = !(node.descendants().any(|n| n.node_type() == NodeType::Text)
+                || node.is_tag_name(EId::Tref)
+                || has_em_ex_attributes(&node));
 
-            if    _no_td
-               && !node.is_tag_name(EId::FontFace)
-               && !is_linked_text(&node) {
+            if _no_td
+                && !node.is_tag_name(EId::FontFace)
+                && !is_linked_text(&node) {
                 node.remove_attributes(TEXT_ATTRIBUTES);
             }
 
@@ -217,7 +217,7 @@ fn is_text_contains_spaces(text_node: &Node) -> bool {
     let text = text_node.text();
 
     if text.is_empty() {
-        return false
+        return false;
     }
 
     // 'trim' will remove leading and trailing spaces,
@@ -242,9 +242,10 @@ fn is_text_contains_spaces(text_node: &Node) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use svgdom::{Document, ToStringWithOptions};
+
     use super::*;
     use super::remove_xml_space;
-    use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

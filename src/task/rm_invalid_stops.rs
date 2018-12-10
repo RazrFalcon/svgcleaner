@@ -28,8 +28,8 @@ pub fn remove_invalid_stops(doc: &Document) {
     let mut nodes = Vec::new();
 
     let iter = doc.descendants()
-                  .filter(|n| n.is_gradient())
-                  .filter(|n| n.has_children());
+        .filter(|n| n.is_gradient())
+        .filter(|n| n.has_children());
     for node in iter {
         let mut prev_child = node.first_child().unwrap();
 
@@ -38,7 +38,7 @@ pub fn remove_invalid_stops(doc: &Document) {
                 let attrs1 = prev_child.attributes();
                 let attrs2 = child.attributes();
 
-                if     attrs1.get_value(AId::Offset) == attrs2.get_value(AId::Offset)
+                if attrs1.get_value(AId::Offset) == attrs2.get_value(AId::Offset)
                     && attrs1.get_value(AId::StopColor) == attrs2.get_value(AId::StopColor)
                     && attrs1.get_value(AId::StopOpacity) == attrs2.get_value(AId::StopOpacity) {
                     // If nothing changed - we can remove this 'stop'.
@@ -55,10 +55,12 @@ pub fn remove_invalid_stops(doc: &Document) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
     use task;
     use task::fix_attrs;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -156,5 +158,4 @@ mod tests {
     </linearGradient>
 </svg>
 ");
-
 }

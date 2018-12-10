@@ -18,7 +18,7 @@
 
 use svgdom::Document;
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 // TODO: is 'svg' element contains only one element and it's 'g' element - ungroup it
 
@@ -66,8 +66,9 @@ pub fn fix_xmlns_attribute(doc: &Document, rm_unused: bool) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

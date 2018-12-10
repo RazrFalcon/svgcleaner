@@ -41,8 +41,8 @@ fn process_units(doc: &Document) {
 // we can remove such attribute.
 fn rm_equal(doc: &Document) {
     let mut order = Vec::new();
-    for node in doc.descendants().filter(|n|    n.is_gradient()
-                                             && n.has_attribute(AId::XlinkHref)) {
+    for node in doc.descendants().filter(|n| n.is_gradient()
+        && n.has_attribute(AId::XlinkHref)) {
         let c = node.linked_nodes().filter(|n| n.is_gradient()).count();
         // The gradient element and count of gradient elements than uses it.
         order.push((node.clone(), c));
@@ -63,7 +63,7 @@ fn rm_equal(doc: &Document) {
                     if let AttributeValue::Link(ref link) = av {
                         // If current units is equal to parent units we can remove them.
                         if node.attributes().get_value(AId::GradientUnits)
-                                == link.attributes().get_value(AId::GradientUnits) {
+                            == link.attributes().get_value(AId::GradientUnits) {
                             make_attr_invisible(node, AId::GradientUnits);
                         }
                     }
@@ -95,19 +95,19 @@ fn rm_equal(doc: &Document) {
 // we can move their 'gradientUnits' to the parent.
 fn group_to_parent(doc: &Document) {
     let mut nodes: Vec<Node> = doc.descendants()
-                                  .filter(|n| n.is_gradient())
-                                  .filter(|n| !n.has_attribute(AId::XlinkHref))
-                                  .filter(|n| n.linked_nodes().all(|l| l.is_gradient()))
-                                  .collect();
+        .filter(|n| n.is_gradient())
+        .filter(|n| !n.has_attribute(AId::XlinkHref))
+        .filter(|n| n.linked_nodes().all(|l| l.is_gradient()))
+        .collect();
 
     for node in &mut nodes {
         let total_count = node.uses_count();
         let count = node.linked_nodes()
-                        .filter(|n| {
-                            n.attributes().get_value(AId::GradientUnits) ==
-                                Some(&AttributeValue::PredefValue(ValueId::ObjectBoundingBox))
-                        })
-                        .count();
+            .filter(|n| {
+                n.attributes().get_value(AId::GradientUnits) ==
+                    Some(&AttributeValue::PredefValue(ValueId::ObjectBoundingBox))
+            })
+            .count();
 
         if count == total_count {
             // If all linked gradients has the 'objectBoundingBox' value - move
@@ -177,9 +177,11 @@ fn make_attr_invisible(node: &mut Node, aid: AId) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
     use task;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -282,5 +284,4 @@ mod tests {
     <linearGradient gradientUnits='objectBoundingBox' xlink:href='#lg1'/>
 </svg>
 ");
-
 }

@@ -25,7 +25,7 @@ use svgdom::{
     ValueId,
 };
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 use task::utils;
 
 // TODO: process mask element
@@ -91,9 +91,9 @@ fn is_valid_clip_path_elem(node: &Node) -> bool {
     // https://www.w3.org/TR/SVG/masking.html#EstablishingANewClippingPath
 
     fn is_valid_shape(node: &Node) -> bool {
-           node.is_basic_shape()
-        || node.is_tag_name(EId::Path)
-        || node.is_tag_name(EId::Text)
+        node.is_basic_shape()
+            || node.is_tag_name(EId::Path)
+            || node.is_tag_name(EId::Text)
     }
 
     if node.is_tag_name(EId::Use) {
@@ -156,8 +156,8 @@ fn _process_display_attribute(parent: &Node, nodes: &mut Vec<Node>, is_any_remov
 // Remove 'filter' elements without children.
 fn process_empty_filter(doc: &Document, is_any_removed: &mut bool) {
     let mut nodes: Vec<Node> = doc.descendants()
-                                  .filter(|n| n.is_tag_name(EId::Filter) && !n.has_children())
-                                  .collect();
+        .filter(|n| n.is_tag_name(EId::Filter) && !n.has_children())
+        .collect();
 
     if !nodes.is_empty() {
         *is_any_removed = true;
@@ -225,8 +225,8 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
     {
         // Gradient without children and link to other gradient is pointless.
         let iter = doc.descendants()
-                      .filter(|n| n.is_gradient())
-                      .filter(|n| !n.has_children() && !n.has_attribute(AId::XlinkHref));
+            .filter(|n| n.is_gradient())
+            .filter(|n| !n.has_children() && !n.has_attribute(AId::XlinkHref));
 
         for n in iter {
             for mut link in n.linked_nodes().collect::<Vec<Node>>() {
@@ -245,8 +245,8 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
         // 'If one stop is defined, then paint with the solid color fill using the color
         // defined for that gradient stop.'
         let iter = doc.descendants()
-                      .filter(|n| n.is_gradient())
-                      .filter(|n| n.children().count() == 1 && !n.has_attribute(AId::XlinkHref));
+            .filter(|n| n.is_gradient())
+            .filter(|n| n.children().count() == 1 && !n.has_attribute(AId::XlinkHref));
 
         for n in iter {
             let stop = n.first_child().unwrap();
@@ -264,8 +264,8 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
             // Replace links with colors, but not in gradients,
             // because it will lead to 'xlink:href=#ffffff', which is wrong.
             for mut link in n.linked_nodes()
-                             .filter(|n| !n.is_gradient())
-                             .collect::<Vec<Node>>() {
+                .filter(|n| !n.is_gradient())
+                .collect::<Vec<Node>>() {
                 while let Some(aid) = find_link_attribute(&link, &n) {
                     link.set_attribute((aid, color));
                     if opacity.fuzzy_ne(&1.0) {
@@ -293,7 +293,7 @@ fn find_link_attribute(node: &Node, link: &Node) -> Option<AId> {
 
     for (aid, attr) in attrs.iter_svg() {
         match attr.value {
-              AttributeValue::Link(ref n)
+            AttributeValue::Link(ref n)
             | AttributeValue::FuncLink(ref n) => {
                 if *n == *link {
                     return Some(aid);
@@ -338,9 +338,11 @@ fn process_rect(doc: &mut Document, is_any_removed: &mut bool) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
     use task::{group_defs, remove_empty_defs};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -552,5 +554,4 @@ mod tests {
     <rect height='10' width='10'/>
 </svg>
 ");
-
 }

@@ -108,8 +108,8 @@ pub fn convert_l_to_hv(path: &mut Path) {
         debug_assert!(seg.absolute);
 
         // H and V must not be created during processing.
-        debug_assert!(   seg.cmd() != Command::HorizontalLineTo
-                      && seg.cmd() != Command::VerticalLineTo);
+        debug_assert!(seg.cmd() != Command::HorizontalLineTo
+            && seg.cmd() != Command::VerticalLineTo);
 
         match *seg.data() {
             SegmentData::LineTo { x, y } => {
@@ -146,11 +146,11 @@ fn _convert_segments(path: &mut Path, is_changed: &mut bool) {
                     // y1 must be equal or greater than prev_y.
                     // y2 must be equal or less than y.
 
-                       prev_x.fuzzy_eq(&x)
-                    && x1.fuzzy_eq(&x2)
-                    && x1.fuzzy_eq(&x)
-                    && y1.fuzzy_cmp(&prev_y) != Ordering::Less
-                    && y2.fuzzy_cmp(&y) != Ordering::Greater
+                    prev_x.fuzzy_eq(&x)
+                        && x1.fuzzy_eq(&x2)
+                        && x1.fuzzy_eq(&x)
+                        && y1.fuzzy_cmp(&prev_y) != Ordering::Less
+                        && y2.fuzzy_cmp(&y) != Ordering::Greater
                 };
 
                 let is_hlineto = || {
@@ -158,16 +158,16 @@ fn _convert_segments(path: &mut Path, is_changed: &mut bool) {
                     // x1 must be equal or greater than prev_x.
                     // x2 must be equal or less than x.
 
-                       prev_y.fuzzy_eq(&y)
-                    && y1.fuzzy_eq(&y2)
-                    && y1.fuzzy_eq(&y)
-                    && x1.fuzzy_cmp(&prev_x) != Ordering::Less
-                    && x2.fuzzy_cmp(&x) != Ordering::Greater
+                    prev_y.fuzzy_eq(&y)
+                        && y1.fuzzy_eq(&y2)
+                        && y1.fuzzy_eq(&y)
+                        && x1.fuzzy_cmp(&prev_x) != Ordering::Less
+                        && x2.fuzzy_cmp(&x) != Ordering::Greater
                 };
 
                 let is_lineto = || {
-                       is_point_on_line(prev_x, prev_y, x, y, x1, y1)
-                    && is_point_on_line(prev_x, prev_y, x, y, x2, y2)
+                    is_point_on_line(prev_x, prev_y, x, y, x1, y1)
+                        && is_point_on_line(prev_x, prev_y, x, y, x2, y2)
                 };
 
                 if is_vlineto() {
@@ -181,7 +181,7 @@ fn _convert_segments(path: &mut Path, is_changed: &mut bool) {
                     *is_changed = true;
                 } else {
                     let (nx1, ny1) = match *prev_seg.data() {
-                          SegmentData::CurveTo { x2: px2, y2: py2, x: px, y: py, .. }
+                        SegmentData::CurveTo { x2: px2, y2: py2, x: px, y: py, .. }
                         | SegmentData::SmoothCurveTo { x2: px2, y2: py2, x: px, y: py } => {
                             (px * 2.0 - px2, py * 2.0 - py2)
                         }
@@ -224,8 +224,8 @@ fn is_point_on_line(x1: f64, y1: f64, x2: f64, y2: f64, x: f64, y: f64) -> bool 
         // Process vertical line.
         let o1 = y.fuzzy_cmp(&y1);
         let o2 = y.fuzzy_cmp(&y2);
-        if    (o1 != Ordering::Less    && o2 != Ordering::Greater)
-           || (o1 != Ordering::Greater && o2 != Ordering::Less) {
+        if (o1 != Ordering::Less && o2 != Ordering::Greater)
+            || (o1 != Ordering::Greater && o2 != Ordering::Less) {
             return true;
         }
     } else {
@@ -234,8 +234,8 @@ fn is_point_on_line(x1: f64, y1: f64, x2: f64, y2: f64, x: f64, y: f64) -> bool 
         let c = a * x + b;
 
         if y.fuzzy_eq(&c) {
-            if    ( x.fuzzy_cmp(&x1) == Ordering::Greater && x.fuzzy_cmp(&x2) == Ordering::Less)
-               || (x2.fuzzy_cmp(&x1) == Ordering::Greater && x.fuzzy_cmp(&x1) == Ordering::Less) {
+            if (x.fuzzy_cmp(&x1) == Ordering::Greater && x.fuzzy_cmp(&x2) == Ordering::Less)
+                || (x2.fuzzy_cmp(&x1) == Ordering::Greater && x.fuzzy_cmp(&x1) == Ordering::Less) {
                 return true;
             }
         }
@@ -248,8 +248,9 @@ fn is_point_on_line(x1: f64, y1: f64, x2: f64, y2: f64, x: f64, y: f64) -> bool 
 mod tests {
     use std::str::FromStr;
 
-    use super::*;
     use svgdom::path::Path;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

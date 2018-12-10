@@ -23,9 +23,9 @@ use svgdom::{
 };
 use svgdom::path::Path;
 
-use task::short::{EId, AId};
-use task::apply_transforms::utils as ts_utils;
 use options::CleaningOptions;
+use task::apply_transforms::utils as ts_utils;
+use task::short::{AId, EId};
 
 mod apply_transform;
 mod conv_segments;
@@ -38,15 +38,15 @@ pub fn process_paths(doc: &Document, opt: &CleaningOptions) {
         //
         // TODO: do not remove first segment if node has marker
         let has_marker = node.has_attributes(&[AId::Marker, AId::MarkerStart,
-                                               AId::MarkerMid, AId::MarkerEnd]);
+            AId::MarkerMid, AId::MarkerEnd]);
 
         let mut ts = None;
         if opt.apply_transform_to_paths {
             if node.has_attribute(AId::Transform) {
                 let tsl = ts_utils::get_ts(&node);
 
-                if    ts_utils::is_valid_transform(&tsl)
-                   && ts_utils::is_valid_attrs(&node) {
+                if ts_utils::is_valid_transform(&tsl)
+                    && ts_utils::is_valid_attrs(&node) {
                     ts = Some(tsl);
 
                     node.remove_attribute(AId::Transform);
@@ -110,7 +110,7 @@ fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, opt: &
 }
 
 mod utils {
-    use svgdom::path::{Path, Command};
+    use svgdom::path::{Command, Path};
 
     // HorizontalLineTo, VerticalLineTo and ClosePath does not have 'x'/'y' coordinates,
     // so we have to find them in previous segments.
@@ -138,9 +138,11 @@ mod utils {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use options::CleaningOptions;
     use svgdom::{Document, ToStringWithOptions};
+
+    use options::CleaningOptions;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

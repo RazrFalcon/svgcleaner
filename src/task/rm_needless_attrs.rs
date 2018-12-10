@@ -26,7 +26,7 @@ use svgdom::{
     ValueId,
 };
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 // TODO: split to suboptions
 
@@ -84,53 +84,53 @@ fn process_clip_path(node: &Node) {
 fn process_rect(node: &mut Node) {
     // Remove all non-rect attributes.
     node.attributes_mut().retain(|a| {
-           is_basic_shapes_attr(a)
-        || a.has_id(AId::X)
-        || a.has_id(AId::Y)
-        || a.has_id(AId::Width)
-        || a.has_id(AId::Height)
-        || a.has_id(AId::Rx)
-        || a.has_id(AId::Ry)
+        is_basic_shapes_attr(a)
+            || a.has_id(AId::X)
+            || a.has_id(AId::Y)
+            || a.has_id(AId::Width)
+            || a.has_id(AId::Height)
+            || a.has_id(AId::Rx)
+            || a.has_id(AId::Ry)
     });
 }
 
 fn process_circle(node: &mut Node) {
     // Remove all non-circle attributes.
     node.attributes_mut().retain(|a| {
-           is_basic_shapes_attr(a)
-        || a.has_id(AId::Cx)
-        || a.has_id(AId::Cy)
-        || a.has_id(AId::R)
+        is_basic_shapes_attr(a)
+            || a.has_id(AId::Cx)
+            || a.has_id(AId::Cy)
+            || a.has_id(AId::R)
     });
 }
 
 fn process_ellipse(node: &mut Node) {
     // Remove all non-ellipse attributes.
     node.attributes_mut().retain(|a| {
-           is_basic_shapes_attr(a)
-        || a.has_id(AId::Cx)
-        || a.has_id(AId::Cy)
-        || a.has_id(AId::Rx)
-        || a.has_id(AId::Ry)
+        is_basic_shapes_attr(a)
+            || a.has_id(AId::Cx)
+            || a.has_id(AId::Cy)
+            || a.has_id(AId::Rx)
+            || a.has_id(AId::Ry)
     });
 }
 
 fn process_line(node: &mut Node) {
     // Remove all non-line attributes.
     node.attributes_mut().retain(|a| {
-           is_basic_shapes_attr(a)
-        || a.has_id(AId::X1)
-        || a.has_id(AId::Y1)
-        || a.has_id(AId::X2)
-        || a.has_id(AId::Y2)
+        is_basic_shapes_attr(a)
+            || a.has_id(AId::X1)
+            || a.has_id(AId::Y1)
+            || a.has_id(AId::X2)
+            || a.has_id(AId::Y2)
     });
 }
 
 fn process_poly(node: &mut Node) {
     // Remove all non-polyline/polygon attributes.
     node.attributes_mut().retain(|a| {
-           is_basic_shapes_attr(a)
-        || a.has_id(AId::Points)
+        is_basic_shapes_attr(a)
+            || a.has_id(AId::Points)
     });
 }
 
@@ -138,14 +138,14 @@ fn is_basic_shapes_attr(a: &Attribute) -> bool {
     // List of common basic shapes attributes.
     // https://www.w3.org/TR/SVG/shapes.html#RectElement
 
-       a.is_conditional_processing()
-    || a.is_core()
-    || a.is_graphical_event()
-    || a.is_presentation()
-    || a.has_id(AId::Class)
-    || a.has_id(AId::Style)
-    || a.has_id(AId::ExternalResourcesRequired)
-    || a.has_id(AId::Transform)
+    a.is_conditional_processing()
+        || a.is_core()
+        || a.is_graphical_event()
+        || a.is_presentation()
+        || a.has_id(AId::Class)
+        || a.has_id(AId::Style)
+        || a.has_id(AId::ExternalResourcesRequired)
+        || a.has_id(AId::Transform)
 }
 
 fn process_fill(node: &mut Node) {
@@ -249,7 +249,7 @@ fn process_overflow(node: &mut Node) {
     //
     // https://www.w3.org/TR/SVG/masking.html#OverflowProperty
     match node.tag_id().unwrap() {
-          EId::Svg
+        EId::Svg
         | EId::Symbol
         | EId::Image
         | EId::ForeignObject
@@ -263,8 +263,9 @@ fn process_overflow(node: &mut Node) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -380,5 +381,4 @@ mod tests {
     <rect/>
 </svg>
 ");
-
 }

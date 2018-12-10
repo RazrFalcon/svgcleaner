@@ -16,29 +16,29 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-extern crate svgcleaner;
-extern crate log;
 extern crate fern;
+extern crate log;
+extern crate svgcleaner;
 
 use std::fmt;
 use std::fs;
-use std::str;
-use std::path::Path;
 use std::io::{
     stderr,
     Write,
 };
+use std::path::Path;
+use std::str;
 
+use svgcleaner::{
+    ChainedErrorExt,
+    cleaner,
+};
 use svgcleaner::cli::{
     self,
     InputFrom,
-    OutputTo,
     Key,
     KEYS,
-};
-use svgcleaner::{
-    cleaner,
-    ChainedErrorExt,
+    OutputTo,
 };
 
 macro_rules! try_msg {
@@ -96,20 +96,20 @@ fn main() {
     let on_err = || {
         // Copy original file to destination
         // only when both files are specified.
-        let in_file  = if let InputFrom::File(s) = input  { Some(s) } else { None };
-        let out_file = if let OutputTo::File(s)  = output { Some(s) } else { None };
+        let in_file = if let InputFrom::File(s) = input { Some(s) } else { None };
+        let out_file = if let OutputTo::File(s) = output { Some(s) } else { None };
 
-        if     in_file.is_some()
+        if in_file.is_some()
             && out_file.is_some()
             && args.is_present(KEYS[Key::CopyOnError])
-        {
-            let inf = in_file.unwrap();
-            let outf = out_file.unwrap();
-            // Copy a file only when paths are different.
-            if inf != outf {
-                try_msg!(fs::copy(inf, outf));
+            {
+                let inf = in_file.unwrap();
+                let outf = out_file.unwrap();
+                // Copy a file only when paths are different.
+                if inf != outf {
+                    try_msg!(fs::copy(inf, outf));
+                }
             }
-        }
 
         std::process::exit(0);
     };

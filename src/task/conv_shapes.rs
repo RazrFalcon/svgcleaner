@@ -17,15 +17,15 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use svgdom::{
-    path,
     AttributeValue,
     Document,
     FuzzyEq,
     Length,
     Node,
+    path,
 };
 
-use task::short::{EId, AId, Unit};
+use task::short::{AId, EId, Unit};
 
 // TODO: convert thin rect to line-to path
 // view-calendar-list.svg
@@ -59,7 +59,7 @@ fn convert_line(node: &mut Node) {
         // We can't convert line with non-pixel coordinates.
         // Unit will newer be Px, since we disable it globally via ParseOptions.
         if !(x1.unit == Unit::None && y1.unit == Unit::None &&
-             x2.unit == Unit::None && y2.unit == Unit::None) {
+            x2.unit == Unit::None && y2.unit == Unit::None) {
             return;
         }
 
@@ -101,7 +101,7 @@ fn convert_rect(node: &mut Node) {
         let y = get_value!(attrs, Length, AId::Y, Length::zero());
 
         if !(x.unit == Unit::None && y.unit == Unit::None &&
-             w.unit == Unit::None && h.unit == Unit::None) {
+            w.unit == Unit::None && h.unit == Unit::None) {
             return;
         }
 
@@ -178,8 +178,9 @@ fn points_to_path(node: &Node) -> Option<path::Path> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

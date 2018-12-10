@@ -28,7 +28,7 @@ pub fn remove_unused_defs(doc: &Document) {
     let mut defs = doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0).unwrap();
 
     // Repeat until no unused nodes left.
-    while remove_unused_defs_impl(&mut defs) { }
+    while remove_unused_defs_impl(&mut defs) {}
 }
 
 // Returns true if tree structure has been changed.
@@ -82,8 +82,9 @@ fn ungroup_children(node: &Node, mv_nodes: &mut Vec<Node>, rm_nodes: &mut Vec<No
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

@@ -22,11 +22,11 @@ use svgdom::{
     Document,
 };
 
-use task::short::{EId, AId};
 use error::{
     ErrorKind,
     Result,
 };
+use task::short::{AId, EId};
 
 pub fn preclean_checks(doc: &Document) -> Result<()> {
     check_for_unsupported_elements(doc)?;
@@ -43,7 +43,7 @@ fn check_for_unsupported_elements(doc: &Document) -> Result<()> {
             EId::Script => {
                 return Err(ErrorKind::ScriptingIsNotSupported.into());
             }
-              EId::Animate
+            EId::Animate
             | EId::AnimateColor
             | EId::AnimateMotion
             | EId::AnimateTransform
@@ -60,12 +60,12 @@ fn check_for_unsupported_elements(doc: &Document) -> Result<()> {
 fn check_for_script_attributes(doc: &Document) -> Result<()> {
     for (_, node) in doc.descendants().svg() {
         for attr in node.attributes().iter() {
-            if     attr.is_graphical_event()
+            if attr.is_graphical_event()
                 || attr.is_document_event()
                 || attr.is_animation_event()
-            {
-                return Err(ErrorKind::ScriptingIsNotSupported.into());
-            }
+                {
+                    return Err(ErrorKind::ScriptingIsNotSupported.into());
+                }
         }
     }
 
@@ -102,7 +102,7 @@ fn check_for_external_xlink(doc: &Document) -> Result<()> {
         }
 
         match node.tag_id().unwrap() {
-              EId::A
+            EId::A
             | EId::Image
             | EId::FontFaceUri
             | EId::FeImage => continue,
@@ -120,8 +120,9 @@ fn check_for_external_xlink(doc: &Document) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
+    use svgdom::{ChainedErrorExt, Document};
+
     use super::*;
-    use svgdom::{Document, ChainedErrorExt};
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $err:expr) => (

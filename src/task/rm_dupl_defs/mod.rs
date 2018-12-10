@@ -24,9 +24,9 @@ use svgdom::{
 
 use task::short::AId;
 
+pub use self::fe_gaussian_blur::remove_dupl_fe_gaussian_blur;
 pub use self::linear_gradient::remove_dupl_linear_gradients;
 pub use self::radial_gradient::remove_dupl_radial_gradients;
-pub use self::fe_gaussian_blur::remove_dupl_fe_gaussian_blur;
 
 mod linear_gradient;
 mod radial_gradient;
@@ -43,7 +43,7 @@ macro_rules! check_attr {
 }
 
 fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
-    where F : Fn(&Node, &Node) -> bool
+    where F: Fn(&Node, &Node) -> bool
 {
     let mut link_attrs: Vec<(Node, AId, Node)> = Vec::new();
 
@@ -137,9 +137,9 @@ pub fn is_equal_stops(node1: &Node, node2: &Node) -> bool {
         let attrs1 = c1.attributes_mut();
         let attrs2 = c2.attributes_mut();
 
-        if !(   attrs1.get_value(AId::Offset) == attrs2.get_value(AId::Offset)
-             && attrs1.get_value(AId::StopColor) == attrs2.get_value(AId::StopColor)
-             && attrs1.get_value(AId::StopOpacity) == attrs2.get_value(AId::StopOpacity)) {
+        if !(attrs1.get_value(AId::Offset) == attrs2.get_value(AId::Offset)
+            && attrs1.get_value(AId::StopColor) == attrs2.get_value(AId::StopColor)
+            && attrs1.get_value(AId::StopOpacity) == attrs2.get_value(AId::StopOpacity)) {
             return false;
         }
     }
@@ -150,8 +150,9 @@ pub fn is_equal_stops(node1: &Node, node2: &Node) -> bool {
 #[cfg(test)]
 mod tests {
     use svgdom::{Document, Node};
-    use task::short::EId;
+
     use task;
+    use task::short::EId;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $flag:expr) => (

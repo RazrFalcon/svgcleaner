@@ -21,7 +21,7 @@ use svgdom::{
     Node,
 };
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 pub fn remove_dupl_fe_gaussian_blur(doc: &Document) {
     let filter_attrs = [
@@ -111,8 +111,9 @@ fn is_attrs_equal(node1: &Node, node2: &Node, attrs: &[AId]) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -197,5 +198,4 @@ mod tests {
     </filter>
 </svg>
 ");
-
 }

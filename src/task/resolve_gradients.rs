@@ -28,12 +28,11 @@ use svgdom::{
     ValueId,
 };
 
-use task::short::{EId, AId};
-
 use error::{
     ErrorKind,
     Result,
 };
+use task::short::{AId, EId};
 
 /// Resolve attributes of `linearGradient` elements.
 ///
@@ -51,7 +50,7 @@ use error::{
 pub fn resolve_linear_gradient_attributes(doc: &Document) {
     for node in &mut gen_order(doc, EId::LinearGradient) {
         check_attr(node, AId::GradientUnits,
-            Some(AttributeValue::from(ValueId::ObjectBoundingBox)));
+                   Some(AttributeValue::from(ValueId::ObjectBoundingBox)));
         check_attr(node, AId::SpreadMethod, Some(AttributeValue::from(ValueId::Pad)));
         check_attr(node, AId::X1, Some(AttributeValue::from((0.0, LengthUnit::Percent))));
         check_attr(node, AId::Y1, Some(AttributeValue::from((0.0, LengthUnit::Percent))));
@@ -85,11 +84,11 @@ pub fn resolve_radial_gradient_attributes(doc: &Document) {
 
     for node in &mut gen_order(doc, EId::RadialGradient) {
         check_attr(node, AId::GradientUnits,
-            Some(AttributeValue::from(ValueId::ObjectBoundingBox)));
+                   Some(AttributeValue::from(ValueId::ObjectBoundingBox)));
         check_attr(node, AId::SpreadMethod, Some(AttributeValue::from(ValueId::Pad)));
         check_attr(node, AId::Cx, Some(AttributeValue::from((50.0, LengthUnit::Percent))));
         check_attr(node, AId::Cy, Some(AttributeValue::from((50.0, LengthUnit::Percent))));
-        check_attr(node, AId::R,  Some(AttributeValue::from((50.0, LengthUnit::Percent))));
+        check_attr(node, AId::R, Some(AttributeValue::from((50.0, LengthUnit::Percent))));
 
         let cx = node.attributes().get_value(AId::Cx).cloned();
         let cy = node.attributes().get_value(AId::Cy).cloned();
@@ -154,7 +153,7 @@ pub fn resolve_stop_attributes(doc: &Document) -> Result<()> {
 // TODO: explain algorithm
 fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
     let nodes = doc.descendants().filter(|n| n.is_tag_name(eid))
-                   .collect::<Vec<Node>>();
+        .collect::<Vec<Node>>();
 
     let mut order = Vec::with_capacity(nodes.len());
 
@@ -225,8 +224,9 @@ macro_rules! base_test {
 
 #[cfg(test)]
 mod lg_tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -243,13 +243,13 @@ mod lg_tests {
         x1='0%' x2='100%' y1='0%' y2='0%'/>
 </svg>
 ");
-
 }
 
 #[cfg(test)]
 mod rg_tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test_rg {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -363,8 +363,9 @@ mod rg_tests {
 
 #[cfg(test)]
 mod stop_tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -391,5 +392,4 @@ mod stop_tests {
     </linearGradient>
 </svg>
 ");
-
 }

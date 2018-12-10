@@ -23,7 +23,7 @@ use svgdom::{
     Node,
 };
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 use task::utils;
 
 static LG_ATTRIBUTES: &'static [AId] = &[
@@ -127,9 +127,11 @@ fn _merge_gradients(doc: &Document, nodes: &mut Vec<Node>) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
     use task;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -259,5 +261,4 @@ mod tests {
     </linearGradient>
 </svg>
 ");
-
 }

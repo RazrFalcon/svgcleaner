@@ -22,13 +22,14 @@ use svgdom::{
     ElementType,
 };
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
+
 use super::utils;
 
 pub fn apply_transform_to_gradients(doc: &Document) {
     let iter = doc.descendants()
-                  .filter(|n| n.is_gradient())
-                  .filter(|n| n.has_attribute(AId::GradientTransform));
+        .filter(|n| n.is_gradient())
+        .filter(|n| n.has_attribute(AId::GradientTransform));
 
     for mut node in iter {
         {
@@ -89,9 +90,11 @@ pub fn apply_transform_to_gradients(doc: &Document) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
     use task;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -150,5 +153,4 @@ mod tests {
     <linearGradient xlink:href='#lg1'/>
 </svg>
 ");
-
 }

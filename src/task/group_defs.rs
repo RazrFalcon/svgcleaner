@@ -100,7 +100,7 @@ pub fn group_defs(doc: &mut Document) {
 // so if we want to move this elements to the 'defs' - we should resolve attributes too.
 fn resolve_attrs(node: &Node) {
     match node.tag_id().unwrap() {
-          EId::ClipPath
+        EId::ClipPath
         | EId::Marker
         | EId::Mask
         | EId::Pattern
@@ -127,8 +127,9 @@ fn resolve_attrs(node: &Node) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -225,7 +226,7 @@ mod tests {
 </svg>
 ");
 
-    // Ungroupping should only work for direct 'defs' nodes.
+    // Ungrouping should only work for direct 'defs' nodes.
     test!(move_defs_4,
 "<svg>
     <defs id='a'>
@@ -337,5 +338,4 @@ mod tests {
     <g fill='none'/>
 </svg>
 ");
-
 }

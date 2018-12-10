@@ -48,8 +48,9 @@ pub fn ungroup_defs(doc: &Document) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (
@@ -104,5 +105,4 @@ mod tests {
     </defs>
 </svg>
 ");
-
 }

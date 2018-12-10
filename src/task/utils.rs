@@ -88,8 +88,9 @@ pub fn remove_nodes(nodes: &mut Vec<Node>) {
 
 #[cfg(test)]
 mod tests {
-    use task::short::EId;
     use svgdom::{Document, ToStringWithOptions};
+
+    use task::short::EId;
     use task::utils;
 
     macro_rules! test {
@@ -160,5 +161,4 @@ mod tests {
     <path stroke-dasharray='10 4 10 10 4 10' stroke-dashoffset='4' stroke-width='2'/>
 </svg>
 ");
-
 }

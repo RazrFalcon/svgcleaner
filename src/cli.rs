@@ -16,18 +16,17 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use std::ops::Index;
 use std::io::{
     stderr,
     Write,
 };
+use std::ops::Index;
 
 use clap::{
-    Arg,
     App,
+    Arg,
     ArgMatches,
 };
-
 use svgdom::{
     ParseOptions,
     WriteOptions,
@@ -38,19 +37,19 @@ use {
     StyleJoinMode,
 };
 
-#[derive(Debug,Clone,Copy,PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum InputFrom<'a> {
     Stdin,
     File(&'a str),
 }
 
-#[derive(Debug,Clone,Copy,PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum OutputTo<'a> {
     Stdout,
     File(&'a str),
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone, Copy)]
 pub enum Key {
     RemoveComments,
     RemoveDeclarations,
@@ -143,7 +142,6 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-invalid-stops",
     "remove-invisible-elements",
     "resolve-use",
-
     "remove-version",
     "remove-nonsvg-attributes",
     "remove-unreferenced-ids",
@@ -158,7 +156,6 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "apply-transform-to-gradients",
     "apply-transform-to-shapes",
     "remove-unresolved-classes",
-
     "paths-to-relative",
     "remove-unused-segments",
     "convert-segments",
@@ -167,7 +164,6 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "join-arcto-flags",
     "remove-dupl-cmd-in-paths",
     "use-implicit-cmds",
-
     "trim-colors",
     "simplify-transforms",
     "coordinates-precision",
@@ -176,7 +172,6 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "paths-coordinates-precision",
     "list-separator",
     "indent",
-
     "no-defaults",
     "multipass",
     "allow-bigger-file",
@@ -330,8 +325,8 @@ fn is_precision(val: String) -> Result<(), String> {
 fn is_flag(val: String) -> Result<(), String> {
     match val.as_ref() {
         "true" | "false" |
-        "yes"  | "no" |
-        "y"    | "n" => Ok(()),
+        "yes" | "no" |
+        "y" | "n" => Ok(()),
         _ => Err(String::from("Invalid flag value.")),
     }
 }
@@ -346,7 +341,6 @@ fn get_flag(args: &ArgMatches, key: Key) -> bool {
 
 // I don't know how to check it using 'clap', so here is manual checks.
 pub fn check_values(args: &ArgMatches) -> bool {
-
     fn check_value(args: &ArgMatches, flag: Key, dep: Key) -> bool {
         if !get_flag(args, flag) && get_flag(args, dep) {
             writeln!(stderr(), "Error: You can use '--{}=true' only with '--{}=true'.",
@@ -481,20 +475,20 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     flags.resolve(&mut opt.trim_hex_colors, Key::TrimColors);
 
     opt.list_separator = match args.value_of(KEYS[Key::ListSeparator]).unwrap() {
-        "space"         => ListSeparator::Space,
-        "comma"         => ListSeparator::Comma,
-        "comma-space"   => ListSeparator::CommaSpace,
+        "space" => ListSeparator::Space,
+        "comma" => ListSeparator::Comma,
+        "comma-space" => ListSeparator::CommaSpace,
         _ => unreachable!(), // clap will validate the input.
     };
 
     opt.indent = match args.value_of(KEYS[Key::Indent]).unwrap() {
-        "none"  => Indent::None,
-        "0"     => Indent::Spaces(0),
-        "1"     => Indent::Spaces(1),
-        "2"     => Indent::Spaces(2),
-        "3"     => Indent::Spaces(3),
-        "4"     => Indent::Spaces(4),
-        "tabs"  => Indent::Tabs,
+        "none" => Indent::None,
+        "0" => Indent::Spaces(0),
+        "1" => Indent::Spaces(1),
+        "2" => Indent::Spaces(2),
+        "3" => Indent::Spaces(3),
+        "4" => Indent::Spaces(4),
+        "tabs" => Indent::Tabs,
         _ => unreachable!(), // clap will validate the input.
     };
 
@@ -537,9 +531,9 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> CleaningOptions {
     flags.resolve(&mut opt.apply_transform_to_shapes, Key::ApplyTransformToShapes);
 
     opt.join_style_attributes = match args.value_of(KEYS[Key::JoinStyleAttributes]).unwrap() {
-        "no"    => StyleJoinMode::None,
-        "some"  => StyleJoinMode::Some,
-        "all"   => StyleJoinMode::All,
+        "no" => StyleJoinMode::None,
+        "some" => StyleJoinMode::Some,
+        "all" => StyleJoinMode::All,
         _ => unreachable!(), // clap will validate the input.
     };
 
@@ -552,7 +546,7 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> CleaningOptions {
     opt.properties_precision = value_t!(args, KEYS[Key::PropertiesPrecision], u8).unwrap();
     opt.paths_coordinates_precision
         = value_t!(args, KEYS[Key::PathsCoordinatesPrecision], u8).unwrap();
-    opt.transforms_precision   = value_t!(args, KEYS[Key::TransformsPrecision], u8).unwrap();
+    opt.transforms_precision = value_t!(args, KEYS[Key::TransformsPrecision], u8).unwrap();
 
     opt
 }

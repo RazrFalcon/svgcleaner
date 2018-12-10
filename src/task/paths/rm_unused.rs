@@ -53,7 +53,7 @@ pub fn remove_unused_segments(path: &mut Path) {
     }
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone, Copy)]
 enum DrainMode {
     Single,
     Both,
@@ -208,7 +208,7 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
 fn is_line_based(seg: Command) -> bool
 {
     match seg {
-          Command::LineTo
+        Command::LineTo
         | Command::HorizontalLineTo
         | Command::VerticalLineTo => true,
         _ => false,
@@ -219,9 +219,11 @@ fn is_line_based(seg: Command) -> bool
 mod tests {
     use std::str::FromStr;
 
-    use super::*;
     use svgdom::path::Path;
+
     use task::paths::conv_segments;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

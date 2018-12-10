@@ -21,7 +21,7 @@ use svgdom::{
     Document,
 };
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 pub fn remove_unused_coordinates(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);
@@ -109,8 +109,9 @@ pub fn remove_unused_coordinates(doc: &Document) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

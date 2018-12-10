@@ -23,7 +23,7 @@ use svgdom::{
     Transform,
 };
 
-use task::short::{EId, AId, Unit};
+use task::short::{AId, EId, Unit};
 
 pub fn resolve_use(doc: &Document) {
     let mut nodes = Vec::new();
@@ -107,8 +107,9 @@ pub fn resolve_use(doc: &Document) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

@@ -21,9 +21,10 @@ use svgdom::{
     Transform,
 };
 
-use task::short::{EId, AId};
-use super::utils;
 use options::CleaningOptions;
+use task::short::{AId, EId};
+
+use super::utils;
 
 // If group has transform and contains only valid elements
 // we can apply the group's transform to children before applying transform to
@@ -45,8 +46,8 @@ pub fn prepare_transforms(parent: &Node, recursive: bool, opt: &CleaningOptions)
 
     valid_elems.push(EId::G);
 
-    let iter = parent.descendants().filter(|n|    n.is_tag_name(EId::G)
-                                               && n.has_attribute(AId::Transform));
+    let iter = parent.descendants().filter(|n| n.is_tag_name(EId::G)
+        && n.has_attribute(AId::Transform));
 
     for mut node in iter {
         if !utils::has_valid_transform(&node) || !utils::is_valid_attrs(&node) {
@@ -61,10 +62,10 @@ pub fn prepare_transforms(parent: &Node, recursive: bool, opt: &CleaningOptions)
                 utils::is_valid_coords(&n)
             };
 
-               valid_elems.contains(&id)
-            && utils::has_valid_transform(&n)
-            && utils::is_valid_attrs(&n)
-            && is_valid_coords
+            valid_elems.contains(&id)
+                && utils::has_valid_transform(&n)
+                && utils::is_valid_attrs(&n)
+                && is_valid_coords
         });
 
         if is_valid {
@@ -95,9 +96,11 @@ fn apply_ts_to_children(node: &Node, ts: Transform) {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use options::CleaningOptions;
     use svgdom::{Document, ToStringWithOptions};
+
+    use options::CleaningOptions;
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

@@ -25,7 +25,7 @@ use svgdom::{
     ValueId,
 };
 
-use task::short::{EId, AId, Unit};
+use task::short::{AId, EId, Unit};
 
 // TODO: xml:space
 
@@ -93,7 +93,7 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
 
     // TODO: this elements should be processed differently
     match tag_name {
-          EId::LinearGradient
+        EId::LinearGradient
         | EId::RadialGradient => return false,
         _ => {}
     }
@@ -205,7 +205,7 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
                 }
             }
         }
-          AId::ClipPathUnits
+        AId::ClipPathUnits
         | AId::MaskContentUnits
         | AId::PatternContentUnits
         | AId::PrimitiveUnits => {
@@ -215,7 +215,7 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
                 }
             }
         }
-          AId::MaskUnits
+        AId::MaskUnits
         | AId::PatternUnits
         | AId::FilterUnits => {
             if let AttributeValue::PredefValue(v) = attr.value {
@@ -232,8 +232,9 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use svgdom::{Document, ToStringWithOptions};
+
+    use super::*;
 
     macro_rules! test {
         ($name:ident, $in_text:expr, $out_text:expr) => (

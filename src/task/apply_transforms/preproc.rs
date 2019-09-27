@@ -16,14 +16,11 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    Node,
-    Transform,
-};
+use svgdom::{Node, Transform};
 
-use task::short::{EId, AId};
 use super::utils;
 use options::CleaningOptions;
+use task::short::{AId, EId};
 
 // If group has transform and contains only valid elements
 // we can apply the group's transform to children before applying transform to
@@ -45,8 +42,9 @@ pub fn prepare_transforms(parent: &Node, recursive: bool, opt: &CleaningOptions)
 
     valid_elems.push(EId::G);
 
-    let iter = parent.descendants().filter(|n|    n.is_tag_name(EId::G)
-                                               && n.has_attribute(AId::Transform));
+    let iter = parent
+        .descendants()
+        .filter(|n| n.is_tag_name(EId::G) && n.has_attribute(AId::Transform));
 
     for mut node in iter {
         if !utils::has_valid_transform(&node) || !utils::is_valid_attrs(&node) {
@@ -61,10 +59,10 @@ pub fn prepare_transforms(parent: &Node, recursive: bool, opt: &CleaningOptions)
                 utils::is_valid_coords(&n)
             };
 
-               valid_elems.contains(&id)
-            && utils::has_valid_transform(&n)
-            && utils::is_valid_attrs(&n)
-            && is_valid_coords
+            valid_elems.contains(&id)
+                && utils::has_valid_transform(&n)
+                && utils::is_valid_attrs(&n)
+                && is_valid_coords
         });
 
         if is_valid {
@@ -100,7 +98,7 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -117,26 +115,29 @@ mod tests {
                 opt.simplify_transform_matrices = true;
                 assert_eq_text!(doc.to_string_with_opt(&opt), $out_text);
             }
-        )
+        };
     }
 
-    test!(apply_1,
-"<svg>
+    test!(
+        apply_1,
+        "<svg>
     <g transform='translate(10 20)'>
         <rect transform='scale(2)'/>
         <path/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <g>
         <rect transform='matrix(2 0 0 2 10 20)'/>
         <path transform='translate(10 20)'/>
     </g>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_1,
-"<svg>
+    test_eq!(
+        keep_1,
+        "<svg>
     <g transform='scale(10 20)'>
         <path d='M 10 20 L 30 40'/>
     </g>
@@ -144,10 +145,12 @@ mod tests {
         <rect d='M 10 20 L 30 40'/>
     </g>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_2,
-"<svg>
+    test_eq!(
+        keep_2,
+        "<svg>
     <linearGradient id='lg1'/>
     <g fill='url(#lg1)'>
         <rect/>
@@ -156,30 +159,36 @@ mod tests {
         <path/>
     </g>
 </svg>
-");
+"
+    );
 
     // Group should contain only supported children.
-    test_eq!(keep_3,
-"<svg>
+    test_eq!(
+        keep_3,
+        "<svg>
     <g transform='scale(10 20)'>
         <g/>
         <rect/>
     </g>
 </svg>
-");
+"
+    );
 
     // Both transforms should be valid.
-    test_eq!(keep_4,
-"<svg>
+    test_eq!(
+        keep_4,
+        "<svg>
     <g transform='scale(10)'>
         <rect transform='scale(10 30)'/>
     </g>
 </svg>
-");
+"
+    );
 
     // Non-SVG child.
-    test!(keep_5,
-"<svg>
+    test!(
+        keep_5,
+        "<svg>
     <g transform='scale(10)'>
         <rect transform='scale(10 30)'/>
         <test/>
@@ -191,7 +200,7 @@ mod tests {
         Text
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <g transform='scale(10)'>
         <rect transform='scale(10 30)'/>
         <test/>
@@ -201,5 +210,6 @@ mod tests {
     </g>
     <g>Text</g>
 </svg>
-");
+"
+    );
 }

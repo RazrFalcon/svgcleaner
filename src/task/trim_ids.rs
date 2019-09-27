@@ -32,22 +32,25 @@ impl Num {
         let mut chars = [0u8; CHARS_SIZE];
         {
             let mut pos = 0;
-            for c in 97..123 { // a-z
+            for c in 97..123 {
+                // a-z
                 chars[pos] = c;
                 pos += 1;
             }
-            for c in 65..91 { // A-Z
+            for c in 65..91 {
+                // A-Z
                 chars[pos] = c;
                 pos += 1;
             }
-            for c in 48..58 { // 0-9
+            for c in 48..58 {
+                // 0-9
                 chars[pos] = c;
                 pos += 1;
             }
         }
 
         let mut arr = [255u8; NUM_SIZE];
-        arr[NUM_SIZE-1] = 0;
+        arr[NUM_SIZE - 1] = 0;
 
         Num {
             d: arr,
@@ -62,8 +65,8 @@ impl Num {
         if n == MAX_NUM_CHAR || (n == 51 && &pos == head) {
             self.d[pos] = 0;
 
-            if self.d[pos-1] == 255 {
-                self.d[pos-1] = 0;
+            if self.d[pos - 1] == 255 {
+                self.d[pos - 1] = 0;
             } else {
                 self.shift(pos - 1, head);
             }
@@ -74,7 +77,7 @@ impl Num {
 
     // Can panic if number is bigger than around 100000000.
     fn plus_one(&mut self) {
-        let mut head = NUM_SIZE-1;
+        let mut head = NUM_SIZE - 1;
         for i in (0..5).rev() {
             if self.d[i] == 255 {
                 head = i + 1;
@@ -82,7 +85,7 @@ impl Num {
             }
         }
 
-        self.shift(NUM_SIZE-1, &head);
+        self.shift(NUM_SIZE - 1, &head);
     }
 
     fn to_string(&self) -> String {
@@ -124,7 +127,9 @@ mod tests {
         num.plus_one();
         assert_eq!(num.to_string(), "b");
 
-        for _ in 0..50 { num.plus_one(); }
+        for _ in 0..50 {
+            num.plus_one();
+        }
         assert_eq!(num.to_string(), "Z");
 
         // id cannot start with digit,
@@ -132,13 +137,21 @@ mod tests {
         num.plus_one();
         assert_eq!(num.to_string(), "aa");
 
-        for _ in 0..62 { num.plus_one(); }
+        for _ in 0..62 {
+            num.plus_one();
+        }
         assert_eq!(num.to_string(), "ba");
 
-        for _ in 0..62 { num.plus_one(); }
+        for _ in 0..62 {
+            num.plus_one();
+        }
         assert_eq!(num.to_string(), "ca");
 
-        for _ in 0..62 { for _ in 0..52 { num.plus_one(); } }
+        for _ in 0..62 {
+            for _ in 0..52 {
+                num.plus_one();
+            }
+        }
         assert_eq!(num.to_string(), "aca");
     }
 }

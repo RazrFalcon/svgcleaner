@@ -17,23 +17,12 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use svgdom::{
-    Attribute,
-    AttributeValue,
-    Color,
-    Document,
-    ElementType,
-    Length,
-    LengthUnit,
-    Node,
-    ValueId,
+    Attribute, AttributeValue, Color, Document, ElementType, Length, LengthUnit, Node, ValueId,
 };
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
-use error::{
-    ErrorKind,
-    Result,
-};
+use error::{ErrorKind, Result};
 
 /// Resolve attributes of `linearGradient` elements.
 ///
@@ -50,13 +39,36 @@ use error::{
 /// Details: https://www.w3.org/TR/SVG/pservers.html#LinearGradients
 pub fn resolve_linear_gradient_attributes(doc: &Document) {
     for node in &mut gen_order(doc, EId::LinearGradient) {
-        check_attr(node, AId::GradientUnits,
-            Some(AttributeValue::from(ValueId::ObjectBoundingBox)));
-        check_attr(node, AId::SpreadMethod, Some(AttributeValue::from(ValueId::Pad)));
-        check_attr(node, AId::X1, Some(AttributeValue::from((0.0, LengthUnit::Percent))));
-        check_attr(node, AId::Y1, Some(AttributeValue::from((0.0, LengthUnit::Percent))));
-        check_attr(node, AId::X2, Some(AttributeValue::from((100.0, LengthUnit::Percent))));
-        check_attr(node, AId::Y2, Some(AttributeValue::from((0.0, LengthUnit::Percent))));
+        check_attr(
+            node,
+            AId::GradientUnits,
+            Some(AttributeValue::from(ValueId::ObjectBoundingBox)),
+        );
+        check_attr(
+            node,
+            AId::SpreadMethod,
+            Some(AttributeValue::from(ValueId::Pad)),
+        );
+        check_attr(
+            node,
+            AId::X1,
+            Some(AttributeValue::from((0.0, LengthUnit::Percent))),
+        );
+        check_attr(
+            node,
+            AId::Y1,
+            Some(AttributeValue::from((0.0, LengthUnit::Percent))),
+        );
+        check_attr(
+            node,
+            AId::X2,
+            Some(AttributeValue::from((100.0, LengthUnit::Percent))),
+        );
+        check_attr(
+            node,
+            AId::Y2,
+            Some(AttributeValue::from((0.0, LengthUnit::Percent))),
+        );
         check_attr(node, AId::GradientTransform, None);
     }
 }
@@ -84,12 +96,31 @@ pub fn resolve_radial_gradient_attributes(doc: &Document) {
     // From not referenced to referenced.
 
     for node in &mut gen_order(doc, EId::RadialGradient) {
-        check_attr(node, AId::GradientUnits,
-            Some(AttributeValue::from(ValueId::ObjectBoundingBox)));
-        check_attr(node, AId::SpreadMethod, Some(AttributeValue::from(ValueId::Pad)));
-        check_attr(node, AId::Cx, Some(AttributeValue::from((50.0, LengthUnit::Percent))));
-        check_attr(node, AId::Cy, Some(AttributeValue::from((50.0, LengthUnit::Percent))));
-        check_attr(node, AId::R,  Some(AttributeValue::from((50.0, LengthUnit::Percent))));
+        check_attr(
+            node,
+            AId::GradientUnits,
+            Some(AttributeValue::from(ValueId::ObjectBoundingBox)),
+        );
+        check_attr(
+            node,
+            AId::SpreadMethod,
+            Some(AttributeValue::from(ValueId::Pad)),
+        );
+        check_attr(
+            node,
+            AId::Cx,
+            Some(AttributeValue::from((50.0, LengthUnit::Percent))),
+        );
+        check_attr(
+            node,
+            AId::Cy,
+            Some(AttributeValue::from((50.0, LengthUnit::Percent))),
+        );
+        check_attr(
+            node,
+            AId::R,
+            Some(AttributeValue::from((50.0, LengthUnit::Percent))),
+        );
 
         let cx = node.attributes().get_value(AId::Cx).cloned();
         let cy = node.attributes().get_value(AId::Cy).cloned();
@@ -125,12 +156,17 @@ pub fn resolve_stop_attributes(doc: &Document) -> Result<()> {
             } else {
                 if idx == 0 {
                     // Allow first stop to not have an offset.
-                    warn!("The 'stop' element must have an 'offset' attribute. \
-                           Fallback to 'offset=0'.");
+                    warn!(
+                        "The 'stop' element must have an 'offset' attribute. \
+                         Fallback to 'offset=0'."
+                    );
                     node.set_attribute((AId::Offset, Length::zero()));
                 } else {
-                    return Err(ErrorKind::MissingAttribute("stop".to_string(),
-                                                           "offset".to_string()).into());
+                    return Err(ErrorKind::MissingAttribute(
+                        "stop".to_string(),
+                        "offset".to_string(),
+                    )
+                    .into());
                 }
             }
 
@@ -153,8 +189,10 @@ pub fn resolve_stop_attributes(doc: &Document) -> Result<()> {
 
 // TODO: explain algorithm
 fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
-    let nodes = doc.descendants().filter(|n| n.is_tag_name(eid))
-                   .collect::<Vec<Node>>();
+    let nodes = doc
+        .descendants()
+        .filter(|n| n.is_tag_name(eid))
+        .collect::<Vec<Node>>();
 
     let mut order = Vec::with_capacity(nodes.len());
 
@@ -164,9 +202,10 @@ fn gen_order(doc: &Document, eid: EId) -> Vec<Node> {
                 continue;
             }
 
-            let c = node.linked_nodes().filter(|n| {
-                n.is_tag_name(eid) && !order.iter().any(|on| on == n)
-            }).count();
+            let c = node
+                .linked_nodes()
+                .filter(|n| n.is_tag_name(eid) && !order.iter().any(|on| on == n))
+                .count();
 
             if c == 0 {
                 order.push(node.clone());
@@ -187,31 +226,30 @@ fn check_attr(node: &mut Node, id: AId, def_value: Option<AttributeValue>) {
     }
 }
 
-fn resolve_attribute(node: &Node, id: AId, def_value: Option<AttributeValue>)
-                     -> Option<AttributeValue> {
+fn resolve_attribute(
+    node: &Node,
+    id: AId,
+    def_value: Option<AttributeValue>,
+) -> Option<AttributeValue> {
     if node.has_attribute(id) {
         return node.attributes().get_value(id).cloned();
     }
 
     match node.attributes().get_value(AId::XlinkHref) {
-        Some(av) => {
-            match *av {
-                AttributeValue::Link(ref ref_node) => resolve_attribute(ref_node, id, def_value),
-                _ => unreachable!(),
-            }
-        }
-        None => {
-            match node.attributes().get_value(id) {
-                Some(v) => Some(v.clone()),
-                None => def_value,
-            }
-        }
+        Some(av) => match *av {
+            AttributeValue::Link(ref ref_node) => resolve_attribute(ref_node, id, def_value),
+            _ => unreachable!(),
+        },
+        None => match node.attributes().get_value(id) {
+            Some(v) => Some(v.clone()),
+            None => def_value,
+        },
     }
 }
 
 #[cfg(test)]
 macro_rules! base_test {
-    ($name:ident, $functor:expr, $in_text:expr, $out_text:expr) => (
+    ($name:ident, $functor:expr, $in_text:expr, $out_text:expr) => {
         #[test]
         fn $name() {
             let doc = Document::from_str($in_text).unwrap();
@@ -220,7 +258,7 @@ macro_rules! base_test {
             opt.write_hidden_attributes = true;
             assert_eq_text!(doc.to_string_with_opt(&opt), $out_text);
         }
-    )
+    };
 }
 
 #[cfg(test)]
@@ -229,21 +267,27 @@ mod lg_tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
-            base_test!($name, resolve_linear_gradient_attributes, $in_text, $out_text);
-        )
+        ($name:ident, $in_text:expr, $out_text:expr) => {
+            base_test!(
+                $name,
+                resolve_linear_gradient_attributes,
+                $in_text,
+                $out_text
+            );
+        };
     }
 
-    test!(resolve_1,
-"<svg>
+    test!(
+        resolve_1,
+        "<svg>
     <linearGradient id='lg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1' gradientUnits='objectBoundingBox' spreadMethod='pad' \
         x1='0%' x2='100%' y1='0%' y2='0%'/>
 </svg>
-");
-
+"
+    );
 }
 
 #[cfg(test)]
@@ -252,39 +296,49 @@ mod rg_tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test_rg {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
-            base_test!($name, resolve_radial_gradient_attributes, $in_text, $out_text);
-        )
+        ($name:ident, $in_text:expr, $out_text:expr) => {
+            base_test!(
+                $name,
+                resolve_radial_gradient_attributes,
+                $in_text,
+                $out_text
+            );
+        };
     }
 
-    test_rg!(resolve_1,
-"<svg>
+    test_rg!(
+        resolve_1,
+        "<svg>
     <radialGradient id='rg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <radialGradient id='rg1' cx='50%' cy='50%' fx='50%' fy='50%' gradientUnits='objectBoundingBox' \
         r='50%' spreadMethod='pad'/>
 </svg>
-");
+"
+    );
 
-    test_rg!(resolve_2,
-"<svg>
+    test_rg!(
+        resolve_2,
+        "<svg>
     <radialGradient id='rg1' cx='10' cy='20'/>
 </svg>",
-"<svg>
+        "<svg>
     <radialGradient id='rg1' cx='10' cy='20' fx='10' fy='20' gradientUnits='objectBoundingBox' \
         r='50%' spreadMethod='pad'/>
 </svg>
-");
+"
+    );
 
-    test_rg!(resolve_3,
-"<svg>
+    test_rg!(
+        resolve_3,
+        "<svg>
     <radialGradient id='rg1' cx='10' cy='20' fx='30' fy='40' \
         gradientTransform='matrix(1 0 0 1 10 20)' gradientUnits='userSpaceOnUse' r='5' \
         spreadMethod='repeat'/>
     <radialGradient id='rg2' xlink:href='#rg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <radialGradient id='rg1' cx='10' cy='20' fx='30' fy='40' \
         gradientTransform='translate(10 20)' gradientUnits='userSpaceOnUse' r='5' \
         spreadMethod='repeat'/>
@@ -292,17 +346,19 @@ mod rg_tests {
         gradientTransform='translate(10 20)' gradientUnits='userSpaceOnUse' r='5' \
         spreadMethod='repeat' xlink:href='#rg1'/>
 </svg>
-");
+"
+    );
 
-    test_rg!(resolve_4,
-"<svg>
+    test_rg!(
+        resolve_4,
+        "<svg>
     <radialGradient id='rg1' cx='10' cy='20' fx='30' fy='40' \
         gradientTransform='matrix(1 0 0 1 10 20)' gradientUnits='userSpaceOnUse' r='5' \
         spreadMethod='repeat'/>
     <radialGradient id='rg2' xlink:href='#rg1'/>
     <radialGradient id='rg3' xlink:href='#rg2'/>
 </svg>",
-"<svg>
+        "<svg>
     <radialGradient id='rg1' cx='10' cy='20' fx='30' fy='40' \
         gradientTransform='translate(10 20)' gradientUnits='userSpaceOnUse' r='5' \
         spreadMethod='repeat'/>
@@ -313,30 +369,34 @@ mod rg_tests {
         gradientTransform='translate(10 20)' gradientUnits='userSpaceOnUse' r='5' \
         spreadMethod='repeat' xlink:href='#rg2'/>
 </svg>
-");
+"
+    );
 
-    test_rg!(resolve_5,
-"<svg>
+    test_rg!(
+        resolve_5,
+        "<svg>
     <radialGradient id='rg1' cx='10' cy='20' r='5'/>
     <radialGradient id='rg2' cy='30' xlink:href='#rg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <radialGradient id='rg1' cx='10' cy='20' fx='10' fy='20' \
         gradientUnits='objectBoundingBox' r='5' spreadMethod='pad'/>
     <radialGradient id='rg2' cx='10' cy='30' fx='10' fy='30' \
         gradientUnits='objectBoundingBox' r='5' spreadMethod='pad' xlink:href='#rg1'/>
 </svg>
-");
+"
+    );
 
     // This is the main test, because it check resolving order correctness.
-    test_rg!(resolve_6,
-"<svg>
+    test_rg!(
+        resolve_6,
+        "<svg>
     <radialGradient id='rg2' cy='30' xlink:href='#rg1'/>
     <radialGradient id='rg3' cx='30' xlink:href='#rg2'/>
     <radialGradient id='rg4' cx='40' xlink:href='#rg2'/>
     <radialGradient id='rg1' cx='10' cy='20' r='5'/>
 </svg>",
-"<svg>
+        "<svg>
     <radialGradient id='rg2' cx='10' cy='30' fx='10' fy='30' \
         gradientUnits='objectBoundingBox' r='5' spreadMethod='pad' xlink:href='#rg1'/>
     <radialGradient id='rg3' cx='30' cy='30' fx='30' fy='30' \
@@ -346,19 +406,22 @@ mod rg_tests {
     <radialGradient id='rg1' cx='10' cy='20' fx='10' fy='20' \
         gradientUnits='objectBoundingBox' r='5' spreadMethod='pad'/>
 </svg>
-");
+"
+    );
 
-    test_rg!(resolve_7,
-"<svg>
+    test_rg!(
+        resolve_7,
+        "<svg>
     <linearGradient id='lg1' gradientUnits='userSpaceOnUse' spreadMethod='repeat' x='5' y='5'/>
     <radialGradient id='rg2' cy='30' r='5' xlink:href='#lg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1' gradientUnits='userSpaceOnUse' spreadMethod='repeat' x='5' y='5'/>
     <radialGradient id='rg2' cx='50%' cy='30' fx='50%' fy='30' \
         gradientUnits='userSpaceOnUse' r='5' spreadMethod='repeat' xlink:href='#lg1'/>
 </svg>
-");
+"
+    );
 }
 
 #[cfg(test)]
@@ -367,7 +430,7 @@ mod stop_tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -376,20 +439,21 @@ mod stop_tests {
                 opt.write_hidden_attributes = true;
                 assert_eq_text!(doc.to_string_with_opt(&opt), $out_text);
             }
-        )
+        };
     }
 
-    test!(resolve_1,
-"<svg>
+    test!(
+        resolve_1,
+        "<svg>
     <linearGradient>
         <stop offset='50%'/>
     </linearGradient>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient>
         <stop offset='0.5' stop-color='#000000' stop-opacity='1'/>
     </linearGradient>
 </svg>
-");
-
+"
+    );
 }

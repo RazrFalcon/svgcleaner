@@ -16,18 +16,9 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeId,
-    AttributeValue,
-    Document,
-    Node,
-    ValueId,
-};
+use svgdom::{AttributeId, AttributeValue, Document, Node, ValueId};
 
-use error::{
-    ErrorKind,
-    Result,
-};
+use error::{ErrorKind, Result};
 
 // TODO: split
 /// Resolve `inherit` and `currentColor` attributes.
@@ -50,7 +41,7 @@ pub fn resolve_inherit(doc: &Document) -> Result<()> {
                         ValueId::CurrentColor => {
                             vec_curr_color.push(aid);
                         }
-                        _ => {},
+                        _ => {}
                     }
                 }
             }
@@ -93,99 +84,111 @@ mod tests {
 
     #[cfg(test)]
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let mut doc = Document::from_str($in_text).unwrap();
                 resolve_inherit(&mut doc).unwrap();
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
     #[cfg(test)]
     macro_rules! test_err {
-        ($name:ident, $in_text:expr) => (
+        ($name:ident, $in_text:expr) => {
             #[test]
             fn $name() {
                 let mut doc = Document::from_str($in_text).unwrap();
                 assert_eq!(resolve_inherit(&mut doc).is_err(), true);
             }
-        )
+        };
     }
 
-    test!(inherit_1,
-"<svg fill='#ff0000'>
+    test!(
+        inherit_1,
+        "<svg fill='#ff0000'>
     <rect fill='inherit'/>
 </svg>",
-"<svg fill='#ff0000'>
+        "<svg fill='#ff0000'>
     <rect fill='#ff0000'/>
 </svg>
-");
+"
+    );
 
-    test!(inherit_2,
-"<svg fill='#ff0000'>
+    test!(
+        inherit_2,
+        "<svg fill='#ff0000'>
     <g>
         <rect fill='inherit'/>
     </g>
 </svg>",
-"<svg fill='#ff0000'>
+        "<svg fill='#ff0000'>
     <g>
         <rect fill='#ff0000'/>
     </g>
 </svg>
-");
+"
+    );
 
-    test!(inherit_3,
-"<svg fill='#ff0000' stroke='#00ff00'>
+    test!(
+        inherit_3,
+        "<svg fill='#ff0000' stroke='#00ff00'>
     <rect fill='inherit' stroke='inherit'/>
 </svg>",
-"<svg fill='#ff0000' stroke='#00ff00'>
+        "<svg fill='#ff0000' stroke='#00ff00'>
     <rect fill='#ff0000' stroke='#00ff00'/>
 </svg>
-");
+"
+    );
 
-    test!(current_color_1,
-"<svg color='#ff0000'>
+    test!(
+        current_color_1,
+        "<svg color='#ff0000'>
     <rect fill='currentColor'/>
 </svg>",
-"<svg color='#ff0000'>
+        "<svg color='#ff0000'>
     <rect fill='#ff0000'/>
 </svg>
-");
+"
+    );
 
-    test!(current_color_2,
-"<svg>
+    test!(
+        current_color_2,
+        "<svg>
     <rect color='#ff0000' fill='currentColor'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect color='#ff0000' fill='#ff0000'/>
 </svg>
-");
+"
+    );
 
-    test!(current_color_3,
-"<svg color='#ff0000'>
+    test!(
+        current_color_3,
+        "<svg color='#ff0000'>
     <rect fill='currentColor' stroke='currentColor'/>
 </svg>",
-"<svg color='#ff0000'>
+        "<svg color='#ff0000'>
     <rect fill='#ff0000' stroke='#ff0000'/>
 </svg>
-");
+"
+    );
 
-    test_err!(unresolvable_1,
-"<svg>
+    test_err!(
+        unresolvable_1,
+        "<svg>
     <rect fill='inherit'/>
 </svg>"
-);
+    );
 
-    test_err!(unresolvable_2,
-"<svg>
+    test_err!(
+        unresolvable_2,
+        "<svg>
     <rect fill='currentColor'/>
     <rect fill='inherit'/>
 </svg>"
-);
+    );
 
-    test_err!(unresolvable_3,
-"<svg font-family='inherit'/>"
-);
+    test_err!(unresolvable_3, "<svg font-family='inherit'/>");
 }

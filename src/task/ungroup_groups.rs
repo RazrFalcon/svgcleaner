@@ -16,15 +16,11 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeValue,
-    Document,
-    Node,
-};
+use svgdom::{AttributeValue, Document, Node};
 
-use task::short::{EId, AId};
-use task::apply_transforms;
 use options::CleaningOptions;
+use task::apply_transforms;
+use task::short::{AId, EId};
 
 pub fn ungroup_groups(doc: &Document, opt: &CleaningOptions) {
     // doc must contain 'svg' node, so we can safely unwrap.
@@ -120,9 +116,9 @@ fn can_ungroup(parent: &Node, g: &Node) -> bool {
     //
     // example: oxygen/edit-find-mail.svg
     if g.has_attribute(AId::Transform) && g.attributes().len() == 1 {
-        let is_ok = g.children().all(|n| {
-            n.has_attribute(AId::Transform) && !n.is_tag_name(EId::Use)
-        });
+        let is_ok = g
+            .children()
+            .all(|n| n.has_attribute(AId::Transform) && !n.is_tag_name(EId::Use));
 
         if is_ok {
             return true;
@@ -194,12 +190,12 @@ fn ungroup_group(g: &mut Node) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use options::CleaningOptions;
     use svgdom::{Document, ToStringWithOptions};
     use task::{group_defs, remove_empty_defs, rm_unused_defs};
-    use options::CleaningOptions;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let mut doc = Document::from_str($in_text).unwrap();
@@ -226,38 +222,45 @@ mod tests {
                 opt.simplify_transform_matrices = true;
                 assert_eq_text!(doc.to_string_with_opt(&opt), $out_text);
             }
-        )
+        };
     }
 
-    test!(rm_1,
-"<svg>
+    test!(
+        rm_1,
+        "<svg>
     <g/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_2,
-"<svg>
+    test!(
+        rm_2,
+        "<svg>
     <g>
         <g/>
     </g>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(ungroup_1,
-"<svg>
+    test!(
+        ungroup_1,
+        "<svg>
     <g>
         <rect/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_2,
-"<svg>
+    test!(
+        ungroup_2,
+        "<svg>
     <g>
         <g>
             <g>
@@ -268,27 +271,31 @@ mod tests {
         </g>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect/>
 </svg>
-");
+"
+    );
 
     // Keep order.
-    test!(ungroup_3,
-"<svg>
+    test!(
+        ungroup_3,
+        "<svg>
     <g>
         <rect id='1'/>
         <rect id='2'/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect id='1'/>
     <rect id='2'/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_4,
-"<svg>
+    test!(
+        ungroup_4,
+        "<svg>
     <g>
         <rect/>
         <g>
@@ -296,14 +303,16 @@ mod tests {
         </g>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect/>
     <rect/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_5,
-"<svg>
+    test!(
+        ungroup_5,
+        "<svg>
     <switch>
         <foreignObject/>
         <g>
@@ -311,16 +320,18 @@ mod tests {
         </g>
     </switch>
 </svg>",
-"<svg>
+        "<svg>
     <switch>
         <foreignObject/>
         <rect/>
     </switch>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_6,
-"<svg>
+    test!(
+        ungroup_6,
+        "<svg>
     <switch>
         <foreignObject/>
         <g>
@@ -333,54 +344,62 @@ mod tests {
         </g>
     </switch>
 </svg>",
-"<svg>
+        "<svg>
     <switch>
         <foreignObject/>
         <rect/>
     </switch>
 </svg>
-");
+"
+    );
 
     // TODO: implement
-//     test!(ungroup_5,
-// "<svg>
-//     <g id='g1'/>
-//     <use xlink:href='#g1'/>
-// </svg>",
-// "<svg>
-//     <use/>
-// </svg>
-// ");
+    //     test!(ungroup_5,
+    // "<svg>
+    //     <g id='g1'/>
+    //     <use xlink:href='#g1'/>
+    // </svg>",
+    // "<svg>
+    //     <use/>
+    // </svg>
+    // ");
 
-    test_eq!(skip_ungroup_1,
-"<svg>
+    test_eq!(
+        skip_ungroup_1,
+        "<svg>
     <g fill='#ff0000'>
         <rect/>
         <rect/>
     </g>
 </svg>
-");
+"
+    );
 
-    test_eq!(skip_ungroup_2,
-"<svg>
+    test_eq!(
+        skip_ungroup_2,
+        "<svg>
     <defs>
         <filter id='f1'/>
     </defs>
     <g filter='url(#f1)'/>
 </svg>
-");
+"
+    );
 
-    test_eq!(skip_ungroup_3,
-"<svg>
+    test_eq!(
+        skip_ungroup_3,
+        "<svg>
     <g id='g1'>
         <rect/>
     </g>
     <use xlink:href='#g1'/>
 </svg>
-");
+"
+    );
 
-    test_eq!(skip_ungroup_4,
-"<svg>
+    test_eq!(
+        skip_ungroup_4,
+        "<svg>
     <defs>
         <clipPath id='clip1'/>
     </defs>
@@ -388,10 +407,12 @@ mod tests {
         <rect/>
     </g>
 </svg>
-");
+"
+    );
 
-    test!(skip_ungroup_5,
-"<svg>
+    test!(
+        skip_ungroup_5,
+        "<svg>
     <defs>
         <clipPath id='cp1'>
             <g transform='translate(5)'>
@@ -401,7 +422,7 @@ mod tests {
     </defs>
     <rect clip-path='url(#cp1)'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <clipPath id='cp1'>
             <g>
@@ -411,10 +432,12 @@ mod tests {
     </defs>
     <rect clip-path='url(#cp1)'/>
 </svg>
-");
+"
+    );
 
-    test_eq!(skip_ungroup_6,
-"<svg>
+    test_eq!(
+        skip_ungroup_6,
+        "<svg>
     <switch>
         <foreignObject/>
         <g>
@@ -423,39 +446,47 @@ mod tests {
         </g>
     </switch>
 </svg>
-");
+"
+    );
 
-    test_eq!(skip_ungroup_7,
-"<svg>
+    test_eq!(
+        skip_ungroup_7,
+        "<svg>
     <g transform='translate(10 20)'>
         <rect transform='translate(10 20)'/>
         <use transform='translate(10 20)'/>
     </g>
 </svg>
-");
+"
+    );
 
-    test_eq!(skip_ungroup_8,
-"<svg>
+    test_eq!(
+        skip_ungroup_8,
+        "<svg>
     <g opacity='0.5'>
         <rect/>
         <rect/>
     </g>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_with_attrs_1,
-"<svg>
+    test!(
+        ungroup_with_attrs_1,
+        "<svg>
     <g fill='#ff0000'>
         <rect/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect fill='#ff0000'/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_with_attrs_2,
-"<svg>
+    test!(
+        ungroup_with_attrs_2,
+        "<svg>
     <defs>
         <linearGradient id='lg1'/>
     </defs>
@@ -463,27 +494,31 @@ mod tests {
         <rect/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <linearGradient id='lg1'/>
     </defs>
     <rect fill='url(#lg1)'/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_with_attrs_3,
-"<svg>
+    test!(
+        ungroup_with_attrs_3,
+        "<svg>
     <g display='none'>
         <rect display='inline'/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect display='none'/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_with_opacity_1,
-"<svg>
+    test!(
+        ungroup_with_opacity_1,
+        "<svg>
     <g opacity='0.5'>
         <rect/>
     </g>
@@ -491,49 +526,57 @@ mod tests {
         <rect opacity='0.5'/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect opacity='0.5'/>
     <rect opacity='0.25'/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_with_transform_1,
-"<svg>
+    test!(
+        ungroup_with_transform_1,
+        "<svg>
     <g transform='translate(10 20)'>
         <rect/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect transform='translate(10 20)'/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_with_transform_2,
-"<svg>
+    test!(
+        ungroup_with_transform_2,
+        "<svg>
     <g transform='translate(10 20)'>
         <rect transform='translate(20 30)'/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect transform='translate(30 50)'/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_with_transform_3,
-"<svg>
+    test!(
+        ungroup_with_transform_3,
+        "<svg>
     <g transform='translate(10 20)'>
         <g transform='translate(20 30)'>
             <rect/>
         </g>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect transform='translate(30 50)'/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_with_transform_4,
-"<svg>
+    test!(
+        ungroup_with_transform_4,
+        "<svg>
     <g transform='translate(10 20)'>
         <g transform='translate(20 30)'>
             <g>
@@ -545,16 +588,18 @@ mod tests {
         </g>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect transform='translate(30 50)'/>
     <rect transform='translate(10 20)'/>
 </svg>
-");
+"
+    );
 
     // Ungroup group with transform when all children also has a transform
     // but only when group has only one attribute: transform.
-    test!(ungroup_with_transform_5,
-"<svg>
+    test!(
+        ungroup_with_transform_5,
+        "<svg>
     <g transform='translate(10 20)'>
         <rect transform='translate(10 20)'/>
         <rect transform='translate(10 20)'/>
@@ -564,7 +609,7 @@ mod tests {
         <rect transform='translate(10 20)'/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect transform='translate(20 40)'/>
     <rect transform='translate(20 40)'/>
     <g fill='#ff0000'>
@@ -572,25 +617,29 @@ mod tests {
         <rect transform='translate(20 40)'/>
     </g>
 </svg>
-");
+"
+    );
 
     // Ungroup because transform will be applied to rect
     // only when 'Options::apply_transform_to_shapes' is enabled.
-    test!(ungroup_with_transform_6,
-"<svg>
+    test!(
+        ungroup_with_transform_6,
+        "<svg>
     <g transform='translate(10 20)'>
         <rect/>
         <rect/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect transform='translate(10 20)'/>
     <rect transform='translate(10 20)'/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_with_transform_7,
-"<svg>
+    test!(
+        ungroup_with_transform_7,
+        "<svg>
     <g transform='translate(10 20)'>
         <rect/>
         <g fill='#ffffff'>
@@ -600,7 +649,7 @@ mod tests {
         </g>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <rect transform='translate(10 20)'/>
     <g fill='#ffffff'>
         <path transform='translate(10 20)'/>
@@ -608,6 +657,6 @@ mod tests {
         <path transform='translate(10 20)'/>
     </g>
 </svg>
-");
-
+"
+    );
 }

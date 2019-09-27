@@ -16,14 +16,9 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeValue,
-    Document,
-    Node,
-    NodeType,
-};
+use svgdom::{AttributeValue, Document, Node, NodeType};
 
-use task::short::{EId, AId, Unit};
+use task::short::{AId, EId, Unit};
 
 // It's self defined list of the text attributes. There are no such list in the SVG spec.
 static TEXT_ATTRIBUTES: &'static [AId] = &[
@@ -56,8 +51,11 @@ pub fn remove_text_attributes(doc: &Document) {
     remove_xml_space(doc);
 
     // Check doc for text nodes.
-    let has_text = doc.svg_element().unwrap()
-                      .descendants().any(|n| n.node_type() == NodeType::Text);
+    let has_text = doc
+        .svg_element()
+        .unwrap()
+        .descendants()
+        .any(|n| n.node_type() == NodeType::Text);
 
     // We can remove text attributes from the 'font-face' element
     // only when there is no text in a whole doc.
@@ -107,13 +105,11 @@ fn _remove_text_attributes(parent: &Node) -> bool {
             // Local version of the 'no_td'.
 
             // Only this parameters affect parent elements.
-            let _no_td = !(   node.descendants().any(|n| n.node_type() == NodeType::Text)
-                           || node.is_tag_name(EId::Tref)
-                           || has_em_ex_attributes(&node));
+            let _no_td = !(node.descendants().any(|n| n.node_type() == NodeType::Text)
+                || node.is_tag_name(EId::Tref)
+                || has_em_ex_attributes(&node));
 
-            if    _no_td
-               && !node.is_tag_name(EId::FontFace)
-               && !is_linked_text(&node) {
+            if _no_td && !node.is_tag_name(EId::FontFace) && !is_linked_text(&node) {
                 node.remove_attributes(TEXT_ATTRIBUTES);
             }
 
@@ -217,7 +213,7 @@ fn is_text_contains_spaces(text_node: &Node) -> bool {
     let text = text_node.text();
 
     if text.is_empty() {
-        return false
+        return false;
     }
 
     // 'trim' will remove leading and trailing spaces,
@@ -242,38 +238,43 @@ fn is_text_contains_spaces(text_node: &Node) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::remove_xml_space;
+    use super::*;
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             base_test!($name, remove_text_attributes, $in_text, $out_text);
-        )
+        };
     }
 
-    test!(rm_text_1,
-"<svg font='Verdana'>
+    test!(
+        rm_text_1,
+        "<svg font='Verdana'>
     <rect text-anchor='middle'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect/>
 </svg>
-");
+"
+    );
 
     // We can remove text attributes from the 'font-face' element
     // only when there is no text in a whole doc.
-    test!(rm_text_2,
-"<svg>
+    test!(
+        rm_text_2,
+        "<svg>
     <font-face font-family='Verdana'/>
 </svg>",
-"<svg>
+        "<svg>
     <font-face/>
 </svg>
-");
+"
+    );
 
-    test!(rm_text_3,
-"<svg>
+    test!(
+        rm_text_3,
+        "<svg>
     <g font-family='Verdana'>
         <text text-anchor='middle'>text</text>
     </g>
@@ -281,7 +282,7 @@ mod tests {
         <rect/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <g font-family='Verdana'>
         <text text-anchor='middle'>text</text>
     </g>
@@ -289,10 +290,12 @@ mod tests {
         <rect/>
     </g>
 </svg>
-");
+"
+    );
 
-    test!(rm_text_4,
-"<svg>
+    test!(
+        rm_text_4,
+        "<svg>
     <g font-size='10'>
         <rect width='10ex'/>
     </g>
@@ -300,7 +303,7 @@ mod tests {
         <rect width='10px'/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <g font-size='10'>
         <rect width='10ex'/>
     </g>
@@ -308,31 +311,37 @@ mod tests {
         <rect width='10px'/>
     </g>
 </svg>
-");
+"
+    );
 
-    test!(keep_text_1,
-"<svg font='Verdana'>
+    test!(
+        keep_text_1,
+        "<svg font='Verdana'>
     <g word-spacing='normal'>
         <text text-anchor='middle'>text</text>
     </g>
 </svg>",
-"<svg font='Verdana'>
+        "<svg font='Verdana'>
     <g word-spacing='normal'>
         <text text-anchor='middle'>text</text>
     </g>
 </svg>
-");
+"
+    );
 
     // Keep font attributes on font-face, since it's global.
-    test_eq!(keep_text_2,
-"<svg>
+    test_eq!(
+        keep_text_2,
+        "<svg>
     <font-face font-family='Verdana'/>
     <text>text</text>
 </svg>
-");
+"
+    );
 
-    test!(keep_text_3,
-"<svg>
+    test!(
+        keep_text_3,
+        "<svg>
     <defs>
         <text id='hello'>Hello</text>
     </defs>
@@ -340,16 +349,18 @@ mod tests {
         <tref xlink:href='#hello'/>
     </text>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <text id='hello'>Hello</text>
     </defs>
     <text font-family='Verdana'><tref xlink:href='#hello'/></text>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_text_4,
-"<svg>
+    test_eq!(
+        keep_text_4,
+        "<svg>
     <g font-size='50'>
         <rect width='50ex'/>
     </g>
@@ -357,27 +368,33 @@ mod tests {
         <rect width='50em'/>
     </g>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_text_5,
-"<svg>
+    test_eq!(
+        keep_text_5,
+        "<svg>
     <defs>
         <text id='text'>Text</text>
     </defs>
     <use font-size='50' xlink:href='#text'/>
 </svg>
-");
+"
+    );
 
     // Do not take first node, take first element.
-    test_eq!(keep_text_6,
-"<!-- Comment -->
+    test_eq!(
+        keep_text_6,
+        "<!-- Comment -->
 <svg>
     <text font-size='16'>text</text>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_text_7,
-"<svg>
+    test_eq!(
+        keep_text_7,
+        "<svg>
     <g font-size='10'>
         <rect width='10'/>
         <g>
@@ -386,41 +403,46 @@ mod tests {
         <rect width='10'/>
     </g>
 </svg>
-");
+"
+    );
 
     macro_rules! test_space {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             base_test!($name, remove_xml_space, $in_text, $out_text);
-        )
+        };
     }
 
     macro_rules! test_space_eq {
-        ($name:ident, $in_text:expr) => (
+        ($name:ident, $in_text:expr) => {
             test_space!($name, $in_text, $in_text);
-        )
+        };
     }
 
-    test_space!(space_preserve_1,
-"<svg>
+    test_space!(
+        space_preserve_1,
+        "<svg>
     <text xml:space='preserve'/>
     <text xml:space='preserve'></text>
     <text xml:space='preserve'>Text</text>
     <text xml:space='preserve'>Text Text</text>
 </svg>",
-"<svg>
+        "<svg>
     <text/>
     <text/>
     <text>Text</text>
     <text>Text Text</text>
 </svg>
-");
+"
+    );
 
-    test_space_eq!(space_preserve_keep_1,
-"<svg>
+    test_space_eq!(
+        space_preserve_keep_1,
+        "<svg>
     <text xml:space='preserve'> Text</text>
     <text xml:space='preserve'>Text </text>
     <text xml:space='preserve'> Text </text>
     <text xml:space='preserve'>Text  Text</text>
 </svg>
-");
+"
+    );
 }

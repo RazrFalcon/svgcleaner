@@ -16,19 +16,16 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeValue,
-    Document,
-    ElementType,
-};
+use svgdom::{AttributeValue, Document, ElementType};
 
-use task::short::{EId, AId};
 use super::utils;
+use task::short::{AId, EId};
 
 pub fn apply_transform_to_gradients(doc: &Document) {
-    let iter = doc.descendants()
-                  .filter(|n| n.is_gradient())
-                  .filter(|n| n.has_attribute(AId::GradientTransform));
+    let iter = doc
+        .descendants()
+        .filter(|n| n.is_gradient())
+        .filter(|n| n.has_attribute(AId::GradientTransform));
 
     for mut node in iter {
         {
@@ -94,7 +91,7 @@ mod tests {
     use task;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -104,17 +101,19 @@ mod tests {
                 apply_transform_to_gradients(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(apply_1,
-"<svg>
+    test!(
+        apply_1,
+        "<svg>
     <linearGradient x1='10' x2='10' y1='10' y2='10' gradientTransform='translate(10 20)'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient x1='20' x2='20' y1='30' y2='30'/>
 </svg>
-");
+"
+    );
 
     test!(apply_2,
 "<svg>
@@ -125,11 +124,13 @@ mod tests {
 </svg>
 ");
 
-    test_eq!(keep_1,
-"<svg>
+    test_eq!(
+        keep_1,
+        "<svg>
     <linearGradient gradientTransform='translate(10 20)'/>
 </svg>
-");
+"
+    );
 
     // skewX(3)
     test_eq!(keep_2,
@@ -138,17 +139,20 @@ mod tests {
 </svg>
 ");
 
-    test_eq!(keep_3,
-"<svg>
+    test_eq!(
+        keep_3,
+        "<svg>
     <linearGradient gradientTransform='scale(1.5 2)' x1='10' x2='10' y1='10' y2='10'/>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_4,
-"<svg>
+    test_eq!(
+        keep_4,
+        "<svg>
     <linearGradient id='lg1' gradientTransform='translate(10 20)' x1='10' x2='10' y1='10' y2='10'/>
     <linearGradient xlink:href='#lg1'/>
 </svg>
-");
-
+"
+    );
 }

@@ -16,21 +16,13 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use std::fmt;
 use std::cmp;
+use std::fmt;
 use std::ops::Range;
 
-use svgdom::{
-    Attribute,
-    AttributeType,
-    AttributeValue,
-    Document,
-    Indent,
-    Node,
-    WriteOptions,
-};
+use svgdom::{Attribute, AttributeType, AttributeValue, Document, Indent, Node, WriteOptions};
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 // TODO: optimize, since Table is basically Vec<(Vec,Vec)>, which is not very efficient
 struct Table {
@@ -66,9 +58,7 @@ impl Table {
 
         // We group only N or more elements,
         // so rows with less than N flags are useless.
-        self.d.retain(|x| {
-            x.count_flags() >= min_nodes_count
-        });
+        self.d.retain(|x| x.count_flags() >= min_nodes_count);
 
         // Rows should contain flags that repeats at least N times.
         // |*-*| -> |---|
@@ -101,9 +91,7 @@ impl Table {
         }
 
         // Remove again.
-        self.d.retain(|x| {
-            x.count_flags() >= min_nodes_count
-        });
+        self.d.retain(|x| x.count_flags() >= min_nodes_count);
     }
 
     // Sort rows by the longest continuous range of set flags.
@@ -242,8 +230,8 @@ impl fmt::Debug for Table {
 
 #[cfg(test)]
 mod table_tests {
-    use svgdom::{Attribute, AttributeId as AId};
     use super::{Table, TableRow};
+    use svgdom::{Attribute, AttributeId as AId};
 
     fn row_from_str(text: &str) -> Vec<bool> {
         let mut vec = Vec::new();
@@ -293,34 +281,42 @@ mod table_tests {
 
     // We use dummy attributes since we care only about flags.
 
-    test_all!(basic_1,
-        ["*****"],
-        "fill=\"red\" |*****|");
+    test_all!(basic_1, ["*****"], "fill=\"red\" |*****|");
 
-    test_all!(join_1,
+    test_all!(
+        join_1,
         ["*****", "*****"],
-        "fill=\"red\",fill=\"red\" |*****|");
+        "fill=\"red\",fill=\"red\" |*****|"
+    );
 
-    test_all!(join_2,
+    test_all!(
+        join_2,
         ["-***-", "-***-"],
-        "fill=\"red\",fill=\"red\" |-***-|");
+        "fill=\"red\",fill=\"red\" |-***-|"
+    );
 
-    test_all!(join_3,
+    test_all!(
+        join_3,
         ["*****", "*****", "-***-", "-***-"],
         "fill=\"red\",fill=\"red\" |*****|\n\
-         fill=\"red\",fill=\"red\" |-***-|");
+         fill=\"red\",fill=\"red\" |-***-|"
+    );
 
-    test_all!(sort_1,
+    test_all!(
+        sort_1,
         ["-****", "*****", "-***-", "-**--"],
         "fill=\"red\" |*****|\n\
          fill=\"red\" |-****|\n\
-         fill=\"red\" |-***-|");
+         fill=\"red\" |-***-|"
+    );
 
     // We care only about longest range, not about a number of set flags.
-    test_all!(sort_2,
+    test_all!(
+        sort_2,
         ["*****-******", "**********--"],
         "fill=\"red\" |**********--|\n\
-         fill=\"red\" |*****-******|");
+         fill=\"red\" |*****-******|"
+    );
 }
 
 pub fn group_by_style(doc: &Document, opt: &WriteOptions) {
@@ -359,7 +355,6 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
         return;
     }
 
-
     // Grouping of 3 and more children are always efficient.
     //
     // 57B
@@ -394,14 +389,16 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
     // So we join groups with 2 children only when a parent element is already a group
     // or when indent is zero on none.
     let min_nodes_count = {
-        let is_small_indent =    opt.indent == Indent::None
-                              || opt.indent == Indent::Spaces(0);
+        let is_small_indent = opt.indent == Indent::None || opt.indent == Indent::Spaces(0);
 
-        let is_small =    parent.is_tag_name(EId::Svg)
-                       || parent.is_tag_name(EId::G)
-                       || is_small_indent;
+        let is_small =
+            parent.is_tag_name(EId::Svg) || parent.is_tag_name(EId::G) || is_small_indent;
 
-        if is_small { 2 } else { 3 }
+        if is_small {
+            2
+        } else {
+            3
+        }
     };
     if node_list.len() < min_nodes_count {
         return;
@@ -531,10 +528,19 @@ fn _group_by_style(parent: &Node, opt: &WriteOptions) {
     // </g>
 }
 
-fn move_nodes(attributes: &[Attribute], g_node: &mut Node, node_list: &mut [Node], range: Range<usize>) {
+fn move_nodes(
+    attributes: &[Attribute],
+    g_node: &mut Node,
+    node_list: &mut [Node],
+    range: Range<usize>,
+) {
     let attr_ids: Vec<AId> = attributes.iter().map(|a| a.id().unwrap()).collect();
 
-    for node in node_list.iter_mut().skip(range.start).take(range.end - range.start + 1) {
+    for node in node_list
+        .iter_mut()
+        .skip(range.start)
+        .take(range.end - range.start + 1)
+    {
         // Remove attributes from nodes.
         node.remove_attributes(&attr_ids);
         // Move them to the 'g' element.
@@ -564,58 +570,63 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions, WriteOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
                 group_by_style(&doc, &WriteOptions::default());
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
     // Group elements with equal style.
-    test!(group_1,
-"<svg>
+    test!(
+        group_1,
+        "<svg>
     <rect id='r1' fill='#ff0000'/>
     <rect id='r2' fill='#ff0000'/>
     <rect id='r3' fill='#ff0000'/>
 </svg>",
-"<svg fill='#ff0000'>
+        "<svg fill='#ff0000'>
     <rect id='r1'/>
     <rect id='r2'/>
     <rect id='r3'/>
 </svg>
-");
+"
+    );
 
     // Group elements with equal style to an existing group.
-    test!(group_2,
-"<svg>
+    test!(
+        group_2,
+        "<svg>
     <g>
         <rect id='r1' fill='#ff0000'/>
         <rect id='r2' fill='#ff0000'/>
         <rect id='r3' fill='#ff0000'/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <g fill='#ff0000'>
         <rect id='r1'/>
         <rect id='r2'/>
         <rect id='r3'/>
     </g>
 </svg>
-");
+"
+    );
 
     // Mixed order.
-    test!(group_3,
-"<svg>
+    test!(
+        group_3,
+        "<svg>
     <rect id='r1' fill='#ff0000'/>
     <rect id='r2'/>
     <rect id='r3' fill='#ff0000'/>
     <rect id='r4' fill='#ff0000'/>
     <rect id='r5' fill='#ff0000'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect id='r1' fill='#ff0000'/>
     <rect id='r2'/>
     <g fill='#ff0000'>
@@ -624,32 +635,36 @@ mod tests {
         <rect id='r5'/>
     </g>
 </svg>
-");
+"
+    );
 
     // Find most popular.
-    test!(group_4,
-"<svg>
+    test!(
+        group_4,
+        "<svg>
     <rect id='r1' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r2' stroke='#00ff00'/>
     <rect id='r3' fill='#ff0000' stroke='#00ff00'/>
 </svg>",
-"<svg stroke='#00ff00'>
+        "<svg stroke='#00ff00'>
     <rect id='r1' fill='#ff0000'/>
     <rect id='r2'/>
     <rect id='r3' fill='#ff0000'/>
 </svg>
-");
+"
+    );
 
     // Do not group 'defs'.
-    test!(group_5,
-"<svg>
+    test!(
+        group_5,
+        "<svg>
     <rect id='r1' fill='#ff0000'/>
     <defs/>
     <rect id='r2' fill='#ff0000'/>
     <rect id='r3' fill='#ff0000'/>
     <rect id='r4' fill='#ff0000'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect id='r1' fill='#ff0000'/>
     <defs/>
     <g fill='#ff0000'>
@@ -658,12 +673,14 @@ mod tests {
         <rect id='r4'/>
     </g>
 </svg>
-");
+"
+    );
 
     // Do not group 'defs'.
     // Elements must be grouped into a new group.
-    test!(group_5_1,
-"<svg>
+    test!(
+        group_5_1,
+        "<svg>
     <g>
         <rect id='r1' fill='#ff0000'/>
         <defs/>
@@ -672,7 +689,7 @@ mod tests {
         <rect id='r4' fill='#ff0000'/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <g>
         <rect id='r1' fill='#ff0000'/>
         <defs/>
@@ -683,17 +700,19 @@ mod tests {
         </g>
     </g>
 </svg>
-");
+"
+    );
 
     // Test IRI.
-    test!(group_6,
-"<svg>
+    test!(
+        group_6,
+        "<svg>
     <linearGradient id='lg1'/>
     <rect id='r1' fill='url(#lg1)'/>
     <rect id='r2' fill='url(#lg1)'/>
     <rect id='r3' fill='url(#lg1)'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1'/>
     <g fill='url(#lg1)'>
         <rect id='r1'/>
@@ -701,11 +720,13 @@ mod tests {
         <rect id='r3'/>
     </g>
 </svg>
-");
+"
+    );
 
     // Complex order.
-    test!(group_7,
-"<svg>
+    test!(
+        group_7,
+        "<svg>
     <rect id='r1' stroke='#00ff00'/>
     <rect id='r2' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r3' fill='#ff0000' stroke='#00ff00'/>
@@ -715,7 +736,7 @@ mod tests {
     <rect id='r7' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r8' stroke='#00ff00'/>
 </svg>",
-"<svg stroke='#00ff00'>
+        "<svg stroke='#00ff00'>
     <rect id='r1'/>
     <g fill='#ff0000'>
         <rect id='r2'/>
@@ -727,51 +748,55 @@ mod tests {
     </g>
     <rect id='r8'/>
 </svg>
-");
+"
+    );
 
-//     // Complex order.
-//     test!(group_8,
-// "<svg>
-//     <rect id='r1' fill='#ff0000'/>
-//     <rect id='r2' fill='#ff0000'/>
-//     <rect id='r3' fill='#ff0000'/>
-//     <rect id='r4'/>
-//     <rect id='r5' fill='#ff0000'/>
-//     <rect id='r6' fill='#ff0000'/>
-//     <rect id='r7' fill='#ff0000'/>
-// </svg>",
-// "<svg>
-//     <g fill='#ff0000'>
-//         <rect id='r1'/>
-//         <rect id='r2'/>
-//         <rect id='r3'/>
-//     </g>
-//     <rect id='r4'/>
-//     <g fill='#ff0000'>
-//         <rect id='r5'/>
-//         <rect id='r6'/>
-//         <rect id='r7'/>
-//     </g>
-// </svg>
-// ");
+    //     // Complex order.
+    //     test!(group_8,
+    // "<svg>
+    //     <rect id='r1' fill='#ff0000'/>
+    //     <rect id='r2' fill='#ff0000'/>
+    //     <rect id='r3' fill='#ff0000'/>
+    //     <rect id='r4'/>
+    //     <rect id='r5' fill='#ff0000'/>
+    //     <rect id='r6' fill='#ff0000'/>
+    //     <rect id='r7' fill='#ff0000'/>
+    // </svg>",
+    // "<svg>
+    //     <g fill='#ff0000'>
+    //         <rect id='r1'/>
+    //         <rect id='r2'/>
+    //         <rect id='r3'/>
+    //     </g>
+    //     <rect id='r4'/>
+    //     <g fill='#ff0000'>
+    //         <rect id='r5'/>
+    //         <rect id='r6'/>
+    //         <rect id='r7'/>
+    //     </g>
+    // </svg>
+    // ");
 
     // Two attributes.
-    test!(group_9,
-"<svg>
+    test!(
+        group_9,
+        "<svg>
     <rect id='r1' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r2' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r3' fill='#ff0000' stroke='#00ff00'/>
 </svg>",
-"<svg fill='#ff0000' stroke='#00ff00'>
+        "<svg fill='#ff0000' stroke='#00ff00'>
     <rect id='r1'/>
     <rect id='r2'/>
     <rect id='r3'/>
 </svg>
-");
+"
+    );
 
     // Choose longest.
-    test!(group_10,
-"<svg>
+    test!(
+        group_10,
+        "<svg>
     <rect id='r1' fill='#ff0000'/>
     <rect id='r2' fill='#ff0000' stroke='#00ff00'/>
     <rect id='r3' fill='#ff0000' stroke='#00ff00'/>
@@ -783,7 +808,7 @@ mod tests {
     <rect id='r9' fill='#ff0000'/>
     <rect id='r10' fill='#ff0000'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect id='r1' fill='#ff0000'/>
     <g stroke='#00ff00'>
         <rect id='r2' fill='#ff0000'/>
@@ -797,11 +822,13 @@ mod tests {
     <rect id='r9' fill='#ff0000'/>
     <rect id='r10' fill='#ff0000'/>
 </svg>
-");
+"
+    );
 
     // Choose longest range.
-    test!(group_11,
-"<svg>
+    test!(
+        group_11,
+        "<svg>
     <rect id='r1' fill='#ff0000'/>
     <rect id='r2' fill='#ff0000'/>
     <rect id='r3' fill='#ff0000'/>
@@ -811,7 +838,7 @@ mod tests {
     <rect id='r7' fill='#ff0000'/>
     <rect id='r8' fill='#ff0000'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect id='r1' fill='#ff0000'/>
     <rect id='r2' fill='#ff0000'/>
     <rect id='r3' fill='#ff0000'/>
@@ -823,11 +850,13 @@ mod tests {
         <rect id='r8'/>
     </g>
 </svg>
-");
+"
+    );
 
     // Test range detection.
-    test!(group_12,
-"<svg>
+    test!(
+        group_12,
+        "<svg>
     <rect id='r1'/>
     <rect id='r2'/>
     <rect id='r3' fill='#ff0000' stroke='#ff0000'/>
@@ -836,7 +865,7 @@ mod tests {
     <rect id='r6'/>
     <rect id='r7'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect id='r1'/>
     <rect id='r2'/>
     <g fill='#ff0000' stroke='#ff0000'>
@@ -847,18 +876,20 @@ mod tests {
     <rect id='r6'/>
     <rect id='r7'/>
 </svg>
-");
+"
+    );
 
     // Do not group used elements.
-    test!(group_13,
-"<svg>
+    test!(
+        group_13,
+        "<svg>
     <rect id='r1' fill='#ff0000'/>
     <use xlink:href='#r1'/>
     <rect id='r2' fill='#ff0000'/>
     <rect id='r3' fill='#ff0000'/>
     <rect id='r4' fill='#ff0000'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect id='r1' fill='#ff0000'/>
     <use xlink:href='#r1'/>
     <g fill='#ff0000'>
@@ -867,54 +898,60 @@ mod tests {
         <rect id='r4'/>
     </g>
 </svg>
-");
+"
+    );
 
     // Group transform too.
-    test!(group_14,
-"<svg>
+    test!(
+        group_14,
+        "<svg>
     <rect id='r1' transform='scale(10)'/>
     <rect id='r2' transform='scale(10)'/>
     <rect id='r3' transform='scale(10)'/>
 </svg>",
-"<svg transform='scale(10)'>
+        "<svg transform='scale(10)'>
     <rect id='r1'/>
     <rect id='r2'/>
     <rect id='r3'/>
 </svg>
-");
+"
+    );
 
     // Group and merge transform too.
-    test!(group_15,
-"<svg>
+    test!(
+        group_15,
+        "<svg>
     <g transform='translate(10)'>
         <rect id='r1' transform='scale(10)'/>
         <rect id='r2' transform='scale(10)'/>
         <rect id='r3' transform='scale(10)'/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <g transform='matrix(10 0 0 10 10 0)'>
         <rect id='r1'/>
         <rect id='r2'/>
         <rect id='r3'/>
     </g>
 </svg>
-");
+"
+    );
 
     // Group into existing group.
-    test!(group_16,
-"<svg>
+    test!(
+        group_16,
+        "<svg>
     <g>
         <rect fill='#ff0000'/>
         <rect fill='#ff0000'/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <g fill='#ff0000'>
         <rect/>
         <rect/>
     </g>
 </svg>
-");
-
+"
+    );
 }

@@ -33,21 +33,23 @@ mod tests {
     use svgdom::ToStringWithOptions;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             base_test!($name, remove_unreferenced_ids, $in_text, $out_text);
-        )
+        };
     }
 
-    test!(test_1,
-"<svg>
+    test!(
+        test_1,
+        "<svg>
     <radialGradient id='lg1'/>
     <radialGradient id='lg2'/>
     <rect id='unused' fill='url(#lg1)'/>
 </svg>",
-"<svg>
+        "<svg>
     <radialGradient id='lg1'/>
     <radialGradient/>
     <rect fill='url(#lg1)'/>
 </svg>
-");
+"
+    );
 }

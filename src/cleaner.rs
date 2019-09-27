@@ -17,24 +17,13 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use std::fs;
-use std::io::{
-    self,
-    Read,
-    Write,
-};
+use std::io::{self, Read, Write};
 
-use svgdom::{
-    self,
-    Document,
-    ElementId,
-    ParseOptions,
-    WriteBuffer,
-    WriteOptions,
-};
+use svgdom::{self, Document, ElementId, ParseOptions, WriteBuffer, WriteOptions};
 
+use error;
 use options::CleaningOptions;
 use task::*;
-use error;
 
 pub fn load_stdin() -> Result<String, io::Error> {
     let mut s = String::new();
@@ -63,7 +52,7 @@ pub fn parse_data(data: &str, opt: &ParseOptions) -> Result<Document, svgdom::Er
 pub fn clean_doc(
     doc: &mut Document,
     options: &CleaningOptions,
-    opt: &WriteOptions
+    opt: &WriteOptions,
 ) -> Result<(), error::Error> {
     preclean_checks(doc)?;
 

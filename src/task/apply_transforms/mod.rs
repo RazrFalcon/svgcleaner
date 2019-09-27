@@ -16,24 +16,18 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-pub use self::preproc::prepare_transforms;
 pub use self::gradients::apply_transform_to_gradients;
+pub use self::preproc::prepare_transforms;
 pub use self::shapes::apply_transform_to_shapes;
 
-mod preproc;
 mod gradients;
+mod preproc;
 mod shapes;
 
 pub mod utils {
-    use svgdom::{
-        Attributes,
-        AttributeValue,
-        Length,
-        Node,
-        Transform,
-    };
+    use svgdom::{AttributeValue, Attributes, Length, Node, Transform};
 
-    use task::short::{EId, AId, Unit};
+    use task::short::{AId, EId, Unit};
 
     // TODO: remove
     pub fn has_valid_transform(node: &Node) -> bool {
@@ -67,7 +61,13 @@ pub mod utils {
     // TODO: process 'fill', 'stroke' and 'filter' linked elements only if they
     //       used only by this element.
     pub fn is_valid_attrs(node: &Node) -> bool {
-        for aid in &[AId::Fill, AId::Stroke, AId::Filter, AId::Mask, AId::ClipPath] {
+        for aid in &[
+            AId::Fill,
+            AId::Stroke,
+            AId::Filter,
+            AId::Mask,
+            AId::ClipPath,
+        ] {
             if !is_valid_attr(node, *aid) {
                 return false;
             }
@@ -95,11 +95,13 @@ pub mod utils {
     pub fn is_valid_coords(node: &Node) -> bool {
         match node.tag_id().unwrap() {
             EId::Rect => _is_valid_coords(node, &[AId::X, AId::Y]),
-            EId::Circle |
-            EId::Ellipse => _is_valid_coords(node, &[AId::Cx, AId::Cy]),
-            EId::Line |
-            EId::LinearGradient => _is_valid_coords(node, &[AId::X1, AId::Y1, AId::X2, AId::Y2]),
-            EId::RadialGradient => _is_valid_coords(node, &[AId::Cx, AId::Cy, AId::Fx, AId::Fy, AId::R]),
+            EId::Circle | EId::Ellipse => _is_valid_coords(node, &[AId::Cx, AId::Cy]),
+            EId::Line | EId::LinearGradient => {
+                _is_valid_coords(node, &[AId::X1, AId::Y1, AId::X2, AId::Y2])
+            }
+            EId::RadialGradient => {
+                _is_valid_coords(node, &[AId::Cx, AId::Cy, AId::Fx, AId::Fy, AId::R])
+            }
             _ => false,
         }
     }

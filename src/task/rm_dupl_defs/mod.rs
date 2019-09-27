@@ -16,34 +16,30 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeValue,
-    Node,
-    Transform,
-};
+use svgdom::{AttributeValue, Node, Transform};
 
 use task::short::AId;
 
+pub use self::fe_gaussian_blur::remove_dupl_fe_gaussian_blur;
 pub use self::linear_gradient::remove_dupl_linear_gradients;
 pub use self::radial_gradient::remove_dupl_radial_gradients;
-pub use self::fe_gaussian_blur::remove_dupl_fe_gaussian_blur;
 
+mod fe_gaussian_blur;
 mod linear_gradient;
 mod radial_gradient;
-mod fe_gaussian_blur;
 
 macro_rules! check_attr {
-    ($attrs1:expr, $attrs2:expr, $id:expr, $def:expr) => ({
+    ($attrs1:expr, $attrs2:expr, $id:expr, $def:expr) => {{
         let def = AttributeValue::from($def);
-        if     $attrs1.get_value($id).unwrap_or(&def)
-            != $attrs2.get_value($id).unwrap_or(&def) {
+        if $attrs1.get_value($id).unwrap_or(&def) != $attrs2.get_value($id).unwrap_or(&def) {
             return false;
         }
-    })
+    }};
 }
 
 fn rm_loop<F>(nodes: &mut Vec<Node>, cmp: F)
-    where F : Fn(&Node, &Node) -> bool
+where
+    F: Fn(&Node, &Node) -> bool,
 {
     let mut link_attrs: Vec<(Node, AId, Node)> = Vec::new();
 
@@ -102,7 +98,12 @@ fn is_gradient_attrs_equal(node1: &Node, node2: &Node, attrs: &[AId]) -> bool {
     let attrs1 = node1.attributes();
     let attrs2 = node2.attributes();
 
-    check_attr!(&attrs1, &attrs2, AId::GradientTransform, Transform::default());
+    check_attr!(
+        &attrs1,
+        &attrs2,
+        AId::GradientTransform,
+        Transform::default()
+    );
 
     if attrs1.contains(AId::XlinkHref) && attrs2.contains(AId::XlinkHref) {
         if attrs1.get_value(AId::XlinkHref).unwrap() != attrs2.get_value(AId::XlinkHref).unwrap() {
@@ -137,9 +138,10 @@ pub fn is_equal_stops(node1: &Node, node2: &Node) -> bool {
         let attrs1 = c1.attributes_mut();
         let attrs2 = c2.attributes_mut();
 
-        if !(   attrs1.get_value(AId::Offset) == attrs2.get_value(AId::Offset)
-             && attrs1.get_value(AId::StopColor) == attrs2.get_value(AId::StopColor)
-             && attrs1.get_value(AId::StopOpacity) == attrs2.get_value(AId::StopOpacity)) {
+        if !(attrs1.get_value(AId::Offset) == attrs2.get_value(AId::Offset)
+            && attrs1.get_value(AId::StopColor) == attrs2.get_value(AId::StopColor)
+            && attrs1.get_value(AId::StopOpacity) == attrs2.get_value(AId::StopOpacity))
+        {
             return false;
         }
     }
@@ -150,27 +152,30 @@ pub fn is_equal_stops(node1: &Node, node2: &Node) -> bool {
 #[cfg(test)]
 mod tests {
     use svgdom::{Document, Node};
-    use task::short::EId;
     use task;
+    use task::short::EId;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $flag:expr) => (
+        ($name:ident, $in_text:expr, $flag:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
                 task::resolve_linear_gradient_attributes(&doc);
                 task::resolve_radial_gradient_attributes(&doc);
                 task::resolve_stop_attributes(&doc).unwrap();
-                let vec = doc.descendants().filter(|n| n.is_tag_name(EId::LinearGradient))
-                             .collect::<Vec<Node>>();
+                let vec = doc
+                    .descendants()
+                    .filter(|n| n.is_tag_name(EId::LinearGradient))
+                    .collect::<Vec<Node>>();
 
                 assert_eq!(super::is_equal_stops(&vec[0], &vec[1]), $flag);
             }
-        )
+        };
     }
 
-    test!(cmp_1,
-"<svg>
+    test!(
+        cmp_1,
+        "<svg>
     <linearGradient id='lg1'>
         <stop offset='0' stop-color='#ff0000' stop-opacity='1'/>
         <stop offset='1' stop-color='#000000' stop-opacity='1'/>
@@ -179,10 +184,13 @@ mod tests {
         <stop offset='0' stop-color='#ff0000' stop-opacity='1'/>
         <stop offset='1' stop-color='#000000' stop-opacity='1'/>
     </linearGradient>
-</svg>", true);
+</svg>",
+        true
+    );
 
-    test!(cmp_2,
-"<svg>
+    test!(
+        cmp_2,
+        "<svg>
     <linearGradient id='lg1'>
         <stop offset='0' stop-color='#ff0000'/>
         <stop offset='1' stop-color='#000000'/>
@@ -191,10 +199,13 @@ mod tests {
         <stop offset='0' stop-color='#ff0000' stop-opacity='1'/>
         <stop offset='1'/>
     </linearGradient>
-</svg>", true);
+</svg>",
+        true
+    );
 
-    test!(cmp_3,
-"<svg>
+    test!(
+        cmp_3,
+        "<svg>
     <linearGradient id='lg1'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -203,10 +214,13 @@ mod tests {
         <stop offset='0'/>
         <stop offset='1'/>
     </linearGradient>
-</svg>", true);
+</svg>",
+        true
+    );
 
-    test!(cmp_4,
-"<svg>
+    test!(
+        cmp_4,
+        "<svg>
     <linearGradient id='lg1'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -215,10 +229,13 @@ mod tests {
         <stop offset='0'/>
         <stop offset='0.5'/>
     </linearGradient>
-</svg>", false);
+</svg>",
+        false
+    );
 
-    test!(cmp_5,
-"<svg>
+    test!(
+        cmp_5,
+        "<svg>
     <linearGradient id='lg1'>
         <stop offset='0'/>
     </linearGradient>
@@ -226,5 +243,7 @@ mod tests {
         <stop offset='0'/>
         <stop offset='1'/>
     </linearGradient>
-</svg>", false);
+</svg>",
+        false
+    );
 }

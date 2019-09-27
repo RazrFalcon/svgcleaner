@@ -16,13 +16,7 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeValue,
-    Document,
-    ElementType,
-    Length,
-    Node,
-};
+use svgdom::{AttributeValue, Document, ElementType, Length, Node};
 
 use task::short::{AId, EId, Unit};
 
@@ -50,7 +44,7 @@ pub fn fix_invalid_attributes(doc: &Document) {
 pub fn fix_rect_attributes(node: &mut Node) {
     debug_assert!(node.is_tag_name(EId::Rect));
 
-    fix_len(node, AId::Width,  Length::zero());
+    fix_len(node, AId::Width, Length::zero());
     fix_len(node, AId::Height, Length::zero());
 
     rm_negative_len(node, AId::Rx);
@@ -64,12 +58,12 @@ pub fn fix_rect_attributes(node: &mut Node) {
 
 #[cfg(test)]
 mod test_rect {
-    use super::*;
     use super::EId;
+    use super::*;
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -78,11 +72,12 @@ mod test_rect {
                 }
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(fix_rect_1,
-"<svg>
+    test!(
+        fix_rect_1,
+        "<svg>
     <rect/>
     <rect width='-1' height='-1'/>
     <rect width='30'/>
@@ -92,7 +87,7 @@ mod test_rect {
     <rect width='0'/>
     <rect height='0'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect height='0' width='0'/>
     <rect height='0' width='0'/>
     <rect height='0' width='30'/>
@@ -102,23 +97,25 @@ mod test_rect {
     <rect height='0' width='0'/>
     <rect height='0' width='0'/>
 </svg>
-");
+"
+    );
 
-    test!(fix_rect_2,
-"<svg>
+    test!(
+        fix_rect_2,
+        "<svg>
     <rect height='50' width='40'/>
     <rect height='50' rx='-5' width='40'/>
     <rect height='50' ry='-5' width='40'/>
     <rect height='50' rx='-5' ry='-5' width='40'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect height='50' width='40'/>
     <rect height='50' width='40'/>
     <rect height='50' width='40'/>
     <rect height='50' width='40'/>
 </svg>
-");
-
+"
+    );
 }
 
 /// Fix `polyline` and `polygon` element attributes.
@@ -158,12 +155,12 @@ pub fn fix_poly_attributes(node: &mut Node) {
 
 #[cfg(test)]
 mod test_poly {
-    use super::*;
     use super::EId;
+    use super::*;
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -174,24 +171,25 @@ mod test_poly {
                 }
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(fix_polyline_1,
-"<svg>
+    test!(
+        fix_polyline_1,
+        "<svg>
     <polyline points='5 6 7'/>
     <polyline points='5'/>
     <polyline points=''/>
     <polyline/>
 </svg>",
-"<svg>
+        "<svg>
     <polyline points='5 6'/>
     <polyline/>
     <polyline/>
     <polyline/>
 </svg>
-");
-
+"
+    );
 }
 
 /// Fix `stop` element attributes.
@@ -244,11 +242,11 @@ pub fn fix_stop_attributes(node: &Node) {
 #[cfg(test)]
 mod test_stop {
     use super::*;
-    use svgdom::{Document, ToStringWithOptions, ElementType};
+    use svgdom::{Document, ElementType, ToStringWithOptions};
     use task::resolve_stop_attributes;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -258,11 +256,12 @@ mod test_stop {
                 }
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(fix_stop_1,
-"<svg>
+    test!(
+        fix_stop_1,
+        "<svg>
     <linearGradient>
         <stop offset='-1'/>
         <stop offset='0.4'/>
@@ -271,7 +270,7 @@ mod test_stop {
         <stop offset='0.5'/>
     </linearGradient>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='0.4'/>
@@ -280,7 +279,8 @@ mod test_stop {
         <stop offset='1'/>
     </linearGradient>
 </svg>
-");
+"
+    );
 }
 
 fn fix_len(node: &mut Node, id: AId, new_len: Length) {

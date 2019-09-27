@@ -16,11 +16,7 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeValue,
-    FuzzyEq,
-    Node,
-};
+use svgdom::{AttributeValue, FuzzyEq, Node};
 
 use task::short::AId;
 
@@ -88,77 +84,91 @@ pub fn remove_nodes(nodes: &mut Vec<Node>) {
 
 #[cfg(test)]
 mod tests {
-    use task::short::EId;
     use svgdom::{Document, ToStringWithOptions};
+    use task::short::EId;
     use task::utils;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
-                let mut node = doc.descendants().find(|n| n.is_tag_name(EId::Path)).unwrap();
+                let mut node = doc
+                    .descendants()
+                    .find(|n| n.is_tag_name(EId::Path))
+                    .unwrap();
                 utils::recalc_stroke(&mut node, 2.0);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
     // From default.
-    test!(recalc_stroke_1,
-"<svg>
+    test!(
+        recalc_stroke_1,
+        "<svg>
     <path/>
 </svg>",
-"<svg>
+        "<svg>
     <path stroke-width='2'/>
 </svg>
-");
+"
+    );
 
     // From current.
-    test!(recalc_stroke_2,
-"<svg>
+    test!(
+        recalc_stroke_2,
+        "<svg>
     <path stroke-width='2'/>
 </svg>",
-"<svg>
+        "<svg>
     <path stroke-width='4'/>
 </svg>
-");
+"
+    );
 
     // From parent.
-    test!(recalc_stroke_3,
-"<svg stroke-width='2'>
+    test!(
+        recalc_stroke_3,
+        "<svg stroke-width='2'>
     <path />
 </svg>",
-"<svg stroke-width='2'>
+        "<svg stroke-width='2'>
     <path stroke-width='4'/>
 </svg>
-");
+"
+    );
 
-    test!(recalc_stroke_4,
-"<svg>
+    test!(
+        recalc_stroke_4,
+        "<svg>
     <path stroke-dasharray='5 2 5 5 2 5'/>
 </svg>",
-"<svg>
+        "<svg>
     <path stroke-dasharray='10 4 10 10 4 10' stroke-width='2'/>
 </svg>
-");
+"
+    );
 
-    test!(recalc_stroke_5,
-"<svg>
+    test!(
+        recalc_stroke_5,
+        "<svg>
     <path stroke-dashoffset='2'/>
 </svg>",
-"<svg>
+        "<svg>
     <path stroke-dashoffset='4' stroke-width='2'/>
 </svg>
-");
+"
+    );
 
-    test!(recalc_stroke_6,
-"<svg>
+    test!(
+        recalc_stroke_6,
+        "<svg>
     <path stroke-dasharray='5 2 5 5 2 5' stroke-dashoffset='2'/>
 </svg>",
-"<svg>
+        "<svg>
     <path stroke-dasharray='10 4 10 10 4 10' stroke-dashoffset='4' stroke-width='2'/>
 </svg>
-");
-
+"
+    );
 }

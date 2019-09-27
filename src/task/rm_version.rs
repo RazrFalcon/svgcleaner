@@ -26,4 +26,3 @@ pub fn remove_version(doc: &Document) {
     svg.remove_attribute(AId::Version);
     svg.remove_attribute(AId::BaseProfile);
 }
-

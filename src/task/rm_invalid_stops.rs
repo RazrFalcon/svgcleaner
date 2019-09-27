@@ -16,10 +16,7 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    Document,
-    ElementType,
-};
+use svgdom::{Document, ElementType};
 
 use task::short::AId;
 use task::utils;
@@ -27,9 +24,10 @@ use task::utils;
 pub fn remove_invalid_stops(doc: &Document) {
     let mut nodes = Vec::new();
 
-    let iter = doc.descendants()
-                  .filter(|n| n.is_gradient())
-                  .filter(|n| n.has_children());
+    let iter = doc
+        .descendants()
+        .filter(|n| n.is_gradient())
+        .filter(|n| n.has_children());
     for node in iter {
         let mut prev_child = node.first_child().unwrap();
 
@@ -38,9 +36,10 @@ pub fn remove_invalid_stops(doc: &Document) {
                 let attrs1 = prev_child.attributes();
                 let attrs2 = child.attributes();
 
-                if     attrs1.get_value(AId::Offset) == attrs2.get_value(AId::Offset)
+                if attrs1.get_value(AId::Offset) == attrs2.get_value(AId::Offset)
                     && attrs1.get_value(AId::StopColor) == attrs2.get_value(AId::StopColor)
-                    && attrs1.get_value(AId::StopOpacity) == attrs2.get_value(AId::StopOpacity) {
+                    && attrs1.get_value(AId::StopOpacity) == attrs2.get_value(AId::StopOpacity)
+                {
                     // If nothing changed - we can remove this 'stop'.
                     nodes.push(child.clone());
                 }
@@ -61,7 +60,7 @@ mod tests {
     use task::fix_attrs;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -72,43 +71,48 @@ mod tests {
                 remove_invalid_stops(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(rm_1,
-"<svg>
+    test!(
+        rm_1,
+        "<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='0'/>
         <stop offset='1'/>
     </linearGradient>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='1'/>
     </linearGradient>
 </svg>
-");
+"
+    );
 
-    test!(rm_2,
-"<svg>
+    test!(
+        rm_2,
+        "<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='1'/>
         <stop offset='0.2'/>
     </linearGradient>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='1'/>
     </linearGradient>
 </svg>
-");
+"
+    );
 
-    test!(rm_3,
-"<svg>
+    test!(
+        rm_3,
+        "<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='0.5' stop-color='#ff0000'/>
@@ -116,17 +120,19 @@ mod tests {
         <stop offset='1'/>
     </linearGradient>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='0.5' stop-color='#ff0000'/>
         <stop offset='1'/>
     </linearGradient>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_1,
-"<svg>
+    test_eq!(
+        keep_1,
+        "<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='0.5' stop-color='#ff0000'/>
@@ -134,10 +140,12 @@ mod tests {
         <stop offset='1'/>
     </linearGradient>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_2,
-"<svg>
+    test_eq!(
+        keep_2,
+        "<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='0.5' stop-opacity='0.6'/>
@@ -145,16 +153,18 @@ mod tests {
         <stop offset='1'/>
     </linearGradient>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_3,
-"<svg>
+    test_eq!(
+        keep_3,
+        "<svg>
     <linearGradient>
         <stop offset='0'/>
         <stop offset='1' stop-color='#ff0000'/>
         <stop offset='1' stop-color='#00ff00'/>
     </linearGradient>
 </svg>
-");
-
+"
+    );
 }

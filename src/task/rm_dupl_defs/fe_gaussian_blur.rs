@@ -16,12 +16,9 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    Document,
-    Node,
-};
+use svgdom::{Document, Node};
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 pub fn remove_dupl_fe_gaussian_blur(doc: &Document) {
     let filter_attrs = [
@@ -35,9 +32,7 @@ pub fn remove_dupl_fe_gaussian_blur(doc: &Document) {
         AId::ColorInterpolationFilters,
     ];
 
-    let fe_blur_attrs = [
-        AId::StdDeviation,
-    ];
+    let fe_blur_attrs = [AId::StdDeviation];
 
     let mut nodes = Vec::new();
 
@@ -115,13 +110,14 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             base_test!($name, remove_dupl_fe_gaussian_blur, $in_text, $out_text);
-        )
+        };
     }
 
-    test!(rm_1,
-"<svg>
+    test!(
+        rm_1,
+        "<svg>
     <defs>
         <filter id='f1'>
             <feGaussianBlur stdDeviation='2'/>
@@ -132,7 +128,7 @@ mod tests {
     </defs>
     <rect filter='url(#f2)'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <filter id='f1'>
             <feGaussianBlur stdDeviation='2'/>
@@ -140,10 +136,12 @@ mod tests {
     </defs>
     <rect filter='url(#f1)'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_2,
-"<svg>
+    test!(
+        rm_2,
+        "<svg>
     <defs>
         <filter id='f1' x='5' y='5' width='10' height='10'>
             <feGaussianBlur stdDeviation='2'/>
@@ -154,7 +152,7 @@ mod tests {
     </defs>
     <rect filter='url(#f2)'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <filter id='f1' height='10' width='10' x='5' y='5'>
             <feGaussianBlur stdDeviation='2'/>
@@ -162,11 +160,13 @@ mod tests {
     </defs>
     <rect filter='url(#f1)'/>
 </svg>
-");
+"
+    );
 
     // Keep when attrs is different.
-    test_eq!(keep_1,
-"<svg>
+    test_eq!(
+        keep_1,
+        "<svg>
     <filter id='f1' height='10' width='10' x='50' y='5'>
         <feGaussianBlur stdDeviation='2'/>
     </filter>
@@ -174,10 +174,12 @@ mod tests {
         <feGaussianBlur stdDeviation='2'/>
     </filter>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_2,
-"<svg>
+    test_eq!(
+        keep_2,
+        "<svg>
     <filter id='f1'>
         <feGaussianBlur stdDeviation='1'/>
     </filter>
@@ -185,10 +187,12 @@ mod tests {
         <feGaussianBlur stdDeviation='2'/>
     </filter>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_3,
-"<svg>
+    test_eq!(
+        keep_3,
+        "<svg>
     <filter id='f1' xlink:href='#f2'>
         <feGaussianBlur stdDeviation='1'/>
     </filter>
@@ -196,6 +200,6 @@ mod tests {
         <feGaussianBlur stdDeviation='1'/>
     </filter>
 </svg>
-");
-
+"
+    );
 }

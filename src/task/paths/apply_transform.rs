@@ -16,14 +16,8 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    Transform,
-    FuzzyEq,
-};
-use svgdom::path::{
-    Path,
-    SegmentData,
-};
+use svgdom::path::{Path, SegmentData};
+use svgdom::{FuzzyEq, Transform};
 
 pub fn apply_transform(path: &mut Path, ts: &Transform) {
     let (sx, sy) = ts.get_scale();
@@ -33,9 +27,18 @@ pub fn apply_transform(path: &mut Path, ts: &Transform) {
 
     for seg in &mut path.d {
         match *seg.data_mut() {
-              SegmentData::MoveTo { ref mut x, ref mut y }
-            | SegmentData::LineTo { ref mut x, ref mut y }
-            | SegmentData::SmoothQuadratic { ref mut x, ref mut y } => {
+            SegmentData::MoveTo {
+                ref mut x,
+                ref mut y,
+            }
+            | SegmentData::LineTo {
+                ref mut x,
+                ref mut y,
+            }
+            | SegmentData::SmoothQuadratic {
+                ref mut x,
+                ref mut y,
+            } => {
                 ts.apply_ref(x, y);
             }
 
@@ -47,28 +50,50 @@ pub fn apply_transform(path: &mut Path, ts: &Transform) {
                 ts.apply_ref(&mut 0.0, y);
             }
 
-            SegmentData::CurveTo { ref mut x1, ref mut y1, ref mut x2, ref mut y2,
-                                   ref mut x, ref mut y } => {
+            SegmentData::CurveTo {
+                ref mut x1,
+                ref mut y1,
+                ref mut x2,
+                ref mut y2,
+                ref mut x,
+                ref mut y,
+            } => {
                 ts.apply_ref(x1, y1);
                 ts.apply_ref(x2, y2);
-                ts.apply_ref(x,  y);
+                ts.apply_ref(x, y);
             }
 
-            SegmentData::SmoothCurveTo { ref mut x2, ref mut y2, ref mut x, ref mut y } => {
+            SegmentData::SmoothCurveTo {
+                ref mut x2,
+                ref mut y2,
+                ref mut x,
+                ref mut y,
+            } => {
                 ts.apply_ref(x2, y2);
-                ts.apply_ref(x,  y);
+                ts.apply_ref(x, y);
             }
 
-            SegmentData::Quadratic { ref mut x1, ref mut y1, ref mut x, ref mut y } => {
+            SegmentData::Quadratic {
+                ref mut x1,
+                ref mut y1,
+                ref mut x,
+                ref mut y,
+            } => {
                 ts.apply_ref(x1, y1);
-                ts.apply_ref(x,  y);
+                ts.apply_ref(x, y);
             }
 
-            SegmentData::EllipticalArc { ref mut rx, ref mut ry, ref mut x, ref mut y, .. } => {
+            SegmentData::EllipticalArc {
+                ref mut rx,
+                ref mut ry,
+                ref mut x,
+                ref mut y,
+                ..
+            } => {
                 *rx *= sx;
                 *ry *= sx;
 
-                ts.apply_ref(x,  y);
+                ts.apply_ref(x, y);
             }
 
             SegmentData::ClosePath => {}
@@ -85,7 +110,7 @@ mod tests {
     use svgdom::Transform;
 
     macro_rules! test {
-        ($name:ident, $in_path:expr, $in_ts:expr, $out_text:expr) => (
+        ($name:ident, $in_path:expr, $in_ts:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let mut path = Path::from_str($in_path).unwrap();
@@ -96,9 +121,13 @@ mod tests {
                 apply_transform(&mut path, &ts);
                 assert_eq_text!(path.to_string(), $out_text);
             }
-        )
+        };
     }
 
-    test!(apply_1, "M 10 20 L 30 40", "translate(10 20)",
-                   "M 20 40 L 40 60");
+    test!(
+        apply_1,
+        "M 10 20 L 30 40",
+        "translate(10 20)",
+        "M 20 40 L 40 60"
+    );
 }

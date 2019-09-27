@@ -16,12 +16,9 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeValue,
-    Document,
-};
+use svgdom::{AttributeValue, Document};
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 pub fn remove_unused_coordinates(doc: &Document) {
     let mut rm_list = Vec::with_capacity(16);
@@ -70,20 +67,22 @@ pub fn remove_unused_coordinates(doc: &Document) {
                     // TODO: process whole gradient tree
 
                     macro_rules! rm_f {
-                        ($f:expr, $c:expr) => (
+                        ($f:expr, $c:expr) => {
                             if attrs.contains($f) && attrs.contains($c) {
                                 if attrs.get_value($f).unwrap() == attrs.get_value($c).unwrap() {
                                     // We can remove 'fx'/'fy' only if this element is not used
                                     // by any 'radialGradient'.
-                                    let c = node.linked_nodes()
-                                                .filter(|n| n.is_tag_name(EId::RadialGradient))
-                                                .count();
+                                    let c = node
+                                        .linked_nodes()
+                                        .filter(|n| n.is_tag_name(EId::RadialGradient))
+                                        .count();
 
                                     if c == 0 {
                                         rm_list.push($f);
                                     }
                                 }
-                            })
+                            }
+                        };
                     }
 
                     // If 'fx' equals to 'cx', than we can remove 'fx'.
@@ -113,57 +112,69 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             base_test!($name, remove_unused_coordinates, $in_text, $out_text);
-        )
+        };
     }
 
-    test!(rm_svg_x_y,
-"<svg x='5' y='5'>
+    test!(
+        rm_svg_x_y,
+        "<svg x='5' y='5'>
     <svg x='5' y='5'/>
 </svg>",
-"<svg>
+        "<svg>
     <svg x='5' y='5'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_rect_rx_ry,
-"<svg>
+    test!(
+        rm_rect_rx_ry,
+        "<svg>
     <rect rx='5' ry='5'/>
     <rect rx='5' ry='5em'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect rx='5'/>
     <rect rx='5' ry='5em'/>
 </svg>
-");
+"
+    );
 
-    test_eq!(rect_rx_ry,
-"<svg>
+    test_eq!(
+        rect_rx_ry,
+        "<svg>
     <rect/>
 </svg>
-");
+"
+    );
 
-    test!(rm_radial_gradient_fx,
-"<svg>
+    test!(
+        rm_radial_gradient_fx,
+        "<svg>
     <radialGradient cx='5' cy='5' fx='5' fy='5'/>
 </svg>",
-"<svg>
+        "<svg>
     <radialGradient cx='5' cy='5'/>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_radial_gradient_fx_1,
-"<svg>
+    test_eq!(
+        keep_radial_gradient_fx_1,
+        "<svg>
     <radialGradient id='rg1' fx='5'/>
     <radialGradient xlink:href='#rg1'/>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_radial_gradient_fx_2,
-"<svg>
+    test_eq!(
+        keep_radial_gradient_fx_2,
+        "<svg>
     <radialGradient id='rg1'/>
     <radialGradient fx='5' xlink:href='#rg1'/>
 </svg>
-");
+"
+    );
 }

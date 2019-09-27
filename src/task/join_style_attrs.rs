@@ -16,15 +16,10 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeType,
-    Document,
-    WriteBuffer,
-    WriteOptions,
-};
+use svgdom::{AttributeType, Document, WriteBuffer, WriteOptions};
 
-use task::short::AId;
 use options::StyleJoinMode;
+use task::short::AId;
 
 pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOptions) {
     // NOTE: Must be run at last, since it breaks linking.
@@ -36,7 +31,10 @@ pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOpt
     for (_, mut node) in doc.descendants().svg() {
         let count = {
             let attrs = node.attributes();
-            attrs.iter().filter(|a| a.is_presentation() && a.visible).count()
+            attrs
+                .iter()
+                .filter(|a| a.is_presentation() && a.visible)
+                .count()
         };
 
         // 5 - is an amount of attributes when style notation is becoming more efficient than
@@ -75,16 +73,17 @@ pub fn join_style_attributes(doc: &Document, mode: StyleJoinMode, opt: &WriteOpt
 #[cfg(test)]
 mod tests {
     use super::*;
-    use task::short::AId;
-    use svgdom::{Document, WriteOptions, AttributeValue};
     use options::StyleJoinMode;
+    use svgdom::{AttributeValue, Document, WriteOptions};
+    use task::short::AId;
 
     #[test]
     fn join_styles_1() {
         let doc = Document::from_str(
             "<svg fill='black' stroke='red' stroke-width='1' opacity='1' \
-                  fill-opacity='1' stroke-opacity='1'/>"
-        ).unwrap();
+             fill-opacity='1' stroke-opacity='1'/>",
+        )
+        .unwrap();
 
         let svg_node = doc.svg_element().unwrap();
         let wopt = WriteOptions::default();
@@ -108,9 +107,7 @@ mod tests {
 
     #[test]
     fn join_styles_2() {
-        let doc = Document::from_str(
-            "<svg fill='black' stroke='red'/>"
-        ).unwrap();
+        let doc = Document::from_str("<svg fill='black' stroke='red'/>").unwrap();
 
         let svg_node = doc.svg_element().unwrap();
         let wopt = WriteOptions::default();
@@ -127,9 +124,6 @@ mod tests {
             _ => unreachable!(),
         };
 
-        assert_eq_text!(
-            res,
-            "fill:#000000;stroke:#ff0000"
-        );
+        assert_eq_text!(res, "fill:#000000;stroke:#ff0000");
     }
 }

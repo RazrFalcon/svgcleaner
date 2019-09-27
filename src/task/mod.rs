@@ -85,7 +85,7 @@ pub mod utils;
 
 // Shorthand names for modules.
 mod short {
-    pub use svgdom::ElementId as EId;
     pub use svgdom::AttributeId as AId;
+    pub use svgdom::ElementId as EId;
     pub use svgdom::LengthUnit as Unit;
 }

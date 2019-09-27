@@ -16,16 +16,12 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeValue,
-    Document,
-    Transform,
-};
 use svgdom::path::Path;
+use svgdom::{AttributeValue, Document, Transform};
 
-use task::short::{EId, AId};
-use task::apply_transforms::utils as ts_utils;
 use options::CleaningOptions;
+use task::apply_transforms::utils as ts_utils;
+use task::short::{AId, EId};
 
 mod apply_transform;
 mod conv_segments;
@@ -37,16 +33,19 @@ pub fn process_paths(doc: &Document, opt: &CleaningOptions) {
         // it will break rendering.
         //
         // TODO: do not remove first segment if node has marker
-        let has_marker = node.has_attributes(&[AId::Marker, AId::MarkerStart,
-                                               AId::MarkerMid, AId::MarkerEnd]);
+        let has_marker = node.has_attributes(&[
+            AId::Marker,
+            AId::MarkerStart,
+            AId::MarkerMid,
+            AId::MarkerEnd,
+        ]);
 
         let mut ts = None;
         if opt.apply_transform_to_paths {
             if node.has_attribute(AId::Transform) {
                 let tsl = ts_utils::get_ts(&node);
 
-                if    ts_utils::is_valid_transform(&tsl)
-                   && ts_utils::is_valid_attrs(&node) {
+                if ts_utils::is_valid_transform(&tsl) && ts_utils::is_valid_attrs(&node) {
                     ts = Some(tsl);
 
                     node.remove_attribute(AId::Transform);
@@ -110,7 +109,7 @@ fn process_path(path: &mut Path, has_marker: bool, ts: Option<Transform>, opt: &
 }
 
 mod utils {
-    use svgdom::path::{Path, Command};
+    use svgdom::path::{Command, Path};
 
     // HorizontalLineTo, VerticalLineTo and ClosePath does not have 'x'/'y' coordinates,
     // so we have to find them in previous segments.
@@ -143,7 +142,7 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -157,79 +156,91 @@ mod tests {
                 process_paths(&doc, &opt);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(empty,
-"<svg>
+    test!(
+        empty,
+        "<svg>
     <path d=''/>
 </svg>",
-"<svg>
+        "<svg>
     <path d=''/>
 </svg>
-");
+"
+    );
 
-    test!(single,
-"<svg>
+    test!(
+        single,
+        "<svg>
     <path d='M 10 20'/>
 </svg>",
-"<svg>
+        "<svg>
     <path d=''/>
 </svg>
-");
+"
+    );
 
-    test!(invalid,
-"<svg>
+    test!(
+        invalid,
+        "<svg>
     <path d='M'/>
     <path d='M 10'/>
 </svg>",
-"<svg>
+        "<svg>
     <path d=''/>
     <path d=''/>
 </svg>
-");
+"
+    );
 
-    test!(transform_1,
-"<svg>
+    test!(
+        transform_1,
+        "<svg>
     <path id='valid' d='M 10 20 L 30 40' transform='translate(10 20)'/>
     <path id='valid2' d='M 10 20 L 30 40' transform='scale(2)'/>
     <path id='ignored' d='M 10 20 L 30 40' transform='rotate(30)'/>
 </svg>",
-"<svg>
+        "<svg>
     <path id='valid' d='m 20 40 l 20 20'/>
     <path id='valid2' d='m 20 40 l 40 40' stroke-width='2'/>
     <path id='ignored' d='m 10 20 l 20 20' transform='rotate(30)'/>
 </svg>
-");
+"
+    );
 
     // Skip transform if style was defined in the parent node
-    test!(transform_2,
-"<svg>
+    test!(
+        transform_2,
+        "<svg>
     <linearGradient id='lg1'/>
     <g fill='url(#lg1)'>
         <path id='valid' d='M 10 20 L 30 40' transform='translate(10 20)'/>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1'/>
     <g fill='url(#lg1)'>
         <path id='valid' d='m 10 20 l 20 20' transform='translate(10 20)'/>
     </g>
 </svg>
-");
+"
+    );
 
-    test!(marker,
-"<svg>
+    test!(
+        marker,
+        "<svg>
     <marker id='m'/>
     <path d='M 10 20 L 30 40' marker='url(#m)'/>
     <path d='M 10 20' marker='url(#m)'/>
     <path d='M 10 20'/>
 </svg>",
-"<svg>
+        "<svg>
     <marker id='m'/>
     <path d='m 10 20 l 20 20' marker='url(#m)'/>
     <path d='m 10 20' marker='url(#m)'/>
     <path d=''/>
 </svg>
-");
+"
+    );
 }

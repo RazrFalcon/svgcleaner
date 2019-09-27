@@ -16,16 +16,9 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeValue,
-    Document,
-    ElementType,
-    FuzzyEq,
-    Node,
-    ValueId,
-};
+use svgdom::{AttributeValue, Document, ElementType, FuzzyEq, Node, ValueId};
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 use task::utils;
 
 // TODO: process mask element
@@ -91,9 +84,7 @@ fn is_valid_clip_path_elem(node: &Node) -> bool {
     // https://www.w3.org/TR/SVG/masking.html#EstablishingANewClippingPath
 
     fn is_valid_shape(node: &Node) -> bool {
-           node.is_basic_shape()
-        || node.is_tag_name(EId::Path)
-        || node.is_tag_name(EId::Text)
+        node.is_basic_shape() || node.is_tag_name(EId::Path) || node.is_tag_name(EId::Text)
     }
 
     if node.is_tag_name(EId::Use) {
@@ -155,9 +146,10 @@ fn _process_display_attribute(parent: &Node, nodes: &mut Vec<Node>, is_any_remov
 
 // Remove 'filter' elements without children.
 fn process_empty_filter(doc: &Document, is_any_removed: &mut bool) {
-    let mut nodes: Vec<Node> = doc.descendants()
-                                  .filter(|n| n.is_tag_name(EId::Filter) && !n.has_children())
-                                  .collect();
+    let mut nodes: Vec<Node> = doc
+        .descendants()
+        .filter(|n| n.is_tag_name(EId::Filter) && !n.has_children())
+        .collect();
 
     if !nodes.is_empty() {
         *is_any_removed = true;
@@ -224,9 +216,10 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
 
     {
         // Gradient without children and link to other gradient is pointless.
-        let iter = doc.descendants()
-                      .filter(|n| n.is_gradient())
-                      .filter(|n| !n.has_children() && !n.has_attribute(AId::XlinkHref));
+        let iter = doc
+            .descendants()
+            .filter(|n| n.is_gradient())
+            .filter(|n| !n.has_children() && !n.has_attribute(AId::XlinkHref));
 
         for n in iter {
             for mut link in n.linked_nodes().collect::<Vec<Node>>() {
@@ -244,9 +237,10 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
     {
         // 'If one stop is defined, then paint with the solid color fill using the color
         // defined for that gradient stop.'
-        let iter = doc.descendants()
-                      .filter(|n| n.is_gradient())
-                      .filter(|n| n.children().count() == 1 && !n.has_attribute(AId::XlinkHref));
+        let iter = doc
+            .descendants()
+            .filter(|n| n.is_gradient())
+            .filter(|n| n.children().count() == 1 && !n.has_attribute(AId::XlinkHref));
 
         for n in iter {
             let stop = n.first_child().unwrap();
@@ -263,9 +257,11 @@ fn process_gradients(doc: &Document, is_any_removed: &mut bool) {
 
             // Replace links with colors, but not in gradients,
             // because it will lead to 'xlink:href=#ffffff', which is wrong.
-            for mut link in n.linked_nodes()
-                             .filter(|n| !n.is_gradient())
-                             .collect::<Vec<Node>>() {
+            for mut link in n
+                .linked_nodes()
+                .filter(|n| !n.is_gradient())
+                .collect::<Vec<Node>>()
+            {
                 while let Some(aid) = find_link_attribute(&link, &n) {
                     link.set_attribute((aid, color));
                     if opacity.fuzzy_ne(&1.0) {
@@ -293,8 +289,7 @@ fn find_link_attribute(node: &Node, link: &Node) -> Option<AId> {
 
     for (aid, attr) in attrs.iter_svg() {
         match attr.value {
-              AttributeValue::Link(ref n)
-            | AttributeValue::FuncLink(ref n) => {
+            AttributeValue::Link(ref n) | AttributeValue::FuncLink(ref n) => {
                 if *n == *link {
                     return Some(aid);
                 }
@@ -343,7 +338,7 @@ mod tests {
     use task::{group_defs, remove_empty_defs};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let mut doc = Document::from_str($in_text).unwrap();
@@ -355,11 +350,12 @@ mod tests {
                 remove_empty_defs(&mut doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(rm_clip_path_children_1,
-"<svg>
+    test!(
+        rm_clip_path_children_1,
+        "<svg>
     <defs>
         <clipPath>
             <g/>
@@ -367,17 +363,19 @@ mod tests {
         </clipPath>
     </defs>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <clipPath>
             <rect height='5' width='5'/>
         </clipPath>
     </defs>
 </svg>
-");
+"
+    );
 
-    test!(rm_clip_path_children_2,
-"<svg>
+    test!(
+        rm_clip_path_children_2,
+        "<svg>
     <defs>
         <clipPath>
             <use/>
@@ -388,7 +386,7 @@ mod tests {
     <rect id='rect1' height='5' width='5'/>
     <g id='g1'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <clipPath>
             <use xlink:href='#rect1'/>
@@ -397,115 +395,142 @@ mod tests {
     <rect id='rect1' height='5' width='5'/>
     <g id='g1'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_clip_path_1,
-"<svg>
+    test!(
+        rm_clip_path_1,
+        "<svg>
     <clipPath id='cp1'/>
     <rect clip-path='url(#cp1)' height='5' width='5'/>
     <rect clip-path='url(#cp1)' height='5' width='5'/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_clip_path_2,
-"<svg>
+    test!(
+        rm_clip_path_2,
+        "<svg>
     <linearGradient id='lg1'/>
     <clipPath id='cp1'/>
     <rect clip-path='url(#cp1)' fill='url(#lg1)' height='5' width='5'/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_clip_path_3,
-"<svg>
+    test!(
+        rm_clip_path_3,
+        "<svg>
     <clipPath>
         <rect display='none' height='5' width='5'/>
     </clipPath>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_path_1,
-"<svg>
+    test!(
+        rm_path_1,
+        "<svg>
     <path/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_path_2,
-"<svg>
+    test!(
+        rm_path_2,
+        "<svg>
     <path d=''/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_path_3,
-"<svg>
+    test!(
+        rm_path_3,
+        "<svg>
     <linearGradient id='lg1'/>
     <path d='' fill='url(#lg1)'/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_display_none_1,
-"<svg>
+    test!(
+        rm_display_none_1,
+        "<svg>
     <path display='none'/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_display_none_2,
-"<svg>
+    test!(
+        rm_display_none_2,
+        "<svg>
     <g display='none'>
         <rect height='5' width='5'/>
     </g>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test_eq!(skip_display_none_1,
-"<svg>
+    test_eq!(
+        skip_display_none_1,
+        "<svg>
     <g display='none'>
         <rect id='r1' height='5' width='5'/>
     </g>
     <use xlink:href='#r1'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_filter_1,
-"<svg>
+    test!(
+        rm_filter_1,
+        "<svg>
     <filter/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_filter_2,
-"<svg>
+    test!(
+        rm_filter_2,
+        "<svg>
     <filter id='f1'/>
     <rect filter='url(#f1)' height='5' width='5'/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_use_1,
-"<svg>
+    test!(
+        rm_use_1,
+        "<svg>
     <use/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_gradient_1,
-"<svg>
+    test!(
+        rm_gradient_1,
+        "<svg>
     <linearGradient id='lg1'/>
     <rect fill='url(#lg1)' height='5' width='5'/>
     <rect stroke='url(#lg1)' height='5' width='5'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect fill='none' height='5' width='5'/>
     <rect height='5' stroke='none' width='5'/>
 </svg>
-");
+"
+    );
 
     test!(rm_gradient_2,
 "<svg>
@@ -532,25 +557,28 @@ mod tests {
 </svg>
 ");
 
-    test!(rm_rect_1,
-"<svg>
+    test!(
+        rm_rect_1,
+        "<svg>
     <rect width='0' height='0'/>
     <rect width='10' height='0'/>
     <rect width='0' height='10'/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_fe_color_matrix_1,
-"<svg>
+    test!(
+        rm_fe_color_matrix_1,
+        "<svg>
     <filter id='filter1'>
         <feColorMatrix type='matrix' values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0'/>
     </filter>
     <rect filter='url(#filter1)' height='10' width='10'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect height='10' width='10'/>
 </svg>
-");
-
+"
+    );
 }

@@ -16,12 +16,9 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    Document,
-    Node,
-};
+use svgdom::{Document, Node};
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 pub fn remove_dupl_radial_gradients(doc: &Document) {
     let attrs = [
@@ -34,9 +31,10 @@ pub fn remove_dupl_radial_gradients(doc: &Document) {
         AId::SpreadMethod,
     ];
 
-    let mut nodes = doc.descendants()
-                       .filter(|n| n.is_tag_name(EId::RadialGradient))
-                       .collect::<Vec<Node>>();
+    let mut nodes = doc
+        .descendants()
+        .filter(|n| n.is_tag_name(EId::RadialGradient))
+        .collect::<Vec<Node>>();
 
     super::rm_loop(&mut nodes, |node1, node2| {
         if !super::is_gradient_attrs_equal(node1, node2, &attrs) {
@@ -58,7 +56,7 @@ mod tests {
     use task;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -66,11 +64,12 @@ mod tests {
                 remove_dupl_radial_gradients(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(rm_1,
-"<svg>
+    test!(
+        rm_1,
+        "<svg>
     <defs>
         <radialGradient id='rg1' cx='0' cy='0' fx='5' fy='5' r='10'>
             <stop offset='0' stop-color='#ff0000'/>
@@ -83,7 +82,7 @@ mod tests {
     </defs>
     <rect fill='url(#rg2)'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <radialGradient id='rg1' cx='0' cy='0' fx='5' fy='5' r='10'>
             <stop offset='0' stop-color='#ff0000'/>
@@ -92,42 +91,48 @@ mod tests {
     </defs>
     <rect fill='url(#rg1)'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_2,
-"<svg>
+    test!(
+        rm_2,
+        "<svg>
     <defs>
         <radialGradient id='rg1' cx='0' cy='0' fx='5' fy='5' r='10'/>
         <radialGradient id='rg2' cx='0' cy='0' fx='5' fy='5' r='10'/>
     </defs>
     <rect fill='url(#rg2)'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <radialGradient id='rg1' cx='0' cy='0' fx='5' fy='5' r='10'/>
     </defs>
     <rect fill='url(#rg1)'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_3,
-"<svg>
+    test!(
+        rm_3,
+        "<svg>
     <defs>
         <radialGradient id='rg1' cx='5' cy='5' fx='5' r='10'/>
         <radialGradient id='rg2' cx='5' cy='5' fy='5' r='10'/>
     </defs>
     <rect fill='url(#rg2)'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <radialGradient id='rg1' cx='5' cy='5' fx='5' r='10'/>
     </defs>
     <rect fill='url(#rg1)'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_4,
-"<svg>
+    test!(
+        rm_4,
+        "<svg>
     <defs>
         <radialGradient id='rg1' cx='5' cy='5' fx='5' \
             gradientTransform='matrix(1 0 0 1 10 20)' r='10'/>
@@ -137,7 +142,7 @@ mod tests {
     </defs>
     <rect fill='url(#rg2)'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <radialGradient id='rg1' cx='5' cy='5' fx='5' \
             gradientTransform='translate(10 20)' r='10'/>
@@ -145,50 +150,57 @@ mod tests {
     </defs>
     <rect fill='url(#rg1)'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_5,
-"<svg>
+    test!(
+        rm_5,
+        "<svg>
     <radialGradient id='rg1'/>
     <radialGradient id='rg2' xlink:href='#rg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <radialGradient id='rg1'/>
 </svg>
-");
+"
+    );
 
-// TODO: this
+    // TODO: this
 
-//     test!(rm_6,
-// "<svg>
-//     <radialGradient id='rg2' xlink:href='#rg1'/>
-//     <radialGradient id='rg1'/>
-// </svg>",
-// "<svg>
-//     <radialGradient id='rg1'/>
-// </svg>
-// ");
+    //     test!(rm_6,
+    // "<svg>
+    //     <radialGradient id='rg2' xlink:href='#rg1'/>
+    //     <radialGradient id='rg1'/>
+    // </svg>",
+    // "<svg>
+    //     <radialGradient id='rg1'/>
+    // </svg>
+    // ");
 
-    test!(rm_7,
-"<svg>
+    test!(
+        rm_7,
+        "<svg>
     <radialGradient id='rg1'/>
     <radialGradient id='rg2' xlink:href='#rg1'/>
     <radialGradient id='rg3' xlink:href='#rg2'/>
 </svg>",
-"<svg>
+        "<svg>
     <radialGradient id='rg1'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_8,
-"<svg>
+    test!(
+        rm_8,
+        "<svg>
     <linearGradient id='lg1'/>
     <radialGradient id='rg1' xlink:href='#lg1'/>
     <radialGradient id='rg2' xlink:href='#lg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1'/>
     <radialGradient id='rg1' xlink:href='#lg1'/>
 </svg>
-");
+"
+    );
 }

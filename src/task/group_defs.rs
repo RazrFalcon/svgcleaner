@@ -16,12 +16,7 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeType,
-    Document,
-    ElementType,
-    Node,
-};
+use svgdom::{AttributeType, Document, ElementType, Node};
 
 use task::short::EId;
 
@@ -30,7 +25,11 @@ pub fn group_defs(doc: &mut Document) {
     let mut svg = doc.svg_element().unwrap();
 
     // Create 'defs' node if it didn't exist already.
-    let mut defs = match doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0) {
+    let mut defs = match doc
+        .descendants()
+        .filter(|n| n.is_tag_name(EId::Defs))
+        .nth(0)
+    {
         Some(n) => n,
         None => doc.create_element(EId::Defs),
     };
@@ -100,11 +99,7 @@ pub fn group_defs(doc: &mut Document) {
 // so if we want to move this elements to the 'defs' - we should resolve attributes too.
 fn resolve_attrs(node: &Node) {
     match node.tag_id().unwrap() {
-          EId::ClipPath
-        | EId::Marker
-        | EId::Mask
-        | EId::Pattern
-        | EId::Symbol => {
+        EId::ClipPath | EId::Marker | EId::Mask | EId::Pattern | EId::Symbol => {
             let mut parent = Some(node.clone());
             while let Some(p) = parent {
                 let attrs = p.attributes();
@@ -131,22 +126,25 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             base_test!($name, group_defs, $in_text, $out_text);
-        )
+        };
     }
 
     // Add 'defs' to 'svg' node, not to first node.
-    test!(create_defs_1,
-"<!--comment--><svg/>",
-"<!--comment-->
+    test!(
+        create_defs_1,
+        "<!--comment--><svg/>",
+        "<!--comment-->
 <svg>
     <defs/>
 </svg>
-");
+"
+    );
 
-    test!(move_defs_1,
-"<svg>
+    test!(
+        move_defs_1,
+        "<svg>
     <altGlyphDef/>
     <clipPath/>
     <cursor/>
@@ -159,7 +157,7 @@ mod tests {
     <symbol/>
     <rect/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <altGlyphDef/>
         <clipPath/>
@@ -174,11 +172,13 @@ mod tests {
     </defs>
     <rect/>
 </svg>
-");
+"
+    );
 
     // Complex. Recursive.
-    test!(move_defs_2,
-"<svg>
+    test!(
+        move_defs_2,
+        "<svg>
     <defs id='a'>
         <altGlyphDef/>
         <defs id='b'>
@@ -196,7 +196,7 @@ mod tests {
     </defs>
     <defs/>
 </svg>",
-"<svg>
+        "<svg>
     <defs id='a'>
         <altGlyphDef/>
         <clipPath/>
@@ -205,11 +205,13 @@ mod tests {
         <radialGradient/>
     </defs>
 </svg>
-");
+"
+    );
 
     // We should ungroup any nodes from 'defs'.
-    test!(move_defs_3,
-"<svg>
+    test!(
+        move_defs_3,
+        "<svg>
     <defs id='a'>
         <altGlyphDef/>
         <defs id='b'>
@@ -217,17 +219,19 @@ mod tests {
         </defs>
     </defs>
 </svg>",
-"<svg>
+        "<svg>
     <defs id='a'>
         <altGlyphDef/>
         <rect/>
     </defs>
 </svg>
-");
+"
+    );
 
     // Ungroupping should only work for direct 'defs' nodes.
-    test!(move_defs_4,
-"<svg>
+    test!(
+        move_defs_4,
+        "<svg>
     <defs id='a'>
         <defs id='b'>
             <clipPath>
@@ -239,7 +243,7 @@ mod tests {
         </line>
     </defs>
 </svg>",
-"<svg>
+        "<svg>
     <defs id='a'>
         <line>
             <animate/>
@@ -249,28 +253,32 @@ mod tests {
         </clipPath>
     </defs>
 </svg>
-");
+"
+    );
 
-    test!(move_defs_5,
-"<svg>
+    test!(
+        move_defs_5,
+        "<svg>
     <rect/>
     <defs/>
 </svg>",
-"<svg>
+        "<svg>
     <defs/>
     <rect/>
 </svg>
-");
+"
+    );
 
-    test!(move_mask_1,
-"<svg>
+    test!(
+        move_mask_1,
+        "<svg>
     <g fill='#ff0000'>
         <marker>
             <path/>
         </marker>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <marker>
             <path fill='#ff0000'/>
@@ -278,10 +286,12 @@ mod tests {
     </defs>
     <g fill='#ff0000'/>
 </svg>
-");
+"
+    );
 
-    test!(move_attrs_1,
-"<svg>
+    test!(
+        move_attrs_1,
+        "<svg>
     <g fill='#ff0000'>
         <marker>
             <path/>
@@ -289,7 +299,7 @@ mod tests {
         </marker>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <marker>
             <path fill='#ff0000'/>
@@ -298,10 +308,12 @@ mod tests {
     </defs>
     <g fill='#ff0000'/>
 </svg>
-");
+"
+    );
 
-    test!(move_attrs_2,
-"<svg>
+    test!(
+        move_attrs_2,
+        "<svg>
     <linearGradient id='lg1'/>
     <g fill='url(#lg1)'>
         <marker>
@@ -309,7 +321,7 @@ mod tests {
         </marker>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <linearGradient id='lg1'/>
         <marker>
@@ -318,17 +330,19 @@ mod tests {
     </defs>
     <g fill='url(#lg1)'/>
 </svg>
-");
+"
+    );
 
-    test!(move_attrs_3,
-"<svg>
+    test!(
+        move_attrs_3,
+        "<svg>
     <g fill='none'>
         <mask fill='#ff0000'>
             <path/>
         </mask>
     </g>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <mask fill='#ff0000'>
             <path fill='#ff0000'/>
@@ -336,6 +350,6 @@ mod tests {
     </defs>
     <g fill='none'/>
 </svg>
-");
-
+"
+    );
 }

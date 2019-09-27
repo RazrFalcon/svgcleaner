@@ -16,13 +16,7 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeValue,
-    Document,
-    ElementType,
-    Node,
-    ValueId,
-};
+use svgdom::{AttributeValue, Document, ElementType, Node, ValueId};
 
 use task::short::AId;
 
@@ -41,8 +35,10 @@ fn process_units(doc: &Document) {
 // we can remove such attribute.
 fn rm_equal(doc: &Document) {
     let mut order = Vec::new();
-    for node in doc.descendants().filter(|n|    n.is_gradient()
-                                             && n.has_attribute(AId::XlinkHref)) {
+    for node in doc
+        .descendants()
+        .filter(|n| n.is_gradient() && n.has_attribute(AId::XlinkHref))
+    {
         let c = node.linked_nodes().filter(|n| n.is_gradient()).count();
         // The gradient element and count of gradient elements than uses it.
         order.push((node.clone(), c));
@@ -63,7 +59,8 @@ fn rm_equal(doc: &Document) {
                     if let AttributeValue::Link(ref link) = av {
                         // If current units is equal to parent units we can remove them.
                         if node.attributes().get_value(AId::GradientUnits)
-                                == link.attributes().get_value(AId::GradientUnits) {
+                            == link.attributes().get_value(AId::GradientUnits)
+                        {
                             make_attr_invisible(node, AId::GradientUnits);
                         }
                     }
@@ -94,20 +91,22 @@ fn rm_equal(doc: &Document) {
 // If several gradients linked to the same gradient
 // we can move their 'gradientUnits' to the parent.
 fn group_to_parent(doc: &Document) {
-    let mut nodes: Vec<Node> = doc.descendants()
-                                  .filter(|n| n.is_gradient())
-                                  .filter(|n| !n.has_attribute(AId::XlinkHref))
-                                  .filter(|n| n.linked_nodes().all(|l| l.is_gradient()))
-                                  .collect();
+    let mut nodes: Vec<Node> = doc
+        .descendants()
+        .filter(|n| n.is_gradient())
+        .filter(|n| !n.has_attribute(AId::XlinkHref))
+        .filter(|n| n.linked_nodes().all(|l| l.is_gradient()))
+        .collect();
 
     for node in &mut nodes {
         let total_count = node.uses_count();
-        let count = node.linked_nodes()
-                        .filter(|n| {
-                            n.attributes().get_value(AId::GradientUnits) ==
-                                Some(&AttributeValue::PredefValue(ValueId::ObjectBoundingBox))
-                        })
-                        .count();
+        let count = node
+            .linked_nodes()
+            .filter(|n| {
+                n.attributes().get_value(AId::GradientUnits)
+                    == Some(&AttributeValue::PredefValue(ValueId::ObjectBoundingBox))
+            })
+            .count();
 
         if count == total_count {
             // If all linked gradients has the 'objectBoundingBox' value - move
@@ -139,7 +138,8 @@ fn group_to_parent(doc: &Document) {
                     if av == AttributeValue::PredefValue(ValueId::ObjectBoundingBox) {
                         make_attr_invisible(&mut n.clone(), AId::GradientUnits);
                     } else {
-                        n.clone().set_attribute((AId::GradientUnits, ValueId::UserSpaceOnUse));
+                        n.clone()
+                            .set_attribute((AId::GradientUnits, ValueId::UserSpaceOnUse));
                     }
                 }
             }
@@ -155,7 +155,8 @@ fn group_to_parent(doc: &Document) {
                     if av == AttributeValue::PredefValue(ValueId::UserSpaceOnUse) {
                         make_attr_invisible(&mut n.clone(), AId::GradientUnits);
                     } else {
-                        n.clone().set_attribute((AId::GradientUnits, ValueId::ObjectBoundingBox));
+                        n.clone()
+                            .set_attribute((AId::GradientUnits, ValueId::ObjectBoundingBox));
                     }
                 }
             }
@@ -182,7 +183,7 @@ mod tests {
     use task;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -192,95 +193,106 @@ mod tests {
                 remove_gradient_attributes(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(move_gradient_units_1,
-"<svg>
+    test!(
+        move_gradient_units_1,
+        "<svg>
     <linearGradient id='lg1'/>
     <linearGradient xlink:href='#lg1' gradientUnits='userSpaceOnUse'/>
     <radialGradient xlink:href='#lg1' gradientUnits='userSpaceOnUse'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1' gradientUnits='userSpaceOnUse'/>
     <linearGradient xlink:href='#lg1'/>
     <radialGradient xlink:href='#lg1'/>
 </svg>
-");
+"
+    );
 
-    test!(move_1,
-"<svg>
+    test!(
+        move_1,
+        "<svg>
     <linearGradient id='lg1-1'/>
     <linearGradient id='lg2-1' gradientUnits='userSpaceOnUse' xlink:href='#lg1-1'/>
     <linearGradient id='lg2-2' gradientUnits='userSpaceOnUse' xlink:href='#lg1-1'/>
     <radialGradient id='lg3-1' gradientUnits='userSpaceOnUse' xlink:href='#lg2-1'/>
     <radialGradient id='lg3-2' gradientUnits='userSpaceOnUse' xlink:href='#lg2-1'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1-1' gradientUnits='userSpaceOnUse'/>
     <linearGradient id='lg2-1' xlink:href='#lg1-1'/>
     <linearGradient id='lg2-2' xlink:href='#lg1-1'/>
     <radialGradient id='lg3-1' xlink:href='#lg2-1'/>
     <radialGradient id='lg3-2' xlink:href='#lg2-1'/>
 </svg>
-");
+"
+    );
 
-    test!(move_gradient_units_2,
-"<svg>
+    test!(
+        move_gradient_units_2,
+        "<svg>
     <linearGradient id='lg1'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient gradientUnits='objectBoundingBox' xlink:href='#lg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1' gradientUnits='userSpaceOnUse'/>
     <linearGradient xlink:href='#lg1'/>
     <linearGradient xlink:href='#lg1'/>
     <linearGradient gradientUnits='objectBoundingBox' xlink:href='#lg1'/>
 </svg>
-");
+"
+    );
 
-    test!(move_gradient_units_3,
-"<svg>
+    test!(
+        move_gradient_units_3,
+        "<svg>
     <linearGradient id='lg1' gradientUnits='objectBoundingBox'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient gradientUnits='objectBoundingBox' xlink:href='#lg1'/>
     <linearGradient gradientUnits='objectBoundingBox' xlink:href='#lg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient xlink:href='#lg1'/>
     <linearGradient xlink:href='#lg1'/>
 </svg>
-");
+"
+    );
 
-    test!(move_gradient_units_4,
-"<svg>
+    test!(
+        move_gradient_units_4,
+        "<svg>
     <linearGradient id='lg1' gradientUnits='userSpaceOnUse'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient gradientUnits='objectBoundingBox' xlink:href='#lg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient xlink:href='#lg1'/>
 </svg>
-");
+"
+    );
 
-    test!(move_gradient_units_5,
-"<svg>
+    test!(
+        move_gradient_units_5,
+        "<svg>
     <linearGradient id='lg1'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient gradientUnits='userSpaceOnUse' xlink:href='#lg1'/>
     <linearGradient xlink:href='#lg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1' gradientUnits='userSpaceOnUse'/>
     <linearGradient xlink:href='#lg1'/>
     <linearGradient xlink:href='#lg1'/>
     <linearGradient gradientUnits='objectBoundingBox' xlink:href='#lg1'/>
 </svg>
-");
-
+"
+    );
 }

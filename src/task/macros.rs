@@ -18,55 +18,57 @@
 
 #[cfg(test)]
 macro_rules! write_opt_for_tests {
-    () => ({
+    () => {{
         use svgdom::WriteOptions;
         let mut opt = WriteOptions::default();
         opt.use_single_quote = true;
         opt.simplify_transform_matrices = true;
         opt
-    })
+    }};
 }
 
 #[cfg(test)]
 macro_rules! base_test {
-    ($name:ident, $functor:expr, $in_text:expr, $out_text:expr) => (
+    ($name:ident, $functor:expr, $in_text:expr, $out_text:expr) => {
         #[test]
         fn $name() {
             let mut doc = Document::from_str($in_text).unwrap();
             $functor(&mut doc);
             assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
         }
-    )
+    };
 }
 
 #[cfg(test)]
 macro_rules! assert_eq_text {
-    ($left:expr, $right:expr) => ({
+    ($left:expr, $right:expr) => {{
         match (&$left, &$right) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
-                    panic!("assertion failed: `(left == right)` \
-                           \nleft:  `{}`\nright: `{}`",
-                           left_val, right_val)
+                    panic!(
+                        "assertion failed: `(left == right)` \
+                         \nleft:  `{}`\nright: `{}`",
+                        left_val, right_val
+                    )
                 }
             }
         }
-    })
+    }};
 }
 
 #[cfg(test)]
 macro_rules! test_eq {
-    ($name:ident, $in_text:expr) => (
+    ($name:ident, $in_text:expr) => {
         test!($name, $in_text, $in_text);
-    )
+    };
 }
 
 macro_rules! get_value {
-    ($attrs:expr, $t:ident, $aid:expr, $def:expr) => (
+    ($attrs:expr, $t:ident, $aid:expr, $def:expr) => {
         if let Some(&AttributeValue::$t(v)) = $attrs.get_value($aid) {
             v
         } else {
             $def
         }
-    )
+    };
 }

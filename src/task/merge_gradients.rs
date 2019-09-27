@@ -16,14 +16,9 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    AttributeValue,
-    Document,
-    ElementType,
-    Node,
-};
+use svgdom::{AttributeValue, Document, ElementType, Node};
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 use task::utils;
 
 static LG_ATTRIBUTES: &'static [AId] = &[
@@ -132,7 +127,7 @@ mod tests {
     use task;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -144,58 +139,65 @@ mod tests {
                 opt.simplify_transform_matrices = true;
                 assert_eq_text!(doc.to_string_with_opt(&opt), $out_text);
             }
-        )
+        };
     }
 
     // There is nothing to merge - just remove it.
-    test!(merge_1,
-"<svg>
+    test!(
+        merge_1,
+        "<svg>
     <linearGradient id='lg1'/>
     <linearGradient xlink:href='#lg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient/>
 </svg>
-");
+"
+    );
 
     // Move 'stop' elements.
     // Order is important.
-    test!(merge_2,
-"<svg>
+    test!(
+        merge_2,
+        "<svg>
     <linearGradient id='lg1'>
         <stop id='s1' offset='0'/>
         <stop id='s2' offset='1'/>
     </linearGradient>
     <linearGradient xlink:href='#lg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient>
         <stop id='s1' offset='0'/>
         <stop id='s2' offset='1'/>
     </linearGradient>
 </svg>
-");
+"
+    );
 
     // Move attributes.
-    test!(merge_3,
-"<svg>
+    test!(
+        merge_3,
+        "<svg>
     <linearGradient id='lg1' x1='5' x2='5'>
         <stop offset='0'/>
         <stop offset='1'/>
     </linearGradient>
     <linearGradient x1='10' xlink:href='#lg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient x1='10' x2='5'>
         <stop offset='0'/>
         <stop offset='1'/>
     </linearGradient>
 </svg>
-");
+"
+    );
 
     // Recursive.
-    test!(merge_4,
-"<svg>
+    test!(
+        merge_4,
+        "<svg>
     <linearGradient id='lg1' x1='5' x2='5'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -203,17 +205,19 @@ mod tests {
     <linearGradient id='lg2' xlink:href='#lg1'/>
     <linearGradient x1='10' xlink:href='#lg2'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient x1='10' x2='5'>
         <stop offset='0'/>
         <stop offset='1'/>
     </linearGradient>
 </svg>
-");
+"
+    );
 
     // Same as above, but in different order.
-    test!(merge_5,
-"<svg>
+    test!(
+        merge_5,
+        "<svg>
     <linearGradient x1='10' xlink:href='#lg2'/>
     <linearGradient id='lg2' xlink:href='#lg1'/>
     <linearGradient id='lg1' x1='5' x2='5'>
@@ -221,28 +225,32 @@ mod tests {
         <stop offset='1'/>
     </linearGradient>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient x1='10' x2='5'>
         <stop offset='0'/>
         <stop offset='1'/>
     </linearGradient>
 </svg>
-");
+"
+    );
 
     // Move only element-specific attributes.
-    test!(merge_6,
-"<svg>
+    test!(
+        merge_6,
+        "<svg>
     <linearGradient id='lg1' x1='5' x2='5'/>
     <radialGradient xlink:href='#lg1'/>
 </svg>",
-"<svg>
+        "<svg>
     <radialGradient/>
 </svg>
-");
+"
+    );
 
     // Skip existing stop's.
-    test!(merge_7,
-"<svg>
+    test!(
+        merge_7,
+        "<svg>
     <linearGradient id='lg1'>
         <stop id='s1' offset='0'/>
         <stop id='s2' offset='1'/>
@@ -252,12 +260,12 @@ mod tests {
         <stop id='s4' offset='1'/>
     </linearGradient>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg2'>
         <stop id='s3' offset='0'/>
         <stop id='s4' offset='1'/>
     </linearGradient>
 </svg>
-");
-
+"
+    );
 }

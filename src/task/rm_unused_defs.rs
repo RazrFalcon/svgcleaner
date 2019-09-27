@@ -16,19 +16,20 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    Document,
-    Node,
-};
+use svgdom::{Document, Node};
 
 use task::short::EId;
 
 pub fn remove_unused_defs(doc: &Document) {
     // Unwrap is safe, because 'defs' already had been created in 'group_defs'.
-    let mut defs = doc.descendants().filter(|n| n.is_tag_name(EId::Defs)).nth(0).unwrap();
+    let mut defs = doc
+        .descendants()
+        .filter(|n| n.is_tag_name(EId::Defs))
+        .nth(0)
+        .unwrap();
 
     // Repeat until no unused nodes left.
-    while remove_unused_defs_impl(&mut defs) { }
+    while remove_unused_defs_impl(&mut defs) {}
 }
 
 // Returns true if tree structure has been changed.
@@ -47,7 +48,6 @@ fn remove_unused_defs_impl(defs: &mut Node) -> bool {
     }
 
     let is_any_changed = !mv_nodes.is_empty() || !rm_nodes.is_empty();
-
 
     if !is_any_changed {
         return false;
@@ -86,13 +86,14 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             base_test!($name, remove_unused_defs, $in_text, $out_text);
-        )
+        };
     }
 
-    test!(simple_1,
-"<svg>
+    test!(
+        simple_1,
+        "<svg>
     <defs>
         <rect id='rect1'/>
         <rect/>
@@ -100,16 +101,18 @@ mod tests {
     </defs>
     <use xlink:href='#rect1'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <rect id='rect1'/>
     </defs>
     <use xlink:href='#rect1'/>
 </svg>
-");
+"
+    );
 
-    test!(recursive_1,
-"<svg>
+    test!(
+        recursive_1,
+        "<svg>
     <defs>
         <linearGradient id='linearGradient1'>
             <stop/>
@@ -118,13 +121,15 @@ mod tests {
         <radialGradient xlink:href='#linearGradient1' id='radialGradient1'/>
     </defs>
 </svg>",
-"<svg>
+        "<svg>
     <defs/>
 </svg>
-");
+"
+    );
 
-    test!(correct_ungroup_1,
-"<svg>
+    test!(
+        correct_ungroup_1,
+        "<svg>
     <defs>
         <clipPath id='clipPath1'>
             <path id='path1'/>
@@ -132,16 +137,18 @@ mod tests {
     </defs>
     <use xlink:href='#path1'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <path id='path1'/>
     </defs>
     <use xlink:href='#path1'/>
 </svg>
-");
+"
+    );
 
-    test_eq!(correct_ungroup_2,
-"<svg>
+    test_eq!(
+        correct_ungroup_2,
+        "<svg>
     <defs>
         <clipPath id='clipPath1'>
             <path id='path1'/>
@@ -149,10 +156,12 @@ mod tests {
     </defs>
     <use clip-path='url(#clipPath1)' xlink:href='#path1'/>
 </svg>
-");
+"
+    );
 
-    test_eq!(correct_ungroup_3,
-"<svg>
+    test_eq!(
+        correct_ungroup_3,
+        "<svg>
     <defs>
         <clipPath id='clipPath1'>
             <rect/>
@@ -164,10 +173,12 @@ mod tests {
     </defs>
     <use clip-path='url(#clipPath1)'/>
 </svg>
-");
+"
+    );
 
-    test!(correct_ungroup_4,
-"<svg>
+    test!(
+        correct_ungroup_4,
+        "<svg>
     <defs>
         <clipPath>
             <g>
@@ -177,16 +188,18 @@ mod tests {
     </defs>
     <use xlink:href='#rect1'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <rect id='rect1'/>
     </defs>
     <use xlink:href='#rect1'/>
 </svg>
-");
+"
+    );
 
-    test!(correct_ungroup_5,
-"<svg>
+    test!(
+        correct_ungroup_5,
+        "<svg>
     <defs>
         <foreignObject>
             <svg>
@@ -200,16 +213,18 @@ mod tests {
         <tref xlink:href='#hello'/>
     </text>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <text id='hello'>Hello</text>
     </defs>
     <text><tref xlink:href='#hello'/></text>
 </svg>
-");
+"
+    );
 
-    test!(correct_ungroup_6,
-"<svg>
+    test!(
+        correct_ungroup_6,
+        "<svg>
     <defs>
         <g>
             <rect id='rect1'/>
@@ -217,31 +232,35 @@ mod tests {
     </defs>
     <use xlink:href='#rect1'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <rect id='rect1'/>
     </defs>
     <use xlink:href='#rect1'/>
 </svg>
-");
+"
+    );
 
-    test!(keep_font_1,
-"<svg>
+    test!(
+        keep_font_1,
+        "<svg>
     <defs>
         <font-face/>
         <font/>
     </defs>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <font-face/>
         <font/>
     </defs>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_font_2,
-"<svg>
+    test_eq!(
+        keep_font_2,
+        "<svg>
     <defs>
         <font-face font-family='SVGFreeSansASCII' unicode-range='U+0-7F'>
             <font-face-src>
@@ -250,5 +269,6 @@ mod tests {
         </font-face>
     </defs>
 </svg>
-");
+"
+    );
 }

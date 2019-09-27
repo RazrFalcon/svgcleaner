@@ -18,12 +18,8 @@
 
 // TODO: split to submodules and suboptions
 
+use svgdom::path::{Command, Path, Segment};
 use svgdom::FuzzyEq;
-use svgdom::path::{
-    Command,
-    Path,
-    Segment,
-};
 
 use super::utils;
 
@@ -40,11 +36,19 @@ pub fn remove_unused_segments(path: &mut Path) {
         }
 
         // Order is important.
-        if remove_mm(path) { is_changed = true; }
-        if remove_zz(path) { is_changed = true; }
-        if remove_mz(path) { is_changed = true; }
+        if remove_mm(path) {
+            is_changed = true;
+        }
+        if remove_zz(path) {
+            is_changed = true;
+        }
+        if remove_mz(path) {
+            is_changed = true;
+        }
         process_lz(path, &mut is_changed);
-        if remove_equal(path) { is_changed = true; }
+        if remove_equal(path) {
+            is_changed = true;
+        }
         remove_zero_lenght(path, &mut is_changed);
 
         if path.d.is_empty() {
@@ -53,7 +57,7 @@ pub fn remove_unused_segments(path: &mut Path) {
     }
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone, Copy)]
 enum DrainMode {
     Single,
     Both,
@@ -61,7 +65,8 @@ enum DrainMode {
 
 // Removes segments by predicate and returns 'true' if any was removed.
 fn drain_by_pair<P>(path: &mut Path, mode: DrainMode, p: P) -> bool
-    where P: Fn(&Segment, &Segment) -> bool
+where
+    P: Fn(&Segment, &Segment) -> bool,
 {
     let old_len = path.d.len();
 
@@ -79,7 +84,11 @@ fn drain_by_pair<P>(path: &mut Path, mode: DrainMode, p: P) -> bool
                     path.d.remove(i - 1);
                     path.d.remove(i - 1);
 
-                    if i > 1 { 2 } else { 0 }
+                    if i > 1 {
+                        2
+                    } else {
+                        0
+                    }
                 }
             };
 
@@ -119,9 +128,7 @@ fn remove_mz(path: &mut Path) -> bool {
 
 // If current segment is the same as previous - remove it.
 fn remove_equal(path: &mut Path) -> bool {
-    drain_by_pair(path, DrainMode::Single, |prev, curr| {
-        prev.fuzzy_eq(curr)
-    })
+    drain_by_pair(path, DrainMode::Single, |prev, curr| prev.fuzzy_eq(curr))
 }
 
 // If segment moved to the same position as current - remove it.
@@ -132,9 +139,7 @@ fn remove_zero_lenght(path: &mut Path, is_changed: &mut bool) {
         let (px, py) = utils::resolve_xy(path, i - 1);
 
         let is_equal = match curr.cmd() {
-            Command::LineTo => {
-                curr.x().unwrap().fuzzy_eq(&px) && curr.y().unwrap().fuzzy_eq(&py)
-            }
+            Command::LineTo => curr.x().unwrap().fuzzy_eq(&px) && curr.y().unwrap().fuzzy_eq(&py),
             // Curves can't be removed.
             _ => false,
         };
@@ -205,12 +210,9 @@ fn process_lz(path: &mut Path, is_changed: &mut bool) {
     }
 }
 
-fn is_line_based(seg: Command) -> bool
-{
+fn is_line_based(seg: Command) -> bool {
     match seg {
-          Command::LineTo
-        | Command::HorizontalLineTo
-        | Command::VerticalLineTo => true,
+        Command::LineTo | Command::HorizontalLineTo | Command::VerticalLineTo => true,
         _ => false,
     }
 }
@@ -224,7 +226,7 @@ mod tests {
     use task::paths::conv_segments;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let mut path = Path::from_str($in_text).unwrap();
@@ -233,84 +235,87 @@ mod tests {
                 remove_unused_segments(&mut path);
                 assert_eq_text!(path.to_string(), $out_text);
             }
-        )
+        };
     }
 
-    test!(rm_dulp_moveto_1,
+    test!(
+        rm_dulp_moveto_1,
         "m 10 10 m 20 20 l 10 20",
-        "M 30 30 L 40 50");
+        "M 30 30 L 40 50"
+    );
 
-    test!(rm_dulp_moveto_2,
+    test!(
+        rm_dulp_moveto_2,
         "m 10 10 20 20 l 10 20",
-        "M 10 10 L 30 30 L 40 50");
+        "M 10 10 L 30 30 L 40 50"
+    );
 
-    test!(rm_dulp_moveto_3,
+    test!(
+        rm_dulp_moveto_3,
         "M 10 10 M 10 10 M 10 10 M 10 10 L 15 20",
-        "M 10 10 L 15 20");
+        "M 10 10 L 15 20"
+    );
 
+    test!(rm_single_1, "M 10 10", "");
 
-    test!(rm_single_1,
-        "M 10 10",
-        "");
+    test!(rm_mz_1, "M 10 10 Z", "");
 
+    test!(rm_mz_2, "M 10 10 Z M 10 10 Z M 10 10 Z", "");
 
-    test!(rm_mz_1,
-        "M 10 10 Z",
-        "");
-
-    test!(rm_mz_2,
-        "M 10 10 Z M 10 10 Z M 10 10 Z",
-        "");
-
-    test!(rm_mz_3,
+    test!(
+        rm_mz_3,
         "M 10 10 L 15 20 M 10 20 Z M 10 20 L 15 30",
-        "M 10 10 L 15 20 M 10 20 L 15 30");
+        "M 10 10 L 15 20 M 10 20 L 15 30"
+    );
 
+    test!(rm_z_1, "M 10 10 Z Z Z", "");
 
-    test!(rm_z_1,
-        "M 10 10 Z Z Z",
-        "");
-
-    test!(rm_z_2,
+    test!(
+        rm_z_2,
         "M 10 10 L 15 20 Z Z Z M 10 20 L 20 30",
-        "M 10 10 L 15 20 Z M 10 20 L 20 30");
+        "M 10 10 L 15 20 Z M 10 20 L 20 30"
+    );
 
-    test!(rm_zero_lenght_1,
+    test!(
+        rm_zero_lenght_1,
         "M 10 10 L 10 20 L 10 20 L 10 20 Z",
-        "M 10 10 L 10 20 Z");
+        "M 10 10 L 10 20 Z"
+    );
 
-    test!(rm_zero_lenght_2,
-        "M 10 10 L 10 10",
-        "");
+    test!(rm_zero_lenght_2, "M 10 10 L 10 10", "");
 
     // Only H, V, L segments should be removed.
-    test!(keep_zero_lenght_1,
+    test!(
+        keep_zero_lenght_1,
         "M 10 10 C 20 20 30 30 10 10",
-        "M 10 10 C 20 20 30 30 10 10");
+        "M 10 10 C 20 20 30 30 10 10"
+    );
 
-
-    test!(rm_equal_1,
+    test!(
+        rm_equal_1,
         "M 10 10 C 20 20 30 30 10 10 C 20 20 30 30 10 10",
-        "M 10 10 C 20 20 30 30 10 10");
+        "M 10 10 C 20 20 30 30 10 10"
+    );
 
-    test!(rm_equal_2,
+    test!(
+        rm_equal_2,
         "M 10 10 L 20 20 L 20 20 L 20 20",
-        "M 10 10 L 20 20");
+        "M 10 10 L 20 20"
+    );
 
+    test!(rm_lz_1, "M 10 10 L 50 50 L 10 10 Z", "M 10 10 L 50 50 Z");
 
-    test!(rm_lz_1,
-        "M 10 10 L 50 50 L 10 10 Z",
-        "M 10 10 L 50 50 Z");
+    test!(rm_lz_2, "M 10 10 L 50 50 L 10 10", "M 10 10 L 50 50 Z");
 
-    test!(rm_lz_2,
-        "M 10 10 L 50 50 L 10 10",
-        "M 10 10 L 50 50 Z");
-
-    test!(rm_lz_3,
+    test!(
+        rm_lz_3,
         "M 10 10 L 50 50 L 10 10 M 50 50 L 60 60",
-        "M 10 10 L 50 50 Z M 50 50 L 60 60");
+        "M 10 10 L 50 50 Z M 50 50 L 60 60"
+    );
 
-    test!(rm_lz_4,
+    test!(
+        rm_lz_4,
         "M 10 10 L 50 50 L 10 10 M 50 50 L 50 50",
-        "M 10 10 L 50 50 Z");
+        "M 10 10 L 50 50 Z"
+    );
 }

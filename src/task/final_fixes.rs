@@ -18,7 +18,7 @@
 
 use svgdom::Document;
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 // TODO: is 'svg' element contains only one element and it's 'g' element - ungroup it
 
@@ -70,92 +70,113 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             base_test!($name, remove_empty_defs, $in_text, $out_text);
-        )
+        };
     }
 
-    test!(rm_defs_1,
-"<svg>
+    test!(
+        rm_defs_1,
+        "<svg>
     <defs/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_defs_2,
-"<svg>
+    test!(
+        rm_defs_2,
+        "<svg>
     <rect/>
     <!--comment-->
     <defs/>
 </svg>",
-"<svg>
+        "<svg>
     <rect/>
     <!--comment-->
 </svg>
-");
+"
+    );
 
-    test!(keep_1,
-"<svg>
+    test!(
+        keep_1,
+        "<svg>
     <defs>
         <rect/>
     </defs>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <rect/>
     </defs>
 </svg>
-");
+"
+    );
 
     macro_rules! test_xmlns {
-        ($name:ident, $in_text:expr, $out_text:expr, $rm_unused:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr, $rm_unused:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
                 fix_xmlns_attribute(&doc, $rm_unused);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test_xmlns!(xmlns_rm_1,
-"<svg xmlns:xlink='http://www.w3.org/1999/xlink'/>",
-"<svg/>
-", true);
+    test_xmlns!(
+        xmlns_rm_1,
+        "<svg xmlns:xlink='http://www.w3.org/1999/xlink'/>",
+        "<svg/>
+",
+        true
+    );
 
-    test_xmlns!(xmlns_rm_2,
-"<svg xmlns:xlink='http://www.w3.org/1999/xlink'/>",
-"<svg xmlns:xlink='http://www.w3.org/1999/xlink'/>
-", false);
+    test_xmlns!(
+        xmlns_rm_2,
+        "<svg xmlns:xlink='http://www.w3.org/1999/xlink'/>",
+        "<svg xmlns:xlink='http://www.w3.org/1999/xlink'/>
+",
+        false
+    );
 
-    test_xmlns!(xmlns_keep_1,
-"<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
+    test_xmlns!(
+        xmlns_keep_1,
+        "<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
     <rect id='rect1'/>
     <use xlink:href='#rect1'/>
 </svg>",
-"<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
+        "<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
     <rect id='rect1'/>
     <use xlink:href='#rect1'/>
 </svg>
-", true);
+",
+        true
+    );
 
-    test_xmlns!(xmlns_keep_2,
-"<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
+    test_xmlns!(
+        xmlns_keep_2,
+        "<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
     <font-face-uri xlink:href='../resources/SVGFreeSans.svg#ascii'/>
 </svg>",
-"<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
+        "<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
     <font-face-uri xlink:href='../resources/SVGFreeSans.svg#ascii'/>
 </svg>
-", true);
+",
+        true
+    );
 
-    test_xmlns!(xmlns_fix_1,
-"<svg>
+    test_xmlns!(
+        xmlns_fix_1,
+        "<svg>
     <rect id='rect1'/>
     <use xlink:href='#rect1'/>
 </svg>",
-"<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
+        "<svg xmlns:xlink='http://www.w3.org/1999/xlink'>
     <rect id='rect1'/>
     <use xlink:href='#rect1'/>
 </svg>
-", true);
+",
+        true
+    );
 }

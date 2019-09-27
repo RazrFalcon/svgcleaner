@@ -16,16 +16,9 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    path,
-    AttributeValue,
-    Document,
-    FuzzyEq,
-    Length,
-    Node,
-};
+use svgdom::{path, AttributeValue, Document, FuzzyEq, Length, Node};
 
-use task::short::{EId, AId, Unit};
+use task::short::{AId, EId, Unit};
 
 // TODO: convert thin rect to line-to path
 // view-calendar-list.svg
@@ -58,8 +51,11 @@ fn convert_line(node: &mut Node) {
 
         // We can't convert line with non-pixel coordinates.
         // Unit will newer be Px, since we disable it globally via ParseOptions.
-        if !(x1.unit == Unit::None && y1.unit == Unit::None &&
-             x2.unit == Unit::None && y2.unit == Unit::None) {
+        if !(x1.unit == Unit::None
+            && y1.unit == Unit::None
+            && x2.unit == Unit::None
+            && y2.unit == Unit::None)
+        {
             return;
         }
 
@@ -100,8 +96,11 @@ fn convert_rect(node: &mut Node) {
         let x = get_value!(attrs, Length, AId::X, Length::zero());
         let y = get_value!(attrs, Length, AId::Y, Length::zero());
 
-        if !(x.unit == Unit::None && y.unit == Unit::None &&
-             w.unit == Unit::None && h.unit == Unit::None) {
+        if !(x.unit == Unit::None
+            && y.unit == Unit::None
+            && w.unit == Unit::None
+            && h.unit == Unit::None)
+        {
             return;
         }
 
@@ -182,96 +181,114 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             base_test!($name, convert_shapes_to_paths, $in_text, $out_text);
-        )
+        };
     }
 
-    test!(conv_line_1,
-"<svg>
+    test!(
+        conv_line_1,
+        "<svg>
     <line x1='100' y1='200' x2='300' y2='400'/>
 </svg>",
-"<svg>
+        "<svg>
     <path d='M 100 200 L 300 400'/>
 </svg>
-");
+"
+    );
 
-    test!(conv_line_2,
-"<svg>
+    test!(
+        conv_line_2,
+        "<svg>
     <line x2='30'/>
 </svg>",
-"<svg>
+        "<svg>
     <path d='M 0 0 L 30 0'/>
 </svg>
-");
+"
+    );
 
     // Ignore, because of non-px unit.
-    test!(conv_line_3,
-"<svg>
+    test!(
+        conv_line_3,
+        "<svg>
     <line x2='30pt'/>
 </svg>",
-"<svg>
+        "<svg>
     <line x2='30pt'/>
 </svg>
-");
+"
+    );
 
-    test!(conv_rect_1,
-"<svg>
+    test!(
+        conv_rect_1,
+        "<svg>
     <rect x='10' y='20' width='30' height='40'/>
 </svg>",
-"<svg>
+        "<svg>
     <path d='M 10 20 H 40 V 60 H 10 Z'/>
 </svg>
-");
+"
+    );
 
-    test!(conv_rect_2,
-"<svg>
+    test!(
+        conv_rect_2,
+        "<svg>
     <rect width='30' height='40'/>
 </svg>",
-"<svg>
+        "<svg>
     <path d='M 0 0 H 30 V 40 H 0 Z'/>
 </svg>
-");
+"
+    );
     // Ignore invalid rects.
-    test!(conv_rect_3,
-"<svg>
+    test!(
+        conv_rect_3,
+        "<svg>
     <rect width='30' height='30' rx='1'/>
     <rect width='30' height='30' ry='1'/>
     <rect width='30' height='0'/>
     <rect width='0' height='30'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect height='30' rx='1' width='30'/>
     <rect height='30' ry='1' width='30'/>
     <rect height='0' width='30'/>
     <rect height='30' width='0'/>
 </svg>
-");
+"
+    );
 
-    test!(conv_polyline_1,
-"<svg>
+    test!(
+        conv_polyline_1,
+        "<svg>
     <polyline points='30 40 50 60 70 80'/>
 </svg>",
-"<svg>
+        "<svg>
     <path d='M 30 40 L 50 60 L 70 80'/>
 </svg>
-");
+"
+    );
 
-    test!(conv_polyline_2,
-"<svg>
+    test!(
+        conv_polyline_2,
+        "<svg>
     <polyline/>
 </svg>",
-"<svg>
+        "<svg>
     <polyline/>
 </svg>
-");
+"
+    );
 
-    test!(conv_polygon_1,
-"<svg>
+    test!(
+        conv_polygon_1,
+        "<svg>
     <polygon points='30 40 50 60 70 80'/>
 </svg>",
-"<svg>
+        "<svg>
     <path d='M 30 40 L 50 60 L 70 80 Z'/>
 </svg>
-");
+"
+    );
 }

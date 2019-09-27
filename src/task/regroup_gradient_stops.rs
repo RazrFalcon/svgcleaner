@@ -16,16 +16,13 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    Document,
-    ElementType,
-    Node,
-};
+use svgdom::{Document, ElementType, Node};
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 pub fn regroup_gradient_stops(doc: &mut Document) {
-    let mut nodes: Vec<Node> = doc.descendants()
+    let mut nodes: Vec<Node> = doc
+        .descendants()
         .filter(|n| n.is_gradient())
         .filter(|n| n.has_children())
         .filter(|n| !n.has_attribute(AId::XlinkHref))
@@ -115,7 +112,7 @@ mod tests {
     use task;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let mut doc = Document::from_str($in_text).unwrap();
@@ -125,11 +122,12 @@ mod tests {
                 regroup_gradient_stops(&mut doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(rm_1,
-"<svg>
+    test!(
+        rm_1,
+        "<svg>
     <linearGradient id='lg1' x1='50'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -139,7 +137,7 @@ mod tests {
         <stop offset='1'/>
     </linearGradient>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg3'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -147,10 +145,12 @@ mod tests {
     <linearGradient id='lg1' x1='50' xlink:href='#lg3'/>
     <linearGradient id='lg2' x1='100' xlink:href='#lg3'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_2,
-"<svg>
+    test!(
+        rm_2,
+        "<svg>
     <linearGradient id='lg1' x1='50'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -168,7 +168,7 @@ mod tests {
         <stop offset='1'/>
     </linearGradient>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg5'>
         <stop offset='0'/>
         <stop offset='1'/>
@@ -182,6 +182,6 @@ mod tests {
     <linearGradient id='lg2' x1='100' xlink:href='#lg5'/>
     <linearGradient id='lg4' x1='100' xlink:href='#lg6'/>
 </svg>
-");
-
+"
+    );
 }

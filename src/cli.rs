@@ -16,41 +16,28 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+use std::io::{stderr, Write};
 use std::ops::Index;
-use std::io::{
-    stderr,
-    Write,
-};
 
-use clap::{
-    Arg,
-    App,
-    ArgMatches,
-};
+use clap::{App, Arg, ArgMatches};
 
-use svgdom::{
-    ParseOptions,
-    WriteOptions,
-};
+use svgdom::{ParseOptions, WriteOptions};
 
-use {
-    CleaningOptions,
-    StyleJoinMode,
-};
+use {CleaningOptions, StyleJoinMode};
 
-#[derive(Debug,Clone,Copy,PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum InputFrom<'a> {
     Stdin,
     File(&'a str),
 }
 
-#[derive(Debug,Clone,Copy,PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum OutputTo<'a> {
     Stdout,
     File(&'a str),
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone, Copy)]
 pub enum Key {
     RemoveComments,
     RemoveDeclarations,
@@ -143,7 +130,6 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "remove-invalid-stops",
     "remove-invisible-elements",
     "resolve-use",
-
     "remove-version",
     "remove-nonsvg-attributes",
     "remove-unreferenced-ids",
@@ -158,7 +144,6 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "apply-transform-to-gradients",
     "apply-transform-to-shapes",
     "remove-unresolved-classes",
-
     "paths-to-relative",
     "remove-unused-segments",
     "convert-segments",
@@ -167,7 +152,6 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "join-arcto-flags",
     "remove-dupl-cmd-in-paths",
     "use-implicit-cmds",
-
     "trim-colors",
     "simplify-transforms",
     "coordinates-precision",
@@ -176,7 +160,6 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "paths-coordinates-precision",
     "list-separator",
     "indent",
-
     "no-defaults",
     "multipass",
     "allow-bigger-file",
@@ -186,23 +169,23 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
 ]);
 
 macro_rules! gen_flag {
-    ($key:expr, $flag:expr) => (
+    ($key:expr, $flag:expr) => {
         Arg::with_name(KEYS[$key])
             .long(KEYS[$key])
             .value_name("FLAG")
             .default_value($flag)
             .validator(is_flag)
-    )
+    };
 }
 
 macro_rules! gen_precision {
-    ($key:expr, $def_value:expr) => (
+    ($key:expr, $def_value:expr) => {
         Arg::with_name(KEYS[$key])
             .long(KEYS[$key])
             .value_name("NUM")
             .validator(is_precision)
             .default_value($def_value)
-    )
+    };
 }
 
 pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
@@ -214,28 +197,28 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
     App::new("svgcleaner")
         .help(include_str!("../data/help.txt"))
         .version(env!("CARGO_PKG_VERSION"))
-        .arg(Arg::with_name("in-file")
-            .required(true)
-            .index(1)
-            .validator(is_svg))
-        .arg(Arg::with_name("out-file")
-            .required_unless(KEYS[Key::Stdout])
-            .index(2)
-            .validator(is_svg))
-        .arg(Arg::with_name(KEYS[Key::Stdout])
-            .short("c")
-            .long(KEYS[Key::Stdout]))
-        .arg(Arg::with_name(KEYS[Key::NoDefaults])
-            .long(KEYS[Key::NoDefaults]))
-        .arg(Arg::with_name(KEYS[Key::Multipass])
-            .long(KEYS[Key::Multipass]))
-        .arg(Arg::with_name(KEYS[Key::AllowBiggerFile])
-            .long(KEYS[Key::AllowBiggerFile]))
-        .arg(Arg::with_name(KEYS[Key::CopyOnError])
-            .long(KEYS[Key::CopyOnError]))
-        .arg(Arg::with_name(KEYS[Key::Quiet])
-            .long(KEYS[Key::Quiet]))
-
+        .arg(
+            Arg::with_name("in-file")
+                .required(true)
+                .index(1)
+                .validator(is_svg),
+        )
+        .arg(
+            Arg::with_name("out-file")
+                .required_unless(KEYS[Key::Stdout])
+                .index(2)
+                .validator(is_svg),
+        )
+        .arg(
+            Arg::with_name(KEYS[Key::Stdout])
+                .short("c")
+                .long(KEYS[Key::Stdout]),
+        )
+        .arg(Arg::with_name(KEYS[Key::NoDefaults]).long(KEYS[Key::NoDefaults]))
+        .arg(Arg::with_name(KEYS[Key::Multipass]).long(KEYS[Key::Multipass]))
+        .arg(Arg::with_name(KEYS[Key::AllowBiggerFile]).long(KEYS[Key::AllowBiggerFile]))
+        .arg(Arg::with_name(KEYS[Key::CopyOnError]).long(KEYS[Key::CopyOnError]))
+        .arg(Arg::with_name(KEYS[Key::Quiet]).long(KEYS[Key::Quiet]))
         // elements
         .arg(gen_flag!(Key::RemoveComments, "true"))
         .arg(gen_flag!(Key::RemoveDeclarations, "true"))
@@ -256,7 +239,6 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::RemoveInvalidStops, "true"))
         .arg(gen_flag!(Key::RemoveInvisibleElements, "true"))
         .arg(gen_flag!(Key::ResolveUse, "true"))
-
         // attributes
         .arg(gen_flag!(Key::RemoveVersion, "true"))
         .arg(gen_flag!(Key::RemoveNonsvgAttributes, "true"))
@@ -268,15 +250,16 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::RemoveXmlnsXlinkAttribute, "true"))
         .arg(gen_flag!(Key::RemoveNeedlessAttributes, "true"))
         .arg(gen_flag!(Key::RemoveGradientAttributes, "false"))
-        .arg(Arg::with_name(KEYS[Key::JoinStyleAttributes])
-            .long(KEYS[Key::JoinStyleAttributes])
-            .value_name("VALUE")
-            .possible_values(&["no", "some", "all"])
-            .default_value("some"))
+        .arg(
+            Arg::with_name(KEYS[Key::JoinStyleAttributes])
+                .long(KEYS[Key::JoinStyleAttributes])
+                .value_name("VALUE")
+                .possible_values(&["no", "some", "all"])
+                .default_value("some"),
+        )
         .arg(gen_flag!(Key::ApplyTransformToGradients, "true"))
         .arg(gen_flag!(Key::ApplyTransformToShapes, "true"))
         .arg(gen_flag!(Key::RemoveUnresolvedClasses, "true"))
-
         // paths
         .arg(gen_flag!(Key::PathsToRelative, "true"))
         .arg(gen_flag!(Key::RemoveUnusedSegments, "true"))
@@ -286,7 +269,6 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_flag!(Key::JoinArcToFlags, "false"))
         .arg(gen_flag!(Key::RemoveDuplCmdInPaths, "true"))
         .arg(gen_flag!(Key::UseImplicitCommands, "true"))
-
         // output
         .arg(gen_flag!(Key::TrimColors, "true"))
         .arg(gen_flag!(Key::SimplifyTransforms, "true"))
@@ -294,16 +276,20 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
         .arg(gen_precision!(Key::PropertiesPrecision, "6"))
         .arg(gen_precision!(Key::TransformsPrecision, "8"))
         .arg(gen_precision!(Key::PathsCoordinatesPrecision, "8"))
-        .arg(Arg::with_name(KEYS[Key::ListSeparator])
-            .long(KEYS[Key::ListSeparator])
-            .value_name("SEPARATOR")
-            .possible_values(&["space", "comma", "comma-space"])
-            .default_value("space"))
-        .arg(Arg::with_name(KEYS[Key::Indent])
-            .long(KEYS[Key::Indent])
-            .value_name("INDENT")
-            .possible_values(&["none", "0", "1", "2", "3", "4", "tabs"])
-            .default_value("none"))
+        .arg(
+            Arg::with_name(KEYS[Key::ListSeparator])
+                .long(KEYS[Key::ListSeparator])
+                .value_name("SEPARATOR")
+                .possible_values(&["space", "comma", "comma-space"])
+                .default_value("space"),
+        )
+        .arg(
+            Arg::with_name(KEYS[Key::Indent])
+                .long(KEYS[Key::Indent])
+                .value_name("INDENT")
+                .possible_values(&["none", "0", "1", "2", "3", "4", "tabs"])
+                .default_value("none"),
+        )
 }
 
 fn is_svg(val: String) -> Result<(), String> {
@@ -329,9 +315,7 @@ fn is_precision(val: String) -> Result<(), String> {
 
 fn is_flag(val: String) -> Result<(), String> {
     match val.as_ref() {
-        "true" | "false" |
-        "yes"  | "no" |
-        "y"    | "n" => Ok(()),
+        "true" | "false" | "yes" | "no" | "y" | "n" => Ok(()),
         _ => Err(String::from("Invalid flag value.")),
     }
 }
@@ -346,11 +330,15 @@ fn get_flag(args: &ArgMatches, key: Key) -> bool {
 
 // I don't know how to check it using 'clap', so here is manual checks.
 pub fn check_values(args: &ArgMatches) -> bool {
-
     fn check_value(args: &ArgMatches, flag: Key, dep: Key) -> bool {
         if !get_flag(args, flag) && get_flag(args, dep) {
-            writeln!(stderr(), "Error: You can use '--{}=true' only with '--{}=true'.",
-                     KEYS[dep], KEYS[flag]).unwrap();
+            writeln!(
+                stderr(),
+                "Error: You can use '--{}=true' only with '--{}=true'.",
+                KEYS[dep],
+                KEYS[flag]
+            )
+            .unwrap();
             return false;
         }
         true
@@ -439,18 +427,20 @@ pub fn gen_parse_options(args: &ArgMatches) -> ParseOptions {
     flags.resolve_inv(&mut opt.parse_comments, Key::RemoveComments);
     flags.resolve_inv(&mut opt.parse_declarations, Key::RemoveDeclarations);
     flags.resolve_inv(&mut opt.parse_unknown_elements, Key::RemoveNonsvgElements);
-    flags.resolve_inv(&mut opt.parse_unknown_attributes, Key::RemoveNonsvgAttributes);
-    flags.resolve(&mut opt.skip_unresolved_classes, Key::RemoveUnresolvedClasses);
+    flags.resolve_inv(
+        &mut opt.parse_unknown_attributes,
+        Key::RemoveNonsvgAttributes,
+    );
+    flags.resolve(
+        &mut opt.skip_unresolved_classes,
+        Key::RemoveUnresolvedClasses,
+    );
 
     opt
 }
 
 pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
-    use svgdom::{
-        Indent,
-        ListSeparator,
-        AttributesOrder,
-    };
+    use svgdom::{AttributesOrder, Indent, ListSeparator};
 
     // Initial options should be opposite to default ones.
     let mut opt = WriteOptions {
@@ -472,29 +462,38 @@ pub fn gen_write_options(args: &ArgMatches) -> WriteOptions {
     let flags = Flags::new(args);
 
     flags.resolve(&mut opt.use_compact_path_notation, Key::TrimPaths);
-    flags.resolve(&mut opt.remove_duplicated_path_commands, Key::RemoveDuplCmdInPaths);
+    flags.resolve(
+        &mut opt.remove_duplicated_path_commands,
+        Key::RemoveDuplCmdInPaths,
+    );
     flags.resolve(&mut opt.join_arc_to_flags, Key::JoinArcToFlags);
-    flags.resolve(&mut opt.use_implicit_lineto_commands, Key::UseImplicitCommands);
+    flags.resolve(
+        &mut opt.use_implicit_lineto_commands,
+        Key::UseImplicitCommands,
+    );
 
-    flags.resolve(&mut opt.simplify_transform_matrices, Key::SimplifyTransforms);
+    flags.resolve(
+        &mut opt.simplify_transform_matrices,
+        Key::SimplifyTransforms,
+    );
 
     flags.resolve(&mut opt.trim_hex_colors, Key::TrimColors);
 
     opt.list_separator = match args.value_of(KEYS[Key::ListSeparator]).unwrap() {
-        "space"         => ListSeparator::Space,
-        "comma"         => ListSeparator::Comma,
-        "comma-space"   => ListSeparator::CommaSpace,
+        "space" => ListSeparator::Space,
+        "comma" => ListSeparator::Comma,
+        "comma-space" => ListSeparator::CommaSpace,
         _ => unreachable!(), // clap will validate the input.
     };
 
     opt.indent = match args.value_of(KEYS[Key::Indent]).unwrap() {
-        "none"  => Indent::None,
-        "0"     => Indent::Spaces(0),
-        "1"     => Indent::Spaces(1),
-        "2"     => Indent::Spaces(2),
-        "3"     => Indent::Spaces(3),
-        "4"     => Indent::Spaces(4),
-        "tabs"  => Indent::Tabs,
+        "none" => Indent::None,
+        "0" => Indent::Spaces(0),
+        "1" => Indent::Spaces(1),
+        "2" => Indent::Spaces(2),
+        "3" => Indent::Spaces(3),
+        "4" => Indent::Spaces(4),
+        "tabs" => Indent::Tabs,
         _ => unreachable!(), // clap will validate the input.
     };
 
@@ -512,47 +511,83 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> CleaningOptions {
     flags.resolve(&mut opt.remove_title, Key::RemoveTitle);
     flags.resolve(&mut opt.remove_desc, Key::RemoveDesc);
     flags.resolve(&mut opt.remove_metadata, Key::RemoveMetadata);
-    flags.resolve(&mut opt.remove_dupl_linear_gradients, Key::RemoveDuplLinearGradients);
-    flags.resolve(&mut opt.remove_dupl_radial_gradients, Key::RemoveDuplRadialGradients);
-    flags.resolve(&mut opt.remove_dupl_fe_gaussian_blur, Key::RemoveDuplFeGaussianBlur);
+    flags.resolve(
+        &mut opt.remove_dupl_linear_gradients,
+        Key::RemoveDuplLinearGradients,
+    );
+    flags.resolve(
+        &mut opt.remove_dupl_radial_gradients,
+        Key::RemoveDuplRadialGradients,
+    );
+    flags.resolve(
+        &mut opt.remove_dupl_fe_gaussian_blur,
+        Key::RemoveDuplFeGaussianBlur,
+    );
     flags.resolve(&mut opt.ungroup_groups, Key::UngroupGroups);
     flags.resolve(&mut opt.ungroup_defs, Key::UngroupDefs);
     flags.resolve(&mut opt.group_by_style, Key::GroupByStyle);
     flags.resolve(&mut opt.merge_gradients, Key::MergeGradients);
     flags.resolve(&mut opt.regroup_gradient_stops, Key::RegroupGradientStops);
     flags.resolve(&mut opt.remove_invalid_stops, Key::RemoveInvalidStops);
-    flags.resolve(&mut opt.remove_invisible_elements, Key::RemoveInvisibleElements);
+    flags.resolve(
+        &mut opt.remove_invisible_elements,
+        Key::RemoveInvisibleElements,
+    );
     flags.resolve(&mut opt.resolve_use, Key::ResolveUse);
 
     flags.resolve(&mut opt.remove_version, Key::RemoveVersion);
     flags.resolve(&mut opt.remove_unreferenced_ids, Key::RemoveUnreferencedIds);
     flags.resolve(&mut opt.trim_ids, Key::TrimIds);
     flags.resolve(&mut opt.remove_text_attributes, Key::RemoveTextAttributes);
-    flags.resolve(&mut opt.remove_unused_coordinates, Key::RemoveUnusedCoordinates);
-    flags.resolve(&mut opt.remove_default_attributes, Key::RemoveDefaultAttributes);
-    flags.resolve(&mut opt.remove_xmlns_xlink_attribute, Key::RemoveXmlnsXlinkAttribute);
-    flags.resolve(&mut opt.remove_needless_attributes, Key::RemoveNeedlessAttributes);
-    flags.resolve(&mut opt.remove_gradient_attributes, Key::RemoveGradientAttributes);
-    flags.resolve(&mut opt.apply_transform_to_gradients, Key::ApplyTransformToGradients);
-    flags.resolve(&mut opt.apply_transform_to_shapes, Key::ApplyTransformToShapes);
+    flags.resolve(
+        &mut opt.remove_unused_coordinates,
+        Key::RemoveUnusedCoordinates,
+    );
+    flags.resolve(
+        &mut opt.remove_default_attributes,
+        Key::RemoveDefaultAttributes,
+    );
+    flags.resolve(
+        &mut opt.remove_xmlns_xlink_attribute,
+        Key::RemoveXmlnsXlinkAttribute,
+    );
+    flags.resolve(
+        &mut opt.remove_needless_attributes,
+        Key::RemoveNeedlessAttributes,
+    );
+    flags.resolve(
+        &mut opt.remove_gradient_attributes,
+        Key::RemoveGradientAttributes,
+    );
+    flags.resolve(
+        &mut opt.apply_transform_to_gradients,
+        Key::ApplyTransformToGradients,
+    );
+    flags.resolve(
+        &mut opt.apply_transform_to_shapes,
+        Key::ApplyTransformToShapes,
+    );
 
     opt.join_style_attributes = match args.value_of(KEYS[Key::JoinStyleAttributes]).unwrap() {
-        "no"    => StyleJoinMode::None,
-        "some"  => StyleJoinMode::Some,
-        "all"   => StyleJoinMode::All,
+        "no" => StyleJoinMode::None,
+        "some" => StyleJoinMode::Some,
+        "all" => StyleJoinMode::All,
         _ => unreachable!(), // clap will validate the input.
     };
 
     flags.resolve(&mut opt.paths_to_relative, Key::PathsToRelative);
     flags.resolve(&mut opt.remove_unused_segments, Key::RemoveUnusedSegments);
     flags.resolve(&mut opt.convert_segments, Key::ConvertSegments);
-    flags.resolve(&mut opt.apply_transform_to_paths, Key::ApplyTransformToPaths);
+    flags.resolve(
+        &mut opt.apply_transform_to_paths,
+        Key::ApplyTransformToPaths,
+    );
 
     opt.coordinates_precision = value_t!(args, KEYS[Key::CoordinatesPrecision], u8).unwrap();
     opt.properties_precision = value_t!(args, KEYS[Key::PropertiesPrecision], u8).unwrap();
-    opt.paths_coordinates_precision
-        = value_t!(args, KEYS[Key::PathsCoordinatesPrecision], u8).unwrap();
-    opt.transforms_precision   = value_t!(args, KEYS[Key::TransformsPrecision], u8).unwrap();
+    opt.paths_coordinates_precision =
+        value_t!(args, KEYS[Key::PathsCoordinatesPrecision], u8).unwrap();
+    opt.transforms_precision = value_t!(args, KEYS[Key::TransformsPrecision], u8).unwrap();
 
     opt
 }
@@ -590,13 +625,15 @@ mod tests {
     #[test]
     fn cli_1() {
         let app = prepare_app();
-        let args = app.get_matches_from_safe(&[
-            "svgcleaner",
-            "--trim-paths=false",
-            "--join-arcto-flags=true",
-            "in.svg",
-            "out.svg",
-        ]).unwrap();
+        let args = app
+            .get_matches_from_safe(&[
+                "svgcleaner",
+                "--trim-paths=false",
+                "--join-arcto-flags=true",
+                "in.svg",
+                "out.svg",
+            ])
+            .unwrap();
 
         assert!(!check_values(&args));
     }
@@ -604,13 +641,15 @@ mod tests {
     #[test]
     fn cli_2() {
         let app = prepare_app();
-        let args = app.get_matches_from_safe(&[
-            "svgcleaner",
-            "--paths-to-relative=false",
-            "--remove-unused-segments=true",
-            "in.svg",
-            "out.svg",
-        ]).unwrap();
+        let args = app
+            .get_matches_from_safe(&[
+                "svgcleaner",
+                "--paths-to-relative=false",
+                "--remove-unused-segments=true",
+                "in.svg",
+                "out.svg",
+            ])
+            .unwrap();
 
         assert!(!check_values(&args));
     }
@@ -618,13 +657,15 @@ mod tests {
     #[test]
     fn cli_3() {
         let app = prepare_app();
-        let args = app.get_matches_from_safe(&[
-            "svgcleaner",
-            "--paths-to-relative=false",
-            "--convert-segments=true",
-            "in.svg",
-            "out.svg",
-        ]).unwrap();
+        let args = app
+            .get_matches_from_safe(&[
+                "svgcleaner",
+                "--paths-to-relative=false",
+                "--convert-segments=true",
+                "in.svg",
+                "out.svg",
+            ])
+            .unwrap();
 
         assert!(!check_values(&args));
     }
@@ -632,13 +673,15 @@ mod tests {
     #[test]
     fn cli_4() {
         let app = prepare_app();
-        let args = app.get_matches_from_safe(&[
-            "svgcleaner",
-            "--paths-to-relative=false",
-            "--apply-transform-to-paths=true",
-            "in.svg",
-            "out.svg",
-        ]).unwrap();
+        let args = app
+            .get_matches_from_safe(&[
+                "svgcleaner",
+                "--paths-to-relative=false",
+                "--apply-transform-to-paths=true",
+                "in.svg",
+                "out.svg",
+            ])
+            .unwrap();
 
         assert!(!check_values(&args));
     }
@@ -646,11 +689,9 @@ mod tests {
     #[test]
     fn default_1() {
         let app = prepare_app();
-        let args = app.get_matches_from_safe(&[
-            "svgcleaner",
-            "in.svg",
-            "out.svg",
-        ]).unwrap();
+        let args = app
+            .get_matches_from_safe(&["svgcleaner", "in.svg", "out.svg"])
+            .unwrap();
 
         let parse_opt = gen_parse_options(&args);
         let write_opt = gen_write_options(&args);
@@ -670,12 +711,9 @@ mod tests {
     #[test]
     fn no_defaults_1() {
         let app = prepare_app();
-        let args = app.get_matches_from_safe(&[
-            "svgcleaner",
-            "--no-defaults",
-            "in.svg",
-            "out.svg",
-        ]).unwrap();
+        let args = app
+            .get_matches_from_safe(&["svgcleaner", "--no-defaults", "in.svg", "out.svg"])
+            .unwrap();
 
         let parse_opt = gen_parse_options(&args);
         let write_opt = gen_write_options(&args);
@@ -695,15 +733,17 @@ mod tests {
     #[test]
     fn no_defaults_2() {
         let app = prepare_app();
-        let args = app.get_matches_from_safe(&[
-            "svgcleaner",
-            "--no-defaults",
-            "--remove-comments=true",
-            "--trim-paths=true",
-            "--remove-unused-defs=true",
-            "in.svg",
-            "out.svg",
-        ]).unwrap();
+        let args = app
+            .get_matches_from_safe(&[
+                "svgcleaner",
+                "--no-defaults",
+                "--remove-comments=true",
+                "--trim-paths=true",
+                "--remove-unused-defs=true",
+                "in.svg",
+                "out.svg",
+            ])
+            .unwrap();
 
         let parse_opt = gen_parse_options(&args);
         let write_opt = gen_write_options(&args);
@@ -723,11 +763,9 @@ mod tests {
     #[test]
     fn no_std() {
         let app = prepare_app();
-        let args = app.get_matches_from_safe(&[
-            "svgcleaner",
-            "in.svg",
-            "out.svg",
-        ]).unwrap();
+        let args = app
+            .get_matches_from_safe(&["svgcleaner", "in.svg", "out.svg"])
+            .unwrap();
 
         assert_eq!(input(&args), InputFrom::File("in.svg"));
         assert_eq!(output(&args), OutputTo::File("out.svg"));
@@ -736,11 +774,9 @@ mod tests {
     #[test]
     fn std_1() {
         let app = prepare_app();
-        let args = app.get_matches_from_safe(&[
-            "svgcleaner",
-            "-c",
-            "-",
-        ]).unwrap();
+        let args = app
+            .get_matches_from_safe(&["svgcleaner", "-c", "-"])
+            .unwrap();
 
         assert_eq!(input(&args), InputFrom::Stdin);
         assert_eq!(output(&args), OutputTo::Stdout);
@@ -749,11 +785,9 @@ mod tests {
     #[test]
     fn std_2() {
         let app = prepare_app();
-        let args = app.get_matches_from_safe(&[
-            "svgcleaner",
-            "-c",
-            "in.svg",
-        ]).unwrap();
+        let args = app
+            .get_matches_from_safe(&["svgcleaner", "-c", "in.svg"])
+            .unwrap();
 
         assert_eq!(input(&args), InputFrom::File("in.svg"));
         assert_eq!(output(&args), OutputTo::Stdout);
@@ -762,11 +796,9 @@ mod tests {
     #[test]
     fn std_3() {
         let app = prepare_app();
-        let args = app.get_matches_from_safe(&[
-            "svgcleaner",
-            "out.svg",
-            "-",
-        ]).unwrap();
+        let args = app
+            .get_matches_from_safe(&["svgcleaner", "out.svg", "-"])
+            .unwrap();
 
         assert_eq!(input(&args), InputFrom::Stdin);
         assert_eq!(output(&args), OutputTo::File("out.svg"));

@@ -16,11 +16,7 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    Document,
-    ElementType,
-    Node,
-};
+use svgdom::{Document, ElementType, Node};
 
 use task::short::EId;
 
@@ -52,24 +48,27 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             base_test!($name, ungroup_defs, $in_text, $out_text);
-        )
+        };
     }
 
-    test!(ungroup_1,
-"<svg>
+    test!(
+        ungroup_1,
+        "<svg>
     <defs>
         <linearGradient/>
     </defs>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_2,
-"<svg>
+    test!(
+        ungroup_2,
+        "<svg>
     <defs>
         <linearGradient/>
     </defs>
@@ -77,32 +76,36 @@ mod tests {
         <linearGradient/>
     </defs>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient/>
     <linearGradient/>
 </svg>
-");
+"
+    );
 
-    test!(ungroup_3,
-"<svg>
+    test!(
+        ungroup_3,
+        "<svg>
     <defs>
         <linearGradient/>
         <radialGradient/>
     </defs>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient/>
     <radialGradient/>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_1,
-"<svg>
+    test_eq!(
+        keep_1,
+        "<svg>
     <defs>
         <linearGradient/>
         <rect/>
     </defs>
 </svg>
-");
-
+"
+    );
 }

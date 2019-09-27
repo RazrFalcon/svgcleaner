@@ -16,12 +16,9 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    Document,
-    Node,
-};
+use svgdom::{Document, Node};
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 pub fn remove_dupl_linear_gradients(doc: &Document) {
     let attrs = [
@@ -33,9 +30,10 @@ pub fn remove_dupl_linear_gradients(doc: &Document) {
         AId::SpreadMethod,
     ];
 
-    let mut nodes = doc.descendants()
-                       .filter(|n| n.is_tag_name(EId::LinearGradient))
-                       .collect::<Vec<Node>>();
+    let mut nodes = doc
+        .descendants()
+        .filter(|n| n.is_tag_name(EId::LinearGradient))
+        .collect::<Vec<Node>>();
 
     super::rm_loop(&mut nodes, |node1, node2| {
         if !super::is_gradient_attrs_equal(node1, node2, &attrs) {
@@ -57,7 +55,7 @@ mod tests {
     use task;
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
@@ -65,11 +63,12 @@ mod tests {
                 remove_dupl_linear_gradients(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(rm_1,
-"<svg>
+    test!(
+        rm_1,
+        "<svg>
     <defs>
         <linearGradient id='lg1'>
             <stop offset='0' stop-color='#ff0000'/>
@@ -82,7 +81,7 @@ mod tests {
     </defs>
     <rect fill='url(#lg2)'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <linearGradient id='lg1'>
             <stop offset='0' stop-color='#ff0000'/>
@@ -91,10 +90,12 @@ mod tests {
     </defs>
     <rect fill='url(#lg1)'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_2,
-"<svg>
+    test!(
+        rm_2,
+        "<svg>
     <defs>
         <linearGradient id='lg1'>
             <stop offset='0' stop-color='#ff0000'/>
@@ -112,7 +113,7 @@ mod tests {
     <rect fill='url(#lg2)'/>
     <rect fill='url(#lg3)'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <linearGradient id='lg1'>
             <stop offset='0' stop-color='#ff0000'/>
@@ -122,44 +123,50 @@ mod tests {
     <rect fill='url(#lg1)'/>
     <rect fill='url(#lg1)'/>
 </svg>
-");
+"
+    );
 
     // Different default attributes.
-    test!(rm_3,
-"<svg>
+    test!(
+        rm_3,
+        "<svg>
     <defs>
         <linearGradient id='lg1' x1='0%'/>
         <linearGradient id='lg2' x2='100%'/>
     </defs>
     <rect fill='url(#lg2)'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <linearGradient id='lg1' x1='0%'/>
     </defs>
     <rect fill='url(#lg1)'/>
 </svg>
-");
+"
+    );
 
     // No 'stop' elements.
-    test!(rm_4,
-"<svg>
+    test!(
+        rm_4,
+        "<svg>
     <defs>
         <linearGradient id='lg1'/>
         <linearGradient id='lg2'/>
     </defs>
     <rect fill='url(#lg2)'/>
 </svg>",
-"<svg>
+        "<svg>
     <defs>
         <linearGradient id='lg1'/>
     </defs>
     <rect fill='url(#lg1)'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_5,
-"<svg>
+    test!(
+        rm_5,
+        "<svg>
     <linearGradient id='lg1'>
         <stop/>
     </linearGradient>
@@ -168,7 +175,7 @@ mod tests {
     <rect fill='url(#lg2)'/>
     <rect fill='url(#lg3)'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1'>
         <stop/>
     </linearGradient>
@@ -176,15 +183,18 @@ mod tests {
     <rect fill='url(#lg2)'/>
     <rect fill='url(#lg2)'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_6,
-"<svg>
+    test!(
+        rm_6,
+        "<svg>
     <linearGradient id='lg1' xlink:href='#lg2'/>
     <linearGradient id='lg2'/>
 </svg>",
-"<svg>
+        "<svg>
     <linearGradient id='lg1'/>
 </svg>
-");
+"
+    );
 }

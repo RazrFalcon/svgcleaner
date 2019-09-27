@@ -16,17 +16,9 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    Attribute,
-    AttributeType,
-    AttributeValue,
-    Document,
-    ElementType,
-    Node,
-    ValueId,
-};
+use svgdom::{Attribute, AttributeType, AttributeValue, Document, ElementType, Node, ValueId};
 
-use task::short::{EId, AId};
+use task::short::{AId, EId};
 
 // TODO: split to suboptions
 
@@ -84,68 +76,63 @@ fn process_clip_path(node: &Node) {
 fn process_rect(node: &mut Node) {
     // Remove all non-rect attributes.
     node.attributes_mut().retain(|a| {
-           is_basic_shapes_attr(a)
-        || a.has_id(AId::X)
-        || a.has_id(AId::Y)
-        || a.has_id(AId::Width)
-        || a.has_id(AId::Height)
-        || a.has_id(AId::Rx)
-        || a.has_id(AId::Ry)
+        is_basic_shapes_attr(a)
+            || a.has_id(AId::X)
+            || a.has_id(AId::Y)
+            || a.has_id(AId::Width)
+            || a.has_id(AId::Height)
+            || a.has_id(AId::Rx)
+            || a.has_id(AId::Ry)
     });
 }
 
 fn process_circle(node: &mut Node) {
     // Remove all non-circle attributes.
     node.attributes_mut().retain(|a| {
-           is_basic_shapes_attr(a)
-        || a.has_id(AId::Cx)
-        || a.has_id(AId::Cy)
-        || a.has_id(AId::R)
+        is_basic_shapes_attr(a) || a.has_id(AId::Cx) || a.has_id(AId::Cy) || a.has_id(AId::R)
     });
 }
 
 fn process_ellipse(node: &mut Node) {
     // Remove all non-ellipse attributes.
     node.attributes_mut().retain(|a| {
-           is_basic_shapes_attr(a)
-        || a.has_id(AId::Cx)
-        || a.has_id(AId::Cy)
-        || a.has_id(AId::Rx)
-        || a.has_id(AId::Ry)
+        is_basic_shapes_attr(a)
+            || a.has_id(AId::Cx)
+            || a.has_id(AId::Cy)
+            || a.has_id(AId::Rx)
+            || a.has_id(AId::Ry)
     });
 }
 
 fn process_line(node: &mut Node) {
     // Remove all non-line attributes.
     node.attributes_mut().retain(|a| {
-           is_basic_shapes_attr(a)
-        || a.has_id(AId::X1)
-        || a.has_id(AId::Y1)
-        || a.has_id(AId::X2)
-        || a.has_id(AId::Y2)
+        is_basic_shapes_attr(a)
+            || a.has_id(AId::X1)
+            || a.has_id(AId::Y1)
+            || a.has_id(AId::X2)
+            || a.has_id(AId::Y2)
     });
 }
 
 fn process_poly(node: &mut Node) {
     // Remove all non-polyline/polygon attributes.
-    node.attributes_mut().retain(|a| {
-           is_basic_shapes_attr(a)
-        || a.has_id(AId::Points)
-    });
+    node.attributes_mut()
+        .retain(|a| is_basic_shapes_attr(a) || a.has_id(AId::Points));
 }
 
 fn is_basic_shapes_attr(a: &Attribute) -> bool {
     // List of common basic shapes attributes.
     // https://www.w3.org/TR/SVG/shapes.html#RectElement
 
-       a.is_conditional_processing()
-    || a.is_core()
-    || a.is_graphical_event()
-    || a.is_presentation()
-    || a.has_id(AId::Class)
-    || a.has_id(AId::Style)
-    || a.has_id(AId::ExternalResourcesRequired)
-    || a.has_id(AId::Transform)
+    a.is_conditional_processing()
+        || a.is_core()
+        || a.is_graphical_event()
+        || a.is_presentation()
+        || a.has_id(AId::Class)
+        || a.has_id(AId::Style)
+        || a.has_id(AId::ExternalResourcesRequired)
+        || a.has_id(AId::Transform)
 }
 
 fn process_fill(node: &mut Node) {
@@ -184,7 +171,12 @@ static STROKE_ATTRIBUTES: &'static [AId] = &[
 fn process_stroke(node: &mut Node) {
     fn is_invisible(node: &Node) -> bool {
         // Skip nodes with marker, because it doesn't count opacity and stroke-width.
-        if node.has_attributes(&[AId::Marker, AId::MarkerStart, AId::MarkerMid, AId::MarkerEnd]) {
+        if node.has_attributes(&[
+            AId::Marker,
+            AId::MarkerStart,
+            AId::MarkerMid,
+            AId::MarkerEnd,
+        ]) {
             return false;
         }
 
@@ -233,7 +225,11 @@ fn process_stroke(node: &mut Node) {
 
                     // If the parent element doesn't define 'stroke' - we can remove it
                     // from the current element.
-                    if node.parents().find(|n| n.has_attribute(AId::Stroke)).is_none() {
+                    if node
+                        .parents()
+                        .find(|n| n.has_attribute(AId::Stroke))
+                        .is_none()
+                    {
                         node.remove_attribute(AId::Stroke);
                     }
                 }
@@ -249,12 +245,7 @@ fn process_overflow(node: &mut Node) {
     //
     // https://www.w3.org/TR/SVG/masking.html#OverflowProperty
     match node.tag_id().unwrap() {
-          EId::Svg
-        | EId::Symbol
-        | EId::Image
-        | EId::ForeignObject
-        | EId::Pattern
-        | EId::Marker => {}
+        EId::Svg | EId::Symbol | EId::Image | EId::ForeignObject | EId::Pattern | EId::Marker => {}
         _ => {
             node.remove_attribute(AId::Overflow);
         }
@@ -267,118 +258,137 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let doc = Document::from_str($in_text).unwrap();
                 remove_needless_attributes(&doc);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
-    test!(rm_clip_path_attrs_1,
-"<svg>
+    test!(
+        rm_clip_path_attrs_1,
+        "<svg>
     <clipPath>
         <rect width='10' fill='red'/>
     </clipPath>
 </svg>",
-"<svg>
+        "<svg>
     <clipPath>
         <rect width='10'/>
     </clipPath>
 </svg>
-");
+"
+    );
 
-    test!(rm_clip_path_attrs_2,
-"<svg>
+    test!(
+        rm_clip_path_attrs_2,
+        "<svg>
     <clipPath>
         <text fill='red' font-size='10'/>
     </clipPath>
 </svg>",
-"<svg>
+        "<svg>
     <clipPath>
         <text font-size='10'/>
     </clipPath>
 </svg>
-");
+"
+    );
 
-    test!(rm_rect_attrs_1,
-"<svg>
+    test!(
+        rm_rect_attrs_1,
+        "<svg>
     <rect dx='10' fill='#ff0000' r='5'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect fill='#ff0000'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_eb_1,
-"<svg enable-background='new'>
+    test!(
+        rm_eb_1,
+        "<svg enable-background='new'>
     <g enable-background='new'>
         <rect enable-background='new'/>
     </g>
 </svg>",
-"<svg enable-background='new'>
+        "<svg enable-background='new'>
     <g enable-background='new'>
         <rect/>
     </g>
 </svg>
-");
+"
+    );
 
-    test!(rm_fill_1,
-"<svg>
+    test!(
+        rm_fill_1,
+        "<svg>
     <rect fill='none' fill-rule='evenodd' fill-opacity='0.5'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect fill='none'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_fill_2,
-"<svg>
+    test!(
+        rm_fill_2,
+        "<svg>
     <rect fill='red' fill-rule='evenodd' fill-opacity='0'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect fill='none'/>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_fill_1,
-"<svg>
+    test_eq!(
+        keep_fill_1,
+        "<svg>
     <g fill='#ff0000' fill-rule='evenodd'>
         <rect fill='none'/>
     </g>
 </svg>
-");
+"
+    );
 
-    test!(rm_stroke_1,
-"<svg>
+    test!(
+        rm_stroke_1,
+        "<svg>
     <rect stroke='none' stroke-width='5' stroke-linecap='square'/>
     <rect stroke='red' stroke-width='0' stroke-linecap='square'/>
     <rect stroke='red' stroke-opacity='0' stroke-linecap='square'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect/>
     <rect/>
     <rect/>
 </svg>
-");
+"
+    );
 
-    test_eq!(keep_stroke_1,
-"<svg>
+    test_eq!(
+        keep_stroke_1,
+        "<svg>
     <g stroke='#ff0000'>
         <rect stroke='none'/>
     </g>
 </svg>
-");
+"
+    );
 
-    test!(rm_overflow_1,
-"<svg overflow='scroll'>
+    test!(
+        rm_overflow_1,
+        "<svg overflow='scroll'>
     <rect overflow='visible'/>
 </svg>",
-"<svg overflow='scroll'>
+        "<svg overflow='scroll'>
     <rect/>
 </svg>
-");
-
+"
+    );
 }

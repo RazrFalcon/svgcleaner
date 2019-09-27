@@ -28,50 +28,59 @@ pub fn remove_element(doc: &mut Document, id: EId) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use svgdom::{Document, ToStringWithOptions, ElementId};
+    use svgdom::{Document, ElementId, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $id:expr, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $id:expr, $in_text:expr, $out_text:expr) => {
             #[test]
             fn $name() {
                 let mut doc = Document::from_str($in_text).unwrap();
                 remove_element(&mut doc, $id);
                 assert_eq_text!(doc.to_string_with_opt(&write_opt_for_tests!()), $out_text);
             }
-        )
+        };
     }
 
     // TODO: this tests should be in svgdom
 
-    test!(rm_1, ElementId::Title,
-"<svg>
+    test!(
+        rm_1,
+        ElementId::Title,
+        "<svg>
     <title/>
 </svg>",
-"<svg/>
-");
+        "<svg/>
+"
+    );
 
-    test!(rm_2, ElementId::Title,
-"<svg>
+    test!(
+        rm_2,
+        ElementId::Title,
+        "<svg>
     <title/>
     <title/>
     <rect/>
     <title/>
 </svg>",
-"<svg>
+        "<svg>
     <rect/>
 </svg>
-");
+"
+    );
 
-    test!(rm_3, ElementId::Title,
-"<svg>
+    test!(
+        rm_3,
+        ElementId::Title,
+        "<svg>
     <title>
         <title/>
         <rect/>
     </title>
     <rect/>
 </svg>",
-"<svg>
+        "<svg>
     <rect/>
 </svg>
-");
+"
+    );
 }

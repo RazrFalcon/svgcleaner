@@ -16,16 +16,9 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use svgdom::{
-    Attribute,
-    AttributeType,
-    AttributeValue,
-    Document,
-    Length,
-    ValueId,
-};
+use svgdom::{Attribute, AttributeType, AttributeValue, Document, Length, ValueId};
 
-use task::short::{EId, AId, Unit};
+use task::short::{AId, EId, Unit};
 
 // TODO: xml:space
 
@@ -93,8 +86,7 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
 
     // TODO: this elements should be processed differently
     match tag_name {
-          EId::LinearGradient
-        | EId::RadialGradient => return false,
+        EId::LinearGradient | EId::RadialGradient => return false,
         _ => {}
     }
 
@@ -132,26 +124,24 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
                 _ => {}
             }
         }
-        AId::Width | AId::Height => {
-            match tag_name {
-                EId::Svg => {
-                    if attr.value == AttributeValue::from((100.0, Unit::Percent)) {
-                        return true;
-                    }
+        AId::Width | AId::Height => match tag_name {
+            EId::Svg => {
+                if attr.value == AttributeValue::from((100.0, Unit::Percent)) {
+                    return true;
                 }
-                EId::Pattern => {
-                    if attr.value == AttributeValue::from((0.0, Unit::None)) {
-                        return true;
-                    }
-                }
-                EId::Mask | EId::Filter => {
-                    if attr.value == AttributeValue::from((120.0, Unit::Percent)) {
-                        return true;
-                    }
-                }
-                _ => {}
             }
-        }
+            EId::Pattern => {
+                if attr.value == AttributeValue::from((0.0, Unit::None)) {
+                    return true;
+                }
+            }
+            EId::Mask | EId::Filter => {
+                if attr.value == AttributeValue::from((120.0, Unit::Percent)) {
+                    return true;
+                }
+            }
+            _ => {}
+        },
         // TODO: this
         // temporary disabled since many render applications do not support this
         // AId::Rx | AId::Ry => {
@@ -205,7 +195,7 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
                 }
             }
         }
-          AId::ClipPathUnits
+        AId::ClipPathUnits
         | AId::MaskContentUnits
         | AId::PatternContentUnits
         | AId::PrimitiveUnits => {
@@ -215,9 +205,7 @@ fn is_default(attr: &Attribute, tag_name: EId) -> bool {
                 }
             }
         }
-          AId::MaskUnits
-        | AId::PatternUnits
-        | AId::FilterUnits => {
+        AId::MaskUnits | AId::PatternUnits | AId::FilterUnits => {
             if let AttributeValue::PredefValue(v) = attr.value {
                 if v == ValueId::ObjectBoundingBox {
                     return true;
@@ -236,70 +224,84 @@ mod tests {
     use svgdom::{Document, ToStringWithOptions};
 
     macro_rules! test {
-        ($name:ident, $in_text:expr, $out_text:expr) => (
+        ($name:ident, $in_text:expr, $out_text:expr) => {
             base_test!($name, remove_default_attributes, $in_text, $out_text);
-        )
+        };
     }
 
-    test!(rm_1,
-"<svg>
+    test!(
+        rm_1,
+        "<svg>
     <rect fill='#000000'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect/>
 </svg>
-");
+"
+    );
 
-    test!(keep_1,
-"<svg fill='#ff0000'>
+    test!(
+        keep_1,
+        "<svg fill='#ff0000'>
     <rect fill='#000000'/>
 </svg>",
-"<svg fill='#ff0000'>
+        "<svg fill='#ff0000'>
     <rect fill='#000000'/>
 </svg>
-");
+"
+    );
 
-    test!(rm_svg_w_h,
-"<svg width='100%' height='100%'/>",
-"<svg/>
-");
+    test!(
+        rm_svg_w_h,
+        "<svg width='100%' height='100%'/>",
+        "<svg/>
+"
+    );
 
     // x, y attributes inside 'text' elements are not Length rather LengthList.
-    test!(rm_len_list,
-"<svg>
+    test!(
+        rm_len_list,
+        "<svg>
     <text x='0'/>
 </svg>",
-"<svg>
+        "<svg>
     <text/>
 </svg>
-");
+"
+    );
 
-    test!(rm_mask,
-"<svg>
+    test!(
+        rm_mask,
+        "<svg>
     <mask x='-10%' y='-10%' width='120%' height='120%'/>
 </svg>",
-"<svg>
+        "<svg>
     <mask/>
 </svg>
-");
+"
+    );
 
-    test!(rm_filter,
-"<svg>
+    test!(
+        rm_filter,
+        "<svg>
     <filter x='-10%' y='-10%' width='120%' height='120%'/>
 </svg>",
-"<svg>
+        "<svg>
     <filter/>
 </svg>
-");
+"
+    );
 
-    test!(rm_overflow_1,
-"<svg overflow='visible'>
+    test!(
+        rm_overflow_1,
+        "<svg overflow='visible'>
     <rect overflow='hidden'/>
     <svg overflow='visible'/>
 </svg>",
-"<svg>
+        "<svg>
     <rect/>
     <svg overflow='visible'/>
 </svg>
-");
+"
+    );
 }

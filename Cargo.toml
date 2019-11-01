@@ -25,26 +25,12 @@ name = "svgcleaner"
 path = "src/main.rs"
 
 [dependencies]
+clap = { version = "2", default-features = false, optional = true }
+error-chain = { version = "0.11", default-features = false }
+# fern 0.5.9 added chrono and we don't need it
+fern = { version = "=0.5.8", default-features = false }
 log = "0.4"
-fern = "0.5"
-
-[dependencies.svgdom]
-# latest
-# git = "https://github.com/RazrFalcon/libsvgdom.git"
-# branch = "devel"
-# local copy
-# path = "../svgdom"
-# from crates
-version = "0.10.5"
-
-[dependencies.error-chain]
-version = "0.11"
-default-features = false
-
-[dependencies.clap]
-version = "2"
-default-features = false
-optional = true
+svgdom = "0.10.5"
 
 [features]
 default = ["cli-parsing"]
@@ -53,5 +39,4 @@ cli-parsing = ["clap"]
 # Makes it 5-10% faster, but very slow to compile.
 # Also makes an executable ~30% smaller.
 [profile.release]
-opt-level = 3
 lto = true

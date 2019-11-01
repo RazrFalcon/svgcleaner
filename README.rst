@@ -171,7 +171,7 @@ You can get prebuilt packages `here <https://github.com/RazrFalcon/svgcleaner-gu
 Building
 --------
 
-Dependency: `Rust <https://www.rust-lang.org/>`_ >= 1.20
+Dependency: `Rust <https://www.rust-lang.org/>`_
 
 ::
 

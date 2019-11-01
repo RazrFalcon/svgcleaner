@@ -1776,6 +1776,43 @@ a|image::images/before/trim-colors.svg[]
 a|image::images/after/trim-colors.svg[]
 |===
 
+=== Append newline
+
+Ensures that the output file has a newline at the end of the file,
+following the POSIX standard for text files. There is no visual change
+in the image, but it will behave better with command-line tools, and
+won't show warnings when viewed on GitHub. Disabled by default because
+it slightly increases the file size.
+
+CLI argument: `--append-newline`
+
+|===
+|Before (209B) |After (210B)
+
+a|
+[source,xml]
+----
+<svg>
+  <circle fill="green" cx="50"
+          cy="50" r="45"
+          transform="translate(25)"/>
+</svg> # Error: No newline at end of file.
+----
+
+a|
+[source,xml]
+----
+<svg>
+  <circle fill="green" cx="50"
+          cy="50" r="45"
+          transform="translate(25)"/>
+</svg>
+----
+
+a|image::images/after/simplify-transforms.svg[]
+a|image::images/after/append-newline.svg[]
+|===
+
 === Simplify transform matrices
 
 Simplify transform matrices into short equivalent when possible.

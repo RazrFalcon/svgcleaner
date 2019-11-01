@@ -58,6 +58,7 @@ pub struct CleaningOptions {
     pub paths_to_relative: bool,
     pub remove_unused_segments: bool,
     pub convert_segments: bool,
+    pub append_newline: bool,
     pub apply_transform_to_paths: bool,
 
     // 1..12
@@ -107,6 +108,7 @@ impl Default for CleaningOptions {
             paths_to_relative: false,
             remove_unused_segments: false,
             convert_segments: false,
+            append_newline: false,
             apply_transform_to_paths: false,
 
             coordinates_precision: 6,

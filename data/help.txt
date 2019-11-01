@@ -80,6 +80,7 @@ Paths:
 
 Output:
     --trim-colors <FLAG>                    Use #RGB notation [default: yes]
+    --append-newline <FLAG>                 Output a newline at the end of the file [default: no]
     --simplify-transforms <FLAG>            Simplify transform matrices [default: yes]
     --coordinates-precision <NUM>           Set coordinates numeric precision (1..12) [default: 6]
     --properties-precision <NUM>            Set properties numeric precision (1..12) [default: 6]

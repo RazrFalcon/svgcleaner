@@ -1367,6 +1367,35 @@ CLI argument: ``--trim-colors``
 .. |after-trim-colors| image:: images/after/trim-colors.svg
 
 
+Append newline
+--------------
+
+Ensures that the output file has a newline at the end of the file,
+following the POSIX standard for text files. There is no visual change
+in the image, but it will behave better with command-line tools, and
+won't show warnings when viewed on GitHub. Disabled by default because
+it slightly increases the file size.
+
+CLI argument: ``--append-newline``
+
++----------------------------------------------+-----------------------------------------+
+| Before (209b)                                | After (210b)                            |
++----------------------------------------------+-----------------------------------------+
+| .. code-block:: XML                          | .. code-block:: XML                     |
+|                                              |                                         |
+|   <svg>                                      |   <svg>                                 |
+|     <circle fill="green" cx="50"             |     <circle fill="green" cx="50"        |
+|             cy="50" r="45"                   |             cy="50" r="45"              |
+|             transform="translate(25)"/>      |             transform="translate(25)"/> |
+|   </svg> # Error: No newline at end of file. |   </svg>                                |
++----------------------------------------------+-----------------------------------------+
+| |after-simplify-transforms|                  | |after-append-newline|                  |
++----------------------------------------------+-----------------------------------------+
+
+.. |after-simplify-transforms| image:: images/after/simplify-transforms.svg
+.. |after-append-newline| image:: images/after/append-newline.svg
+
+
 Simplify transform matrices
 ---------------------------
 

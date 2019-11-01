@@ -97,6 +97,7 @@ pub enum Key {
     UseImplicitCommands,
 
     TrimColors,
+    AppendNewline,
     SimplifyTransforms,
     CoordinatesPrecision,
     PropertiesPrecision,
@@ -169,6 +170,7 @@ pub static KEYS: &'static KeysData<'static> = &KeysData(&[
     "use-implicit-cmds",
 
     "trim-colors",
+    "append-newline",
     "simplify-transforms",
     "coordinates-precision",
     "properties-precision",
@@ -289,6 +291,7 @@ pub fn prepare_app<'a, 'b>() -> App<'a, 'b> {
 
         // output
         .arg(gen_flag!(Key::TrimColors, "true"))
+        .arg(gen_flag!(Key::AppendNewline, "false"))
         .arg(gen_flag!(Key::SimplifyTransforms, "true"))
         .arg(gen_precision!(Key::CoordinatesPrecision, "6"))
         .arg(gen_precision!(Key::PropertiesPrecision, "6"))
@@ -547,6 +550,7 @@ pub fn gen_cleaning_options(args: &ArgMatches) -> CleaningOptions {
     flags.resolve(&mut opt.remove_unused_segments, Key::RemoveUnusedSegments);
     flags.resolve(&mut opt.convert_segments, Key::ConvertSegments);
     flags.resolve(&mut opt.apply_transform_to_paths, Key::ApplyTransformToPaths);
+    flags.resolve(&mut opt.append_newline, Key::AppendNewline);
 
     opt.coordinates_precision = value_t!(args, KEYS[Key::CoordinatesPrecision], u8).unwrap();
     opt.properties_precision = value_t!(args, KEYS[Key::PropertiesPrecision], u8).unwrap();

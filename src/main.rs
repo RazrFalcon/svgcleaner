@@ -174,6 +174,13 @@ fn main() {
         }
     }
 
+    // Optionally add a newline to the end of the file.
+    // This is placed after the check for if the file is smaller. It's OK if the
+    // file grows when adding a newline, since the user explicitly wanted that.
+    if cleaning_opt.append_newline {
+        buf.push(b'\n');
+    }
+
     // Save buffer.
     match output {
         OutputTo::Stdout => try_msg!(cleaner::write_stdout(&buf[..])),

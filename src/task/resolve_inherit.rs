@@ -65,7 +65,9 @@ pub fn resolve_inherit(doc: &Document) -> Result<()> {
             if let Some(av) = av {
                 node.set_attribute((*id, av.clone()));
             } else {
-                resolve_impl(&mut node, *id, AttributeId::Color)?;
+                // We don't care if this doesn't resolve, the color will still be `currentColor` if
+                // we can't find it in the document.
+                let _ = resolve_impl(&mut node, *id, AttributeId::Color);
             }
         }
     }
@@ -169,6 +171,16 @@ mod tests {
 </svg>",
 "<svg color='#ff0000'>
     <rect fill='#ff0000' stroke='#ff0000'/>
+</svg>
+");
+
+    test!(current_color_4,
+"<svg>
+    <rect fill='currentColor' stroke='currentColor'/>
+</svg>
+",
+"<svg>
+    <rect fill='currentColor' stroke='currentColor'/>
 </svg>
 ");
 

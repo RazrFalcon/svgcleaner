@@ -29,7 +29,7 @@ error_chain! {
 
     errors {
         UnresolvedAttribute(attr_name: String) {
-            display("failed to resolved attribute '{}'", attr_name)
+            display("failed to resolve attribute '{}'", attr_name)
         }
 
         MissingAttribute(tag_name: String, attr_name: String) {

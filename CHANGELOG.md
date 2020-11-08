@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.6] - 2020-11-08
+### Added
+- `--append-newline` option by [@aaronfranke](https://github.com/aaronfranke).
+
 ## [0.9.5] - 2018-04-09
 ### Added
 - Removal of the `transform` attribute with a default value.
@@ -273,7 +277,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First public release with Perl backend and Qt GUI.
 
-[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.5...HEAD
+[Unreleased]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.6...HEAD
+[0.9.6]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/RazrFalcon/svgcleaner/compare/v0.9.2...v0.9.3

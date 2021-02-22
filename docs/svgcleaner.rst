@@ -1096,7 +1096,7 @@ CLI argument: ``--remove-unresolved-classes``
 |     <style>                                |     <circle fill="green"             |
 |       .fill1 {fill:green}                  |             cx="50" cy="50" r="50"/> |
 |     </style>                               |   </svg>                             |
-|     <circle class=".fill1 .stroke1 .other" |                                      |
+|     <circle class="fill1 stroke1 other"    |                                      |
 |             cx="50" cy="50" r="50"/>       |                                      |
 |   </svg>                                   |                                      |
 +--------------------------------------------+--------------------------------------+

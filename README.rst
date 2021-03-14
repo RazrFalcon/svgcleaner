@@ -104,13 +104,13 @@ Collection                 Size Before (MiB)  Size After (MiB)  Ratio (%)
 =========================  =================  ================  =========
 
 .. _`Breeze icons theme`: https://github.com/KDE/breeze-icons
-.. _`Ardis icons theme`: https://github.com/NitruxSA/ardis-icon-theme
+.. _`Ardis icons theme`: https://github.com/Nitrux/ardis-icon-theme
 .. _`Humanity icons theme`: https://wiki.ubuntu.com/Artwork/Incoming/Karmic/Humanity_Icons?action=AttachFile&do=view&target=humanity_2.1.tar.gz
 .. _`Open Icon Library`: https://sourceforge.net/projects/openiconlibrary
 .. _`Elementary icons theme`: https://github.com/elementary/icons
 .. _`Adwaita icons theme`: https://github.com/GNOME/adwaita-icon-theme
-.. _`Faience icon theme`: https://www.archlinux.org/packages/community/any/faience-icon-theme/
-.. _`GCP Icons`: https://cloud.google.com/icons/files/gcp-icons.zip
+.. _`Faience icon theme`: https://github.com/csharris/faience-icon-theme
+.. _`GCP Icons`: https://cloud.google.com/icons/files/google-cloud-icons.zip
 
 Documentation
 -------------

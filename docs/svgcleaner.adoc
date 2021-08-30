@@ -892,7 +892,7 @@ a|image::images/after/resolve-use.svg[]
 Remove `version` and `baseProfile` attributes from the `svg` element.
 
 Some applications can rely on them, so someone may want to keep them.
-Even throw they usually useless.
+Even though they usually useless.
 
 CLI argument: `--remove-version`
 

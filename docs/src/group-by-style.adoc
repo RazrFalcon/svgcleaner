@@ -3,7 +3,7 @@
 If a continuous range of elements contains equal, inheritable attributes - we can
 group such elements and move this attributes to a new or an existing parent group.
 
-*Note:* this option is mostly poinless when XML indent is enabled,
+*Note:* this option is mostly pointless when XML indent is enabled,
 so you should use it with *Sets XML nodes indent*/`--indent` option equal to `-1` or `0`.
 
 ////

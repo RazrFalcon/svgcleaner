@@ -172,7 +172,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `--copy-on-error` option to copy original file to destination on error.
 - `--quiet` option to suppress any output except warnings and errors.
 - `-remove-title` and `--remove-desc` which was a part of the `--remove-invisible-elts` option.
-- `--remove-text-attributes` which was a part of the the `--remove-notappl-atts` options.
+- `--remove-text-attributes` which was a part of the `--remove-notappl-atts` options.
 - `--remove-xmlns-xlink-attribute` to remove unused `xmlns:xlink` attribute.
 
 ### Changed

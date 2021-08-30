@@ -359,7 +359,7 @@ pub fn check_values(args: &ArgMatches) -> bool {
         true
     }
 
-    // TODO: JoinArcToFlags should be automaticaly disabled if TrimPaths is disabled
+    // TODO: JoinArcToFlags should be automatically disabled if TrimPaths is disabled
 
     if !check_value(args, Key::TrimPaths, Key::JoinArcToFlags) {
         return false;
